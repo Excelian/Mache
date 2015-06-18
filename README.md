@@ -7,9 +7,10 @@ https://trello.com/b/DYSHTr8c/excelian-mache
 ## Features:
 - Nearside caching for common NoSQL platforms using Google's Guava Cache. 
 - ORM Modelling for POJO's using Spring data
-- Eventing and invalidation between various client-side caches (*) (Kafka, Rabbit etc)
 - JSON support (*)
-- Eventual support for continuous query cache by leveraging cache-events and implicit query support (*)
+- Eventing and invalidation between various client-side caches (*) (Kafka, Rabbit etc)
+- Event listener support (*)
+- Continuous query caching; leveraging cache-events and implicit query support (*)
 
 \* coming soon ;)
 
