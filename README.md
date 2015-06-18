@@ -13,6 +13,11 @@ https://trello.com/b/DYSHTr8c/excelian-mache
 
 \* coming soon ;)
 
+## Storage Layer Support
+- Cassandra (done)
+- Mongodb (done)
+- Couchbase
+
 # Roadmap
 - V1 Nearside Caching
 - V2 Nearside with remote invalidation
@@ -22,11 +27,6 @@ https://trello.com/b/DYSHTr8c/excelian-mache
    https://code.google.com/p/guava-libraries/wiki/CachesExplained
 - Spring Data wrappers to map POJO's to each data platform 
    http://projects.spring.io/spring-data/
-
-## Supports
-- Cassandra (done)
-- Mongodb (done)
-- Couchbase
 
 ## Getting started:
 - Take a look at the integration tests for each data platform (mongodb shown below)
