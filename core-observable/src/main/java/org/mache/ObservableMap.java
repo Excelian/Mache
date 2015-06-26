@@ -1,6 +1,9 @@
 package org.mache;
 
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
+
+import org.mache.coordination.CoordinationEntryEvent;
 
 /**
  * Created by neil.avery on 11/06/2015.
@@ -32,13 +35,14 @@ public class ObservableMap<K,V> implements ExCache<K,V> {
     @Override
     public void put(K k, V v) {
         delegate.put(k, v);
-        listener.fire(EventType.INVALIDATE);
+
+        fireInvalidate(k);
     }
 
     @Override
     public void remove(K k) {
         delegate.remove(k);
-        listener.fire(EventType.INVALIDATE);
+        fireInvalidate(k);
     }
 
     @Override
@@ -54,5 +58,10 @@ public class ObservableMap<K,V> implements ExCache<K,V> {
     @Override
     public ExCacheLoader getCacheLoader() {
         return delegate.getCacheLoader();
+    }
+    
+    private void fireInvalidate(K k) {
+    	final CoordinationEntryEvent<K> event = new CoordinationEntryEvent<K>(getName(), k, EventType.INVALIDATE, new Date());
+    	listener.fire(event);
     }
 }
