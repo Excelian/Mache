@@ -16,7 +16,6 @@ import org.mache.coordination.RemoteCacheEntryExpiredListener;
 import org.mache.coordination.RemoteCacheEntryRemovedListener;
 import org.mache.coordination.RemoteCacheEntryUpdatedListener;
 
-
 public abstract class BaseCoordinationEntryEventConsumer implements Closeable {
 
     abstract public void beginSubscriptionThread() throws InterruptedException, JMSException, IOException;
