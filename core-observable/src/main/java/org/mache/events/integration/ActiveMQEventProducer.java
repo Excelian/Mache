@@ -41,6 +41,9 @@ public class ActiveMQEventProducer extends BaseCoordinationEntryEventProducer {
 			message = session.createTextMessage(gson.toJson(event));
 			producer.send(message);
 		} catch (JMSException e) {
+			System.out.println("Error sending message ");
+			e.printStackTrace();
+			
 			throw new RuntimeException("Error while sending event", e);
 		}
     }
