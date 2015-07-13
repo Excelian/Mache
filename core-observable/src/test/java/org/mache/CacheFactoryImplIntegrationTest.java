@@ -74,8 +74,6 @@ public class CacheFactoryImplIntegrationTest {
 		assertEquals(testValue, cache2.get(testKey));
 	}
 
-	//TODO cache2 consumer does not receive information from other cache1 producer 
-	@Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldProperlyInvalidateFromAnotherCache() throws ExecutionException, InterruptedException {

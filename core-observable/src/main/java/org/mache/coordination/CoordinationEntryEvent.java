@@ -18,7 +18,8 @@ public class CoordinationEntryEvent<K> {
 		this.eventType = eventType;
         this.key = key;
         this.eventTime=timeOfEventOccurence;
-        uniqueId= UUID.randomUUID().toString();
+
+        uniqueId= UUID.randomUUID().toString();//TODO: replace with Type 1 UUID to enable tracking of time this message is constructed
     }
 
     public K getKey(){
