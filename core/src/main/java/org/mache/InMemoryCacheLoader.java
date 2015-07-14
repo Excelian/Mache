@@ -3,7 +3,7 @@ package org.mache;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class InMemoryCacheLoader extends AbstractCacheLoader<String, String, String> {
+public class InMemoryCacheLoader<K,V> extends AbstractCacheLoader<String, String, String> {
 	private final String cacheName;
 	private final Map<String, String> store = new ConcurrentHashMap<String, String>();
 	

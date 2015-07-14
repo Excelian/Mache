@@ -7,7 +7,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class CacheEventCollector<K> implements RemoteCacheEntryCreatedListener, RemoteCacheEntryUpdatedListener,RemoteCacheEntryRemovedListener,RemoteCacheEntryExpiredListener {
+public class CacheEventCollector<K> implements RemoteCacheEntryCreatedListener, RemoteCacheEntryUpdatedListener,RemoteCacheEntryRemovedListener,RemoteCacheEntryInvalidateListener {
 
     BlockingQueue<CoordinationEntryEvent<K>> queue = new ArrayBlockingQueue<CoordinationEntryEvent<K>>(1);
 
@@ -27,7 +27,7 @@ public class CacheEventCollector<K> implements RemoteCacheEntryCreatedListener, 
     }
 
     @Override
-    public void onExpired(Iterable iterable) throws CacheEntryListenerException {
+    public void onInvalidate(Iterable iterable) throws CacheEntryListenerException {
         for(CoordinationEntryEvent<K> evt: (Iterable<CoordinationEntryEvent<K>>) iterable){
             queue.add(evt);
         }

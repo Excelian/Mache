@@ -6,3 +6,5 @@ public interface RemoteCacheEntryRemovedListener extends CoordinationEventListen
     void onRemoved(Iterable<CoordinationEntryEvent<?>> events)
             throws CacheEntryListenerException;
 }
+
+

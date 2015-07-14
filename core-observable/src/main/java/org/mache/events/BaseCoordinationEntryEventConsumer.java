@@ -12,7 +12,7 @@ import org.mache.EventType;
 import org.mache.coordination.CoordinationEntryEvent;
 import org.mache.coordination.CoordinationEventListener;
 import org.mache.coordination.RemoteCacheEntryCreatedListener;
-import org.mache.coordination.RemoteCacheEntryExpiredListener;
+import org.mache.coordination.RemoteCacheEntryInvalidateListener;
 import org.mache.coordination.RemoteCacheEntryRemovedListener;
 import org.mache.coordination.RemoteCacheEntryUpdatedListener;
 
@@ -31,7 +31,7 @@ public abstract class BaseCoordinationEntryEventConsumer implements Closeable {
         eventMap.putIfAbsent(EventType.CREATED,new ArrayList<CoordinationEventListener>());
         eventMap.putIfAbsent(EventType.REMOVED,new ArrayList<CoordinationEventListener>());
         eventMap.putIfAbsent(EventType.UPDATED,new ArrayList<CoordinationEventListener>());
-        eventMap.putIfAbsent(EventType.EXPIRED, new ArrayList<CoordinationEventListener>());
+        eventMap.putIfAbsent(EventType.INVALIDATE, new ArrayList<CoordinationEventListener>());
 
         this.topicName = topicName;
     }
@@ -54,8 +54,8 @@ public abstract class BaseCoordinationEntryEventConsumer implements Closeable {
             eventMap.get(EventType.REMOVED).add(listener);
         }
 
-        if(listener instanceof RemoteCacheEntryExpiredListener){
-            eventMap.get(EventType.EXPIRED).add(listener);
+        if(listener instanceof RemoteCacheEntryInvalidateListener){
+            eventMap.get(EventType.INVALIDATE).add(listener);
         }
     }
 
@@ -70,16 +70,17 @@ public abstract class BaseCoordinationEntryEventConsumer implements Closeable {
         for (CoordinationEventListener listener : eventMap.get(eventType)) {
             if (eventType == EventType.CREATED) {
                 ((RemoteCacheEntryCreatedListener) listener).onCreated(events);
-            }
-            if (eventType == EventType.REMOVED) {
+            }else if (eventType == EventType.REMOVED) {
                 ((RemoteCacheEntryRemovedListener) listener).onRemoved(events);
-            }
-            if (eventType == EventType.UPDATED) {
+            }else if (eventType == EventType.UPDATED) {
                 ((RemoteCacheEntryUpdatedListener) listener).onUpdated(events);
+            }else if(eventType == EventType.INVALIDATE) {
+                ((RemoteCacheEntryInvalidateListener) listener).onInvalidate(events);
+            }else
+            {
+                System.err.print("Error. Unsupported coordination event type received - "+eventType);
             }
-            if (eventType == EventType.EXPIRED) {
-                ((RemoteCacheEntryExpiredListener) listener).onExpired(events);
-            }
+
         }
         return event;
     }

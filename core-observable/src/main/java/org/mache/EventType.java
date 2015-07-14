@@ -25,10 +25,8 @@ public enum EventType {
 
 
     /**
-     * An event type indicating that the cache entry has expired.
+     * An event type indicating that the cache entry has expired or been invalidated.
      */
-    EXPIRED,
-
     INVALIDATE
 
 }

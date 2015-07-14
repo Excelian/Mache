@@ -38,8 +38,10 @@ public class ActiveMQEventProducer extends BaseCoordinationEntryEventProducer {
         Gson gson = new Gson();
         TextMessage message;
 		try {
-			message = session.createTextMessage(gson.toJson(event));
+            String payload = gson.toJson(event);
+			message = session.createTextMessage(payload);
 			producer.send(message);
+            System.out.println("SEND:"+payload);
 		} catch (JMSException e) {
 			System.out.println("Error sending message ");
 			e.printStackTrace();

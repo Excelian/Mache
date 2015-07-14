@@ -6,10 +6,12 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import javax.jms.JMSException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -65,6 +67,12 @@ public class CacheFactoryImplIntegrationTest {
 		cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, cacheThingFactory);
 	}
 
+	@After
+	public void TearDown() throws IOException {
+		mqFactory1.close();
+		mqFactory2.close();
+	}
+
 	@Test
 	public void shouldProperlySetupCachesUsingSameCacheLoader() throws ExecutionException {
 		ExCache<String, String> cache1 = cacheFactory1.createCache(cacheLoader);
@@ -78,14 +86,11 @@ public class CacheFactoryImplIntegrationTest {
 	@Test
 	public void shouldProperlyInvalidateFromAnotherCache() throws ExecutionException, InterruptedException {
 		ExCache<String, String> cache1 = cacheFactory1.createCache(cacheLoader);
-		cache1.put(testKey, testValue);
-
 		ExCache<String, String> cache2 = cacheFactory2.createCache(cacheLoader);
-		cache2.get(testKey);
 
 		reset(spiedCache1);
 		cache2.put(testKey, testValue2);
-		Thread.sleep(1000);
+		Thread.sleep(5000);
 		verify(spiedCache1).remove(testKey);
 	}
 }
