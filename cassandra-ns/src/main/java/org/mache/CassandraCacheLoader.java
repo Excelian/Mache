@@ -23,29 +23,33 @@ public class CassandraCacheLoader<K,V> extends AbstractCacheLoader<K,V, Session>
 
     final private Cluster cluster;
     private Session session;
-    private boolean isSchemaCreate;
+    private SchemaOptions schemaOption;
     final private String keySpace;
 
     private boolean isTableCreated = false;
 
     final private Class<V> clazz;
 
-    public CassandraCacheLoader(Class<V> clazz, Cluster cluster, boolean isSchemaCreate, String keySpace) {
+    ;
+
+    public CassandraCacheLoader(Class<V> clazz, Cluster cluster, SchemaOptions schemaOption, String keySpace) throws Exception {
         this.cluster = cluster;
+
         this.cluster.getConfiguration().getQueryOptions().setConsistencyLevel(ConsistencyLevel.LOCAL_QUORUM);
-        this.isSchemaCreate = isSchemaCreate;
+        this.schemaOption = schemaOption;
         this.keySpace = keySpace.replace("-","_").replace(" ","_").replace(":","_");
         this.clazz = clazz;
     }
 
     public void create(String name, K k) {
-        if (isSchemaCreate && session == null) {
+        if ( schemaOption.ShouldCreateSchema() && session == null) {
             synchronized (this) {
-                if (isSchemaCreate && session == null) {
+                if (session == null) {
                     try {
-                        isSchemaCreate = false;
                         session = cluster.connect();
-                        createKeySpace();
+                        if(schemaOption.ShouldCreateSchema()) {
+                            createKeySpace();
+                        }
                         createTable();
                     } catch (Throwable t) {
                         System.err.println("Keyspace:" + keySpace);
@@ -62,6 +66,7 @@ public class CassandraCacheLoader<K,V> extends AbstractCacheLoader<K,V, Session>
     private void createKeySpace() {
         session.execute(String.format("CREATE KEYSPACE IF NOT EXISTS %s  WITH REPLICATION = {'class':'%s', 'replication_factor':%d}; ", keySpace, REPLICATION_CLASS, REPLICATION_FACTOR));
         session.execute(String.format("USE %s ", keySpace));
+        System.out.println("Created keyspace" + keySpace);
     }
 
     void createTable() {
@@ -90,7 +95,18 @@ public class CassandraCacheLoader<K,V> extends AbstractCacheLoader<K,V, Session>
 
     @Override
     public void close() {
-        if (session != null && !session.isClosed()) session.close();
+        if (session != null && !session.isClosed()) {
+            if(schemaOption.ShouldDropSchema()) {
+                try{
+                    session.execute(String.format("DROP KEYSPACE %s; ", keySpace));
+                    System.out.println("Dropped keyspace" + keySpace);
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                    System.err.println("Failed to drop keyspace :"+keySpace+". err=" + t.getMessage());
+                }
+            }
+            session.close();
+        }
     }
 
     @Override

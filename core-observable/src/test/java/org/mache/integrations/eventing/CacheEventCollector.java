@@ -12,7 +12,7 @@ public class CacheEventCollector<K> implements RemoteCacheEntryCreatedListener, 
     BlockingQueue<CoordinationEntryEvent<K>> queue = new ArrayBlockingQueue<CoordinationEntryEvent<K>>(1);
 
     public CoordinationEntryEvent<K> pollWithTimeout() throws InterruptedException {
-        return queue.poll(2, TimeUnit.SECONDS);
+        return queue.poll(5, TimeUnit.SECONDS);
     }
 
     public CoordinationEntryEvent<K> pollWithTimeout(long msecs) throws InterruptedException {

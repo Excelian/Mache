@@ -11,6 +11,7 @@ import org.springframework.data.cassandra.mapping.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -22,8 +23,8 @@ public class CassandraCacheIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        cacheThing = new CacheThing<>(
-                new CassandraCacheLoader<String,TestEntity>(TestEntity.class, cluster, true, keySpace));
+        CassandraCacheLoader loader=new CassandraCacheLoader<String,TestEntity>(TestEntity.class, cluster, SchemaOptions.CREATEANDDROPSCHEMA, keySpace);
+        cacheThing = new CacheThing<>(loader);
     }
 
     @After
@@ -33,6 +34,7 @@ public class CassandraCacheIntegrationTest {
 
     @Test
     public void testGetDriver() throws Exception {
+        cacheThing.put("test-1", new TestEntity("test-1"));
         cacheThing.get("test-1");
         CassandraCacheLoader cacheLoader = (CassandraCacheLoader) cacheThing.getCacheLoader();
         Session driver = cacheLoader.getDriverSession();
@@ -44,6 +46,7 @@ public class CassandraCacheIntegrationTest {
 
         cacheThing.put("test-1", new TestEntity("value-yay"));
         TestEntity test = cacheThing.get("test-1");
+        assertNotNull("Expected object to be retrieved from cache", test);
         assertEquals("value-yay", test.pkString);
     }
 
@@ -61,16 +64,15 @@ public class CassandraCacheIntegrationTest {
         cacheThing.put(key, new TestEntity(key));
         cacheThing.remove(key);
         TestEntity testEntity = cacheThing.get(key);
-        assertNull("Item wasnt removed", testEntity);
+        assertNull("Expected item to be removed", testEntity);
     }
-
 
     @Test
     public void testReadThrough() throws Exception {
         cacheThing.put("test-2", new TestEntity("test-2"));
         cacheThing.put("test-3", new TestEntity("test-3"));
         // replace the cache
-        cacheThing = new CacheThing<String, TestEntity>(new CassandraCacheLoader<>(TestEntity.class, cluster, true, keySpace));
+        cacheThing = new CacheThing<String, TestEntity>(new CassandraCacheLoader<>(TestEntity.class, cluster, SchemaOptions.USEEXISTINGSCHEMA, keySpace));
 
         TestEntity test = cacheThing.get("test-2");
         assertEquals("test-2", test.pkString);
@@ -110,7 +112,6 @@ public class CassandraCacheIntegrationTest {
         }
     }
 
-
     @PrimaryKeyClass
     public static class CompositeKey implements Serializable {
 
@@ -137,7 +138,7 @@ public class CassandraCacheIntegrationTest {
     public void testPutComposite() throws Exception {
 
         CacheThing<CompositeKey, TestEntityWithCompositeKey> compCache = new CacheThing<CompositeKey, TestEntityWithCompositeKey>(
-                new CassandraCacheLoader<String,TestEntityWithCompositeKey>(TestEntityWithCompositeKey.class, cluster, true, keySpace));
+                new CassandraCacheLoader<String,TestEntityWithCompositeKey>(TestEntityWithCompositeKey.class, cluster, SchemaOptions.CREATEANDDROPSCHEMA, "NoSQL_Nearside_Test_"+ new Date().toString() ));
 
         TestEntityWithCompositeKey value = new TestEntityWithCompositeKey("neil", "mac", "explorer");
         compCache.put(value.compositeKey, value);
