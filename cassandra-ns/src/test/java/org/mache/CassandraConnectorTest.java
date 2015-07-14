@@ -9,10 +9,10 @@ import org.junit.Test;
 /**
  * Created by neil.avery on 27/05/2015.
  */
-public class CassandraConnector {
+public class CassandraConnectorTest {
 
     @Test
-    public void connectsToTheCluster() throws Exception {
+    public void connectsToTheCassandraCluster() throws Exception {
         Cluster cluster;
         Session session;
 
@@ -24,8 +24,7 @@ public class CassandraConnector {
         System.out.println("Hosts:" + metadata.getAllHosts());
         System.out.println("KeySpaces:" + metadata.getKeyspaces());
 
-        session = cluster.connect("testkube");
-
-
+        session = cluster.connect("system");//system keyspace should always be present
+        session.close();
     }
 }
