@@ -39,6 +39,7 @@ public class CacheFactoryImpl implements CacheFactory {
 		final ObservableMap<K, V> observable = new ObservableMap<K, V>(underlyingCache);
 
 		observable.registerListener(communicationFactory.getProducer(configuration));
+
 		try {
 			BaseCoordinationEntryEventConsumer consumer=communicationFactory.getConsumer(configuration);
 			consumer.registerEventListener(
@@ -70,7 +71,7 @@ public class CacheFactoryImpl implements CacheFactory {
 								if (e.getEntityName().equals(underlyingCache.getName())) {
 									@SuppressWarnings("unchecked")
 									K key = (K) e.getKey();
-									underlyingCache.remove(key);
+									underlyingCache.invalidate(key);//if we called remove it would go to the DB too.
 								}
 							}
 						}

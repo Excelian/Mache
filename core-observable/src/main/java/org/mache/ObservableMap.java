@@ -50,6 +50,11 @@ public class ObservableMap<K,V> implements ExCache<K,V> {
     }
 
     @Override
+    public void invalidate(K k) {
+        delegate.invalidate(k);
+    }
+
+    @Override
     public void close() {
         delegate.close();
     }

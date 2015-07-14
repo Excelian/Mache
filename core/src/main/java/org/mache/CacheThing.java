@@ -75,6 +75,12 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
         fwdCache.invalidateAll();
 
     }
+
+    @Override
+    public void invalidate(K k) {
+        fwdCache.invalidate(k);
+    }
+
     private void createMaybe(K k) {
         if (!created) {
             synchronized (this) {

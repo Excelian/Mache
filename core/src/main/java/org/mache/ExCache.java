@@ -16,6 +16,8 @@ public interface ExCache<K,V> {
 
     void invalidateAll();
 
+    void invalidate(K k);
+
     void close();
 
     ExCacheLoader getCacheLoader();

@@ -74,12 +74,13 @@ public class CacheFactoryImplIntegrationTest {
 	}
 
 	@Test
-	public void shouldProperlySetupCachesUsingSameCacheLoader() throws ExecutionException {
+	public void shouldProperlySetupCachesUsingSameCacheLoader() throws ExecutionException, InterruptedException {
 		ExCache<String, String> cache1 = cacheFactory1.createCache(cacheLoader);
-		cache1.put(testKey, testValue);
+		cache1.put(testValue, testValue);
 
 		ExCache<String, String> cache2 = cacheFactory2.createCache(cacheLoader);
-		assertEquals(testValue, cache2.get(testKey));
+
+		assertEquals(testValue, cache2.get(testValue));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -90,7 +91,9 @@ public class CacheFactoryImplIntegrationTest {
 
 		reset(spiedCache1);
 		cache2.put(testKey, testValue2);
-		Thread.sleep(5000);
-		verify(spiedCache1).remove(testKey);
+
+		Thread.sleep(2000);//give time for the message to propagate and invalidate to be called
+
+		verify(spiedCache1).invalidate(testKey);
 	}
 }
