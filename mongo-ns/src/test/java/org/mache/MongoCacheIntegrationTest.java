@@ -1,5 +1,6 @@
 package org.mache;
 
+import com.google.common.cache.CacheLoader;
 import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
 import org.junit.After;
@@ -40,6 +41,7 @@ public class MongoCacheIntegrationTest {
 
     @Test
     public void testGetDriver() throws Exception {
+        cacheThing.put("test-1", new TestEntity("test-1"));
         cacheThing.get("test-1");
         MongoDBCacheLoader cacheLoader = (MongoDBCacheLoader) cacheThing.getCacheLoader();
         Mongo driver = cacheLoader.getDriverSession();
@@ -48,9 +50,9 @@ public class MongoCacheIntegrationTest {
 
     @Test
     public void testPut() throws Exception {
-        cacheThing.put("test-1", new TestEntity("value-yay"));
+        cacheThing.put("test-1", new TestEntity("test-1"));
         TestEntity test = cacheThing.get("test-1");
-        assertEquals("value-yay", test.pkString);
+        assertEquals("test-1", test.pkString);
     }
 
     @Test
@@ -62,11 +64,20 @@ public class MongoCacheIntegrationTest {
 
     @Test
     public void testRemove() throws Exception {
+        CacheLoader.InvalidCacheLoadException exception=null;
         String key = "rem-test-2";
         cacheThing.put(key, new TestEntity(key));
         cacheThing.remove(key);
-        TestEntity testEntity = cacheThing.get(key);
-        assertNull("Item wasnt removed", testEntity);
+
+        try {
+            cacheThing.get(key);
+        }
+        catch(CacheLoader.InvalidCacheLoadException e) {
+            exception=e;
+        }
+
+        assertNotNull("Exception expected to have been thrown", exception);
+        assertEquals("CacheLoader returned null for key rem-test-2.", exception.getMessage());
     }
 
     @Test
