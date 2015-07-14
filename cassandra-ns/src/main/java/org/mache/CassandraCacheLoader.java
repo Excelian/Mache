@@ -30,8 +30,6 @@ public class CassandraCacheLoader<K,V> extends AbstractCacheLoader<K,V, Session>
 
     final private Class<V> clazz;
 
-    ;
-
     public CassandraCacheLoader(Class<V> clazz, Cluster cluster, SchemaOptions schemaOption, String keySpace) throws Exception {
         this.cluster = cluster;
 

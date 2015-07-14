@@ -59,6 +59,7 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
 
     @Override
     public void put(K k, V v) {
+
         createMaybe(k);
         fwdCache.invalidate(k);
         cacheLoader.put(k, v);
@@ -66,6 +67,7 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
     @Override
     public void remove(K k) {
         createMaybe(k);
+        cacheLoader.remove(k);
         fwdCache.invalidate(k);
     }
     @Override

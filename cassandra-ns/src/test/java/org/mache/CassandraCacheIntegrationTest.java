@@ -2,6 +2,7 @@ package org.mache;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import com.google.common.cache.CacheLoader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,8 +45,8 @@ public class CassandraCacheIntegrationTest {
     @Test
     public void testPut() throws Exception {
 
-        cacheThing.put("test-1", new TestEntity("value-yay"));
-        TestEntity test = cacheThing.get("test-1");
+        cacheThing.put("value-yay", new TestEntity("value-yay"));
+        TestEntity test = cacheThing.get("value-yay");
         assertNotNull("Expected object to be retrieved from cache", test);
         assertEquals("value-yay", test.pkString);
     }
@@ -60,11 +61,22 @@ public class CassandraCacheIntegrationTest {
 
     @Test
     public void testRemove() throws Exception {
+        CacheLoader.InvalidCacheLoadException exception=null;
         String key = "rem-test-2";
         cacheThing.put(key, new TestEntity(key));
+        assertNotNull("Expected entry to be in cache prior to remocal", cacheThing.get(key));
+
         cacheThing.remove(key);
-        TestEntity testEntity = cacheThing.get(key);
-        assertNull("Expected item to be removed", testEntity);
+
+        try {
+            cacheThing.get(key);
+        }
+        catch(CacheLoader.InvalidCacheLoadException e) {
+            exception=e;
+        }
+
+        assertNotNull("Exception expected to have been thrown", exception);
+        assertEquals("CacheLoader returned null for key rem-test-2.", exception.getMessage());
     }
 
     @Test
