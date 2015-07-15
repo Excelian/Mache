@@ -19,16 +19,16 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<Object,Object,M
 
     private Mongo mongoClient;
     private List<ServerAddress> hosts;
-    private boolean isSchemaCreate;
+    private SchemaOptions schemaOptions;
     private String keySpace;
 
     private boolean isTableCreated = false;
 
     private Class<V> clazz;
 
-    public MongoDBCacheLoader(Class<V> clazz, List<ServerAddress> hosts, boolean isSchemaCreate, String keySpace) {
+    public MongoDBCacheLoader(Class<V> clazz, List<ServerAddress> hosts, SchemaOptions schemaOptions, String keySpace) {
         this.hosts = hosts;
-        this.isSchemaCreate = isSchemaCreate;
+        this.schemaOptions = schemaOptions;
         this.keySpace = keySpace;
         this.keySpace = keySpace.replace("-","_").replace(" ","_").replace(":","_");
         this.clazz = clazz;
@@ -40,21 +40,21 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<Object,Object,M
     }
 
     public void create(String name, Object k) {
-        if (isSchemaCreate && mongoClient == null) {
+        if (schemaOptions.ShouldCreateSchema() && mongoClient == null) {
             synchronized (this) {
-                if (isSchemaCreate && mongoClient == null) {
-                    isSchemaCreate = false;
+                if (mongoClient == null) {
                     try {
                         this.mongoClient = connect(hosts);
 
-                        createKeySpace();
+                        if(schemaOptions.ShouldCreateSchema()) {
+                            createKeySpace();
+                        }
                         createTable();
                     } catch (Throwable t) {
                         t.printStackTrace();
                         System.err.println("Failed to create:" + t.getMessage());
 
                     }
-
                 }
             }
         } else {
@@ -96,6 +96,11 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<Object,Object,M
     @Override
     public void close() {
         if (mongoClient != null){
+            if(schemaOptions.ShouldDropSchema())
+            {
+                mongoClient.dropDatabase(keySpace);
+                System.out.println("Dropped database" + keySpace);
+            }
             mongoClient.close();
         }
     }

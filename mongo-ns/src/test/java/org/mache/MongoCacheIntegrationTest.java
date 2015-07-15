@@ -31,7 +31,7 @@ public class MongoCacheIntegrationTest {
     @Before
     public void setUp() throws Exception {
         cacheThing = new CacheThing<>(
-                new MongoDBCacheLoader<String,TestEntity>(TestEntity.class, serverAddresses, true, keySpace));
+                new MongoDBCacheLoader<String,TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
     }
 
     @After
@@ -85,8 +85,9 @@ public class MongoCacheIntegrationTest {
         cacheThing.put("test-2", new TestEntity("test-2"));
         cacheThing.put("test-3", new TestEntity("test-3"));
         // replace the cache
+        Thread.sleep(1000);
         CacheThing<String, TestEntity> cacheThing1 = new CacheThing<String, TestEntity>(
-                new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, true, keySpace));
+                new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
 
         TestEntity test = cacheThing1.get("test-2");
         assertEquals("test-2", test.pkString);
