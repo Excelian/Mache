@@ -1,10 +1,8 @@
 package org.mache;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -85,7 +83,7 @@ public class CacheFactoryImplIntegrationTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void shouldProperlyInvalidateFromAnotherCache() throws ExecutionException, InterruptedException {
+	public void shouldProperlyInvalidateFromAnotherCacheWhenItemPut() throws ExecutionException, InterruptedException {
 		ExCache<String, String> cache1 = cacheFactory1.createCache(cacheLoader);
 		ExCache<String, String> cache2 = cacheFactory2.createCache(cacheLoader);
 
@@ -95,5 +93,28 @@ public class CacheFactoryImplIntegrationTest {
 		Thread.sleep(2000);//give time for the message to propagate and invalidate to be called
 
 		verify(spiedCache1).invalidate(testKey);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void shouldNotInvalidateFromAnotherCacheWhenItemFetched() throws ExecutionException, InterruptedException {
+		ExCache<String, String> cache1 = cacheFactory1.createCache(cacheLoader);
+		ExCache<String, String> cache2 = cacheFactory2.createCache(cacheLoader);
+
+		/* insert data into loader and ensure it is within cache */
+		cache1.put(testKey, testValue2);
+		assertNotNull(cache1.get(testKey));
+
+		Thread.sleep(1000);//give time for the message to propagate and invalidate to be called from put
+		verify(spiedCache1).invalidate(testKey);
+
+		/* reset mocks */
+		reset(spiedCache1);
+
+		/* pull it into 2nd cache (this should NOT affect any other cache*/
+		assertNotNull(cache2.get(testKey));
+		Thread.sleep(1000);//give time for any messages to propagate and invalidate to 'potentially' called
+
+		verify(spiedCache1, never()).invalidate(testKey);
 	}
 }
