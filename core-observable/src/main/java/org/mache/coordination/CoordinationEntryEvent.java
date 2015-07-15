@@ -1,15 +1,18 @@
 package org.mache.coordination;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.UUID;
 
+import com.fasterxml.uuid.Generators;
 import org.mache.EventType;
 
 public class CoordinationEntryEvent<K> {
 
     private final K key;
     private final String entityName;
-    private final String uniqueId;
+    private final UUID uniqueIdType1;
     private final EventType eventType;
     private final Date eventTime;
 
@@ -18,8 +21,7 @@ public class CoordinationEntryEvent<K> {
 		this.eventType = eventType;
         this.key = key;
         this.eventTime=timeOfEventOccurence;
-
-        uniqueId= UUID.randomUUID().toString();//TODO: replace with Type 1 UUID to enable tracking of time this message is constructed
+        uniqueIdType1 = Generators.timeBasedGenerator().generate(); //TimeUUID
     }
 
     public K getKey(){
@@ -28,14 +30,19 @@ public class CoordinationEntryEvent<K> {
     public String getEntityName() {
     	return entityName;
     }
-    public Date getEventTime(){
+    public Date getEventTime() {
         return eventTime;
     }
+
     public EventType getEventType(){
         return eventType;
     }
 
-    public String getUniqueId() {
-        return uniqueId;
+    public UUID getUniqueId() {
+        return uniqueIdType1;
+    }
+
+    public Date getUniqueIdTime() throws Exception {
+        throw new Exception("Not implemented need to extract date time for uuid");
     }
 }
