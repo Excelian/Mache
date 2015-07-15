@@ -16,10 +16,12 @@ import static org.junit.Assert.assertNotNull;
  */
 public class CassandraLoaderTest extends TestCacheLoaderBase {
 
-    private Cluster cluster = CassandraCacheLoader.connect("10.28.1.140", "BluePrint", 9042);
+
 
     @Override
     protected ExCacheLoader BuildCacheLoader(Class cls) throws Exception {
+
+        Cluster cluster = CassandraCacheLoader.connect("10.28.1.140", "BluePrint", 9042);
         return new CassandraCacheLoader<String,TestEntity>(cls, cluster, SchemaOptions.CREATEANDDROPSCHEMA, keySpace);
     }
 }

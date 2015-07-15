@@ -1,6 +1,8 @@
 package org.mache;
 
 import com.datastax.driver.core.*;
+import com.datastax.driver.core.policies.DCAwareRoundRobinPolicy;
+import com.datastax.driver.core.policies.TokenAwarePolicy;
 import org.springframework.cassandra.core.cql.CqlIdentifier;
 import org.springframework.data.cassandra.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.core.CassandraAdminTemplate;
@@ -123,7 +125,12 @@ public class CassandraCacheLoader<K,V> extends AbstractCacheLoader<K,V, Session>
     }
 
     public static Cluster connect(String contactPoint, String clusterName, int port) {
-        Cluster cluster = Cluster.builder().addContactPoint(contactPoint).withPort(port).withClusterName(clusterName).build();
+        Cluster cluster = Cluster.builder()
+                .addContactPoint(contactPoint)
+                .withPort(port)
+                .withClusterName(clusterName)
+                .withLoadBalancingPolicy(new TokenAwarePolicy(new DCAwareRoundRobinPolicy())) // go to the node with data
+                .build();
         Metadata metadata = cluster.getMetadata();
         return cluster;
     }
