@@ -1,7 +1,5 @@
 package org.mache;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
 import com.google.common.cache.CacheLoader;
 import org.junit.After;
 import org.junit.Before;
@@ -12,20 +10,23 @@ import org.springframework.data.cassandra.mapping.*;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-public class CassandraCacheIntegrationTest {
+/*
+Core common set of tests that all CacheLoader classes should pass
+ */
+public abstract class TestCacheLoaderBase {
 
-    private Cluster cluster = CassandraCacheLoader.connect("10.28.1.140", "BluePrint", 9042);
-    private String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
+    protected String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
     private CacheThing<String, TestEntity> cacheThing;
+
+    abstract protected ExCacheLoader BuildCacheLoader(Class cls) throws Exception;
 
     @Before
     public void setUp() throws Exception {
-        CassandraCacheLoader loader=new CassandraCacheLoader<String,TestEntity>(TestEntity.class, cluster, SchemaOptions.CREATEANDDROPSCHEMA, keySpace);
-        cacheThing = new CacheThing<>(loader);
+        cacheThing = new CacheThing<>(BuildCacheLoader(TestEntity.class));
     }
 
     @After
@@ -34,12 +35,15 @@ public class CassandraCacheIntegrationTest {
     }
 
     @Test
-    public void testGetDriver() throws Exception {
-        cacheThing.put("test-1", new TestEntity("test-1"));
-        cacheThing.get("test-1");
-        CassandraCacheLoader cacheLoader = (CassandraCacheLoader) cacheThing.getCacheLoader();
-        Session driver = cacheLoader.getDriverSession();
-        assertNotNull(driver.getCluster());
+    public void testCanGetDriverSession() throws Exception {
+        ExCacheLoader cacheloader=BuildCacheLoader(TestEntity.class);
+        CacheThing cache = new CacheThing<>(cacheloader);
+        cache.put("test-2", new TestEntity("test-2"));
+        cache.get("test-2");
+        assertNotNull(cacheloader.getDriverSession());
+
+        cacheloader.close();
+        cache.close();
     }
 
     @Test
@@ -84,7 +88,7 @@ public class CassandraCacheIntegrationTest {
         cacheThing.put("test-2", new TestEntity("test-2"));
         cacheThing.put("test-3", new TestEntity("test-3"));
         // replace the cache
-        cacheThing = new CacheThing<String, TestEntity>(new CassandraCacheLoader<>(TestEntity.class, cluster, SchemaOptions.USEEXISTINGSCHEMA, keySpace));
+        cacheThing = new CacheThing<String, TestEntity>(BuildCacheLoader(TestEntity.class));
 
         TestEntity test = cacheThing.get("test-2");
         assertEquals("test-2", test.pkString);
@@ -150,7 +154,7 @@ public class CassandraCacheIntegrationTest {
     public void testPutComposite() throws Exception {
 
         CacheThing<CompositeKey, TestEntityWithCompositeKey> compCache = new CacheThing<CompositeKey, TestEntityWithCompositeKey>(
-                new CassandraCacheLoader<String,TestEntityWithCompositeKey>(TestEntityWithCompositeKey.class, cluster, SchemaOptions.CREATEANDDROPSCHEMA, "NoSQL_Nearside_Test_"+ new Date().toString() ));
+                BuildCacheLoader(TestEntityWithCompositeKey.class) );
 
         TestEntityWithCompositeKey value = new TestEntityWithCompositeKey("neil", "mac", "explorer");
         compCache.put(value.compositeKey, value);
