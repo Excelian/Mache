@@ -22,7 +22,7 @@ import org.mockito.MockitoAnnotations;
 public class CacheFactoryImplIntegrationTest {
 	private static final String LOCAL_MQ = "vm://localhost";
 
-	ExCacheLoader<String, String, String> cacheLoader;
+	ExCacheLoader<String, TestEntity, String> cacheLoader;
 	MQConfiguration mqConfiguration = new MQConfiguration() {
 		@Override
 		public String getTopicName() {
@@ -36,11 +36,10 @@ public class CacheFactoryImplIntegrationTest {
 	MQFactory mqFactory2;
 	CacheFactory cacheFactory2;
 	
-	ExCache<String, String> spiedCache1;
+	ExCache<String, TestEntity> spiedCache1;
 
-	String testKey = "testKey";
-	String testValue = "testValue";
-	String testValue2 = "testValue2";
+	TestEntity testValue = new TestEntity("testValue");
+	TestEntity testValue2 = new TestEntity("testValue2");
 
 	@Mock
 	CacheThingFactory spiedCacheThingFactory;
@@ -73,48 +72,48 @@ public class CacheFactoryImplIntegrationTest {
 
 	@Test
 	public void shouldProperlySetupCachesUsingSameCacheLoader() throws ExecutionException, InterruptedException {
-		ExCache<String, String> cache1 = cacheFactory1.createCache(cacheLoader);
-		cache1.put(testValue, testValue);
+		ExCache<String, TestEntity> cache1 = cacheFactory1.createCache(cacheLoader);
+		cache1.put(testValue.pkey, testValue);
 
-		ExCache<String, String> cache2 = cacheFactory2.createCache(cacheLoader);
+		ExCache<String, TestEntity> cache2 = cacheFactory2.createCache(cacheLoader);
 
-		assertEquals(testValue, cache2.get(testValue));
+		assertEquals(testValue, cache2.get(testValue.pkey));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldProperlyInvalidateFromAnotherCacheWhenItemPut() throws ExecutionException, InterruptedException {
-		ExCache<String, String> cache1 = cacheFactory1.createCache(cacheLoader);
-		ExCache<String, String> cache2 = cacheFactory2.createCache(cacheLoader);
+		ExCache<String, TestEntity> cache1 = cacheFactory1.createCache(cacheLoader);
+		ExCache<String, TestEntity> cache2 = cacheFactory2.createCache(cacheLoader);
 
 		reset(spiedCache1);
-		cache2.put(testKey, testValue2);
+		cache2.put(testValue2.pkey, testValue2);
 
 		Thread.sleep(2000);//give time for the message to propagate and invalidate to be called
 
-		verify(spiedCache1).invalidate(testKey);
+		verify(spiedCache1).invalidate(testValue2.pkey);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldNotInvalidateFromAnotherCacheWhenItemFetched() throws ExecutionException, InterruptedException {
-		ExCache<String, String> cache1 = cacheFactory1.createCache(cacheLoader);
-		ExCache<String, String> cache2 = cacheFactory2.createCache(cacheLoader);
+		ExCache<String, TestEntity> cache1 = cacheFactory1.createCache(cacheLoader);
+		ExCache<String, TestEntity> cache2 = cacheFactory2.createCache(cacheLoader);
 
 		/* insert data into loader and ensure it is within cache */
-		cache1.put(testKey, testValue2);
-		assertNotNull(cache1.get(testKey));
+		cache1.put(testValue2.pkey, testValue2);
+		assertNotNull(cache1.get(testValue2.pkey));
 
 		Thread.sleep(1000);//give time for the message to propagate and invalidate to be called from put
-		verify(spiedCache1).invalidate(testKey);
+		verify(spiedCache1).invalidate(testValue2.pkey);
 
 		/* reset mocks */
 		reset(spiedCache1);
 
 		/* pull it into 2nd cache (this should NOT affect any other cache*/
-		assertNotNull(cache2.get(testKey));
+		assertNotNull(cache2.get(testValue2.pkey));
 		Thread.sleep(1000);//give time for any messages to propagate and invalidate to 'potentially' called
 
-		verify(spiedCache1, never()).invalidate(testKey);
+		verify(spiedCache1, never()).invalidate(testValue2.pkey);
 	}
 }
