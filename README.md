@@ -64,3 +64,17 @@ https://trello.com/b/DYSHTr8c/excelian-mache
 
 ## Interesting links
 https://github.com/infinispan/infinispan/wiki/Near-Caching
+
+## Running the tests
+
+### Pre-requisites
+You will need to install Rabbit MQ.  
+Rabbit server will need to be running while you run the unit tests.  
+Run with: `rabbitmq-server &`
+
+The following tests fail when run outside of Excelian's test cluster:
+ *
+ *
+ *
+ 
+
