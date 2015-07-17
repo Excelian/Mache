@@ -6,10 +6,11 @@ package org.mache;
 public class PuttingCacheClient {
 
   public static void main(String[] args) throws Exception {
-    final ExCache<String, Message> cache = new CassandraExample().exampleCache();
+    final ExCache<String, MessageMongoAnnotated> cache = new MongoExample().exampleCache();
+//    final ExCache<String, Message> cache = new CassandraExample().exampleCache();
     System.out.println("Putting....");
     for (int i = 0; i < 50 ; i++) {
-      final Message v = new Message("msg_"+i, "Hello World - "+i);
+      final MessageMongoAnnotated v = new MessageMongoAnnotated("msg_"+i, "Hello World - "+i);
       cache.put(v.getPrimaryKey(), v);
     }
     System.out.println("Put complete.");

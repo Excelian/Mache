@@ -20,6 +20,7 @@ repositories {
 dependencies {
   compile project(':core')
   compile project(':cassandra-ns')
+  compile project(':mongo-ns')
   compile project(':core-observable')
 
   testCompile group: 'junit', name: 'junit', version: '4.+'
