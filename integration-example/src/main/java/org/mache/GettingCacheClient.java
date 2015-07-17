@@ -1,6 +1,6 @@
 package org.mache;
 
-import org.mache.examples.mongo.MessageMongoAnnotated;
+import org.mache.examples.mongo.MongoAnnotatedMessage;
 import org.mache.examples.mongo.MongoExample;
 
 /**
@@ -10,10 +10,10 @@ public class GettingCacheClient {
 
   public static void main(String[] args) throws Exception {
 //    final ExCache<String, Message> cache = new CassandraExample().exampleCache();
-    final ExCache<String, MessageMongoAnnotated> cache = new MongoExample().exampleCache();
+    final ExCache<String, MongoAnnotatedMessage> cache = new MongoExample().exampleCache();
     System.out.println("Getting...");
     for (int i = 0; i < 50 ; i++) {
-      final MessageMongoAnnotated hello = cache.get("msg_"+i);
+      final MongoAnnotatedMessage hello = cache.get("msg_"+i);
       System.out.println("hello = " + hello);
     }
     cache.close();

@@ -1,6 +1,6 @@
 package org.mache;
 
-import org.mache.examples.mongo.MessageMongoAnnotated;
+import org.mache.examples.mongo.MongoAnnotatedMessage;
 import org.mache.examples.mongo.MongoExample;
 
 /**
@@ -9,11 +9,11 @@ import org.mache.examples.mongo.MongoExample;
 public class PuttingCacheClient {
 
   public static void main(String[] args) throws Exception {
-    final ExCache<String, MessageMongoAnnotated> cache = new MongoExample().exampleCache();
+    final ExCache<String, MongoAnnotatedMessage> cache = new MongoExample().exampleCache();
 //    final ExCache<String, Message> cache = new CassandraExample().exampleCache();
     System.out.println("Putting....");
     for (int i = 0; i < 50 ; i++) {
-      final MessageMongoAnnotated v = new MessageMongoAnnotated("msg_"+i, "Hello World - "+i);
+      final MongoAnnotatedMessage v = new MongoAnnotatedMessage("msg_"+i, "Hello World - "+i);
       cache.put(v.getPrimaryKey(), v);
     }
     System.out.println("Put complete.");

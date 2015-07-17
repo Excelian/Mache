@@ -5,7 +5,6 @@ import org.mache.*;
 import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
 import org.mache.events.integration.RabbitMQFactory;
-import org.mache.examples.mongo.MessageMongoAnnotated;
 
 import javax.jms.JMSException;
 import java.io.IOException;
@@ -21,16 +20,16 @@ public class MongoExample {
   
   protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
   
-  public ExCache<String, MessageMongoAnnotated> exampleCache() throws Exception {
-    final MongoDBCacheLoader<String, MessageMongoAnnotated> cacheLoader = getCacheLoader();
+  public ExCache<String, MongoAnnotatedMessage> exampleCache() throws Exception {
+    final MongoDBCacheLoader<String, MongoAnnotatedMessage> cacheLoader = getCacheLoader();
     final CacheFactory cacheFactory = getCacheFactory();
     return cacheFactory.createCache(cacheLoader);
   }
 
-  private MongoDBCacheLoader<String, MessageMongoAnnotated> getCacheLoader() {
+  private MongoDBCacheLoader<String, MongoAnnotatedMessage> getCacheLoader() {
     final List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress("10.28.1.140", 27017));
     final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
-    return new MongoDBCacheLoader<>(MessageMongoAnnotated.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace);
+    return new MongoDBCacheLoader<>(MongoAnnotatedMessage.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace);
   }
 
 
