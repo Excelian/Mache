@@ -7,7 +7,7 @@ import org.springframework.data.cassandra.mapping.Table;
  * Created by jbowkett on 17/07/15.
  */
 @Table
-public class Message {
+public class CassandraAnnotatedMessage {
 
   private static final String userName = System.getProperty("user.name");
 
@@ -16,7 +16,7 @@ public class Message {
   @PrimaryKey
   private final String primaryKey;
 
-  public Message(String primaryKey, String msg) {
+  public CassandraAnnotatedMessage(String primaryKey, String msg) {
     this.msg = msg;
     this.primaryKey = primaryKey;
   }

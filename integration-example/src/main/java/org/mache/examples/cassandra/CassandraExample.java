@@ -20,10 +20,10 @@ public class CassandraExample {
   
   protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
   
-  protected ExCache<String, Message> exampleCache() throws Exception {
+  protected ExCache<String, CassandraAnnotatedMessage> exampleCache() throws Exception {
     final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
     final Cluster cluster = getCluster();
-    final CassandraCacheLoader<String, Message> cacheLoader = getCacheLoader(keySpace, cluster);
+    final CassandraCacheLoader<String, CassandraAnnotatedMessage> cacheLoader = getCacheLoader(keySpace, cluster);
     final CacheFactory cacheFactory = getCacheFactory();
     return cacheFactory.createCache(cacheLoader);
   }
@@ -36,10 +36,10 @@ public class CassandraExample {
   }
 
 
-  private CassandraCacheLoader<String, Message> getCacheLoader(String keySpace, Cluster cluster) throws Exception {
+  private CassandraCacheLoader<String, CassandraAnnotatedMessage> getCacheLoader(String keySpace, Cluster cluster) throws Exception {
     System.out.println("Creating cache loader with keyspace:["+keySpace+"]");
-    final CassandraCacheLoader<String, Message> cacheLoader = new CassandraCacheLoader<>(
-        Message.class,
+    final CassandraCacheLoader<String, CassandraAnnotatedMessage> cacheLoader = new CassandraCacheLoader<>(
+        CassandraAnnotatedMessage.class,
         cluster, CREATEANDDROPSCHEMA,
         keySpace);
     System.out.println("CacheLoader created.");
