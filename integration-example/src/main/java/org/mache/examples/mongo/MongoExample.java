@@ -1,9 +1,11 @@
-package org.mache;
+package org.mache.examples.mongo;
 
 import com.mongodb.ServerAddress;
+import org.mache.*;
 import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
 import org.mache.events.integration.RabbitMQFactory;
+import org.mache.examples.mongo.MessageMongoAnnotated;
 
 import javax.jms.JMSException;
 import java.io.IOException;

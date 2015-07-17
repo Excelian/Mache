@@ -1,24 +1,22 @@
-package org.mache;
+package org.mache.examples.cassandra;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
  * Created by jbowkett on 17/07/15.
  */
-@Document
-public class MessageMongoAnnotated {
+@Table
+public class Message {
 
-  @Field
+  private static final String userName = System.getProperty("user.name");
+
   private final String msg;
 
-  @Id
+  @PrimaryKey
   private final String primaryKey;
 
-  public MessageMongoAnnotated(String primaryKey, String msg) {
+  public Message(String primaryKey, String msg) {
     this.msg = msg;
     this.primaryKey = primaryKey;
   }

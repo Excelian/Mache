@@ -1,5 +1,8 @@
 package org.mache;
 
+import org.mache.examples.mongo.MessageMongoAnnotated;
+import org.mache.examples.mongo.MongoExample;
+
 /**
  * Created by jbowkett on 17/07/15.
  */

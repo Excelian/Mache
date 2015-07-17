@@ -1,6 +1,7 @@
-package org.mache;
+package org.mache.examples.cassandra;
 
 import com.datastax.driver.core.Cluster;
+import org.mache.*;
 import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
 import org.mache.events.integration.RabbitMQFactory;
