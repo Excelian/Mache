@@ -14,7 +14,7 @@ import java.util.*;
  * Created by neil.avery on 29/05/2015.
  * TODO: Replication class and factor need to be configurable.
  */
-public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<Object,Object,Mongo> {
+public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
 
 
     private Mongo mongoClient;

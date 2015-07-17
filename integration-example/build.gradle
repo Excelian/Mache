@@ -1,0 +1,51 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+version = '1.0'
+jar {
+  manifest {
+    attributes 'Implementation-Title': 'Integration-Example',
+            'Implementation-Version': version
+  }
+}
+
+repositories {
+  maven { url 'https://repository.jboss.org/nexus/content/groups/public' }
+  mavenCentral()
+}
+
+dependencies {
+  compile project(':core')
+  compile project(':cassandra-ns')
+  compile project(':mongo-ns')
+  compile project(':core-observable')
+
+  testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+test {
+  systemProperties 'property': 'value'
+}
+
+uploadArchives {
+  repositories {
+    flatDir {
+      dirs 'repos'
+    }
+  }
+}
+
+
+task getClient(dependsOn: 'classes', type: JavaExec) {
+  main = 'org.mache.GettingCacheClient'
+  classpath = sourceSets.main.runtimeClasspath
+}
+
+task putClient(dependsOn: 'classes', type: JavaExec) {
+  main = 'org.mache.PuttingCacheClient'
+  classpath = sourceSets.main.runtimeClasspath
+}
+
