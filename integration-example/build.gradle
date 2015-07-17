@@ -1,0 +1,38 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+version = '1.0'
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Integration-Example',
+                   'Implementation-Version': version
+    }
+}
+
+repositories {
+    maven { url 'https://repository.jboss.org/nexus/content/groups/public' }
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':core')
+    compile project(':cassandra-ns')
+    compile project(':core-observable')
+
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+test {
+    systemProperties 'property': 'value'
+}
+
+uploadArchives {
+    repositories {
+       flatDir {
+           dirs 'repos'
+       }
+    }
+}
+
