@@ -16,15 +16,19 @@ import static org.mache.SchemaOptions.CREATEANDDROPSCHEMA;
 /**
  * Created by jbowkett on 17/07/15.
  */
-public class CassandraExample {
+public class CassandraExample implements AutoCloseable{
   
   protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
-  
-  protected ExCache<String, CassandraAnnotatedMessage> exampleCache() throws Exception {
+  private MQFactory mqFactory;
+  private Cluster cluster;
+  private CassandraCacheLoader<String, CassandraAnnotatedMessage> cacheLoader;
+
+  public ExCache<String, CassandraAnnotatedMessage> exampleCache() throws IOException, JMSException {
     final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
-    final Cluster cluster = getCluster();
-    final CassandraCacheLoader<String, CassandraAnnotatedMessage> cacheLoader = getCacheLoader(keySpace, cluster);
-    final CacheFactory cacheFactory = getCacheFactory();
+    cluster = getCluster();
+    cacheLoader = getCacheLoader(keySpace, cluster);
+    mqFactory = getMqFactory();
+    final CacheFactory cacheFactory = getCacheFactory(mqFactory);
     return cacheFactory.createCache(cacheLoader);
   }
 
@@ -36,7 +40,7 @@ public class CassandraExample {
   }
 
 
-  private CassandraCacheLoader<String, CassandraAnnotatedMessage> getCacheLoader(String keySpace, Cluster cluster) throws Exception {
+  private CassandraCacheLoader<String, CassandraAnnotatedMessage> getCacheLoader(String keySpace, Cluster cluster){
     System.out.println("Creating cache loader with keyspace:["+keySpace+"]");
     final CassandraCacheLoader<String, CassandraAnnotatedMessage> cacheLoader = new CassandraCacheLoader<>(
         CassandraAnnotatedMessage.class,
@@ -46,14 +50,35 @@ public class CassandraExample {
     return cacheLoader;
   }
 
-  private CacheFactory getCacheFactory() throws JMSException, IOException {
+  private CacheFactory getCacheFactory(MQFactory mqFactory) throws JMSException, IOException {
     System.out.println("Creating CacheFactory...");
-    final MQConfiguration mqConfiguration = () -> "testTopic";
     final CacheThingFactory cacheThingFactory = new CacheThingFactory();
-    final String LOCAL_MQ = "localhost";
-    final MQFactory mqFactory = new RabbitMQFactory(LOCAL_MQ);
+    final MQConfiguration mqConfiguration = () -> "testTopic";
     final CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, cacheThingFactory);
     System.out.println("Cache Factory Created.");
     return cacheFactory;
+  }
+
+  private MQFactory getMqFactory() throws JMSException, IOException {
+    final String LOCAL_MQ = "localhost";
+    return new RabbitMQFactory(LOCAL_MQ);
+  }
+
+  @Override
+  public void close(){
+    if(cacheLoader != null){
+      cacheLoader.close();
+    }
+    if(cluster != null){
+      cluster.close();
+    }
+    if(mqFactory != null){
+      try {
+        mqFactory.close();
+      }
+      catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 }
