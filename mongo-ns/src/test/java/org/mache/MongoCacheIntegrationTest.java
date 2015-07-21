@@ -56,6 +56,14 @@ public class MongoCacheIntegrationTest {
     }
 
     @Test
+    public void canPutTheSameItemAgainTest() throws Exception {
+        cacheThing.put("test-1", new TestEntity("test-1"));
+        cacheThing.put("test-1", new TestEntity("test-1"));//TODO: This should be passing
+        TestEntity test = cacheThing.get("test-1");
+        assertEquals("test-1", test.pkString);
+    }
+
+    @Test
     public void testReadCache() throws Exception {
         cacheThing.put("test-2", new TestEntity("test-2"));
         TestEntity test = cacheThing.get("test-2");
