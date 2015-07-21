@@ -44,7 +44,12 @@ public class MongoExample implements AutoCloseable {
 
   private CacheFactory getCacheFactory(MQFactory mqFactory) throws IOException, JMSException {
     System.out.println("Creating CacheFactory...");
-    final MQConfiguration mqConfiguration = () -> "testTopic";
+    final MQConfiguration mqConfiguration = new MQConfiguration() {
+      @Override
+      public String getTopicName() {
+        return "testTopic";
+      }};
+
     final CacheThingFactory cacheThingFactory = new CacheThingFactory();
     final CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, cacheThingFactory);
     System.out.println("Cache Factory Created.");
@@ -71,3 +76,4 @@ public class MongoExample implements AutoCloseable {
     }
   }
 }
+
