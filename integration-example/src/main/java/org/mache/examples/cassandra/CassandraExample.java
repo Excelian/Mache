@@ -52,6 +52,13 @@ public class CassandraExample implements AutoCloseable{
 
   private CacheFactory getCacheFactory(MQFactory mqFactory) throws JMSException, IOException {
     System.out.println("Creating CacheFactory...");
+
+    final MQConfiguration mqConfiguration = new MQConfiguration() {
+      @Override
+      public String getTopicName() {
+        return "testTopic";
+      }};
+
     final CacheThingFactory cacheThingFactory = new CacheThingFactory();
     final MQConfiguration mqConfiguration = () -> "testTopic";
     final CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, cacheThingFactory);
