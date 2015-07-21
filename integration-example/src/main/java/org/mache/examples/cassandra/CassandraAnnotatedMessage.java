@@ -9,8 +9,6 @@ import org.springframework.data.cassandra.mapping.Table;
 @Table
 public class CassandraAnnotatedMessage {
 
-  private static final String userName = System.getProperty("user.name");
-
   private final String msg;
 
   @PrimaryKey
