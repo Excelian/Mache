@@ -13,6 +13,95 @@
         <element id="module-output" name="mongo-ns" />
         <element id="module-output" name="Mache" />
         <element id="module-output" name="core-observable" />
+        <element id="library" level="project" name="Gradle: aopalliance:aopalliance:1.0" />
+      </root>
+    </artifact>
+    <artifact build-on-make="true" name="MacheSamplerDependencies">
+      <output-path>C:/temp/apache-jmeter-2.13/lib/Mache</output-path>
+      <root id="root">
+        <element id="library" level="project" name="Gradle: com.datastax.cassandra:cassandra-driver-dse:2.1.4" />
+        <element id="library" level="project" name="Gradle: aopalliance:aopalliance:1.0" />
+        <element id="library" level="project" name="Gradle: com.codahale.metrics:metrics-core:3.0.2" />
+        <element id="library" level="project" name="Gradle: com.datastax.cassandra:cassandra-driver-core:2.1.4" />
+        <element id="library" level="project" name="Gradle: com.google.guava:guava:18.0" />
+        <element id="library" level="project" name="Gradle: org.liquibase:liquibase-core:3.1.1" />
+        <element id="library" level="project" name="Gradle: org.springframework.data:spring-cql:1.2.0.RELEASE" />
+        <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-cassandra:1.2.0.RELEASE" />
+        <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-commons:1.10.0.RELEASE" />
+        <element id="library" level="project" name="Gradle: org.springframework:spring-aop:4.0.9.RELEASE" />
+        <element id="library" level="project" name="Gradle: org.springframework:spring-beans:4.0.9.RELEASE" />
+        <element id="library" level="project" name="Gradle: org.springframework:spring-context:4.0.9.RELEASE" />
+        <element id="library" level="project" name="Gradle: org.springframework:spring-core:4.0.9.RELEASE" />
+        <element id="library" level="project" name="Gradle: org.springframework:spring-expression:4.0.9.RELEASE" />
+        <element id="library" level="project" name="Gradle: org.springframework:spring-tx:4.0.9.RELEASE" />
+        <element id="library" level="project" name="Gradle: org.yaml:snakeyaml:1.13" />
+        <element id="library" level="project" name="Gradle: com.101tec:zkclient:0.3" />
+        <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.3.0" />
+        <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.3.3" />
+        <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.3.3" />
+        <element id="library" level="project" name="Gradle: com.fasterxml.uuid:java-uuid-generator:3.1.3" />
+        <element id="library" level="project" name="Gradle: com.github.jsonld-java:jsonld-java:0.5.1" />
+        <element id="library" level="project" name="Gradle: com.google.code.gson:gson:2.3.1" />
+        <element id="library" level="project" name="Gradle: com.rabbitmq:amqp-client:3.3.1" />
+        <element id="library" level="project" name="Gradle: com.yammer.metrics:metrics-core:2.2.0" />
+        <element id="library" level="project" name="Gradle: io.netty:netty:3.7.0.Final" />
+        <element id="library" level="project" name="Gradle: javax.cache:cache-api:1.0.0" />
+        <element id="library" level="project" name="Gradle: javax.jms:jms:1.1" />
+        <element id="library" level="project" name="Gradle: jline:jline:0.9.94" />
+        <element id="library" level="project" name="Gradle: log4j:log4j:1.2.16" />
+        <element id="library" level="project" name="Gradle: net.jpountz.lz4:lz4:1.2.0" />
+        <element id="library" level="project" name="Gradle: net.sf.jopt-simple:jopt-simple:3.2" />
+        <element id="library" level="project" name="Gradle: org.apache.activemq.protobuf:activemq-protobuf:1.1" />
+        <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-core:5.7.0" />
+        <element id="library" level="project" name="Gradle: org.apache.activemq:kahadb:5.7.0" />
+        <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1" />
+        <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpclient-cache:4.2.5" />
+        <element id="library" level="project" name="Gradle: org.apache.kafka:kafka-clients:0.8.2.1" />
+        <element id="library" level="project" name="Gradle: org.apache.kafka:kafka_2.9.2:0.8.2.1" />
+        <element id="library" level="project" name="Gradle: org.apache.zookeeper:zookeeper:3.4.6" />
+        <element id="library" level="project" name="Gradle: org.fusesource.hawtbuf:hawtbuf:1.9" />
+        <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch-transport:1.11" />
+        <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch:1.11" />
+        <element id="library" level="project" name="Gradle: org.fusesource.mqtt-client:mqtt-client:1.3" />
+        <element id="library" level="project" name="Gradle: org.jasypt:jasypt:1.9.0" />
+        <element id="library" level="project" name="Gradle: org.mockito:mockito-all:1.10.19" />
+        <element id="library" level="project" name="Gradle: org.scala-lang:scala-library:2.9.2" />
+        <element id="library" level="project" name="Gradle: org.xerial.snappy:snappy-java:1.1.1.6" />
+        <element id="library" level="project" name="Gradle: com.drewnoakes:metadata-extractor:2.6.2" />
+        <element id="library" level="project" name="Gradle: com.fifesoft:rsyntaxtextarea:2.5.1" />
+        <element id="library" level="project" name="Gradle: com.googlecode.juniversalchardet:juniversalchardet:1.0.3" />
+        <element id="library" level="project" name="Gradle: com.googlecode.mp4parser:isoparser:1.0-RC-1" />
+        <element id="library" level="project" name="Gradle: de.l3s.boilerpipe:boilerpipe:1.1.0" />
+        <element id="library" level="project" name="Gradle: dom4j:dom4j:1.6.1" />
+        <element id="library" level="project" name="Gradle: edu.ucar:netcdf:4.2-min" />
+        <element id="library" level="project" name="Gradle: javax.activation:activation:1.1" />
+        <element id="library" level="project" name="Gradle: logkit:logkit:2.0" />
+        <element id="library" level="project" name="Gradle: org.apache.commons:commons-compress:1.5" />
+        <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-stax-api_1.0_spec:1.0.1" />
+        <element id="library" level="project" name="Gradle: org.apache.james:apache-mime4j-core:0.7.2" />
+        <element id="library" level="project" name="Gradle: org.apache.james:apache-mime4j-dom:0.7.2" />
+        <element id="library" level="project" name="Gradle: org.apache.pdfbox:fontbox:1.8.1" />
+        <element id="library" level="project" name="Gradle: org.apache.pdfbox:jempbox:1.8.1" />
+        <element id="library" level="project" name="Gradle: org.apache.pdfbox:pdfbox:1.8.1" />
+        <element id="library" level="project" name="Gradle: org.apache.poi:poi-ooxml-schemas:3.9" />
+        <element id="library" level="project" name="Gradle: org.apache.poi:poi-ooxml:3.9" />
+        <element id="library" level="project" name="Gradle: org.apache.poi:poi-scratchpad:3.9" />
+        <element id="library" level="project" name="Gradle: org.apache.poi:poi:3.9" />
+        <element id="library" level="project" name="Gradle: org.aspectj:aspectjrt:1.6.11" />
+        <element id="library" level="project" name="Gradle: org.ccil.cowan.tagsoup:tagsoup:1.2.1" />
+        <element id="library" level="project" name="Gradle: org.gagravarr:vorbis-java-core:0.1" />
+        <element id="library" level="project" name="Gradle: org.gagravarr:vorbis-java-core:0.1:tests" />
+        <element id="library" level="project" name="Gradle: org.gagravarr:vorbis-java-tika:0.1" />
+        <element id="library" level="project" name="Gradle: org.hamcrest:hamcrest-core:1.3" />
+        <element id="library" level="project" name="Gradle: org.mongodb:mongo-java-driver:3.0.2" />
+        <element id="library" level="project" name="Gradle: org.ow2.asm:asm-debug-all:4.1" />
+        <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-mongodb:1.7.0.RELEASE" />
+        <element id="library" level="project" name="Gradle: org.tukaani:xz:1.2" />
+        <element id="library" level="project" name="Gradle: oro:oro:2.0.8" />
+        <element id="library" level="project" name="Gradle: rome:rome:0.9" />
+        <element id="library" level="project" name="Gradle: soap:soap:2.3.1" />
+        <element id="library" level="project" name="Gradle: javax.mail:mail:1.5.0-b01" />
+        <element id="library" level="project" name="Gradle: org.jsoup:jsoup:1.7.3" />
       </root>
     </artifact>
   </component>
