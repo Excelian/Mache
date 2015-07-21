@@ -34,7 +34,13 @@ public class MongoExample {
 
   private CacheFactory getCacheFactory() throws JMSException, IOException {
     System.out.println("Creating CacheFactory...");
-    final MQConfiguration mqConfiguration = () -> "testTopic";
+
+    final MQConfiguration mqConfiguration = new MQConfiguration() {
+      @Override
+      public String getTopicName() {
+        return "testTopic";
+      }};
+
     final CacheThingFactory cacheThingFactory = new CacheThingFactory();
     final String LOCAL_MQ = "localhost";
     final MQFactory mqFactory = new RabbitMQFactory(LOCAL_MQ);
