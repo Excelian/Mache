@@ -1,10 +1,11 @@
 package org.mache.integrations.eventing;
 
-import org.mache.events.MQFactory;
-import org.mache.events.integration.RabbitMQFactory;
+import java.io.IOException;
 
 import javax.jms.JMSException;
-import java.io.IOException;
+
+import org.mache.events.MQFactory;
+import org.mache.events.integration.RabbitMQFactory;
 
 public class RabbitMQEventingTest extends TestEventingBase {
 

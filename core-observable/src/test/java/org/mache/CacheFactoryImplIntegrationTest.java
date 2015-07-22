@@ -2,7 +2,11 @@ package org.mache;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -11,11 +15,11 @@ import javax.jms.JMSException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
 import org.mache.events.integration.ActiveMQFactory;
+import org.mache.utils.UUIDUtils;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -46,6 +50,8 @@ public class CacheFactoryImplIntegrationTest {
 	
 	CacheThingFactory cacheThingFactory;
 
+	private final UUIDUtils uuidUtils = new UUIDUtils();
+
 	@Before
 	public void beforeTest() throws JMSException {
 		MockitoAnnotations.initMocks(this);
@@ -55,13 +61,13 @@ public class CacheFactoryImplIntegrationTest {
 		cacheThingFactory = new CacheThingFactory();
 
 		mqFactory1 = new ActiveMQFactory(LOCAL_MQ);
-		cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, spiedCacheThingFactory);
+		cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, spiedCacheThingFactory, uuidUtils);
 
 		spiedCache1 = spy(cacheThingFactory.create(cacheLoader, (String[]) null));
 		when(spiedCacheThingFactory.create(cacheLoader, (String[]) null)).thenReturn(spiedCache1);
 
 		mqFactory2 = new ActiveMQFactory(LOCAL_MQ);
-		cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, cacheThingFactory);
+		cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, cacheThingFactory, uuidUtils);
 	}
 
 	@After
