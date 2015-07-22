@@ -32,32 +32,31 @@ https://trello.com/b/DYSHTr8c/excelian-mache
 ## Getting started:
 - Take a look at the integration tests for each data platform (mongodb shown below)
 
-```
+```` java
  @Document
-    public static class TestEntity {
-        @Id
-        String pkString = "yay";
+public static class TestEntity {
+  @Id
+  String pkString = "yay";
 
-        private int firstInt = 1;
+  private int firstInt = 1;
 
-        @Field(value = "differentName")
-        private double aDouble = 1.0;
+  @Field(value = "differentName")
+  private double aDouble = 1.0;
 
-        @Indexed
-        private String aString = "yay";
+  @Indexed
+  private String aString = "yay";
 
-
-        public TestEntity(String pkString) {
-            this.pkString = pkString;
-        }
-    }
-  List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress("10.28.1.140", 27017));
-  CacheThing cacheThing = new CacheThing<>(
+  public TestEntity(String pkString) {
+    this.pkString = pkString;
+  }
+}
+List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress("10.28.1.140", 27017));
+CacheThing cacheThing = new CacheThing<>(
                 new MongoDBCacheLoader<String,TestEntity>(TestEntity.class, serverAddresses, true, keySpace));)
-   cacheThing.put("test-1", new TestEntity("value-yay"));
-   TestEntity test = cacheThing.get("test-1");
-    assertEquals("value-yay", test.pkString);
-```
+cacheThing.put("test-1", new TestEntity("value-yay"));
+TestEntity test = cacheThing.get("test-1");
+assertEquals("value-yay", test.pkString);
+````
 ## Future work
 - Eventing mechanism
 - JSON

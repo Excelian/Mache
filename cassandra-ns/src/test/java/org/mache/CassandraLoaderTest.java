@@ -3,6 +3,7 @@ package org.mache;
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import com.datastax.driver.core.Cluster;
+
 import org.junit.Rule;
 
 /**

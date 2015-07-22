@@ -8,6 +8,7 @@ import org.apache.jmeter.samplers.SampleResult;
 import org.mache.*;
 import org.mache.events.MQConfiguration;
 import org.mache.events.integration.ActiveMQFactory;
+import org.mache.utils.UUIDUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -37,7 +38,7 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
 
         try {
             mqFactory = new ActiveMQFactory(mapParams.get("activemq.connection"));
-            CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, new CacheThingFactory());
+            CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
             cache = cacheFactory.createCache(new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
             getLogger().info("mache setupTest completed. " + cache.getCacheLoader().getDriverSession().toString() );
 

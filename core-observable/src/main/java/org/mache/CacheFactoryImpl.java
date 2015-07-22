@@ -13,17 +13,20 @@ import org.mache.events.BaseCoordinationEntryEventConsumer;
 import org.mache.events.BaseCoordinationEntryEventProducer;
 import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
+import org.mache.utils.UUIDUtils;
 
 //TODO create artifact to put this class into - it probably will be final artifact depending on anything else
 public class CacheFactoryImpl implements CacheFactory {
 	private final MQFactory communicationFactory;
 	private final MQConfiguration configuration;
 	private final CacheThingFactory cacheThingFactory;
+	private final UUIDUtils uuidUtils;
 
-	public CacheFactoryImpl(final MQFactory communicationFactory, final MQConfiguration configuration, final CacheThingFactory cacheThingFactory) {
+	public CacheFactoryImpl(final MQFactory communicationFactory, final MQConfiguration configuration, final CacheThingFactory cacheThingFactory, final UUIDUtils uuidUtils) {
 		this.communicationFactory = communicationFactory;
 		this.configuration = configuration;
 		this.cacheThingFactory = cacheThingFactory;
+		this.uuidUtils = uuidUtils;
 	}
 
 	@Override
@@ -36,7 +39,7 @@ public class CacheFactoryImpl implements CacheFactory {
 	@Override
 	public <K, V, D> ExCache<K, V> createCache(ExCacheLoader<K, V, D> cacheLoader, String... options) {
 		final ExCache<K, V> underlyingCache = cacheThingFactory.create(cacheLoader, options);
-		final ObservableMap<K, V> observable = new ObservableMap<K, V>(underlyingCache);
+		final ObservableMap<K, V> observable = new ObservableMap<K, V>(underlyingCache, uuidUtils);
 
 		observable.registerListener(communicationFactory.getProducer(configuration));
 

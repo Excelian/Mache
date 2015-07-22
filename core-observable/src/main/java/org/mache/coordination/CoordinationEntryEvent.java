@@ -1,48 +1,46 @@
 package org.mache.coordination;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.UUID;
 
-import com.fasterxml.uuid.Generators;
 import org.mache.EventType;
+import org.mache.utils.UUIDUtils;
+
+import com.fasterxml.uuid.Generators;
 
 public class CoordinationEntryEvent<K> {
 
-    private final K key;
-    private final String entityName;
-    private final UUID uniqueIdType1;
-    private final EventType eventType;
-    private final Date eventTime;
+	private final K key;
+	private final String entityName;
+	private final UUID uniqueIdType1;
+	private final EventType eventType;
+	private Date uniqueIdTime;
 
-    public CoordinationEntryEvent(String entityName, K key, EventType eventType,Date timeOfEventOccurence) {
-        this.entityName = entityName;
+	public CoordinationEntryEvent(final String entityName, final K key, final EventType eventType, final UUIDUtils uuidUtils) {
+		this.entityName = entityName;
 		this.eventType = eventType;
-        this.key = key;
-        this.eventTime=timeOfEventOccurence;
-        uniqueIdType1 = Generators.timeBasedGenerator().generate(); //TimeUUID
-    }
+		this.key = key;
+		uniqueIdType1 = Generators.timeBasedGenerator().generate(); // TimeUUID
+		uniqueIdTime = new Date(uuidUtils.toUnixTimestamp(uniqueIdType1));
+	}
 
-    public K getKey(){
-        return key;
-    }
-    public String getEntityName() {
-    	return entityName;
-    }
-    public Date getEventTime() {
-        return eventTime;
-    }
+	public K getKey() {
+		return key;
+	}
 
-    public EventType getEventType(){
-        return eventType;
-    }
+	public String getEntityName() {
+		return entityName;
+	}
 
-    public UUID getUniqueId() {
-        return uniqueIdType1;
-    }
+	public EventType getEventType() {
+		return eventType;
+	}
 
-    public Date getUniqueIdTime() throws Exception {
-        throw new Exception("Not implemented need to extract date time for uuid");
-    }
+	public UUID getUniqueId() {
+		return uniqueIdType1;
+	}
+
+	public Date getUniqueIdTime() throws Exception {
+		return uniqueIdTime;
+	}
 }

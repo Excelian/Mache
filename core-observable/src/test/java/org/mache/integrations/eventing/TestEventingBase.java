@@ -7,8 +7,10 @@ import org.mache.events.BaseCoordinationEntryEventConsumer;
 import org.mache.events.BaseCoordinationEntryEventProducer;
 import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
+import org.mache.utils.UUIDUtils;
 
 import javax.jms.JMSException;
+
 import java.io.IOException;
 import java.util.Date;
 
@@ -54,7 +56,7 @@ public abstract class TestEventingBase{
         consumer.registerEventListener(collector);
         consumer.beginSubscriptionThread();
 
-        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestEntity.class.getName(),"ID1",EventType.CREATED, new Date());
+        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestEntity.class.getName(),"ID1",EventType.CREATED, new UUIDUtils());
 
         while(collector.pollWithTimeout(250)!=null);//drain queues
 
@@ -93,7 +95,7 @@ public abstract class TestEventingBase{
         consumer.registerEventListener(collector);
         consumer.beginSubscriptionThread();
 
-        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestOtherEntity.class.getName(),"ID1", EventType.CREATED, new Date());
+        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestOtherEntity.class.getName(),"ID1", EventType.CREATED, new UUIDUtils());
 
         while(collector.pollWithTimeout(10)!=null);//drain queues
         producer.send(event);
@@ -128,7 +130,7 @@ public abstract class TestEventingBase{
         consumer2.beginSubscriptionThread();
         while(collector2.pollWithTimeout(10)!=null);//drain queues
 
-        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestEntity.class.getName(), "ID1", EventType.CREATED, new Date());
+        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestEntity.class.getName(), "ID1", EventType.CREATED, new UUIDUtils());
 
         //Publish just the once
         producer.send(event);
