@@ -5,6 +5,7 @@ import org.mache.*;
 import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
 import org.mache.events.integration.RabbitMQFactory;
+import org.mache.utils.UUIDUtils;
 
 import javax.jms.JMSException;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class MongoExample implements AutoCloseable {
       }};
 
     final CacheThingFactory cacheThingFactory = new CacheThingFactory();
-    final CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, cacheThingFactory);
+    final CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, cacheThingFactory, new UUIDUtils());
     System.out.println("Cache Factory Created.");
     return cacheFactory;
   }
