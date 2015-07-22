@@ -29,7 +29,7 @@ public class ObservableMap<K,V> implements ExCache<K,V> {
     }
 
     @Override
-    public Object get(K k) throws ExecutionException {
+    public V get(K k) throws ExecutionException {
         return delegate.get(k);
     }
 

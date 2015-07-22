@@ -30,7 +30,7 @@ public abstract class TestEventingBase{
         public String Name;
     }
 
-    MQConfiguration getConfigurationForEntity(Class cl)
+    MQConfiguration getConfigurationForEntity(final Class cl)
     {
         MQConfiguration mqConfiguration = new MQConfiguration() {
             @Override

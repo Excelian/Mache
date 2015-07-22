@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutionException;
 public interface ExCache<K,V> {
     String getName();
 
-    Object get(K k) throws ExecutionException;
+    V get(K k) throws ExecutionException;
 
     void put(K k, V v);
 
