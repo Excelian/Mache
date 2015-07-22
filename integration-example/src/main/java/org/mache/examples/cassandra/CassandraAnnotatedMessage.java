@@ -1,4 +1,4 @@
-package org.mache;
+package org.mache.examples.cassandra;
 
 import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
@@ -7,16 +7,14 @@ import org.springframework.data.cassandra.mapping.Table;
  * Created by jbowkett on 17/07/15.
  */
 @Table
-public class Message {
-
-  private static final String userName = System.getProperty("user.name");
+public class CassandraAnnotatedMessage {
 
   private final String msg;
 
   @PrimaryKey
   private final String primaryKey;
 
-  public Message(String primaryKey, String msg) {
+  public CassandraAnnotatedMessage(String primaryKey, String msg) {
     this.msg = msg;
     this.primaryKey = primaryKey;
   }
