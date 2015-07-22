@@ -16,7 +16,7 @@ import static org.junit.Assert.assertNotNull;
 public class CassandraConnectorTest {
 
     @Rule
-    public final ConditionalIgnoreRule rul = new ConditionalIgnoreRule();
+    public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     @Test
     @IgnoreIf(condition = NotRunningInExcelian.class)

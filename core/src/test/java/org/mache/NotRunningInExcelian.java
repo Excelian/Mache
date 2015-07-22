@@ -23,7 +23,4 @@ public class NotRunningInExcelian implements IgnoreCondition {
     return !RUNNING_IN_EXCELIAN;
   }
 
-  public static void main(String[] args) {
-    System.out.println("RUNNING_IN_EXCELIAN = " + RUNNING_IN_EXCELIAN);
-  }
 }
