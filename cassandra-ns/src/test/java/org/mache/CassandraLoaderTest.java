@@ -1,20 +1,19 @@
 package org.mache;
 
+import com.codeaffine.test.ConditionalIgnoreRule;
+import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
-import org.junit.Test;
-import org.springframework.data.cassandra.mapping.Column;
-import org.springframework.data.cassandra.mapping.PrimaryKey;
-import org.springframework.data.cassandra.mapping.Table;
-
-import java.util.Date;
-
-import static org.junit.Assert.assertNotNull;
+import org.junit.Rule;
 
 /**
  * Created on 14/07/2015.
  */
+@IgnoreIf(condition = NotRunningInExcelian.class)
 public class CassandraLoaderTest extends TestCacheLoaderBase {
+
+    @Rule
+    public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
+
     @Override
     protected ExCacheLoader buildCacheLoader(Class cls) throws Exception {
         Cluster cluster = CassandraCacheLoader.connect("10.28.1.140", "BluePrint", 9042);
