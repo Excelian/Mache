@@ -1,0 +1,19 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.5
+version = '1.0'
+
+repositories {
+    maven { url 'http://jcenter.bintray.com' }
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':core-observable')
+    compile project(':core')
+    compile project(':mongo-ns')
+
+    compile 'org.apache.jmeter:ApacheJMeter_java:2.11' // 2.11 and jcenter compiles ok
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
