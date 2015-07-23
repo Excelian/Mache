@@ -1,9 +1,11 @@
 package org.mache;
 
+import com.codeaffine.test.ConditionalIgnoreRule;
+import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Metadata;
-import com.datastax.driver.core.ProtocolOptions;
 import com.datastax.driver.core.Session;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -13,7 +15,11 @@ import static org.junit.Assert.assertNotNull;
  */
 public class CassandraConnectorTest {
 
+    @Rule
+    public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
+
     @Test
+    @IgnoreIf(condition = NotRunningInExcelian.class)
     public void connectsToTheCassandraCluster() throws Exception {
         Cluster cluster;
         Session session;

@@ -48,7 +48,6 @@ public abstract class TestCacheLoaderBase {
 
     @Test
     public void testPut() throws Exception {
-
         cacheThing.put("value-yay", new TestEntity("value-yay"));
         TestEntity test = cacheThing.get("value-yay");
         assertNotNull("Expected object to be retrieved from cache", test);
@@ -65,7 +64,6 @@ public abstract class TestCacheLoaderBase {
 
     @Test
     public void testReadCache() throws Exception {
-
         cacheThing.put("test-2", new TestEntity("test-2"));
         TestEntity test = cacheThing.get("test-2");
         assertEquals("test-2", test.pkString);
