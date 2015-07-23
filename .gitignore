@@ -1,1 +1,5 @@
 /build/
+/bin/
+*.iml
+*.iws
+*.ipr
