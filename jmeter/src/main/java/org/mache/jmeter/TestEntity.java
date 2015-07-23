@@ -1,7 +1,6 @@
 package org.mache.jmeter;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -10,10 +9,15 @@ public class TestEntity {
     @Id
     String pkString = "key1";
 
-    @Field(value = "differentName")
-    private String aString = "description for item";
+    @Field(value = "description")
+    private String description = "description for item";
 
-    public TestEntity(String pkString) {
+    public TestEntity(final String pkString, final String description) {
         this.pkString = pkString;
+        this.description = description;
+    }
+
+    public String getAString() {
+        return description;
     }
 }

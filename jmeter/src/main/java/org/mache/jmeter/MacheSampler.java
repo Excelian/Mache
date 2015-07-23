@@ -1,6 +1,8 @@
 package org.mache.jmeter;
 
+import com.google.common.cache.CacheLoader;
 import com.mongodb.ServerAddress;
+
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -8,16 +10,22 @@ import org.apache.jmeter.samplers.SampleResult;
 import org.mache.*;
 import org.mache.events.MQConfiguration;
 import org.mache.events.integration.ActiveMQFactory;
+import org.mache.utils.UUIDUtils;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.*;
 
 
 public class MacheSampler extends AbstractJavaSamplerClient implements Serializable
 {
-    ActiveMQFactory mqFactory = null;
-    ExCache<String, TestEntity> cache;
+    ActiveMQFactory mqFactory1 = null;
+    ActiveMQFactory mqFactory2 = null;
+    ExCache<String, TestEntity> cache1;
+    ExCache<String, TestEntity> cache2;
     private Map<String, String> mapParams = new HashMap<String, String>();
+
+    volatile boolean failTest = false;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -25,7 +33,7 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
         getLogger().info("mache setupTest started  \n");
         mapParams=ExtractParameters(context);
 
-        List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017));
+        List<ServerAddress> serverAddresses = new CopyOnWriteArrayList<>(Arrays.asList(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017)));
         String keySpace = "JMeter_Test_" + new Date().toString();
 
         MQConfiguration mqConfiguration = new MQConfiguration() {
@@ -36,10 +44,14 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
         };
 
         try {
-            mqFactory = new ActiveMQFactory(mapParams.get("activemq.connection"));
-            CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, new CacheThingFactory());
-            cache = cacheFactory.createCache(new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
-            getLogger().info("mache setupTest completed. " + cache.getCacheLoader().getDriverSession().toString() );
+            mqFactory1 = new ActiveMQFactory(mapParams.get("activemq.connection"));
+            mqFactory2 = new ActiveMQFactory(mapParams.get("activemq.connection"));
+            CacheFactoryImpl cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
+            cache1 = cacheFactory1.createCache(new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
+
+            CacheFactoryImpl cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
+            cache2 = cacheFactory2.createCache(new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
+            getLogger().info("mache setupTest completed. "/* + cache1.getCacheLoader().getDriverSession().toString() */);
 
         } catch (Exception e) {
             getLogger().error("mache error building factory", e);
@@ -47,7 +59,7 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
     }
 
     static private Map<String, String> ExtractParameters(JavaSamplerContext context) {
-        Map<String, String> mapParams = new HashMap<String, String>();
+        Map<String, String> mapParams = new ConcurrentHashMap<>();
         for (Iterator<String> it = context.getParameterNamesIterator(); it.hasNext();) {
             String paramName =  it.next();
             String paramValue = context.getParameter(paramName);
@@ -59,34 +71,122 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
     @Override
     public void teardownTest(JavaSamplerContext context)
     {
-        if(cache!=null) cache.close();
-        if(mqFactory!=null) mqFactory.close();
+        if(cache1!=null) cache1.close();
+        if(cache2!=null) cache2.close();
+        if(mqFactory1!=null) mqFactory1.close();
+        if(mqFactory2!=null) mqFactory2.close();
     }
 
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
-        SampleResult result = new SampleResult();
-        boolean success = false;
+        final SampleResult result = new SampleResult();
+        failTest = false;
 
         result.sampleStart();
+        getLogger().info("Starting tests.");
 
-        // Write your test code here.
+        final ExecutorService executorService = Executors.newFixedThreadPool(3);
+
+        final String pkString = "X1";
+        final long thread1ReadTimeoutMilis = Long.parseLong(mapParams.get("thread1.read.timeoutMs"));
+
+        final Future<?> task1 = executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < 1000; ++i) {
+                    final String expectedValue = String.valueOf(i);
+                    final TestEntity e = new TestEntity(pkString, expectedValue);
+                    getLogger().info("TH1 Putting value " + expectedValue);
+                    cache1.put(e.pkString, e);
+
+                    final Future<TestEntity> readTask = executorService.submit(new Callable<TestEntity>() {
+                        @Override
+                        public TestEntity call() throws Exception {
+                            TestEntity result = null;
+                            do {
+                                try {
+                                    result = cache2.get(e.pkString);
+                                    //TODO sometimes I get null there - don't fully udnerstand why
+                                    getLogger().info("TH1 Read value " + result.getAString());
+                                    Thread.sleep(5);
+                                } catch (CacheLoader.InvalidCacheLoadException e) {
+                                    if (!e.getMessage().contains("CacheLoader returned null")) {
+                                        throw e;
+                                    }
+
+                                    //ignore loading null
+                                }
+                            } while (result == null || !expectedValue.equals(result.getAString()));
+
+                            getLogger().info("TH1 Got correct value.");
+                            return result;
+                        }
+                    });
+
+                    try {
+                        readTask.get(thread1ReadTimeoutMilis, TimeUnit.MILLISECONDS);
+                    } catch (InterruptedException | ExecutionException eex) {
+                        getLogger().error("Error while waiting for read task in thread 1", eex);
+                        result.sampleEnd();
+                        result.setSuccessful(false);
+                        result.setResponseMessage("Exception: " + eex);
+                        failTest = true;
+                    } catch (TimeoutException tex) {
+                        //ignore timeout
+                        readTask.cancel(true);
+                    }
+                }
+            }
+        });
+
+        final long thread2TimeoutMilis = Long.parseLong(mapParams.get("thread2.timeoutMs"));
+        final Future<?> task2 = executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                final Random r = new Random();
+                for (int i = 0; i < 10000; ++i) {
+                    final String cache1Value = String.valueOf(r.nextInt());
+                    final String cache2Value = String.valueOf(r.nextInt());
+
+                    getLogger().info("TH2 putting new random values " + cache1Value + ", " + cache2Value);
+
+                    cache1.put(pkString, new TestEntity(pkString, cache1Value));
+                    cache2.put(pkString, new TestEntity(pkString, cache2Value));
+
+                    try {
+                        Thread.sleep(thread2TimeoutMilis);
+                    } catch (InterruptedException e) {
+                        getLogger().error("Error occured in thread2.", e);
+                        result.sampleEnd();
+                        result.setSuccessful(false);
+                        result.setResponseMessage("Exception " + e);
+                        failTest = true;
+                    }
+                }
+            }
+        });
+
         try {
-            TestEntity t1= new TestEntity("X1");
-            cache.put(t1.pkString, t1);
-            result.setResponseMessage("Mache test completed");
-            success=true;
-        } catch (Exception e) {
-            getLogger().error("mache runTest", e);
-            result.sampleEnd();
-            result.setSuccessful(false);
-            result.setResponseMessage("Exception: " + e);
-
-            return result;
+            getLogger().info("Waiting for tasks to complete.");
+            task1.get();
+            task2.get();
+            getLogger().info("Shutting down executor.");
+            executorService.shutdown();
+            executorService.awaitTermination(100L + Math.max(thread1ReadTimeoutMilis * 1000L, thread2TimeoutMilis * 10000L), TimeUnit.MILLISECONDS);
+            getLogger().info("Shut down.");
+        } catch (InterruptedException | ExecutionException e) {
+            getLogger().error("Could not complete all tasks: ", e);
         }
-        //
-        result.sampleEnd();
-        result.setSuccessful(success);
+
+        getLogger().info("Shut down forcefully.");
+        executorService.shutdownNow();
+        getLogger().info("Shut down.");
+
+        if (!failTest) {
+            result.sampleEnd();
+            result.setSuccessful(true);
+        }
+
         return result;
     }
 
@@ -95,6 +195,8 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
         Arguments defaultParameters = new Arguments();
         defaultParameters.addArgument("mongo.server.ip.address", "10.28.1.140");
         defaultParameters.addArgument("activemq.connection", "vm://localhost");
+        defaultParameters.addArgument("thread1.read.timeoutMs", "100");
+        defaultParameters.addArgument("thread2.timeoutMs", "20");
         return defaultParameters;
     }
 
