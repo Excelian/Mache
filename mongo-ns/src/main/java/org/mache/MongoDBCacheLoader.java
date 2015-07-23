@@ -78,7 +78,7 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
     }
 
     public void put(Object k, Object v) {
-        ops().insert(v);
+        ops().save(v);
     }
 
     public void remove(Object k) {
