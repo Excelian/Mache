@@ -1,5 +1,6 @@
 package org.mache;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import org.mache.coordination.CoordinationEntryEvent;
@@ -26,6 +27,11 @@ public class ObservableMap<K,V> implements ExCache<K,V> {
     @Override
     public String getName() {
         return delegate.getName();
+    }
+
+    @Override
+    public UUID getId() {
+        return delegate.getId();
     }
 
     @Override
@@ -67,7 +73,7 @@ public class ObservableMap<K,V> implements ExCache<K,V> {
     }
     
     private void fireInvalidate(K k) {
-    	final CoordinationEntryEvent<K> event = new CoordinationEntryEvent<K>(getName(), k, EventType.INVALIDATE, uuidUtils);
+    	final CoordinationEntryEvent<K> event = new CoordinationEntryEvent<K>(getId(), getName(), k, EventType.INVALIDATE, uuidUtils);
     	listener.send(event);
     }
 }

@@ -1,5 +1,6 @@
 package org.mache.integrations.eventing;
 
+import com.fasterxml.uuid.Generators;
 import org.junit.Test;
 import org.mache.EventType;
 import org.mache.coordination.CoordinationEntryEvent;
@@ -12,7 +13,7 @@ import org.mache.utils.UUIDUtils;
 import javax.jms.JMSException;
 
 import java.io.IOException;
-import java.util.Date;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -56,7 +57,7 @@ public abstract class TestEventingBase{
         consumer.registerEventListener(collector);
         consumer.beginSubscriptionThread();
 
-        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestEntity.class.getName(),"ID1",EventType.CREATED, new UUIDUtils());
+        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(), TestEntity.class.getName(),"ID1",EventType.CREATED, new UUIDUtils());
 
         while(collector.pollWithTimeout(250)!=null);//drain queues
 
@@ -79,6 +80,10 @@ public abstract class TestEventingBase{
         }
     }
 
+    private UUID getUuid() {
+        return Generators.randomBasedGenerator().generate();
+    }
+
     @Test
     public void consumerIgnoresMessagePublishedForDifferentEntity() throws InterruptedException, JMSException, IOException {
 
@@ -94,7 +99,7 @@ public abstract class TestEventingBase{
         consumer.registerEventListener(collector);
         consumer.beginSubscriptionThread();
 
-        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestOtherEntity.class.getName(),"ID1", EventType.CREATED, new UUIDUtils());
+        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(), TestOtherEntity.class.getName(),"ID1", EventType.CREATED, new UUIDUtils());
 
         while(collector.pollWithTimeout(10)!=null);//drain queues
         producer.send(event);
@@ -132,7 +137,7 @@ public abstract class TestEventingBase{
 
         Thread.sleep(300);
 
-        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestEntity.class.getName(), "ID1", EventType.CREATED, new UUIDUtils());
+        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(), TestEntity.class.getName(), "ID1", EventType.CREATED, new UUIDUtils());
         //Publish just the once
         producer.send(event);
 

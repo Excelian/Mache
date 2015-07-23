@@ -1,5 +1,6 @@
 package org.mache;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -7,6 +8,7 @@ import java.util.concurrent.ExecutionException;
  */
 public interface ExCache<K,V> {
     String getName();
+    UUID getId();
 
     V get(K k) throws ExecutionException;
 

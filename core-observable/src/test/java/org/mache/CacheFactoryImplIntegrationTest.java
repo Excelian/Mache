@@ -35,7 +35,8 @@ public class CacheFactoryImplIntegrationTest {
 
 	MQFactory mqFactory2;
 	CacheFactory cacheFactory2;
-	
+
+	ExCache<String, TestEntity> unspiedCache1;
 	ExCache<String, TestEntity> spiedCache1;
 
 	TestEntity testValue = new TestEntity("testValue");
@@ -59,7 +60,8 @@ public class CacheFactoryImplIntegrationTest {
 		mqFactory1 = new ActiveMQFactory(LOCAL_MQ);
 		cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, spiedCacheThingFactory, uuidUtils);
 
-		spiedCache1 = spy(cacheThingFactory.create(cacheLoader, (String[]) null));
+		unspiedCache1 = cacheThingFactory.create(cacheLoader, (String[]) null);
+		spiedCache1 = spy(unspiedCache1);
 		when(spiedCacheThingFactory.create(cacheLoader, (String[]) null)).thenReturn(spiedCache1);
 
 		mqFactory2 = new ActiveMQFactory(LOCAL_MQ);
@@ -85,9 +87,15 @@ public class CacheFactoryImplIntegrationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldProperlyInvalidateFromAnotherCacheWhenItemPut() throws ExecutionException, InterruptedException {
+		ExCache<String, TestEntity> cache1 = cacheFactory1.createCache(cacheLoader);
 		ExCache<String, TestEntity> cache2 = cacheFactory2.createCache(cacheLoader);
 
+		System.out.println("Unspied cache1 is " + unspiedCache1);
+		System.out.println("cache2 is " + cache2);
+
 		reset(spiedCache1);
+
+		Thread.sleep(500); //some time for all listeners to connect
 		cache2.put(testValue2.pkey, testValue2);
 
 		Thread.sleep(2000);//give time for the message to propagate and invalidate to be called
@@ -104,13 +112,10 @@ public class CacheFactoryImplIntegrationTest {
 		/* insert data into loader and ensure it is within cache */
 		cache1.put(testValue2.pkey, testValue2);
 		assertNotNull(cache1.get(testValue2.pkey));
-
 		Thread.sleep(1000);//give time for the message to propagate and invalidate to be called from put
-		verify(spiedCache1).invalidate(testValue2.pkey);
 
 		/* reset mocks */
 		reset(spiedCache1);
-
 		/* pull it into 2nd cache (this should NOT affect any other cache*/
 		assertNotNull(cache2.get(testValue2.pkey));
 		Thread.sleep(1000);//give time for any messages to propagate and invalidate to 'potentially' called
@@ -121,10 +126,12 @@ public class CacheFactoryImplIntegrationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldNotInvalidateSameCacheOnPut() throws ExecutionException, InterruptedException {
-		reset(spiedCache1);
-		spiedCache1.put(testValue2.pkey, testValue2);
+		ExCache<String, TestEntity> cache1 = cacheFactory1.createCache(cacheLoader);
 
-		Thread.sleep(2000);//give time for the message to propagate and invalidate to be called
+		reset(spiedCache1);
+		cache1.put(testValue2.pkey, testValue2);
+
+		Thread.sleep(1000);//give time for the message to propagate and invalidate to be called
 
 		verify(spiedCache1, times(0)).invalidate(testValue2.pkey);
 	}

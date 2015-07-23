@@ -1,7 +1,9 @@
 package org.mache;
 
+import com.fasterxml.uuid.Generators;
 import com.google.common.cache.*;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 
@@ -9,6 +11,7 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
 
     private ForwardingCache<K, V> fwdCache;
     final private ExCacheLoader cacheLoader;
+    private final UUID cacheId;
 
     private String spec = "maximumSize=10000,weakKeys,softValues,expireAfterWrite=1d,expireAfterAccess=1d,recordStats";
 
@@ -20,6 +23,8 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
         if (optionalSpec != null && optionalSpec.length > 0) this.spec = optionalSpec[0];
 
         bindToGuavaCache(cacheLoader);
+
+        cacheId = Generators.nameBasedGenerator().generate(getName() + String.valueOf(this));
     }
 
     private void bindToGuavaCache(ExCacheLoader cacheHook) {
@@ -51,6 +56,9 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
     }
 
     @Override
+    public UUID getId() { return cacheId; }
+
+    @Override
     public V get(final K k) throws ExecutionException {
         createMaybe(k);
         // a bit crappy - but the fwdrCache doesnt expose 'getOrLoad(K, Loader)'
@@ -78,6 +86,7 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
 
     @Override
     public void invalidate(K k) {
+        System.out.println("[" + this + "] Invalidating cache.");
         fwdCache.invalidate(k);
     }
 
