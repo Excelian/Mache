@@ -3,3 +3,10 @@
 *.iml
 *.iws
 *.ipr
+/gradle/
+/activemq-data/
+/.gradle/
+gradlew
+gradlew.bat
+/out/
+*.class
