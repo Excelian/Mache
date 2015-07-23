@@ -46,13 +46,13 @@ public class ConditionalIgnoreRule implements MethodRule {
     return result;
   }
 
-  private static boolean hasConditionalIgnoreAnnotation( FrameworkMethod method, Object target) {
+  private boolean hasConditionalIgnoreAnnotation( FrameworkMethod method, Object target) {
     final boolean methodHasAnnotation = method.getAnnotation(IgnoreIf.class) != null;
     final boolean classHasAnnotation = target.getClass().getAnnotation(IgnoreIf.class) != null;
     return methodHasAnnotation || classHasAnnotation;
   }
 
-  private static IgnoreCondition getIgnoreCondition(Object target, FrameworkMethod method) {
+  private IgnoreCondition getIgnoreCondition(Object target, FrameworkMethod method) {
     IgnoreIf annotation = method.getAnnotation( IgnoreIf.class );
     if(annotation == null){
       annotation = target.getClass().getAnnotation(IgnoreIf.class);
