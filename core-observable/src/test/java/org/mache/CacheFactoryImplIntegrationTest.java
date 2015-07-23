@@ -2,11 +2,7 @@ package org.mache;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -89,7 +85,6 @@ public class CacheFactoryImplIntegrationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldProperlyInvalidateFromAnotherCacheWhenItemPut() throws ExecutionException, InterruptedException {
-		ExCache<String, TestEntity> cache1 = cacheFactory1.createCache(cacheLoader);
 		ExCache<String, TestEntity> cache2 = cacheFactory2.createCache(cacheLoader);
 
 		reset(spiedCache1);
@@ -121,5 +116,16 @@ public class CacheFactoryImplIntegrationTest {
 		Thread.sleep(1000);//give time for any messages to propagate and invalidate to 'potentially' called
 
 		verify(spiedCache1, never()).invalidate(testValue2.pkey);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void shouldNotInvalidateSameCacheOnPut() throws ExecutionException, InterruptedException {
+		reset(spiedCache1);
+		spiedCache1.put(testValue2.pkey, testValue2);
+
+		Thread.sleep(2000);//give time for the message to propagate and invalidate to be called
+
+		verify(spiedCache1, times(0)).invalidate(testValue2.pkey);
 	}
 }
