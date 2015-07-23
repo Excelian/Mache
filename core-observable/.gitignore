@@ -1,5 +1,6 @@
 /build/
 /bin/
+/activemq-data/
 *.iml
 *.iws
 *.ipr
