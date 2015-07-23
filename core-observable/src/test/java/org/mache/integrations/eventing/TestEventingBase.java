@@ -73,7 +73,6 @@ public abstract class TestEventingBase{
         }
 
         finally {
-            System.out.println("closing");
             producer.close();
             consumer.close();
             mqFactory.close();
@@ -81,7 +80,7 @@ public abstract class TestEventingBase{
     }
 
     @Test
-    public void consumerIgnoresMessagePublishedForDifferentEvent() throws InterruptedException, JMSException, IOException {
+    public void consumerIgnoresMessagePublishedForDifferentEntity() throws InterruptedException, JMSException, IOException {
 
         MQFactory mqFactory = buildMQFactory();
 
@@ -112,6 +111,7 @@ public abstract class TestEventingBase{
     }
 
     @Test
+    //TODO Thread sleep inside should be removed but somehow it works 20/80 
     public void multipleConsumersGetACopyOfPublishedEvent() throws InterruptedException, JMSException, IOException {
 
         MQFactory mqFactory = buildMQFactory();
@@ -124,14 +124,15 @@ public abstract class TestEventingBase{
 
         consumer1.registerEventListener(collector1);
         consumer1.beginSubscriptionThread();
-        while(collector1.pollWithTimeout(10)!=null);//drain queues
+        while(collector1.pollWithTimeout(10)!=null);//d0rain queues
 
         consumer2.registerEventListener(collector2);
         consumer2.beginSubscriptionThread();
         while(collector2.pollWithTimeout(10)!=null);//drain queues
 
-        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestEntity.class.getName(), "ID1", EventType.CREATED, new UUIDUtils());
+        Thread.sleep(300);
 
+        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestEntity.class.getName(), "ID1", EventType.CREATED, new UUIDUtils());
         //Publish just the once
         producer.send(event);
 
@@ -157,7 +158,5 @@ public abstract class TestEventingBase{
             consumer2.close();
             mqFactory.close();
         }
-
-
     }
 }

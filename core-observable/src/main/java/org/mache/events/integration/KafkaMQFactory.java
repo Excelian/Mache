@@ -13,15 +13,11 @@ import org.mache.events.MQFactory;
 
 
 public class KafkaMQFactory<K, V extends CoordinationEntryEvent<K>> implements MQFactory {
-
-    Properties consumerConfig;
-    Properties producerConfig;
+	private final String connectionString;
 
     public KafkaMQFactory(String connectionString) throws JMSException, IOException
     {
-        consumerConfig =  CreateConsumerConfig(connectionString);
-        producerConfig =  CreateProducerConfig(connectionString);
-
+        this.connectionString = connectionString;
     }
 
     Properties CreateProducerConfig(String zooKeeper)
@@ -46,7 +42,6 @@ public class KafkaMQFactory<K, V extends CoordinationEntryEvent<K>> implements M
         Properties consumerProperties = new Properties();
         consumerProperties.put("metadata.broker.list", ZK_CONNECTION);
         consumerProperties.put("zookeeper.connect", ZK_CONNECTION);
-        consumerProperties.put("group.id", "group0");
         consumerProperties.put("zookeeper.session.timeout.ms", "8000");
         consumerProperties.put("zookeeper.sync.time.ms", "200");
         consumerProperties.put("auto.commit.interval.ms", "1000");
@@ -58,19 +53,18 @@ public class KafkaMQFactory<K, V extends CoordinationEntryEvent<K>> implements M
     @Override
     public BaseCoordinationEntryEventProducer getProducer(MQConfiguration config)
     {
-        BaseCoordinationEntryEventProducer producer = new KafkaEventProducer(producerConfig, config.getTopicName());
+        BaseCoordinationEntryEventProducer producer = new KafkaEventProducer(CreateProducerConfig(connectionString), config.getTopicName());
         return producer;
     }
 
     @Override
     public BaseCoordinationEntryEventConsumer getConsumer(MQConfiguration config) throws IOException, JMSException
     {
-        BaseCoordinationEntryEventConsumer consumer = new KafkaEventConsumer(consumerConfig, config.getTopicName());
+        BaseCoordinationEntryEventConsumer consumer = new KafkaEventConsumer(CreateConsumerConfig(connectionString), config.getTopicName());
         return consumer;
     }
 
     @Override
     public void close() throws IOException {
-
     }
 }
