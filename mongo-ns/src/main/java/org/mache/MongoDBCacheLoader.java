@@ -78,7 +78,11 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
     }
 
     public void put(Object k, Object v) {
+        System.out.println("Saving to mongo key=" + k + ", newValue=" + v);
         ops().save(v);
+
+        Object o = ops().findById(k, clazz);
+        System.out.println("In mongo after save value=" + o);
     }
 
     public void remove(Object k) {
@@ -90,6 +94,7 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
     @Override
     public Object load(Object key) throws Exception {
         Object o = ops().findById(key, clazz);
+        System.out.println("Loading from mongo by key " + key + " - result " + o);
         return (V) o;
     }
 

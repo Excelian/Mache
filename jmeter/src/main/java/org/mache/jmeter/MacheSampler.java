@@ -47,9 +47,11 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
             mqFactory1 = new ActiveMQFactory(mapParams.get("activemq.connection"));
             mqFactory2 = new ActiveMQFactory(mapParams.get("activemq.connection"));
             CacheFactoryImpl cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
+            getLogger().info("Creating cache 1.");
             cache1 = cacheFactory1.createCache(new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
 
             CacheFactoryImpl cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
+            getLogger().info("Creating cache 2.");
             cache2 = cacheFactory2.createCache(new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
             getLogger().info("mache setupTest completed. "/* + cache1.getCacheLoader().getDriverSession().toString() */);
 
@@ -89,14 +91,16 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
 
         final String pkString = "X1";
         final long thread1ReadTimeoutMilis = Long.parseLong(mapParams.get("thread1.read.timeoutMs"));
+        final int thread1Iterations = Integer.parseInt(mapParams.get("thread1.iterations"));
 
         final Future<?> task1 = executorService.submit(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i < 1000; ++i) {
+                for (int i = 0; i < thread1Iterations; ++i) {
                     final String expectedValue = String.valueOf(i);
                     final TestEntity e = new TestEntity(pkString, expectedValue);
-                    getLogger().info("TH1 Putting value " + expectedValue);
+                    getLogger().info("TH " + Thread.currentThread() + " TH1 Putting value" + expectedValue);
+                            System.out.println("TH1 Putting value " + expectedValue);
                     cache1.put(e.pkString, e);
 
                     final Future<TestEntity> readTask = executorService.submit(new Callable<TestEntity>() {
@@ -105,10 +109,12 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
                             TestEntity result = null;
                             do {
                                 try {
+                                    Thread.sleep(15);
+                                    System.out.println("TH " + Thread.currentThread() + " TH1 Reading value");
                                     result = cache2.get(e.pkString);
                                     //TODO sometimes I get null there - don't fully udnerstand why
-                                    getLogger().info("TH1 Read value " + result.getAString());
-                                    Thread.sleep(5);
+                                    //TODO very rately I get correct value here
+                                    getLogger().info("TH " + Thread.currentThread() + " TH1 Read value " + result.getAString());
                                 } catch (CacheLoader.InvalidCacheLoadException e) {
                                     if (!e.getMessage().contains("CacheLoader returned null")) {
                                         throw e;
@@ -133,6 +139,7 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
                         failTest = true;
                     } catch (TimeoutException tex) {
                         //ignore timeout
+                    } finally {
                         readTask.cancel(true);
                     }
                 }
@@ -140,11 +147,12 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
         });
 
         final long thread2TimeoutMilis = Long.parseLong(mapParams.get("thread2.timeoutMs"));
+        final int thread2Iterations = Integer.parseInt(mapParams.get("thread2.iterations"));
         final Future<?> task2 = executorService.submit(new Runnable() {
             @Override
             public void run() {
                 final Random r = new Random();
-                for (int i = 0; i < 10000; ++i) {
+                for (int i = 0; i < thread2Iterations; ++i) {
                     final String cache1Value = String.valueOf(r.nextInt());
                     final String cache2Value = String.valueOf(r.nextInt());
 
@@ -168,11 +176,22 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
 
         try {
             getLogger().info("Waiting for tasks to complete.");
-            task1.get();
-            task2.get();
+
+            try {
+                task1.get(5000L + thread1ReadTimeoutMilis * thread1Iterations, TimeUnit.MILLISECONDS);
+            } catch (TimeoutException e) {
+                getLogger().error("Could not complete task 1: ", e);
+            }
+
+            try {
+                task1.get(5000L + thread2TimeoutMilis * thread2Iterations, TimeUnit.MILLISECONDS);
+            } catch (TimeoutException e) {
+                getLogger().error("Could not complete task 1: ", e);
+            }
+
             getLogger().info("Shutting down executor.");
             executorService.shutdown();
-            executorService.awaitTermination(100L + Math.max(thread1ReadTimeoutMilis * 1000L, thread2TimeoutMilis * 10000L), TimeUnit.MILLISECONDS);
+            executorService.awaitTermination(10000L, TimeUnit.MILLISECONDS);
             getLogger().info("Shut down.");
         } catch (InterruptedException | ExecutionException e) {
             getLogger().error("Could not complete all tasks: ", e);
@@ -196,7 +215,9 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
         defaultParameters.addArgument("mongo.server.ip.address", "10.28.1.140");
         defaultParameters.addArgument("activemq.connection", "vm://localhost");
         defaultParameters.addArgument("thread1.read.timeoutMs", "100");
+        defaultParameters.addArgument("thread1.iterations", "1000");
         defaultParameters.addArgument("thread2.timeoutMs", "20");
+        defaultParameters.addArgument("thread2.iterations", "10000");
         return defaultParameters;
     }
 

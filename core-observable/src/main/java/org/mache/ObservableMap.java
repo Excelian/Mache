@@ -35,7 +35,7 @@ public class ObservableMap<K,V> implements ExCache<K,V> {
     }
 
     @Override
-    public V get(K k) throws ExecutionException {
+    public V get(K k) {
         return delegate.get(k);
     }
 
@@ -74,6 +74,7 @@ public class ObservableMap<K,V> implements ExCache<K,V> {
     
     private void fireInvalidate(K k) {
     	final CoordinationEntryEvent<K> event = new CoordinationEntryEvent<K>(getId(), getName(), k, EventType.INVALIDATE, uuidUtils);
+        System.out.println("Firing invalidate from " + this + " - cacheId=" + getId());
     	listener.send(event);
     }
 }

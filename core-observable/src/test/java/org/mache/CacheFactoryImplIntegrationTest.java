@@ -90,9 +90,6 @@ public class CacheFactoryImplIntegrationTest {
 		ExCache<String, TestEntity> cache1 = cacheFactory1.createCache(cacheLoader);
 		ExCache<String, TestEntity> cache2 = cacheFactory2.createCache(cacheLoader);
 
-		System.out.println("Unspied cache1 is " + unspiedCache1);
-		System.out.println("cache2 is " + cache2);
-
 		reset(spiedCache1);
 
 		Thread.sleep(500); //some time for all listeners to connect
@@ -101,6 +98,38 @@ public class CacheFactoryImplIntegrationTest {
 		Thread.sleep(2000);//give time for the message to propagate and invalidate to be called
 
 		verify(spiedCache1).invalidate(testValue2.pkey);
+	}
+
+	@Test
+	public void test() {
+		String key = new String("key");
+		String key2 = new String("key");
+
+		assertEquals(System.identityHashCode(key), System.identityHashCode(key2));
+
+	}
+
+	@Test
+	public void shouldProperlyPropagateValues() throws ExecutionException, InterruptedException, JMSException {
+		ExCacheLoader<String, TestEntity2, String> cacheLoader = new InMemoryCacheLoader<>("loaderForTestEntity2");
+		MQFactory mqFactory1 = new ActiveMQFactory(LOCAL_MQ);
+		CacheFactory cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
+		MQFactory mqFactory2 = new ActiveMQFactory(LOCAL_MQ);
+		CacheFactory cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
+
+		ExCache<String, TestEntity2> cache1 = cacheFactory1.createCache(cacheLoader);
+		ExCache<String, TestEntity2> cache2 = cacheFactory2.createCache(cacheLoader);
+
+		final String key1 = "X1";
+		final String val1 = "someValue1";
+
+		cache1.put(key1, new TestEntity2(key1, val1));
+		assertEquals(val1, cache2.get(key1).otherValue);
+
+		final String val2 = "someValue2";
+		cache1.put(key1, new TestEntity2(key1, val2));
+		Thread.sleep(500);
+		assertEquals(val2, cache2.get(key1).otherValue);
 	}
 
 	@SuppressWarnings("unchecked")

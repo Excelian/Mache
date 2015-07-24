@@ -298,7 +298,6 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Mache.iml" filepath="$PROJECT_DIR$/Mache.iml" />
       <module fileurl="file://$PROJECT_DIR$/cassandra-ns/cassandra-ns.iml" filepath="$PROJECT_DIR$/cassandra-ns/cassandra-ns.iml" />
       <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/core-observable/core-observable.iml" filepath="$PROJECT_DIR$/core-observable/core-observable.iml" />

@@ -41,6 +41,8 @@ public class CacheFactoryImpl implements CacheFactory {
 		final ExCache<K, V> underlyingCache = cacheThingFactory.create(cacheLoader, options);
 		final ObservableMap<K, V> observable = new ObservableMap<K, V>(underlyingCache, uuidUtils);
 
+		System.out.println("Created underlying cache " + underlyingCache + ", observableMap " + observable + " - cacheId=" + underlyingCache.getId());
+
 		observable.registerListener(communicationFactory.getProducer(configuration));
 
 		try {

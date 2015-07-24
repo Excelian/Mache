@@ -20,4 +20,9 @@ public class TestEntity {
     public String getAString() {
         return description;
     }
+
+    @Override
+    public String toString() {
+        return "[TestEntity key=" + pkString + " (hC="+ pkString.hashCode() +"), description=" + description + "]";
+    }
 }

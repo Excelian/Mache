@@ -10,7 +10,7 @@ public interface ExCache<K,V> {
     String getName();
     UUID getId();
 
-    V get(K k) throws ExecutionException;
+    V get(K k);
 
     void put(K k, V v);
 
