@@ -13,7 +13,6 @@ jar {
 
 repositories {
     maven { url 'https://repository.jboss.org/nexus/content/groups/public' }
-    maven { url 'http://repo1.maven.org/maven2/com/fasterxml/uuid/java-uuid-generator' }
     mavenCentral()
 }
 
