@@ -101,15 +101,6 @@ public class CacheFactoryImplIntegrationTest {
 	}
 
 	@Test
-	public void test() {
-		String key = new String("key");
-		String key2 = new String("key");
-
-		assertEquals(System.identityHashCode(key), System.identityHashCode(key2));
-
-	}
-
-	@Test
 	public void shouldProperlyPropagateValues() throws ExecutionException, InterruptedException, JMSException {
 		ExCacheLoader<String, TestEntity2, String> cacheLoader = new InMemoryCacheLoader<>("loaderForTestEntity2");
 		MQFactory mqFactory1 = new ActiveMQFactory(LOCAL_MQ);

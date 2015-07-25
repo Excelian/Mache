@@ -26,7 +26,7 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
         if (optionalSpec != null && optionalSpec.length > 0) this.spec = optionalSpec[0];
 
         cache = CacheBuilder.from(spec).
-                recordStats().removalListener((RemovalListener<K,V>) cacheLoader).
+                recordStats()/*.removalListener((RemovalListener<K,V>) cacheLoader)*/.
                 build((CacheLoader<K,V>) cacheLoader);
 
         fwdCache = new ForwardingCache<K, V>() {

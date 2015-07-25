@@ -2,6 +2,7 @@ package org.mache.utils;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -15,11 +16,13 @@ public class UUIDUtilsTest {
 	@Test
 	public void testTimestamps() throws Exception {
 		final UUID uuid = Generators.timeBasedGenerator().generate();
-		final Date now = new Date();
 		
 		final long unixTimestamp = uuidUtils.toUnixTimestamp(uuid);
+		final long nowTime = System.currentTimeMillis();
 		
-		final long deltaNowEvent1 = Math.abs(now.getTime() - unixTimestamp);
-		assertTrue(deltaNowEvent1 <= 1);
+		System.out.println("UnixMsFromUUID=" + unixTimestamp + ", nowMs=" + nowTime + ", delta=" + (nowTime - unixTimestamp));
+		
+		final long deltaNowEvent1 = Math.abs(nowTime - unixTimestamp);
+		assertTrue(deltaNowEvent1 <= 5);
 	}
 }
