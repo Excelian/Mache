@@ -8,10 +8,44 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'ExCache',
+                'Implementation-Version': version
+    }
+
+
+}
+
+task fatJar(type: Jar, dependsOn: compileJava ){
+
+    manifest {  attributes 'Implementation-Title': 'jmeter sampler jar', 'Implementation-Version': version   }
+
+    baseName = project.name + '-mache-plugin-all'
+
+    from sourceSets.main.output.classesDir
+    include '**/*.class'
+
+    from project(':core-observable').sourceSets.main.output.classesDir
+    include '**/*.class'
+
+    from project(':core').sourceSets.main.output.classesDir
+    include '**/*.class'
+
+    from project(':mongo-ns').sourceSets.main.output.classesDir
+    include '**/*.class'
+
+    from project(':cassandra-ns').sourceSets.main.output.classesDir
+    include '**/*.class'
+}
+
+
+
 dependencies {
     compile project(':core-observable')
     compile project(':core')
     compile project(':mongo-ns')
+    compile project(':cassandra-ns')
 
     compile 'org.apache.jmeter:ApacheJMeter_java:2.11' // 2.11 and jcenter compiles ok
 
