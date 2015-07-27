@@ -14,9 +14,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class WriteToCassandra extends AbstractJavaSamplerClient implements Serializable
+public class ReadFromCassandra extends AbstractJavaSamplerClient implements Serializable
 {
-
 
     private CassandraCacheLoader<String, CassandraTestEntity> db;
 
@@ -28,11 +27,10 @@ public class WriteToCassandra extends AbstractJavaSamplerClient implements Seria
 
         try {
             Cluster cluster = CassandraCacheLoader.connect(
-                    mapParams.get("server.ip.address"), mapParams.get("cluster.name")
-                    , 9042);
-            db= new CassandraCacheLoader<String, CassandraTestEntity>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
+                    mapParams.get("server.ip.address"), mapParams.get("cluster.name") , 9042);
+            db= new CassandraCacheLoader(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
 
-            db.create(db.getName(), "");
+            db.create("","");
         } catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);
         }
@@ -64,9 +62,15 @@ public class WriteToCassandra extends AbstractJavaSamplerClient implements Seria
         result.sampleStart();
 
         try {
-            CassandraTestEntity t1= new CassandraTestEntity(mapParams.get("entity.key"), mapParams.get("entity.value"));
-            db.put(t1.pkString, t1);
-            result.setResponseMessage("Created "+t1.pkString);
+            String keyValue=mapParams.get("entity.key");
+            CassandraTestEntity entity= db.load(keyValue);
+
+            if(entity==null)
+            {
+                throw new Exception("No data found in db for key value of "+keyValue);
+            }
+
+            result.setResponseMessage("Read " + entity.pkString+ " from db");
             success=true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,7 +95,6 @@ public class WriteToCassandra extends AbstractJavaSamplerClient implements Seria
         defaultParameters.addArgument("server.ip.address", "10.28.1.140");
         defaultParameters.addArgument("cluster.name", "BluePrint");
         defaultParameters.addArgument("entity.key", "K1");
-        defaultParameters.addArgument("entity.value", "ValueOne");
         return defaultParameters;
     }
 
