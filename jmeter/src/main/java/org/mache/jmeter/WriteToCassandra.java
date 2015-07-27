@@ -2,27 +2,20 @@ package org.mache.jmeter;
 
 import com.datastax.driver.core.Cluster;
 import org.apache.jmeter.config.Arguments;
-import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 import org.mache.CassandraCacheLoader;
 import org.mache.SchemaOptions;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-public class WriteToCassandra extends AbstractJavaSamplerClient implements Serializable
+public class WriteToCassandra extends MacheAbstractJavaSamplerClient
 {
-
-
     private CassandraCacheLoader<String, CassandraTestEntity> db;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
-
+        System.out.println("WriteToCassandra.setupTest");
         Map<String, String> mapParams=ExtractParameters(context);
         String keySpace = mapParams.get("keyspace.name");
 
@@ -30,22 +23,12 @@ public class WriteToCassandra extends AbstractJavaSamplerClient implements Seria
             Cluster cluster = CassandraCacheLoader.connect(
                     mapParams.get("server.ip.address"), mapParams.get("cluster.name")
                     , 9042);
-            db= new CassandraCacheLoader<String, CassandraTestEntity>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
+            db= new CassandraCacheLoader<>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
 
             db.create(db.getName(), "");
         } catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);
         }
-    }
-
-    static private Map<String, String> ExtractParameters(JavaSamplerContext context) {
-        Map<String, String> mapParams = new HashMap<String, String>();
-        for (Iterator<String> it = context.getParameterNamesIterator(); it.hasNext();) {
-            String paramName =  it.next();
-            String paramValue = context.getParameter(paramName);
-            mapParams.put(paramName, paramValue);
-        }
-        return mapParams;
     }
 
     @Override
@@ -69,13 +52,8 @@ public class WriteToCassandra extends AbstractJavaSamplerClient implements Seria
             result.setResponseMessage("Created "+t1.pkString);
             success=true;
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(e);
 
-            result.sampleEnd();
-            result.setSuccessful(false);
-            result.setResponseMessage("Exception: " + e);
-
+            SetupResultForError(result, e);
             return result;
         }
 

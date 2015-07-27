@@ -69,7 +69,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
   private void createKeySpace() {
     session.execute(String.format("CREATE KEYSPACE IF NOT EXISTS %s  WITH REPLICATION = {'class':'%s', 'replication_factor':%d}; ", keySpace, REPLICATION_CLASS, REPLICATION_FACTOR));
     session.execute(String.format("USE %s ", keySpace));
-    System.out.println("Created keyspace " + keySpace);
+    System.out.println("Created keyspace if missing " + keySpace);
   }
 
   void createTable() {

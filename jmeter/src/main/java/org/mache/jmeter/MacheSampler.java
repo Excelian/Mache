@@ -13,7 +13,7 @@ import org.mache.utils.UUIDUtils;
 import java.io.Serializable;
 import java.util.*;
 
-
+/* TODO: breakout into mongo sampler classes */
 public class MacheSampler extends AbstractJavaSamplerClient implements Serializable
 {
     ActiveMQFactory mqFactory = null;
