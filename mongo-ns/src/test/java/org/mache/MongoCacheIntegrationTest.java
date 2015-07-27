@@ -33,7 +33,7 @@ public class MongoCacheIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        cacheThing = new CacheThing<>(
+        cacheThing = new CacheThing<String, TestEntity>(
                 new MongoDBCacheLoader<String,TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
     }
 

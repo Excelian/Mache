@@ -15,7 +15,7 @@ public class ObservableMapTest {
     public void testGet() throws Exception {
         @SuppressWarnings("unchecked")
 		ExCache<String, String> cache = mock(ExCache.class);
-        ObservableMap<String, String> observable = new ObservableMap<>(cache, uuidUtils);
+        ObservableMap<String, String> observable = new ObservableMap<String, String>(cache, uuidUtils);
         observable.registerListener(new MapEventListener() {
             @Override
             public void send(CoordinationEntryEvent<?> event) {

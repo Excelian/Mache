@@ -17,7 +17,7 @@ import java.util.*;
 public class MacheSampler extends AbstractJavaSamplerClient implements Serializable
 {
     ActiveMQFactory mqFactory = null;
-    ExCache<String, TestEntity> cache;
+    ExCache<String, MongoTestEntity> cache;
     private Map<String, String> mapParams = new HashMap<String, String>();
 
     @Override
@@ -39,7 +39,7 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
         try {
             mqFactory = new ActiveMQFactory(mapParams.get("activemq.connection"));
             CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
-            cache = cacheFactory.createCache(new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
+            cache = cacheFactory.createCache(new MongoDBCacheLoader<String, MongoTestEntity>(MongoTestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
             getLogger().info("mache setupTest completed. " + cache.getCacheLoader().getDriverSession().toString() );
 
         } catch (Exception e) {
@@ -73,7 +73,7 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
 
         // Write your test code here.
         try {
-            TestEntity t1= new TestEntity("X1");
+            MongoTestEntity t1= new MongoTestEntity("X1");
             cache.put(t1.pkString, t1);
             result.setResponseMessage("Mache test completed");
             success=true;

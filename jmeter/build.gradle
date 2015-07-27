@@ -19,7 +19,7 @@ jar {
 
 task fatJar(type: Jar, dependsOn: compileJava ){
 
-    manifest {  attributes 'Implementation-Title': 'jmeter sampler jar', 'Implementation-Version': version   }
+    manifest {  attributes 'Implementation-Title': 'jmeter sampler jar for Mache testing', 'Implementation-Version': version   }
 
     baseName = project.name + '-mache-plugin-all'
 
