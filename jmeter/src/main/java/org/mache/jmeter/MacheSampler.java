@@ -114,7 +114,7 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
                                     result = cache2.get(e.pkString);
                                     //TODO sometimes I get null there - don't fully udnerstand why
                                     //TODO very rately I get correct value here
-                                    getLogger().info("TH " + Thread.currentThread() + " TH1 Read value " + result.getAString());
+                                    getLogger().info("TH " + Thread.currentThread() + " TH1 Read value " + result.getDescription());
                                 } catch (CacheLoader.InvalidCacheLoadException e) {
                                     if (!e.getMessage().contains("CacheLoader returned null")) {
                                         throw e;
@@ -122,7 +122,7 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
 
                                     //ignore loading null
                                 }
-                            } while (result == null || !expectedValue.equals(result.getAString()));
+                            } while (result == null || !expectedValue.equals(result.getDescription()));
 
                             getLogger().info("TH1 Got correct value.");
                             return result;

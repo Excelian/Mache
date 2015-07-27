@@ -17,7 +17,7 @@ public class TestEntity {
         this.description = description;
     }
 
-    public String getAString() {
+    public String getDescription() {
         return description;
     }
 

@@ -113,7 +113,7 @@ public class MacheSamplerConsoleApp
                             result = cache2.get(e.pkString);
                             //TODO sometimes I get null there - don't fully udnerstand why
                             //TODO very rately I get correct value here
-                            System.out.println("TH " + Thread.currentThread() + " TH1 Read value " + result.getAString());
+                            System.out.println("TH " + Thread.currentThread() + " TH1 Read value " + result.getDescription());
                         } catch (CacheLoader.InvalidCacheLoadException ex) {
                             if (!ex.getMessage().contains("CacheLoader returned null")) {
                                 throw ex;
@@ -121,7 +121,7 @@ public class MacheSamplerConsoleApp
 
                             //ignore loading null
                         }
-                    } while ((new Date().getTime()-start.getTime() <= thread1ReadTimeoutMilis) && (result == null || !expectedValue.equals(result.getAString())));
+                    } while ((new Date().getTime()-start.getTime() <= thread1ReadTimeoutMilis) && (result == null || !expectedValue.equals(result.getDescription())));
 
                     System.out.println("TH1 Got correct value.");
                 }
