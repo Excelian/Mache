@@ -62,13 +62,7 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
         createMaybe(k);
         // a bit crappy - but the fwdrCache doesnt expose 'getOrLoad(K, Loader)'
 
-        if (cache.asMap().containsKey(k)) {
-            final ConcurrentMap<K, V> cacheMap = cache.asMap();
-            System.out.println("TH " + Thread.currentThread() + " Loading from cache " + this + " id=" + getId() + " using key \"" + k + "\" [cached] - result " + cacheMap.get(k));
-        }
-
         final V result = cache.getUnchecked(k);
-        System.out.println("TH " + Thread.currentThread() + " Loading from cache " + this + " id=" + getId() + " using key \"" + k + "\" - result " + result);
         return result;
     }
 
@@ -93,19 +87,7 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
 
     @Override
     public void invalidate(K k) {
-        System.out.println("TH " + Thread.currentThread() + " [" + this + "] Invalidating cache id=" + getId() + " invalidated key=\"" + k + "\" (hashcode=" + k.hashCode() + ") from " + fwdCache.asMap());
         fwdCache.invalidate(k);
-
-        if (fwdCache.asMap().containsKey(k)) {
-            System.out.println("TH " + Thread.currentThread() + " [" + this + "] After invalidating key=" + k + " is still there.");
-        }
-
-        System.out.println("TH " + Thread.currentThread() + " [" + this + "] After invalidating cache is " + fwdCache.asMap());
-
-        System.out.println("TH " + Thread.currentThread() + " [" + this + "] Keyset in cache: ");
-        for (final K key: fwdCache.asMap().keySet()) {
-            System.out.println("TH " + Thread.currentThread() + " [" + this + "] \"" + key + "\" (hC=" + key.hashCode() + ")");
-        }
     }
 
     private void createMaybe(K k) {
