@@ -25,6 +25,7 @@ public class KafkaEventProducer extends BaseCoordinationEntryEventProducer {
 
         KeyedMessage<String, String> data = new KeyedMessage<String, String>(TOPIC, "0", gson.toJson(event));
         producer.send(data);
+        System.out.println("Sent message " + data);
     }
 
     @Override

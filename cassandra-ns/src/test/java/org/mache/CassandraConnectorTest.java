@@ -6,6 +6,8 @@ import com.datastax.driver.core.ProtocolOptions;
 import com.datastax.driver.core.Session;
 import org.junit.Test;
 
+import static org.junit.Assert.assertNotNull;
+
 /**
  * Created by neil.avery on 27/05/2015.
  */
@@ -25,6 +27,7 @@ public class CassandraConnectorTest {
         System.out.println("KeySpaces:" + metadata.getKeyspaces());
 
         session = cluster.connect("system");//system keyspace should always be present
+        assertNotNull(session);
         session.close();
     }
 }

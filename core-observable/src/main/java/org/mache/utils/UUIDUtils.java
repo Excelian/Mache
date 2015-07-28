@@ -1,6 +1,7 @@
 package org.mache.utils;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.UUID;
 
 public class UUIDUtils {
@@ -11,7 +12,7 @@ public class UUIDUtils {
 	 */
 	public long toUnixTimestamp(final UUID uuid) {
 		//TODO which timezone is used for generation of uuid?
-		final Calendar uuidEpoch = Calendar.getInstance(/*TimeZone.getTimeZone("UTC")*/);
+		final Calendar uuidEpoch = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		uuidEpoch.clear();
 		uuidEpoch.set(1582, 9, 15, 0, 0, 0); // 9 = October
 		final long epochMillis = uuidEpoch.getTime().getTime();

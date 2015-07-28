@@ -56,6 +56,14 @@ public class MongoCacheIntegrationTest {
     }
 
     @Test
+    public void canPutTheSameItemAgainTest() throws Exception {
+        cacheThing.put("test-1", new TestEntity("test-1"));
+        cacheThing.put("test-1", new TestEntity("test-1"));//TODO: This should be passing
+        TestEntity test = cacheThing.get("test-1");
+        assertEquals("test-1", test.pkString);
+    }
+
+    @Test
     public void testReadCache() throws Exception {
         cacheThing.put("test-2", new TestEntity("test-2"));
         TestEntity test = cacheThing.get("test-2");
@@ -78,6 +86,26 @@ public class MongoCacheIntegrationTest {
 
         assertNotNull("Exception expected to have been thrown", exception);
         assertEquals("CacheLoader returned null for key rem-test-2.", exception.getMessage());
+    }
+
+    @Test
+    public void testInvalidate() throws Exception {
+        final CacheThing<String, TestEntity> cacheThing2 = new CacheThing<>(
+                new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
+
+        final String key = "test-1";
+        final String expectedDescription = "test1-description";
+        cacheThing.put(key, new TestEntity(key, expectedDescription));
+        assertEquals(expectedDescription, cacheThing.get(key).getaString());
+        assertEquals(expectedDescription, cacheThing2.get(key).getaString());
+
+        final String expectedDescription2 = "test-description2";
+        cacheThing2.put(key, new TestEntity(key, expectedDescription2));
+        cacheThing.invalidate(key);
+        assertEquals(expectedDescription2, cacheThing.get(key).getaString());
+        assertEquals(expectedDescription2, cacheThing2.get(key).getaString());
+
+        cacheThing2.close();
     }
 
     @Test
@@ -111,9 +139,17 @@ public class MongoCacheIntegrationTest {
         @Indexed
         private String aString = "yay";
 
-
         public TestEntity(String pkString) {
             this.pkString = pkString;
+        }
+
+        public TestEntity(String pkString, String other) {
+            this.pkString = pkString;
+            this.aString = other;
+        }
+
+        public String getaString() {
+            return aString;
         }
     }
 

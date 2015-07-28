@@ -12,9 +12,25 @@ class TestEntity{
 	}
 }
 
-public class InMemoryCacheLoader<K,V> extends AbstractCacheLoader<String, TestEntity, String> {
+class TestEntity2{
+	String pkey;
+	String otherValue;
+
+	TestEntity2(String key, String otherValue)
+	{
+		this.pkey = key;
+		this.otherValue = otherValue;
+	}
+
+	@Override
+	public String toString() {
+		return "TestEntity2 [pkey="+pkey+", otherValue="+otherValue+"]";
+	}
+}
+
+public class InMemoryCacheLoader<K,V> extends AbstractCacheLoader<K, V, String> {
 	private final String cacheName;
-	private final Map<String, TestEntity> store = new ConcurrentHashMap<String, TestEntity>();
+	private final Map<K, V> store = new ConcurrentHashMap<K, V>();
 	
 	public InMemoryCacheLoader(final String name) {
 		this.cacheName = name;
@@ -22,17 +38,17 @@ public class InMemoryCacheLoader<K,V> extends AbstractCacheLoader<String, TestEn
 
 
 	@Override
-	public void create(String name, String k) {
+	public void create(String name, K k) {
 
 	}
 
 	@Override
-	public void put(final String k, final TestEntity v) {
+	public void put(final K k, final V v) {
 		store.put(k, v);
 	}
 
 	@Override
-	public void remove(final String k) {
+	public void remove(final K k) {
 		store.remove(k);
 	}
 
@@ -52,8 +68,8 @@ public class InMemoryCacheLoader<K,V> extends AbstractCacheLoader<String, TestEn
 	}
 
 	@Override
-	public TestEntity load(String key) throws Exception {
-		TestEntity result = store.get(key);
+	public V load(K key) throws Exception {
+		V result = store.get(key);
 		
 		if (result == null) {
 			throw new RuntimeException("Item not found in store.");
@@ -61,5 +77,4 @@ public class InMemoryCacheLoader<K,V> extends AbstractCacheLoader<String, TestEn
 		
 		return result;
 	}
-
 }
