@@ -10,6 +10,7 @@ import org.apache.jmeter.samplers.SampleResult;
 import org.mache.*;
 import org.mache.events.MQConfiguration;
 import org.mache.events.integration.ActiveMQFactory;
+import org.mache.jmeter.mongo.MongoTestEntity;
 import org.mache.utils.UUIDUtils;
 
 import java.io.Serializable;
@@ -21,8 +22,8 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
 {
     ActiveMQFactory mqFactory1 = null;
     ActiveMQFactory mqFactory2 = null;
-    ExCache<String, TestEntity> cache1;
-    ExCache<String, TestEntity> cache2;
+    ExCache<String, MongoTestEntity> cache1;
+    ExCache<String, MongoTestEntity> cache2;
     private Map<String, String> mapParams = new HashMap<String, String>();
 
     volatile boolean failTest = false;
@@ -48,11 +49,11 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
             mqFactory2 = new ActiveMQFactory(mapParams.get("activemq.connection"));
             CacheFactoryImpl cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
             getLogger().info("Creating cache 1.");
-            cache1 = cacheFactory1.createCache(new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
+            cache1 = cacheFactory1.createCache(new MongoDBCacheLoader<String, MongoTestEntity>(MongoTestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
 
             CacheFactoryImpl cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
             getLogger().info("Creating cache 2.");
-            cache2 = cacheFactory2.createCache(new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
+            cache2 = cacheFactory2.createCache(new MongoDBCacheLoader<String, MongoTestEntity>(MongoTestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
             getLogger().info("mache setupTest completed. "/* + cache1.getCacheLoader().getDriverSession().toString() */);
 
         } catch (Exception e) {
@@ -98,23 +99,21 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
             public void run() {
                 for (int i = 0; i < thread1Iterations; ++i) {
                     final String expectedValue = String.valueOf(i);
-                    final TestEntity e = new TestEntity(pkString, expectedValue);
+                    final MongoTestEntity e = new MongoTestEntity(pkString, expectedValue);
                     getLogger().info("TH " + Thread.currentThread() + " TH1 Putting value" + expectedValue);
                             System.out.println("TH1 Putting value " + expectedValue);
                     cache1.put(e.pkString, e);
 
-                    final Future<TestEntity> readTask = executorService.submit(new Callable<TestEntity>() {
+                    final Future<MongoTestEntity> readTask = executorService.submit(new Callable<MongoTestEntity>() {
                         @Override
-                        public TestEntity call() throws Exception {
-                            TestEntity result = null;
+                        public MongoTestEntity call() throws Exception {
+                            MongoTestEntity result = null;
                             do {
                                 try {
                                     Thread.sleep(15);
                                     System.out.println("TH " + Thread.currentThread() + " TH1 Reading value");
                                     result = cache2.get(e.pkString);
-                                    //TODO sometimes I get null there - don't fully udnerstand why
-                                    //TODO very rately I get correct value here
-                                    getLogger().info("TH " + Thread.currentThread() + " TH1 Read value " + result.getDescription());
+                                    getLogger().info("TH " + Thread.currentThread() + " TH1 Read value " + result.description);
                                 } catch (CacheLoader.InvalidCacheLoadException e) {
                                     if (!e.getMessage().contains("CacheLoader returned null")) {
                                         throw e;
@@ -122,7 +121,7 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
 
                                     //ignore loading null
                                 }
-                            } while (result == null || !expectedValue.equals(result.getDescription()));
+                            } while (result == null || !expectedValue.equals(result.description));
 
                             getLogger().info("TH1 Got correct value.");
                             return result;
@@ -158,8 +157,8 @@ public class MacheSampler extends AbstractJavaSamplerClient implements Serializa
 
                     getLogger().info("TH2 putting new random values " + cache1Value + ", " + cache2Value);
 
-                    cache1.put(pkString, new TestEntity(pkString, cache1Value));
-                    cache2.put(pkString, new TestEntity(pkString, cache2Value));
+                    cache1.put(pkString, new MongoTestEntity(pkString, cache1Value));
+                    cache2.put(pkString, new MongoTestEntity(pkString, cache2Value));
 
                     try {
                         Thread.sleep(thread2TimeoutMilis);

@@ -2,6 +2,7 @@ package org.mache.jmeter;
 
 import com.google.common.cache.CacheLoader;
 import com.mongodb.ServerAddress;
+
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -9,6 +10,7 @@ import org.apache.jmeter.samplers.SampleResult;
 import org.mache.*;
 import org.mache.events.MQConfiguration;
 import org.mache.events.integration.ActiveMQFactory;
+import org.mache.jmeter.mongo.MongoTestEntity;
 import org.mache.utils.UUIDUtils;
 
 import java.io.Serializable;
@@ -20,8 +22,8 @@ public class MacheSamplerConsoleApp
 {
     ActiveMQFactory mqFactory1 = null;
     ActiveMQFactory mqFactory2 = null;
-    ExCache<String, TestEntity> cache1;
-    ExCache<String, TestEntity> cache2;
+    ExCache<String, MongoTestEntity> cache1;
+    ExCache<String, MongoTestEntity> cache2;
     private Map<String, String> mapParams = getDefaultParameters();
 
     volatile boolean failTest = false;
@@ -55,11 +57,11 @@ public class MacheSamplerConsoleApp
             mqFactory2 = new ActiveMQFactory(mapParams.get("activemq.connection"));
             CacheFactoryImpl cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
             System.out.println("Creating cache 1.");
-            cache1 = cacheFactory1.createCache(new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
+            cache1 = cacheFactory1.createCache(new MongoDBCacheLoader<String, MongoTestEntity>(MongoTestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
 
             CacheFactoryImpl cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
             System.out.println("Creating cache 2.");
-            cache2 = cacheFactory2.createCache(new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
+            cache2 = cacheFactory2.createCache(new MongoDBCacheLoader<String, MongoTestEntity>(MongoTestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
             System.out.println("mache setupTest completed. "/* + cache1.getCacheLoader().getDriverSession().toString() */);
 
         } catch (Exception e) {
@@ -94,13 +96,13 @@ public class MacheSamplerConsoleApp
             public void run() {
                 for (int i = 0; i < thread1Iterations; ++i) {
                     final String expectedValue = String.valueOf(i);
-                    final TestEntity e = new TestEntity(pkString, expectedValue);
+                    final MongoTestEntity e = new MongoTestEntity(pkString, expectedValue);
                     System.out.println("TH " + Thread.currentThread() + " TH1 Putting value" + expectedValue);
                             System.out.println("TH1 Putting value " + expectedValue);
                     cache1.put(e.pkString, e);
 
                     final Date start = new Date();
-                    TestEntity result = null;
+                    MongoTestEntity result = null;
                     do {
                         try {
                             try {
@@ -113,7 +115,7 @@ public class MacheSamplerConsoleApp
                             result = cache2.get(e.pkString);
                             //TODO sometimes I get null there - don't fully udnerstand why
                             //TODO very rately I get correct value here
-                            System.out.println("TH " + Thread.currentThread() + " TH1 Read value " + result.getDescription());
+                            System.out.println("TH " + Thread.currentThread() + " TH1 Read value " + result.description);
                         } catch (CacheLoader.InvalidCacheLoadException ex) {
                             if (!ex.getMessage().contains("CacheLoader returned null")) {
                                 throw ex;
@@ -121,7 +123,7 @@ public class MacheSamplerConsoleApp
 
                             //ignore loading null
                         }
-                    } while ((new Date().getTime()-start.getTime() <= thread1ReadTimeoutMilis) && (result == null || !expectedValue.equals(result.getDescription())));
+                    } while ((new Date().getTime()-start.getTime() <= thread1ReadTimeoutMilis) && (result == null || !expectedValue.equals(result.description)));
 
                     System.out.println("TH1 Got correct value.");
                 }

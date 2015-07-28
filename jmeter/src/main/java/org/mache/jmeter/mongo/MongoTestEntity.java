@@ -1,24 +1,20 @@
-package org.mache.jmeter;
+package org.mache.jmeter.mongo;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document
-public class TestEntity {
+public class MongoTestEntity {
     @Id
-    String pkString = "key1";
+    public String pkString = "key1";
 
     @Field(value = "description")
-    private String description = "description for item";
+    public String description = "description for item";
 
-    public TestEntity(final String pkString, final String description) {
+    public MongoTestEntity(final String pkString, final String description) {
         this.pkString = pkString;
         this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     @Override
