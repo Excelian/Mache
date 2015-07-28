@@ -155,7 +155,7 @@
           <stringProp name="LoopController.loops">1000</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
         <longProp name="ThreadGroup.start_time">1437408117000</longProp>
         <longProp name="ThreadGroup.end_time">1437408117000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -208,14 +208,14 @@
           <hashTree/>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Cache Thread Group" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Cache Read Thread Group" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1000</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
         <longProp name="ThreadGroup.start_time">1437408117000</longProp>
         <longProp name="ThreadGroup.end_time">1437408117000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -238,7 +238,7 @@
             <boolProp name="CounterConfig.reset_on_tg_iteration">true</boolProp>
           </CounterConfig>
           <hashTree/>
-          <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Read Single Entity from DB via Cache" enabled="true">
+          <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Get Single Entity from DB via Cache" enabled="true">
             <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments">
                 <elementProp name="keyspace.name" elementType="Argument">
@@ -264,6 +264,91 @@
                 <elementProp name="entity.key" elementType="Argument">
                   <stringProp name="Argument.name">entity.key</stringProp>
                   <stringProp name="Argument.value">K${loopCounter}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+                <elementProp name="entity.value" elementType="Argument">
+                  <stringProp name="Argument.name">entity.value</stringProp>
+                  <stringProp name="Argument.value">Description for K${loopCounter}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+                <elementProp name="action" elementType="Argument">
+                  <stringProp name="Argument.name">action</stringProp>
+                  <stringProp name="Argument.value">read</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="classname">org.mache.jmeter.cassandra.CacheBackedByCassandra</stringProp>
+          </JavaSampler>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Cache Write Thread Group" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1000</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
+        <longProp name="ThreadGroup.start_time">1437408117000</longProp>
+        <longProp name="ThreadGroup.end_time">1437408117000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Write Data to Database via Cache" enabled="true">
+          <boolProp name="LoopController.continue_forever">true</boolProp>
+          <stringProp name="LoopController.loops">${distinct.key.count}</stringProp>
+        </LoopController>
+        <hashTree>
+          <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Counter for entity read" enabled="true">
+            <stringProp name="CounterConfig.start">1</stringProp>
+            <stringProp name="CounterConfig.end"></stringProp>
+            <stringProp name="CounterConfig.incr">1</stringProp>
+            <stringProp name="CounterConfig.name">loopCounter</stringProp>
+            <stringProp name="CounterConfig.format"></stringProp>
+            <boolProp name="CounterConfig.per_user">true</boolProp>
+            <boolProp name="CounterConfig.reset_on_tg_iteration">true</boolProp>
+          </CounterConfig>
+          <hashTree/>
+          <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Put a Single Entity into DB via Cache" enabled="true">
+            <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="keyspace.name" elementType="Argument">
+                  <stringProp name="Argument.name">keyspace.name</stringProp>
+                  <stringProp name="Argument.value">JMeterReadThrough</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+                <elementProp name="server.ip.address" elementType="Argument">
+                  <stringProp name="Argument.name">server.ip.address</stringProp>
+                  <stringProp name="Argument.value">10.28.1.140</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+                <elementProp name="cluster.name" elementType="Argument">
+                  <stringProp name="Argument.name">cluster.name</stringProp>
+                  <stringProp name="Argument.value">BluePrint</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+                <elementProp name="activemq.connection" elementType="Argument">
+                  <stringProp name="Argument.name">activemq.connection</stringProp>
+                  <stringProp name="Argument.value">vm://localhost</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+                <elementProp name="entity.key" elementType="Argument">
+                  <stringProp name="Argument.name">entity.key</stringProp>
+                  <stringProp name="Argument.value">K${loopCounter}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+                <elementProp name="entity.value" elementType="Argument">
+                  <stringProp name="Argument.name">entity.value</stringProp>
+                  <stringProp name="Argument.value">Description for K${loopCounter}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+                <elementProp name="action" elementType="Argument">
+                  <stringProp name="Argument.name">action</stringProp>
+                  <stringProp name="Argument.value">write</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
               </collectionProp>

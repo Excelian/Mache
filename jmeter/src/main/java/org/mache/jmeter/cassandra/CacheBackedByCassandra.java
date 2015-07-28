@@ -63,15 +63,27 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient
         result.sampleStart();
 
         try {
-            String keyValue=mapParams.get("entity.key");
-            CassandraTestEntity entity= cache.get(keyValue);
 
-            if(entity==null)
-            {
-                throw new Exception("No data found in cache for key value of "+keyValue);
+            if(mapParams.get("action").contentEquals("read")) {
+                String entityKey = mapParams.get("entity.key");
+                CassandraTestEntity entity = cache.get(entityKey);
+
+                if (entity == null) {
+                    throw new Exception("No data found in cache for key value of " + entityKey);
+                }
+
+                result.setResponseMessage("Read " + entity.pkString + " from Cache");
             }
+            else
+            {
+                String entityKey = mapParams.get("entity.key");
+                String entityValue = mapParams.get("entity.value");
 
-            result.setResponseMessage("Read " + entity.pkString+ " from Cache");
+                CassandraTestEntity entity = new CassandraTestEntity(entityKey, entityValue);
+                cache.put(entity.pkString, entity);
+
+                result.setResponseMessage("Put " + entity.pkString + " into Cache");
+            }
             success=true;
         } catch (Exception e) {
             SetupResultForError(result, e);
@@ -90,7 +102,10 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient
         defaultParameters.addArgument("server.ip.address", "10.28.1.140");
         defaultParameters.addArgument("cluster.name", "BluePrint");
         defaultParameters.addArgument("activemq.connection", "vm://localhost");
-        defaultParameters.addArgument("entity.key", "K1");
+        defaultParameters.addArgument("entity.key", "K${loopCounter}");
+        defaultParameters.addArgument("entity.value", "Description for K${loopCounter}");
+        defaultParameters.addArgument("action", "read");
+
         return defaultParameters;
     }
 }
