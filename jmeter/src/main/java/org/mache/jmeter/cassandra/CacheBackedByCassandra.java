@@ -1,4 +1,4 @@
-package org.mache.jmeter;
+package org.mache.jmeter.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import org.apache.jmeter.config.Arguments;
@@ -8,6 +8,7 @@ import org.mache.*;
 import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
 import org.mache.events.integration.ActiveMQFactory;
+import org.mache.jmeter.MacheAbstractJavaSamplerClient;
 import org.mache.utils.UUIDUtils;
 
 import java.io.IOException;

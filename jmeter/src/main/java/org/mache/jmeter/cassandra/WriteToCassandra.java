@@ -1,4 +1,4 @@
-package org.mache.jmeter;
+package org.mache.jmeter.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import org.apache.jmeter.config.Arguments;
@@ -6,6 +6,8 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 import org.mache.CassandraCacheLoader;
 import org.mache.SchemaOptions;
+import org.mache.jmeter.MacheAbstractJavaSamplerClient;
+import org.mache.jmeter.cassandra.CassandraTestEntity;
 
 import java.util.Map;
 

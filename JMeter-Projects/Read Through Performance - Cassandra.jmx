@@ -143,7 +143,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">org.mache.jmeter.WriteToCassandra</stringProp>
+            <stringProp name="classname">org.mache.jmeter.cassandra.WriteToCassandra</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -203,7 +203,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">org.mache.jmeter.ReadFromCassandra</stringProp>
+            <stringProp name="classname">org.mache.jmeter.cassandra.ReadFromCassandra</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -268,7 +268,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">org.mache.jmeter.CacheBackedByCassandra</stringProp>
+            <stringProp name="classname">org.mache.jmeter.cassandra.CacheBackedByCassandra</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>

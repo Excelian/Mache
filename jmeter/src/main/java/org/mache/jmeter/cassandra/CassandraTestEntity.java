@@ -1,4 +1,4 @@
-package org.mache.jmeter;
+package org.mache.jmeter.cassandra;
 
 import org.springframework.data.cassandra.mapping.Column;
 import org.springframework.data.cassandra.mapping.PrimaryKey;
