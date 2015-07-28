@@ -32,6 +32,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient
 
             Cluster cluster = CassandraCacheLoader.connect( mapParams.get("server.ip.address"), mapParams.get("cluster.name") , 9042);
             CassandraCacheLoader<String, CassandraTestEntity> db= new CassandraCacheLoader(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
+            db.create("","");//this is to force the connection to occur within our setup
 
             CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
             cache = cacheFactory.createCache(db);

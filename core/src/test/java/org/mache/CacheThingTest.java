@@ -35,6 +35,16 @@ public class CacheThingTest {
     }
 
     @Test
+    public void readsThroughOnceThenOnlyReadsFromCacheForSameKey() throws Exception {
+
+        assertNotNull(cacheThing.get("TEST"));
+        assertNotNull(cacheThing.get("TEST"));
+        assertNotNull(cacheThing.get("TEST"));
+
+        assertEquals("Expected loader to have only been called once (the first time)", 1, read);
+    }
+
+    @Test
     public void canWriteThrough() throws ExecutionException {
         cacheThing.put("TEST","VALUE");
         assertEquals(1, put);
