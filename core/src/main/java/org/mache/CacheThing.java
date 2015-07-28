@@ -10,7 +10,7 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
     private ForwardingCache<K, V> fwdCache;
     final private ExCacheLoader cacheLoader;
 
-    private String spec = "maximumSize=10000,weakKeys,softValues,expireAfterWrite=1d,expireAfterAccess=1d,recordStats";
+    private String spec = "maximumSize=10000,expireAfterWrite=1d,expireAfterAccess=1d";
 
     private LoadingCache<K, V> cache;
     private volatile boolean created;
