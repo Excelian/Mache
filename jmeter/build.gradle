@@ -17,6 +17,49 @@ jar {
 
 }
 
+task jarForJmeterZip(type: Zip) {
+    /*
+    Builds the jar to be copied to JMETER/lib/Mache folder
+    */
+    classifier = 'src'
+    from configurations.runtime.allArtifacts.files
+    from configurations.runtime
+    exclude "ApacheJMeter*.*"
+    exclude "avalon-framework*.*"
+    exclude "bc*jdk*.*"
+    exclude "bsf*.*"
+    exclude "bsh*.*"
+    exclude "commons-*.*"
+    exclude "core-*.*"
+    exclude "excalibur-*.*"
+    exclude "geronimo-*.*"
+    exclude "htmllexer-*.*"
+    exclude "htmlparser-*.*"
+    exclude "httpclient-*.*"
+    exclude "httpcore-*.*"
+    exclude "httpmime-*.*"
+    exclude "jcharts-*.*"
+    exclude "jcl-over-slf4j-*.*"
+    exclude "jdom-*.*"
+    exclude "jmeter-*.*"
+    exclude "jodd-*.*"
+    exclude "jorphan-*.*"
+    exclude "jtidy-*.*"
+    exclude "junit-*.*"
+    exclude "rhino-*.*"
+    exclude "serializer-*.*"
+    exclude "slf4j-*.*"
+    exclude "tika-*.*"
+    exclude "tika-*.*"
+    exclude "xercesImpl*.*"
+    exclude "xml*.*"
+    exclude "xalan*.*"
+    exclude "xmpcore-*.*"
+    exclude "xpp*.*"
+    exclude "xstream-*.*"
+}
+
+
 task fatJar(type: Jar, dependsOn: compileJava ){
     /*
      Builds the jar to be copied to JMETER/lib/ext folder
