@@ -37,6 +37,11 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient
 
             CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
             cache = cacheFactory.createCache(db);
+
+
+            CassandraTestEntity entity = new CassandraTestEntity("dummy", "warmup");
+            cache.put(entity.pkString, entity);
+
         } catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);
         }

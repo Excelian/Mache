@@ -17,10 +17,12 @@ jar {
 
 }
 
-task jarForJmeterZip(type: Zip) {
+task pluginSupportJar(type: Zip) {
     /*
     Builds the jar to be copied to JMETER/lib/Mache folder
+    we don't copy every dependany JAR as many conflict with JMeter versions
     */
+    baseName = project.name + '-mache-plugin-support-all'
     classifier = 'src'
     from configurations.runtime.allArtifacts.files
     from configurations.runtime
@@ -60,13 +62,13 @@ task jarForJmeterZip(type: Zip) {
 }
 
 
-task fatJar(type: Jar, dependsOn: compileJava ){
+task pluginJar(type: Jar, dependsOn: compileJava ){
     /*
      Builds the jar to be copied to JMETER/lib/ext folder
     */
     manifest {  attributes 'Implementation-Title': 'jmeter sampler jar for Mache testing', 'Implementation-Version': version   }
 
-    baseName = project.name + '-mache-plugin-all'
+    baseName = project.name + '-mache-plugin'
 
     from sourceSets.main.output.classesDir
     include '**/*.class'
