@@ -1,8 +1,7 @@
 package org.mache;
 
 import com.datastax.driver.core.*;
-import com.datastax.driver.core.policies.DCAwareRoundRobinPolicy;
-import com.datastax.driver.core.policies.TokenAwarePolicy;
+import com.datastax.driver.core.policies.*;
 import org.springframework.cassandra.core.cql.CqlIdentifier;
 import org.springframework.data.cassandra.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.core.CassandraAdminTemplate;
@@ -21,7 +20,8 @@ import java.util.*;
  */
 public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Session> {
 
-  private static final int REPLICATION_FACTOR = 1;
+  //TODO: Breakout into configuration
+  private static final int REPLICATION_FACTOR = 3;
   private static final String REPLICATION_CLASS = "SimpleStrategy";
 
   final private Cluster cluster;
@@ -33,16 +33,15 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
 
   final private Class<V> clazz;
 
-  public CassandraCacheLoader(Class<V> clazz, Cluster cluster, SchemaOptions schemaOption, String keySpace) throws Exception {
+  public CassandraCacheLoader(Class<V> clazz, Cluster cluster, SchemaOptions schemaOption, String keySpace) {
     this.cluster = cluster;
-
     this.cluster.getConfiguration().getQueryOptions().setConsistencyLevel(ConsistencyLevel.LOCAL_QUORUM);
     this.schemaOption = schemaOption;
     this.keySpace = keySpace.replace("-", "_").replace(" ", "_").replace(":", "_");
     this.clazz = clazz;
   }
 
-  public void create(String name, K k) {
+  public void create(String ignored1, K ignored2) {
     if (schemaOption.ShouldCreateSchema() && session == null) {
       synchronized (this) {
         if (session == null) {
@@ -69,7 +68,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
   private void createKeySpace() {
     session.execute(String.format("CREATE KEYSPACE IF NOT EXISTS %s  WITH REPLICATION = {'class':'%s', 'replication_factor':%d}; ", keySpace, REPLICATION_CLASS, REPLICATION_FACTOR));
     session.execute(String.format("USE %s ", keySpace));
-    System.out.println("Created keyspace " + keySpace);
+    System.out.println("Created keyspace if missing " + keySpace);
   }
 
   void createTable() {
@@ -93,6 +92,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
   @Override
   public V load(K key) throws Exception {
     Object o = ops().selectOneById(clazz, key);
+    System.out.println("Loaded value from DB : "+key.toString());
     return (V) o;
   }
 
@@ -134,6 +134,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
         .addContactPoint(contactPoint)
         .withPort(port)
         .withClusterName(clusterName)
+        .withReconnectionPolicy(new ConstantReconnectionPolicy(100L))
         .withLoadBalancingPolicy(new TokenAwarePolicy(new DCAwareRoundRobinPolicy())) // go to the node with data
         .build();
     Metadata metadata = cluster.getMetadata();

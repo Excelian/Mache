@@ -1,11 +1,13 @@
 package org.mache;
 
-import com.fasterxml.uuid.Generators;
-import com.google.common.cache.*;
-
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
+
+import com.fasterxml.uuid.Generators;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.ForwardingCache;
+import com.google.common.cache.LoadingCache;
 
 
 public class CacheThing<K,V> implements ExCache<K,V>  {

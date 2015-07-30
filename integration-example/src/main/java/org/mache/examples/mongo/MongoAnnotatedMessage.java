@@ -1,4 +1,4 @@
-package org.mache;
+package org.mache.examples.mongo;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.mapping.PrimaryKey;
@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
  * Created by jbowkett on 17/07/15.
  */
 @Document
-public class MessageMongoAnnotated {
+public class MongoAnnotatedMessage {
 
   @Field
   private final String msg;
@@ -18,7 +18,7 @@ public class MessageMongoAnnotated {
   @Id
   private final String primaryKey;
 
-  public MessageMongoAnnotated(String primaryKey, String msg) {
+  public MongoAnnotatedMessage(String primaryKey, String msg) {
     this.msg = msg;
     this.primaryKey = primaryKey;
   }

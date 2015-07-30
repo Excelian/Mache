@@ -1,11 +1,10 @@
 package org.mache;
 
+import com.codeaffine.test.ConditionalIgnoreRule;
 import com.google.common.cache.CacheLoader;
 import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,14 +14,18 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static com.codeaffine.test.ConditionalIgnoreRule.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
  * Created by neil.avery on 09/06/2015.
  */
+@IgnoreIf(condition = NotRunningInExcelian.class)
 public class MongoCacheIntegrationTest {
+
+    @Rule
+    public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     private List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress("10.28.1.140", 27017));
     private String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
@@ -30,7 +33,7 @@ public class MongoCacheIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        cacheThing = new CacheThing<>(
+        cacheThing = new CacheThing<String, TestEntity>(
                 new MongoDBCacheLoader<String,TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
     }
 
@@ -152,5 +155,4 @@ public class MongoCacheIntegrationTest {
             return aString;
         }
     }
-
 }

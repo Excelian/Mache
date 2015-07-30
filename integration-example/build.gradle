@@ -1,7 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'application'
 
 sourceCompatibility = 1.7
 version = '1.0'
@@ -22,7 +21,9 @@ dependencies {
   compile project(':cassandra-ns')
   compile project(':mongo-ns')
   compile project(':core-observable')
-
+  compile 'javax.jms:jms:1.1'
+  compile 'org.springframework.data:spring-data-cassandra:1.2.0.RELEASE'
+  compile 'org.springframework.data:spring-data-mongodb:1.7.0.RELEASE'
   testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 

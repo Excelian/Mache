@@ -26,7 +26,7 @@ public abstract class TestCacheLoaderBase {
 
     @Before
     public void setUp() throws Exception {
-        cacheThing = new CacheThing<>(buildCacheLoader(TestEntity.class));
+        cacheThing = new CacheThing<String, TestEntity>(buildCacheLoader(TestEntity.class));
     }
 
     @After
@@ -37,7 +37,7 @@ public abstract class TestCacheLoaderBase {
     @Test
     public void testCanGetDriverSession() throws Exception {
         ExCacheLoader cacheloader = buildCacheLoader(TestEntity.class);
-        CacheThing cache = new CacheThing<>(cacheloader);
+        CacheThing cache = new CacheThing<String, TestEntity>(cacheloader);
         cache.put("test-2", new TestEntity("test-2"));
         cache.get("test-2");
         assertNotNull(cacheloader.getDriverSession());
@@ -48,7 +48,6 @@ public abstract class TestCacheLoaderBase {
 
     @Test
     public void testPut() throws Exception {
-
         cacheThing.put("value-yay", new TestEntity("value-yay"));
         TestEntity test = cacheThing.get("value-yay");
         assertNotNull("Expected object to be retrieved from cache", test);
@@ -65,7 +64,6 @@ public abstract class TestCacheLoaderBase {
 
     @Test
     public void testReadCache() throws Exception {
-
         cacheThing.put("test-2", new TestEntity("test-2"));
         TestEntity test = cacheThing.get("test-2");
         assertEquals("test-2", test.pkString);

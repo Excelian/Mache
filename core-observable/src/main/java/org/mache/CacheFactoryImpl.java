@@ -80,12 +80,9 @@ public class CacheFactoryImpl implements CacheFactory {
 						}
 					});
 			consumer.beginSubscriptionThread();
-		} catch (IOException | JMSException e ) {
+		} catch (Exception  e ) {
 			throw new RuntimeException("Error creating cache consumer from loader " + cacheLoader + " and options " + options, e);
-		} catch (InterruptedException e) {
-			throw new RuntimeException("Error creating cache consumerfrom loader " + cacheLoader + " and options " + options, e);
 		}
-
 		return observable;
 	}
 
