@@ -107,6 +107,7 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
                 System.out.println("Dropped database" + keySpace);
             }
             mongoClient.close();
+            mongoClient=null;
         }
     }
 

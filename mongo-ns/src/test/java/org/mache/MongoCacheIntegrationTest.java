@@ -142,6 +142,11 @@ public class MongoCacheIntegrationTest {
         @Indexed
         private String aString = "yay";
 
+        public TestEntity()
+        {
+            /*Default constructor required by mongo driver (findbyid call) */
+        }
+
         public TestEntity(String pkString) {
             this.pkString = pkString;
         }
