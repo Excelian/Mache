@@ -71,7 +71,7 @@ public class CacheFactoryImpl implements CacheFactory {
 						public void handle(Iterable<CoordinationEntryEvent<?>> events)
 						{
 							for (final CoordinationEntryEvent<?> e : events) {
-								if (e.getEntityName().equals(underlyingCache.getName())) {
+								if (e.getEntityName().equals(underlyingCache.getName()) && !e.getCacheId().equals(underlyingCache.getId())) {
 									@SuppressWarnings("unchecked")
 									K key = (K) e.getKey();
 									underlyingCache.invalidate(key);//if we called remove it would go to the DB too.

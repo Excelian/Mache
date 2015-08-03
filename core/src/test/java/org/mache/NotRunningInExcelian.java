@@ -11,7 +11,7 @@ import java.net.InetAddress;
 public class NotRunningInExcelian implements IgnoreCondition {
   static{
     try {
-      RUNNING_IN_EXCELIAN = InetAddress.getByName("10.28.1.140").isReachable(30);
+      RUNNING_IN_EXCELIAN = InetAddress.getByName("10.28.1.140").isReachable(2000);
     }
     catch (IOException e) {
       RUNNING_IN_EXCELIAN = false;

@@ -92,6 +92,26 @@ public class MongoCacheIntegrationTest {
     }
 
     @Test
+    public void testInvalidate() throws Exception {
+        final CacheThing<String, TestEntity> cacheThing2 = new CacheThing<>(
+                new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
+
+        final String key = "test-1";
+        final String expectedDescription = "test1-description";
+        cacheThing.put(key, new TestEntity(key, expectedDescription));
+        assertEquals(expectedDescription, cacheThing.get(key).getaString());
+        assertEquals(expectedDescription, cacheThing2.get(key).getaString());
+
+        final String expectedDescription2 = "test-description2";
+        cacheThing2.put(key, new TestEntity(key, expectedDescription2));
+        cacheThing.invalidate(key);
+        assertEquals(expectedDescription2, cacheThing.get(key).getaString());
+        assertEquals(expectedDescription2, cacheThing2.get(key).getaString());
+
+        cacheThing2.close();
+    }
+
+    @Test
     public void testReadThrough() throws Exception {
         cacheThing.put("test-2", new TestEntity("test-2"));
         cacheThing.put("test-3", new TestEntity("test-3"));
@@ -122,8 +142,22 @@ public class MongoCacheIntegrationTest {
         @Indexed
         private String aString = "yay";
 
+        public TestEntity()
+        {
+            /*Default constructor required by mongo driver (findbyid call) */
+        }
+
         public TestEntity(String pkString) {
             this.pkString = pkString;
+        }
+
+        public TestEntity(String pkString, String other) {
+            this.pkString = pkString;
+            this.aString = other;
+        }
+
+        public String getaString() {
+            return aString;
         }
     }
 }

@@ -46,17 +46,42 @@ public class CacheThingTest {
 
     @Test
     public void canWriteThrough() throws ExecutionException {
-        cacheThing.put("TEST","VALUE");
+        cacheThing.put("TEST", "VALUE");
         assertEquals(1, put);
-
     }
+
     @Test
     public void canRemove() throws ExecutionException {
         cacheThing.put("TEST", "VALUE");
         cacheThing.remove("TEST");
         assertEquals(1, removed);
-
     }
+
+    @Test
+    public void invalidateWorks() {
+        final String key = "TEST";
+        cacheThing.put(key, "VALUE");
+        cacheThing.invalidate(key);
+        cacheThing.get(key);
+
+        assertEquals(1, read);
+    }
+
+    @Test
+    public void multipleInvalidateWorks() {
+        final String key = "TEST";
+        cacheThing.put(key, "VALUE");
+
+        final int invalidateTimes = 3;
+
+        for (int i=0;i<invalidateTimes;++i) {
+            cacheThing.invalidate(key);
+            cacheThing.get(key);
+        }
+
+        assertEquals(invalidateTimes, read);
+    }
+
     @Before
     public void setUp() throws Exception {
 

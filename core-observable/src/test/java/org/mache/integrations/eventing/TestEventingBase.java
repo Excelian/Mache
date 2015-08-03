@@ -1,5 +1,6 @@
 package org.mache.integrations.eventing;
 
+import com.fasterxml.uuid.Generators;
 import org.junit.Test;
 import org.mache.EventType;
 import org.mache.coordination.CoordinationEntryEvent;
@@ -12,7 +13,7 @@ import org.mache.utils.UUIDUtils;
 import javax.jms.JMSException;
 
 import java.io.IOException;
-import java.util.Date;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -56,7 +57,7 @@ public abstract class TestEventingBase{
         consumer.registerEventListener(collector);
         consumer.beginSubscriptionThread();
 
-        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestEntity.class.getName(),"ID1",EventType.CREATED, new UUIDUtils());
+        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(), TestEntity.class.getName(),"ID1",EventType.CREATED, new UUIDUtils());
 
         while(collector.pollWithTimeout(250)!=null);//drain queues
 
@@ -73,15 +74,18 @@ public abstract class TestEventingBase{
         }
 
         finally {
-            System.out.println("closing");
             producer.close();
             consumer.close();
             mqFactory.close();
         }
     }
 
+    private UUID getUuid() {
+        return Generators.randomBasedGenerator().generate();
+    }
+
     @Test
-    public void consumerIgnoresMessagePublishedForDifferentEvent() throws InterruptedException, JMSException, IOException {
+    public void consumerIgnoresMessagePublishedForDifferentEntity() throws InterruptedException, JMSException, IOException {
 
         MQFactory mqFactory = buildMQFactory();
 
@@ -95,7 +99,7 @@ public abstract class TestEventingBase{
         consumer.registerEventListener(collector);
         consumer.beginSubscriptionThread();
 
-        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestOtherEntity.class.getName(),"ID1", EventType.CREATED, new UUIDUtils());
+        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(), TestOtherEntity.class.getName(),"ID1", EventType.CREATED, new UUIDUtils());
 
         while(collector.pollWithTimeout(10)!=null);//drain queues
         producer.send(event);
@@ -112,6 +116,7 @@ public abstract class TestEventingBase{
     }
 
     @Test
+    //TODO Thread sleep inside should be removed but somehow it works 20/80 
     public void multipleConsumersGetACopyOfPublishedEvent() throws InterruptedException, JMSException, IOException {
 
         MQFactory mqFactory = buildMQFactory();
@@ -124,14 +129,15 @@ public abstract class TestEventingBase{
 
         consumer1.registerEventListener(collector1);
         consumer1.beginSubscriptionThread();
-        while(collector1.pollWithTimeout(10)!=null);//drain queues
+        while(collector1.pollWithTimeout(10)!=null);//d0rain queues
 
         consumer2.registerEventListener(collector2);
         consumer2.beginSubscriptionThread();
         while(collector2.pollWithTimeout(10)!=null);//drain queues
 
-        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(TestEntity.class.getName(), "ID1", EventType.CREATED, new UUIDUtils());
+        Thread.sleep(300);
 
+        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(), TestEntity.class.getName(), "ID1", EventType.CREATED, new UUIDUtils());
         //Publish just the once
         producer.send(event);
 
@@ -157,7 +163,5 @@ public abstract class TestEventingBase{
             consumer2.close();
             mqFactory.close();
         }
-
-
     }
 }

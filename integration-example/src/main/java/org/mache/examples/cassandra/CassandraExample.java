@@ -8,6 +8,7 @@ import org.mache.events.integration.RabbitMQFactory;
 import org.mache.utils.UUIDUtils;
 
 import javax.jms.JMSException;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
