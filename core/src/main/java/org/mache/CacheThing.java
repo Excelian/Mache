@@ -1,31 +1,35 @@
 package org.mache;
 
-import com.google.common.cache.*;
+import java.util.UUID;
 
-import java.util.concurrent.ExecutionException;
+import com.fasterxml.uuid.Generators;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.ForwardingCache;
+import com.google.common.cache.LoadingCache;
 
 
 public class CacheThing<K,V> implements ExCache<K,V>  {
 
-    private ForwardingCache<K, V> fwdCache;
+    private final ForwardingCache<K, V> fwdCache;
     final private ExCacheLoader cacheLoader;
+    private final UUID cacheId;
 
-    private String spec = "maximumSize=10000,weakKeys,softValues,expireAfterWrite=1d,expireAfterAccess=1d,recordStats";
+    //XXX weak keys cause invalidation tto fail because of using identity function for quivalence see http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilder.html#weakKeys()
+    //private volatile String spec = "maximumSize=10000,weakKeys,softValues,expireAfterWrite=1d,expireAfterAccess=1d,recordStats";
+    private volatile String spec = "maximumSize=10000,softValues,expireAfterWrite=1d,expireAfterAccess=1d,recordStats";
 
-    private LoadingCache<K, V> cache;
+    private final LoadingCache<K, V> cache;
     private volatile boolean created;
 
     public CacheThing(final ExCacheLoader cacheLoader, String... optionalSpec) {
         this.cacheLoader = cacheLoader;
         if (optionalSpec != null && optionalSpec.length > 0) this.spec = optionalSpec[0];
 
-        bindToGuavaCache(cacheLoader);
-    }
-
-    private void bindToGuavaCache(ExCacheLoader cacheHook) {
         cache = CacheBuilder.from(spec).
-                recordStats().removalListener((RemovalListener<K,V>) cacheHook).
-                build((CacheLoader<K,V>) cacheHook);
+                recordStats()/*.removalListener((RemovalListener<K,V>) cacheLoader)*/.
+                build((CacheLoader<K,V>) cacheLoader);
 
         fwdCache = new ForwardingCache<K, V>() {
             @Override
@@ -43,6 +47,8 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
                 delegate().invalidate(key);
             }
         };
+
+        cacheId = Generators.nameBasedGenerator().generate(getName() + String.valueOf(this));
     }
 
     @Override
@@ -51,10 +57,15 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
     }
 
     @Override
-    public V get(final K k) throws ExecutionException {
+    public UUID getId() { return cacheId; }
+
+    @Override
+    public V get(final K k) {
         createMaybe(k);
         // a bit crappy - but the fwdrCache doesnt expose 'getOrLoad(K, Loader)'
-        return cache.getUnchecked(k);
+
+        final V result = cache.getUnchecked(k);
+        return result;
     }
 
     @Override

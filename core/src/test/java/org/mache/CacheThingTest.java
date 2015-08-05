@@ -35,18 +35,53 @@ public class CacheThingTest {
     }
 
     @Test
-    public void canWriteThrough() throws ExecutionException {
-        cacheThing.put("TEST","VALUE");
-        assertEquals(1, put);
+    public void readsThroughOnceThenOnlyReadsFromCacheForSameKey() throws Exception {
 
+        assertNotNull(cacheThing.get("TEST"));
+        assertNotNull(cacheThing.get("TEST"));
+        assertNotNull(cacheThing.get("TEST"));
+
+        assertEquals("Expected loader to have only been called once (the first time)", 1, read);
     }
+
+    @Test
+    public void canWriteThrough() throws ExecutionException {
+        cacheThing.put("TEST", "VALUE");
+        assertEquals(1, put);
+    }
+
     @Test
     public void canRemove() throws ExecutionException {
         cacheThing.put("TEST", "VALUE");
         cacheThing.remove("TEST");
         assertEquals(1, removed);
-
     }
+
+    @Test
+    public void invalidateWorks() {
+        final String key = "TEST";
+        cacheThing.put(key, "VALUE");
+        cacheThing.invalidate(key);
+        cacheThing.get(key);
+
+        assertEquals(1, read);
+    }
+
+    @Test
+    public void multipleInvalidateWorks() {
+        final String key = "TEST";
+        cacheThing.put(key, "VALUE");
+
+        final int invalidateTimes = 3;
+
+        for (int i=0;i<invalidateTimes;++i) {
+            cacheThing.invalidate(key);
+            cacheThing.get(key);
+        }
+
+        assertEquals(invalidateTimes, read);
+    }
+
     @Before
     public void setUp() throws Exception {
 

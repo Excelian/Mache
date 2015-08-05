@@ -1,0 +1,52 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.7
+version = '1.0'
+jar {
+  manifest {
+    attributes 'Implementation-Title': 'Integration-Example',
+            'Implementation-Version': version
+  }
+}
+
+repositories {
+  maven { url 'https://repository.jboss.org/nexus/content/groups/public' }
+  mavenCentral()
+}
+
+dependencies {
+  compile project(':core')
+  compile project(':cassandra-ns')
+  compile project(':mongo-ns')
+  compile project(':core-observable')
+  compile 'javax.jms:jms:1.1'
+  compile 'org.springframework.data:spring-data-cassandra:1.2.0.RELEASE'
+  compile 'org.springframework.data:spring-data-mongodb:1.7.0.RELEASE'
+  testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+test {
+  systemProperties 'property': 'value'
+}
+
+uploadArchives {
+  repositories {
+    flatDir {
+      dirs 'repos'
+    }
+  }
+}
+
+
+task getClient(dependsOn: 'classes', type: JavaExec) {
+  main = 'org.mache.GettingCacheClient'
+  classpath = sourceSets.main.runtimeClasspath
+}
+
+task putClient(dependsOn: 'classes', type: JavaExec) {
+  main = 'org.mache.PuttingCacheClient'
+  classpath = sourceSets.main.runtimeClasspath
+}
+

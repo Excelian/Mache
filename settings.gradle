@@ -1,1 +1,3 @@
-include 'core', 'cassandra-ns', 'mongo-ns', 'core-observable'
+include 'core', 'cassandra-ns', 'mongo-ns', 'core-observable', 'integration-example'
+include 'jmeter'
+

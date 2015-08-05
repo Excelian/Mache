@@ -1,0 +1,100 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+version = '1.0'
+
+repositories {
+    maven { url 'http://jcenter.bintray.com' }
+    mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'ExCache',
+                'Implementation-Version': version
+    }
+
+
+}
+
+task pluginSupportJar(type: Zip) {
+    /*
+    Builds the jar to be copied to JMETER/lib/Mache folder
+    we don't copy every dependany JAR as many conflict with JMeter versions
+    */
+    baseName = project.name + '-mache-plugin-support-all'
+    classifier = 'src'
+    from configurations.runtime.allArtifacts.files
+    from configurations.runtime
+    exclude "ApacheJMeter*.*"
+    exclude "avalon-framework*.*"
+    exclude "bc*jdk*.*"
+    exclude "bsf*.*"
+    exclude "bsh*.*"
+    //exclude "commons-*.*"
+    exclude "core-*.*"
+    exclude "excalibur-*.*"
+    //exclude "geronimo-*.*"
+    exclude "htmllexer-*.*"
+    exclude "htmlparser-*.*"
+    exclude "httpclient-cache*.*"
+    exclude "httpcore-*.*"
+    exclude "httpmime-*.*"
+    exclude "jcharts-*.*"
+    exclude "jcl-over-slf4j-*.*"
+    exclude "jdom-*.*"
+    exclude "jmeter-*.*"
+    exclude "jodd-*.*"
+    exclude "jorphan-*.*"
+    exclude "jtidy-*.*"
+    exclude "junit-*.*"
+    exclude "rhino-*.*"
+    exclude "serializer-*.*"
+    exclude "slf4j-*.*"
+    exclude "tika-*.*"
+    exclude "tika-*.*"
+    exclude "xercesImpl*.*"
+    exclude "xml*.*"
+    exclude "xalan*.*"
+    exclude "xmpcore-*.*"
+    exclude "xpp*.*"
+    exclude "xstream-*.*"
+}
+
+
+task pluginJar(type: Jar, dependsOn: compileJava ){
+    /*
+     Builds the jar to be copied to JMETER/lib/ext folder
+    */
+    manifest {  attributes 'Implementation-Title': 'jmeter sampler jar for Mache testing', 'Implementation-Version': version   }
+
+    baseName = project.name + '-mache-plugin'
+
+    from sourceSets.main.output.classesDir
+    include '**/*.class'
+
+    from project(':core-observable').sourceSets.main.output.classesDir
+    include '**/*.class'
+
+    from project(':core').sourceSets.main.output.classesDir
+    include '**/*.class'
+
+    from project(':mongo-ns').sourceSets.main.output.classesDir
+    include '**/*.class'
+
+    from project(':cassandra-ns').sourceSets.main.output.classesDir
+    include '**/*.class'
+}
+
+
+
+dependencies {
+    compile project(':core-observable')
+    compile project(':core')
+    compile project(':mongo-ns')
+    compile project(':cassandra-ns')
+
+    compile 'org.apache.jmeter:ApacheJMeter_java:2.11' // 2.11 and jcenter compiles ok
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}

@@ -14,7 +14,7 @@ import java.util.*;
  * Created by neil.avery on 29/05/2015.
  * TODO: Replication class and factor need to be configurable.
  */
-public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<Object,Object,Mongo> {
+public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
 
 
     private Mongo mongoClient;
@@ -78,7 +78,11 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<Object,Object,M
     }
 
     public void put(Object k, Object v) {
-        ops().insert(v);
+        System.out.println("Saving to mongo key=" + k + ", newValue=" + v);
+        ops().save(v);
+
+        Object o = ops().findById(k, clazz);
+        System.out.println("In mongo after save value=" + o);
     }
 
     public void remove(Object k) {
@@ -90,6 +94,7 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<Object,Object,M
     @Override
     public Object load(Object key) throws Exception {
         Object o = ops().findById(key, clazz);
+        System.out.println("Loading from mongo by key " + key + " - result " + o);
         return (V) o;
     }
 
@@ -102,6 +107,7 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<Object,Object,M
                 System.out.println("Dropped database" + keySpace);
             }
             mongoClient.close();
+            mongoClient=null;
         }
     }
 

@@ -22,11 +22,11 @@ public abstract class TestCacheLoaderBase {
     protected String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
     private CacheThing<String, TestEntity> cacheThing;
 
-    abstract protected ExCacheLoader BuildCacheLoader(Class cls) throws Exception;
+    abstract protected ExCacheLoader buildCacheLoader(Class cls) throws Exception;
 
     @Before
     public void setUp() throws Exception {
-        cacheThing = new CacheThing<>(BuildCacheLoader(TestEntity.class));
+        cacheThing = new CacheThing<String, TestEntity>(buildCacheLoader(TestEntity.class));
     }
 
     @After
@@ -36,8 +36,8 @@ public abstract class TestCacheLoaderBase {
 
     @Test
     public void testCanGetDriverSession() throws Exception {
-        ExCacheLoader cacheloader=BuildCacheLoader(TestEntity.class);
-        CacheThing cache = new CacheThing<>(cacheloader);
+        ExCacheLoader cacheloader = buildCacheLoader(TestEntity.class);
+        CacheThing cache = new CacheThing<String, TestEntity>(cacheloader);
         cache.put("test-2", new TestEntity("test-2"));
         cache.get("test-2");
         assertNotNull(cacheloader.getDriverSession());
@@ -48,7 +48,6 @@ public abstract class TestCacheLoaderBase {
 
     @Test
     public void testPut() throws Exception {
-
         cacheThing.put("value-yay", new TestEntity("value-yay"));
         TestEntity test = cacheThing.get("value-yay");
         assertNotNull("Expected object to be retrieved from cache", test);
@@ -56,8 +55,15 @@ public abstract class TestCacheLoaderBase {
     }
 
     @Test
-    public void testReadCache() throws Exception {
+    public void canPutTheSameItemAgainTest() throws Exception {
+        cacheThing.put("test-1", new TestEntity("test-1"));
+        cacheThing.put("test-1", new TestEntity("test-1"));
+        TestEntity test = cacheThing.get("test-1");
+        assertEquals("test-1", test.pkString);
+    }
 
+    @Test
+    public void testReadCache() throws Exception {
         cacheThing.put("test-2", new TestEntity("test-2"));
         TestEntity test = cacheThing.get("test-2");
         assertEquals("test-2", test.pkString);
@@ -88,7 +94,7 @@ public abstract class TestCacheLoaderBase {
         cacheThing.put("test-2", new TestEntity("test-2"));
         cacheThing.put("test-3", new TestEntity("test-3"));
         // replace the cache
-        cacheThing = new CacheThing<String, TestEntity>(BuildCacheLoader(TestEntity.class));
+        cacheThing = new CacheThing<String, TestEntity>(buildCacheLoader(TestEntity.class));
 
         TestEntity test = cacheThing.get("test-2");
         assertEquals("test-2", test.pkString);
@@ -154,7 +160,7 @@ public abstract class TestCacheLoaderBase {
     public void testPutComposite() throws Exception {
 
         CacheThing<CompositeKey, TestEntityWithCompositeKey> compCache = new CacheThing<CompositeKey, TestEntityWithCompositeKey>(
-                BuildCacheLoader(TestEntityWithCompositeKey.class) );
+                buildCacheLoader(TestEntityWithCompositeKey.class) );
 
         TestEntityWithCompositeKey value = new TestEntityWithCompositeKey("neil", "mac", "explorer");
         compCache.put(value.compositeKey, value);

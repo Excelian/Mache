@@ -71,7 +71,7 @@ public class CacheFactoryImpl implements CacheFactory {
 						public void handle(Iterable<CoordinationEntryEvent<?>> events)
 						{
 							for (final CoordinationEntryEvent<?> e : events) {
-								if (e.getEntityName().equals(underlyingCache.getName())) {
+								if (e.getEntityName().equals(underlyingCache.getName()) && !e.getCacheId().equals(underlyingCache.getId())) {
 									@SuppressWarnings("unchecked")
 									K key = (K) e.getKey();
 									underlyingCache.invalidate(key);//if we called remove it would go to the DB too.
@@ -80,12 +80,9 @@ public class CacheFactoryImpl implements CacheFactory {
 						}
 					});
 			consumer.beginSubscriptionThread();
-		} catch (IOException | JMSException e ) {
+		} catch (Exception  e ) {
 			throw new RuntimeException("Error creating cache consumer from loader " + cacheLoader + " and options " + options, e);
-		} catch (InterruptedException e) {
-			throw new RuntimeException("Error creating cache consumerfrom loader " + cacheLoader + " and options " + options, e);
 		}
-
 		return observable;
 	}
 
