@@ -1,4 +1,6 @@
 apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
 
 sourceCompatibility = 1.8
 version = '1.0'
@@ -61,15 +63,19 @@ task pluginSupportJar(type: Zip) {
     exclude "xstream-*.*"
 }
 
-
 task pluginJar(type: Jar, dependsOn: compileJava ){
     /*
      Builds the jar to be copied to JMETER/lib/ext folder
-    */
+    */        
+    
+    println "Mongo:"+project(':mongo-ns').sourceSets.main.output.classesDir
+    println "Cassandra:"+project(':cassandra-ns').sourceSets.main.output.classesDir
+    
+      
     manifest {  attributes 'Implementation-Title': 'jmeter sampler jar for Mache testing', 'Implementation-Version': version   }
 
     baseName = project.name + '-mache-plugin'
-
+               
     from sourceSets.main.output.classesDir
     include '**/*.class'
 
@@ -81,17 +87,19 @@ task pluginJar(type: Jar, dependsOn: compileJava ){
 
     from project(':mongo-ns').sourceSets.main.output.classesDir
     include '**/*.class'
+           
+    from "../mongo-ns/build/classes/main" include '**/*.class' 
 
     from project(':cassandra-ns').sourceSets.main.output.classesDir
     include '**/*.class'
 }
 
 
-
 dependencies {
+    compile project(':mongo-ns')
     compile project(':core-observable')
     compile project(':core')
-    compile project(':mongo-ns')
+    
     compile project(':cassandra-ns')
 
     compile 'org.apache.jmeter:ApacheJMeter_java:2.11' // 2.11 and jcenter compiles ok

@@ -2,7 +2,6 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-
 sourceCompatibility = 1.8
 version = '1.0'
 jar {
@@ -20,8 +19,8 @@ dependencies {
     compile project(':core')
     compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
     compile 'com.google.guava:guava:18.0'
-    compile 'org.springframework.data:spring-data-cassandra:1.2.0.RELEASE'
     compile 'com.datastax.cassandra:cassandra-driver-core:2.1.4'
+    compile 'org.springframework.data:spring-data-cassandra:1.2.0.RELEASE'    
     testCompile group: 'junit', name: 'junit', version: '4.+'
     testCompile project(path: ':core', configuration: 'tests')
 
