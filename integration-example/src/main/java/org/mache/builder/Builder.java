@@ -15,7 +15,7 @@ import static org.mache.builder.Builder.Messaging.*;
 public class Builder {
 
   public static enum Storage{Cassandra, Mongo}
-  public static enum Messaging{RabbitMQ, Kafka}
+  public static enum Messaging{RabbitMQ, Kafka, None}
 
   public static void main(String...args) {
     final Mache mache =
@@ -32,6 +32,7 @@ public class Builder {
 
     System.out.println("mache = " + mache);
 
+    @SuppressWarnings("unchecked")
     final Mache<CassandraAnnotatedMessage> mache2 =
         mache()
             .backedBy(Mongo)
@@ -44,6 +45,19 @@ public class Builder {
             .locatedAt("localhost")
             .listeningOnTopic("TRADES");
     System.out.println("mache2 = " + mache2);
+
+    @SuppressWarnings("unchecked")
+    final Mache<CassandraAnnotatedMessage> mache3 =
+        mache()
+            .backedBy(Mongo)
+            .servedFrom("10.28.1.140", 27017)
+            .with(noCluster())
+            .withKeyspace("Keyspace")
+            .toStore(CassandraAnnotatedMessage.class)
+            .withPolicy(CREATEANDDROPSCHEMA)
+            .withNoMessaging();
+
+    System.out.println("mache3 = " + mache3);
   }
 
 
@@ -102,7 +116,6 @@ public class Builder {
     }
 
 
-    @SuppressWarnings("unchecked")
     public static StorageTypeBuilder mache() {
       return (Storage storage) -> {
         return (String ipAddress, int port) -> {
@@ -166,6 +179,10 @@ public class Builder {
 
   interface MessageQueueBuilder {
     MessagingLocationBuilder using(Messaging messaging);
+
+    default Mache withNoMessaging(){
+       return using(None).locatedAt("NOWHERE").listeningOnTopic("NONE");
+    }
   }
 
   interface MessagingLocationBuilder {
