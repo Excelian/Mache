@@ -20,7 +20,7 @@ public class Builder {
   public static void main(String...args) {
     final Mache mache =
         mache()
-            .backedBy(Cassandra)
+            .backedByCassandra()
             .servedFrom("10.28.1.140", 27017)
             .with(namedCluster("Blueprint"))
             .withKeyspace("Keyspace")
@@ -35,9 +35,8 @@ public class Builder {
     @SuppressWarnings("unchecked")
     final Mache<CassandraAnnotatedMessage> mache2 =
         mache()
-            .backedBy(Mongo)
+            .backedByMongo()
             .servedFrom("10.28.1.140", 27017)
-            .with(noCluster())
             .withKeyspace("Keyspace")
             .toStore(CassandraAnnotatedMessage.class)
             .withPolicy(CREATEANDDROPSCHEMA)
@@ -49,15 +48,27 @@ public class Builder {
     @SuppressWarnings("unchecked")
     final Mache<CassandraAnnotatedMessage> mache3 =
         mache()
-            .backedBy(Mongo)
+            .backedByMongo()
             .servedFrom("10.28.1.140", 27017)
-            .with(noCluster())
             .withKeyspace("Keyspace")
             .toStore(CassandraAnnotatedMessage.class)
             .withPolicy(CREATEANDDROPSCHEMA)
             .withNoMessaging();
 
     System.out.println("mache3 = " + mache3);
+
+    @SuppressWarnings("unchecked")
+    final Mache<CassandraAnnotatedMessage> mache4 =
+        mache()
+            .backedByMongo()
+            .servedFrom("10.28.1.140", 27017)
+            .withKeyspace("Keyspace")
+            .toStore(CassandraAnnotatedMessage.class)
+            .withPolicy(CREATEANDDROPSCHEMA)
+            .withNoMessaging();
+
+    System.out.println("mache4 = " + mache4);
+
   }
 
 
@@ -117,35 +128,17 @@ public class Builder {
 
 
     public static StorageTypeBuilder mache() {
-      return (Storage storage) -> {
-        return (String ipAddress, int port) -> {
-          return (ClusterDetails cluster) -> {
-            return (String keyspace) -> {
-              return (Class<?> macheType) -> {
-                return (SchemaOptions schemaOption) -> {
-                  return (Messaging messaging) -> {
-                    return (String messagingLocation) -> {
-                      return (String topic) -> {
-                        return new Mache(storage, ipAddress, port, cluster, keyspace, macheType, schemaOption, messaging, messagingLocation, topic);
-                      };
-                    };
-                  };
-                };
-              };
-            };
-          };
-        };
-      };
+      return new StorageTypeBuilder(){};
     }
 
-    public static StorageTypeBuilder person2() {
-      return storage -> (ipAddress, port) -> cluster -> keyspace ->
-          macheType -> schemaOption -> messaging -> messagingLocation ->
-              topic ->
-                  new Mache(storage, ipAddress, port, cluster, keyspace,
-                      macheType, schemaOption, messaging, messagingLocation,
-                      topic);
-    }
+//    public static StorageTypeBuilder person2() {
+//      return storage -> (ipAddress, port) -> cluster -> keyspace ->
+//          macheType -> schemaOption -> messaging -> messagingLocation ->
+//              topic ->
+//                  new Mache(storage, ipAddress, port, cluster, keyspace,
+//                      macheType, schemaOption, messaging, messagingLocation,
+//                      topic);
+//    }
 
     @SuppressWarnings("unchecked")
     public Mache<T> toMache() {
@@ -154,15 +147,39 @@ public class Builder {
   }
 
   interface StorageTypeBuilder {
-    ServerAddressBuilder backedBy(Storage firstName);
+    default MongoServerAddressBuilder backedByMongo(){
+      return (ipAddress, port) ->
+          keyspace -> macheType -> schemaOption ->
+          messaging -> messagingLocation -> topic ->
+              new Mache(Mongo, ipAddress, port, noCluster(), keyspace,
+                            macheType, schemaOption, messaging, messagingLocation,
+                            topic);
+    }
+
+    default CassandraServerAddressBuilder backedByCassandra(){
+      return (ipAddress, port) -> cluster ->
+          keyspace -> macheType -> schemaOption ->
+          messaging -> messagingLocation -> topic ->
+              new Mache(Cassandra, ipAddress, port, cluster, keyspace,
+                            macheType, schemaOption, messaging, messagingLocation,
+                            topic);
+    }
   }
 
-  interface ServerAddressBuilder {
+  interface CassandraServerAddressBuilder {
     ClusterBuilder servedFrom(String ipAddress, int port);
+  }
+
+  interface MongoServerAddressBuilder {
+    KeyspaceBuilder servedFrom(String ipAddress, int port);
   }
 
   interface ClusterBuilder {
     KeyspaceBuilder with(ClusterDetails cluster);
+
+    default KeyspaceBuilder withNoCluster(){
+      return with(new IgnoredClusterDetails());
+    }
   }
 
   interface KeyspaceBuilder {
