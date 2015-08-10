@@ -107,7 +107,7 @@ public class Builder {
         return storageServers -> cluster ->
             keyspace -> new MacheTypeBuilder() {
               public <T> SchemaPolicyBuilder<T> toStore(Class<T> macheType) {
-                return schemaOption ->  Remvoed the compiler warnings
+                return schemaOption ->
                     messaging -> messagingLocation -> topic ->
                         new MacheDescriptor<>(Cassandra, storageServers, cluster, keyspace,
                             macheType, schemaOption, messaging, messagingLocation,
