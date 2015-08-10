@@ -1,13 +1,12 @@
 package org.mache.builder;
 
 
+import org.mache.ExCache;
 import org.mache.SchemaOptions;
-import org.mache.examples.cassandra.CassandraAnnotatedMessage;
+import org.mache.builder.Builder.MacheDescriptor.StorageServerDetails;
 
 import java.util.Arrays;
 
-import static org.mache.SchemaOptions.*;
-import static org.mache.builder.Builder.Mache.mache;
 import static org.mache.builder.Builder.Storage.*;
 import static org.mache.builder.Builder.Messaging.*;
 
@@ -16,80 +15,33 @@ import static org.mache.builder.Builder.Messaging.*;
  */
 public class Builder {
 
-  public static enum Storage{Cassandra, Mongo}
-  public static enum Messaging{RabbitMQ, Kafka, None}
+  public static enum Storage {Cassandra, Mongo}
 
-  public static void main(String...args) {
-    final Mache mache =
-        mache()
-            .backedByCassandra()
-            .servedFrom(server("10.28.1.140", 27017))
-            .with(namedCluster("Blueprint"))
-            .withKeyspace("Keyspace")
-            .toStore(CassandraAnnotatedMessage.class)
-            .withPolicy(CREATEANDDROPSCHEMA)
-            .using(RabbitMQ)
-            .locatedAt("localhost")
-            .listeningOnTopic("TRADES");
+  public static enum Messaging {RabbitMQ, Kafka, None}
 
-    System.out.println("mache = " + mache);
-
-    @SuppressWarnings("unchecked")
-    final Mache<CassandraAnnotatedMessage> mache2 =
-        mache()
-            .backedByMongo()
-            .servedFrom(server("10.28.1.140", 27017))
-            .withKeyspace("Keyspace")
-            .toStore(CassandraAnnotatedMessage.class)
-            .withPolicy(CREATEANDDROPSCHEMA)
-            .using(RabbitMQ)
-            .locatedAt("localhost")
-            .listeningOnTopic("TRADES");
-    System.out.println("mache2 = " + mache2);
-
-    @SuppressWarnings("unchecked")
-    final Mache<CassandraAnnotatedMessage> mache3 =
-        mache()
-            .backedByMongo()
-            .servedFrom(server("10.28.1.140", 27017), server("10.28.1.140", 27017))
-            .withKeyspace("Keyspace")
-            .toStore(CassandraAnnotatedMessage.class)
-            .withPolicy(CREATEANDDROPSCHEMA)
-            .withNoMessaging();
-
-    System.out.println("mache3 = " + mache3);
-
-    @SuppressWarnings("unchecked")
-    final Mache<CassandraAnnotatedMessage> mache4 =
-        mache()
-            .backedByMongo()
-            .servedFrom(server("10.28.1.140", 27017))
-            .withKeyspace("Keyspace")
-            .toStore(CassandraAnnotatedMessage.class)
-            .withPolicy(CREATEANDDROPSCHEMA)
-            .withNoMessaging();
-
-    System.out.println("mache4 = " + mache4);
-
-  }
-
-  private static StorageServerDetails server(String host, int port) {
+  public static StorageServerDetails server(String host, int port) {
     return new StorageServerDetails(host, port);
   }
 
-
-  private static ClusterDetails noCluster() {
+  public static ClusterDetails noCluster() {
     return new IgnoredClusterDetails();
   }
 
-  private static ClusterDetails namedCluster(String name) {
+  public static ClusterDetails namedCluster(String name) {
     return new ClusterDetails(name);
   }
 
+  //rename to MacheDescriptor
+  //then have a macheUp() method that will return a mache instance with the correct type info
+  //the method calls out to the service interface to find the MacheFactory with the
+  //correct published type and then calls into it to create the mache
+  //then wires in any messaging as necessary
+  //calls through to the messaging service interface to find if that's available
 
-  static class Mache<T> {
+
+  static class MacheDescriptor<T> {
     public final Storage storage;
-    private final StorageServerDetails [] storageServers;
+    private final StorageServerDetails[] storageServers;
     private final ClusterDetails cluster;
     private final String keyspace;
     private final Class<T> macheType;
@@ -98,9 +50,9 @@ public class Builder {
     private final String messagingLocation;
     private final String topic;
 
-    private Mache(Storage storage, StorageServerDetails[] storageServers, ClusterDetails cluster,
-                  String keyspace, Class<T> macheType, SchemaOptions schemaOption,
-                  Messaging messaging, String messagingLocation, String topic) {
+    private MacheDescriptor(Storage storage, StorageServerDetails[] storageServers, ClusterDetails cluster,
+                            String keyspace, Class<T> macheType, SchemaOptions schemaOption,
+                            Messaging messaging, String messagingLocation, String topic) {
       this.storage = storage;
       this.storageServers = storageServers;
       this.cluster = cluster;
@@ -129,94 +81,95 @@ public class Builder {
     }
 
     public static StorageTypeBuilder mache() {
-      return new StorageTypeBuilder(){};
+      return new StorageTypeBuilder() {
+      };
     }
 
 
     @SuppressWarnings("unchecked")
-    public Mache<T> toMache() {
-      return (Mache<T>)this;
-    }
-  }
-
-  interface StorageTypeBuilder {
-    default MongoServerAddressBuilder backedByMongo(){
-      return storageServers ->
-          keyspace -> macheType -> schemaOption ->
-          messaging -> messagingLocation -> topic ->
-              new Mache(Mongo, storageServers, noCluster(), keyspace,
-                            macheType, schemaOption, messaging, messagingLocation,
-                            topic);
+    public ExCache<String, T> macheUp() {
+      return (ExCache<String, T>) null;
     }
 
-    default CassandraServerAddressBuilder backedByCassandra(){
-      return storageServers -> cluster ->
-          keyspace -> macheType -> schemaOption ->
-          messaging -> messagingLocation -> topic ->
-              new Mache(Cassandra, storageServers, cluster, keyspace,
-                            macheType, schemaOption, messaging, messagingLocation,
-                            topic);
-    }
-  }
+    interface StorageTypeBuilder {
+      default MongoServerAddressBuilder backedByMongo() {
+        return storageServers ->
+            keyspace -> macheType -> schemaOption ->
+                messaging -> messagingLocation -> topic ->
+                    new MacheDescriptor(Mongo, storageServers, noCluster(), keyspace,
+                        macheType, schemaOption, messaging, messagingLocation,
+                        topic);
+      }
 
-  interface CassandraServerAddressBuilder {
-    ClusterBuilder servedFrom(StorageServerDetails...details);
-  }
-
-  interface MongoServerAddressBuilder {
-    KeyspaceBuilder servedFrom(StorageServerDetails...details);
-  }
-
-  interface ClusterBuilder {
-    KeyspaceBuilder with(ClusterDetails cluster);
-  }
-
-  interface KeyspaceBuilder {
-    MacheTypeBuilder withKeyspace(String keyspace);
-  }
-
-  interface MacheTypeBuilder {
-    SchemaPolicyBuilder toStore(Class<?> macheType);
-  }
-
-  interface SchemaPolicyBuilder {
-    MessageQueueBuilder withPolicy(SchemaOptions schemaOption);
-  }
-
-  interface MessageQueueBuilder {
-    MessagingLocationBuilder using(Messaging messaging);
-
-    default Mache withNoMessaging(){
-       return using(None).locatedAt("NOWHERE").listeningOnTopic("NONE");
-    }
-  }
-
-  interface MessagingLocationBuilder {
-    TopicBuilder locatedAt(String messageServerAddress);
-  }
-
-  interface TopicBuilder {
-    Mache listeningOnTopic(String topic);
-  }
-
-  private static class StorageServerDetails{
-    private final String address;
-    private final int port;
-
-    private StorageServerDetails(String address, int port){
-      this.address = address;
-      this.port = port;
+      @SuppressWarnings("unchecked")
+      default CassandraServerAddressBuilder backedByCassandra() {
+        return storageServers -> cluster ->
+            keyspace -> macheType -> schemaOption ->
+                messaging -> messagingLocation -> topic ->
+                    new MacheDescriptor(Cassandra, storageServers, cluster, keyspace,
+                        macheType, schemaOption, messaging, messagingLocation,
+                        topic);
+      }
     }
 
-    @Override
-    public String toString() {
-      return "StorageServerDetails{" +
-          "address='" + address + '\'' +
-          ", port=" + port +
-          '}';
+    public interface CassandraServerAddressBuilder {
+      ClusterBuilder servedFrom(StorageServerDetails... details);
+    }
+
+    public interface MongoServerAddressBuilder {
+      KeyspaceBuilder servedFrom(StorageServerDetails... details);
+    }
+
+    public interface ClusterBuilder {
+      KeyspaceBuilder with(ClusterDetails cluster);
+    }
+
+    public interface KeyspaceBuilder {
+      MacheTypeBuilder withKeyspace(String keyspace);
+    }
+
+    public interface MacheTypeBuilder {
+      SchemaPolicyBuilder toStore(Class macheType);
+    }
+
+    public interface SchemaPolicyBuilder {
+      MessageQueueBuilder withPolicy(SchemaOptions schemaOption);
+    }
+
+    public interface MessageQueueBuilder {
+      MessagingLocationBuilder using(Messaging messaging);
+
+      default MacheDescriptor withNoMessaging() {
+        return using(None).locatedAt("NOWHERE").listeningOnTopic("NONE");
+      }
+    }
+
+    public interface MessagingLocationBuilder {
+      TopicBuilder locatedAt(String messageServerAddress);
+    }
+
+    public interface TopicBuilder {
+      MacheDescriptor listeningOnTopic(String topic);
+    }
+
+    public static class StorageServerDetails {
+      private final String address;
+      private final int port;
+
+      private StorageServerDetails(String address, int port) {
+        this.address = address;
+        this.port = port;
+      }
+
+      @Override
+      public String toString() {
+        return "StorageServerDetails{" +
+            "address='" + address + '\'' +
+            ", port=" + port +
+            '}';
+      }
     }
   }
-
 
   private static class ClusterDetails {
     private final String name;
@@ -224,8 +177,8 @@ public class Builder {
     public ClusterDetails(String name) {
       this.name = name;
     }
-    public String toString(){
-      return "Cluster['"+name+"']";
+    public String toString() {
+      return "Cluster['" + name + "']";
     }
   }
 
@@ -233,7 +186,7 @@ public class Builder {
     public IgnoredClusterDetails() {
       super("");
     }
-    public String toString(){
+    public String toString() {
       return "NoCluster";
     }
   }
