@@ -89,7 +89,6 @@ public class BuilderTest {
 
   @Test
   public void testAMongoCacheCanBeCreatedWithoutMessaging() {
-    @SuppressWarnings("unchecked")
     final ExCache<String, MongoAnnotatedMessage> mache4 =
         mache()
             .backedByMongo()

@@ -86,29 +86,34 @@ public class Builder {
     }
 
 
-    @SuppressWarnings("unchecked")
     public ExCache<String, T> macheUp() {
       return (ExCache<String, T>) null;
     }
 
     interface StorageTypeBuilder {
       default MongoServerAddressBuilder backedByMongo() {
-        return storageServers ->
-            keyspace -> macheType -> schemaOption ->
+        return (StorageServerDetails... storageServers) -> keyspace -> new MacheTypeBuilder() {
+          public <T> SchemaPolicyBuilder<T> toStore(Class<T> macheType) {
+            return schemaOption ->
                 messaging -> messagingLocation -> topic ->
-                    new MacheDescriptor(Mongo, storageServers, noCluster(), keyspace,
+                    new MacheDescriptor<>(Mongo, storageServers, noCluster(), keyspace,
                         macheType, schemaOption, messaging, messagingLocation,
                         topic);
+          }
+        };
       }
 
-      @SuppressWarnings("unchecked")
       default CassandraServerAddressBuilder backedByCassandra() {
         return storageServers -> cluster ->
-            keyspace -> macheType -> schemaOption ->
-                messaging -> messagingLocation -> topic ->
-                    new MacheDescriptor(Cassandra, storageServers, cluster, keyspace,
-                        macheType, schemaOption, messaging, messagingLocation,
-                        topic);
+            keyspace -> new MacheTypeBuilder() {
+              public <T> SchemaPolicyBuilder<T> toStore(Class<T> macheType) {
+                return schemaOption ->  Remvoed the compiler warnings
+                    messaging -> messagingLocation -> topic ->
+                        new MacheDescriptor<>(Cassandra, storageServers, cluster, keyspace,
+                            macheType, schemaOption, messaging, messagingLocation,
+                            topic);
+              }
+            };
       }
     }
 
@@ -129,27 +134,27 @@ public class Builder {
     }
 
     public interface MacheTypeBuilder {
-      SchemaPolicyBuilder toStore(Class macheType);
+      <T>SchemaPolicyBuilder<T> toStore(Class<T> macheType);
     }
 
-    public interface SchemaPolicyBuilder {
-      MessageQueueBuilder withPolicy(SchemaOptions schemaOption);
+    public interface SchemaPolicyBuilder<T> {
+      MessageQueueBuilder<T> withPolicy(SchemaOptions schemaOption);
     }
 
-    public interface MessageQueueBuilder {
-      MessagingLocationBuilder using(Messaging messaging);
+    public interface MessageQueueBuilder<T> {
+      MessagingLocationBuilder<T> using(Messaging messaging);
 
-      default MacheDescriptor withNoMessaging() {
+      default MacheDescriptor<T> withNoMessaging() {
         return using(None).locatedAt("NOWHERE").listeningOnTopic("NONE");
       }
     }
 
-    public interface MessagingLocationBuilder {
-      TopicBuilder locatedAt(String messageServerAddress);
+    public interface MessagingLocationBuilder<T> {
+      TopicBuilder<T> locatedAt(String messageServerAddress);
     }
 
-    public interface TopicBuilder {
-      MacheDescriptor listeningOnTopic(String topic);
+    public interface TopicBuilder<T> {
+      MacheDescriptor<T> listeningOnTopic(String topic);
     }
 
     public static class StorageServerDetails {
