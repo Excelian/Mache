@@ -7,3 +7,5 @@ public class CassandraDbForTestsPresent extends TestEnvironmentPortCheckIgnoreCo
         super(9042);
     }
 }
+
+
