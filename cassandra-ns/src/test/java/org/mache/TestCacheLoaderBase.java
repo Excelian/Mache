@@ -26,7 +26,6 @@ public abstract class TestCacheLoaderBase {
 
     @Before
     public void setUp() throws Exception {
-        assertEquals("localhost",CassandraDbForTestsPresent.HostName() );
         cacheThing = new CacheThing<String, TestEntity>(buildCacheLoader(TestEntity.class));
     }
 
