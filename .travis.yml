@@ -5,5 +5,7 @@ branches:
   only:
     - master
     - development
+    - travis-further-integration
 services:
   - rabbitmq
+  - mongodb
