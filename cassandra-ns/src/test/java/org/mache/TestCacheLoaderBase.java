@@ -47,6 +47,11 @@ public abstract class TestCacheLoaderBase {
     }
 
     @Test
+    public void testDebugTrabis() throws Exception {
+        throw new Exception("Tests are use cassandra at "+CassandraDbForTestsPresent.HostName());
+    }
+
+    @Test
     public void testPut() throws Exception {
         cacheThing.put("value-yay", new TestEntity("value-yay"));
         TestEntity test = cacheThing.get("value-yay");
