@@ -12,7 +12,7 @@ import java.io.IOException;
 
 import static com.codeaffine.test.ConditionalIgnoreRule.*;
 
-@IgnoreIf(condition = KafkaForTestsPresent.class)
+@IgnoreIf(condition = NotRunningInExcelian.class)
 public class KafkaEventingTest extends TestEventingBase {
 
     @Rule
