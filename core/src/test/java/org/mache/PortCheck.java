@@ -33,7 +33,6 @@ public class PortCheck
             try {
                 socket.close();
             } catch (IOException ex) {
-                // feel free to do something moderately useful here, eg log the event
             }
         }
 
