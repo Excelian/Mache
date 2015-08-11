@@ -7,7 +7,6 @@ import org.mache.examples.mongo.MongoAnnotatedMessage;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mache.SchemaOptions.CREATEANDDROPSCHEMA;
-import static org.mache.builder.Builder.*;
 import static org.mache.builder.Builder.MacheDescriptor.mache;
 import static org.mache.builder.Builder.Messaging.RabbitMQ;
 import static org.mache.builder.Builder.namedCluster;
@@ -60,7 +59,7 @@ public class BuilderTest {
     final ExCache<String, CassandraAnnotatedMessage> mache2 =
         mache()
             .backedByMongo()
-            .servedFrom(server("10.28.1.140", 27017))
+            .at(server("10.28.1.140", 27017))
             .withKeyspace("Keyspace")
             .toStore(CassandraAnnotatedMessage.class)
             .withPolicy(CREATEANDDROPSCHEMA)
@@ -76,7 +75,7 @@ public class BuilderTest {
     final ExCache<String, CassandraAnnotatedMessage> mache3 =
         mache()
             .backedByMongo()
-            .servedFrom(server("10.28.1.140", 27017), server("10.28.1.140", 27017))
+            .at(server("10.28.1.140", 27017), server("10.28.1.140", 27017))
             .withKeyspace("Keyspace")
             .toStore(CassandraAnnotatedMessage.class)
             .withPolicy(CREATEANDDROPSCHEMA)
@@ -89,16 +88,11 @@ public class BuilderTest {
 
   @Test
   public void testAMongoCacheCanBeCreatedWithoutMessaging() {
-    final ExCache<String, MongoAnnotatedMessage> mache4 =
-        mache()
-            .backedByMongo()
-            .servedFrom(server("10.28.1.140", 27017))
-            .withKeyspace("Keyspace")
-            .toStore(MongoAnnotatedMessage.class)
-            .withPolicy(CREATEANDDROPSCHEMA)
-            .withNoMessaging()
-            .macheUp();
+    final Builder.MacheDescriptor.StorageServerDetails dbServer = server("10.28.1.140", 27017);
+    final ExCache<String, Value> mache4 =
+mache().backedByMongo().at(dbServer).withKeyspace("Kspace").toStore(Value.class).withPolicy(CREATEANDDROPSCHEMA).withNoMessaging().macheUp();
 
     System.out.println("mache4 = " + mache4);
   }
+  static class Value{}
 }

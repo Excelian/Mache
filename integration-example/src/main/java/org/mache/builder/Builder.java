@@ -122,7 +122,7 @@ public class Builder {
     }
 
     public interface MongoServerAddressBuilder {
-      KeyspaceBuilder servedFrom(StorageServerDetails... details);
+      KeyspaceBuilder at(StorageServerDetails... details);
     }
 
     public interface ClusterBuilder {
