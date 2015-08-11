@@ -13,13 +13,10 @@ services:
 
 install:
   ## Install and start kafka
-  - curl http://mirrors.ibiblio.org/apache/kafka/0.8.1.1/kafka_2.9.2-0.8.1.1.tgz > kafka.tgz
-  - tar -xzf kafka.tgz
-  - cd kafka_2.9.2-0.8.1.1
-  - ./bin/zookeeper-server-start.sh config/zookeeper.properties &
-  - sleep 3
-  - ./bin/kafka-server-start.sh config/server.properties &
+  - wget http://www.us.apache.org/dist/kafka/0.8.2.1/kafka_2.10-0.8.2.1.tgz -O kafka.tgz
+  - mkdir -p kafka && tar xzf kafka.tgz -C kafka --strip-components 1
+  - nohup bash -c "cd kafka && bin/zookeeper-server-start.sh config/zookeeper.properties &"
+  - nohup bash -c "cd kafka && bin/kafka-server-start.sh config/server.properties &"
   - sleep 5
-  - ./bin/kafka-topics.sh --zookeeper localhost:2181 --topic foobar --partition 1 --replication-factor 1 --create
-  - cd ../
-
+  - kafka/bin/kafka-topics.sh --create --partitions 1 --replication-factor 1 --topic test.1 --zookeeper localhost:2181
+  - kafka/bin/kafka-topics.sh --create --partitions 4 --replication-factor 1 --topic test.4 --zookeeper localhost:2181 --config retention.ms=604800000
