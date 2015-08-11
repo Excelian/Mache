@@ -21,13 +21,13 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Created by neil.avery on 09/06/2015.
  */
-@IgnoreIf(condition = NotRunningInExcelian.class)
+@IgnoreIf(condition = MongoDbForTestsPresent.class)
 public class MongoCacheIntegrationTest {
 
     @Rule
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
-    private List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress("10.28.1.140", 27017));
+    private List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(MongoDbForTestsPresent.HostName(), 27017));
     private String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
     private CacheThing<String, TestEntity> cacheThing;
 
