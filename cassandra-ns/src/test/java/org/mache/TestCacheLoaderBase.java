@@ -26,6 +26,7 @@ public abstract class TestCacheLoaderBase {
 
     @Before
     public void setUp() throws Exception {
+        assertEquals("localhost",CassandraDbForTestsPresent.HostName() );
         cacheThing = new CacheThing<String, TestEntity>(buildCacheLoader(TestEntity.class));
     }
 
@@ -44,11 +45,6 @@ public abstract class TestCacheLoaderBase {
 
         cacheloader.close();
         cache.close();
-    }
-
-    @Test
-    public void testDebugTrabis() throws Exception {
-        throw new Exception("Tests are use cassandra at "+CassandraDbForTestsPresent.HostName());
     }
 
     @Test
