@@ -19,12 +19,12 @@ public class CassandraConnectorTest {
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     @Test
-    @IgnoreIf(condition = CassandraDbForTestsPresent.class)
+    @IgnoreIf(condition = NoRunningCassandraDbForTests.class)
     public void connectsToTheCassandraCluster() throws Exception {
         Cluster cluster;
         Session session;
 
-        cluster = Cluster.builder().addContactPoint(CassandraDbForTestsPresent.HostName()).withPort(9042).withClusterName("BluePrint").build();
+        cluster = Cluster.builder().addContactPoint(NoRunningCassandraDbForTests.HostName()).withPort(9042).withClusterName("BluePrint").build();
         Metadata metadata = cluster.getMetadata();
         System.out.println("Clustername:" + metadata.getClusterName());
         System.out.println("Partitioner:" + metadata.getPartitioner());

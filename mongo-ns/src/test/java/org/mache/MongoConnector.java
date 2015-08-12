@@ -15,10 +15,10 @@ public class MongoConnector {
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     @Test
-    @IgnoreIf(condition = MongoDbForTestsPresent.class)
+    @IgnoreIf(condition = NoRunningMongoDbForTests.class)
     public void connectsToTheCluster() throws Exception {
 
-        MongoClient mongoClient = new MongoClient(MongoDbForTestsPresent.HostName(), 27017);
+        MongoClient mongoClient = new MongoClient(NoRunningMongoDbForTests.HostName(), 27017);
         MongoIterable<String> strings = mongoClient.listDatabaseNames();
         MongoCursor<String> iterator = strings.iterator();
         while (iterator.hasNext()) {

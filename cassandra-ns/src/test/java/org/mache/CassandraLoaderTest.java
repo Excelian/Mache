@@ -9,7 +9,7 @@ import org.junit.Rule;
 /**
  * Created on 14/07/2015.
  */
-@IgnoreIf(condition = CassandraDbForTestsPresent.class)
+@IgnoreIf(condition = NoRunningCassandraDbForTests.class)
 public class CassandraLoaderTest extends TestCacheLoaderBase {
 
     @Rule
@@ -17,7 +17,7 @@ public class CassandraLoaderTest extends TestCacheLoaderBase {
 
     @Override
     protected ExCacheLoader buildCacheLoader(Class cls) throws Exception {
-        Cluster cluster = CassandraCacheLoader.connect(CassandraDbForTestsPresent.HostName(), "BluePrint", 9042);
+        Cluster cluster = CassandraCacheLoader.connect(NoRunningCassandraDbForTests.HostName(), "BluePrint", 9042);
         return new CassandraCacheLoader<String,TestEntity>(cls, cluster, SchemaOptions.CREATEANDDROPSCHEMA, keySpace);
     }
 }

@@ -18,8 +18,8 @@ public abstract class TestEnvironmentPortCheckIgnoreCondition implements Conditi
         }
     }
 
-    private static String hostName;
-    private static boolean FOUND_IT=false;
+    private static String hostName="not-set";
+    private boolean FOUND_IT=false;
 
     public static String HostName(){
         return hostName;

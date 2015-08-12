@@ -16,18 +16,15 @@ public class PortCheck
         SocketAddress sockaddr = new InetSocketAddress(hostName, port);
 
         Socket socket = new Socket();
-        boolean online = true;
+        boolean online = false;
 
         // Connect with 10 s timeout
         try {
             socket.connect(sockaddr, 10000);
-        } catch (SocketTimeoutException stex) {
-            // treating timeout errors separately from other io exceptions
-            // may make sense
-            online=false;
-        } catch (IOException iOException) {
-            online = false;
-        } finally {
+            online = true;
+        } catch (IOException ex) {
+        }
+        finally {
             // As the close() operation can also throw an IOException
             // it must caught here
             try {
