@@ -2,6 +2,7 @@ package org.mache.integrations.eventing;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 import org.junit.Rule;
+import org.mache.NoRunningKafkaForTests;
 import org.mache.NotRunningInExcelian;
 import org.mache.events.MQFactory;
 import org.mache.events.integration.KafkaMQFactory;
@@ -19,7 +20,7 @@ public class KafkaEventingTest extends TestEventingBase {
 
     @Override
     protected MQFactory buildMQFactory() throws JMSException, IOException {
-        return new KafkaMQFactory("10.28.1.140");
+        return new KafkaMQFactory(NoRunningKafkaForTests.HostName());
     }
 }
 
