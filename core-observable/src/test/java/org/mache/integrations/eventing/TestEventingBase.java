@@ -135,7 +135,7 @@ public abstract class TestEventingBase{
         consumer2.beginSubscriptionThread();
         while(collector2.pollWithTimeout(10)!=null);//drain queues
 
-        Thread.sleep(300);
+        Thread.sleep(3000);
 
         CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(), TestEntity.class.getName(), "ID1", EventType.CREATED, new UUIDUtils());
         //Publish just the once
