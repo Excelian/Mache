@@ -26,7 +26,7 @@ public class RabbitMQFactory<K, V extends CoordinationEntryEvent<K>> implements 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setAutomaticRecoveryEnabled(true);
         factory.setNetworkRecoveryInterval(1000);
-        factory.setHost("localhost");
+        factory.setHost(connectionString);
 
         connection = factory.newConnection();
         channel = connection.createChannel();
