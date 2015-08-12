@@ -59,12 +59,12 @@ public abstract class TestEventingBase{
 
         CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(), TestEntity.class.getName(),"ID1",EventType.CREATED, new UUIDUtils());
 
-        while(collector.pollWithTimeout(250)!=null);//drain queues
+        while(collector.pollWithTimeout(1000)!=null);//drain queues
 
         producer.send(event);
 
         try {
-            CoordinationEntryEvent<Integer> receivedEvent = collector.pollWithTimeout(5000);
+            CoordinationEntryEvent<Integer> receivedEvent = collector.pollWithTimeout(10000);
             assertNotNull("Expected consumer to receive and root an event message", receivedEvent);
             assertEquals(event.getKey(), receivedEvent.getKey());
             assertEquals("Expected Id of message received to same as that sent", event.getUniqueId(),receivedEvent.getUniqueId());
