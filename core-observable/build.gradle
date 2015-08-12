@@ -36,6 +36,8 @@ dependencies {
 }
 
 test {
+    testLogging.exceptionFormat = 'full'
+    testLogging.showStackTraces = true
     testLogging.showStandardStreams = true
 
     beforeTest { descriptor ->
