@@ -22,9 +22,10 @@ dependencies {
 }
 
 test {
-    systemProperties 'property': 'value'
+    testLogging {
+        exceptionFormat = 'full'
+    }
 }
-
 
 
 
