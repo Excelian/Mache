@@ -20,6 +20,6 @@ public class RabbitMQEventingTest extends TestEventingBase {
 
     @Override
     protected MQFactory buildMQFactory() throws JMSException, IOException {
-        return new RabbitMQFactory(NoRunningRabbitMQForTests.HostName());
+        return new RabbitMQFactory(new NoRunningRabbitMQForTests().HostName());
     }
 }

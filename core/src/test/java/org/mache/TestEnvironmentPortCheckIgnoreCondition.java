@@ -18,10 +18,10 @@ public abstract class TestEnvironmentPortCheckIgnoreCondition implements Conditi
         }
     }
 
-    private static String hostName="not-set";
+    private String hostName="not-set";
     private boolean hostPresent =false;
 
-    public static String HostName(){
+    public String HostName(){
         return hostName;
     }
     public boolean isSatisfied(){

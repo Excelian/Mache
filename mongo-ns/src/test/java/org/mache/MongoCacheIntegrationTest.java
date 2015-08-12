@@ -33,7 +33,7 @@ public class MongoCacheIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(NoRunningMongoDbForTests.HostName(), 27017));
+        List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(new NoRunningMongoDbForTests().HostName(), 27017));
         cacheThing = new CacheThing<String, TestEntity>(
                 new MongoDBCacheLoader<String,TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
     }
@@ -94,7 +94,7 @@ public class MongoCacheIntegrationTest {
 
     @Test
     public void testInvalidate() throws Exception {
-        List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(NoRunningMongoDbForTests.HostName(), 27017));
+        List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(new NoRunningMongoDbForTests().HostName(), 27017));
         final CacheThing<String, TestEntity> cacheThing2 = new CacheThing<>(
                 new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
 
@@ -115,7 +115,7 @@ public class MongoCacheIntegrationTest {
 
     @Test
     public void testReadThrough() throws Exception {
-        List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(NoRunningMongoDbForTests.HostName(), 27017));
+        List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(new NoRunningMongoDbForTests().HostName(), 27017));
         cacheThing.put("test-2", new TestEntity("test-2"));
         cacheThing.put("test-3", new TestEntity("test-3"));
         // replace the cache

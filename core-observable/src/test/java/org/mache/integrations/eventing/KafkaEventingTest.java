@@ -12,7 +12,7 @@ import java.io.IOException;
 
 import static com.codeaffine.test.ConditionalIgnoreRule.*;
 
-@IgnoreIf(condition = NotRunningInExcelian.class)
+@IgnoreIf(condition = NoRunningKafkaForTests.class)
 public class KafkaEventingTest extends TestEventingBase {
 
     @Rule
@@ -20,7 +20,7 @@ public class KafkaEventingTest extends TestEventingBase {
 
     @Override
     protected MQFactory buildMQFactory() throws JMSException, IOException {
-        return new KafkaMQFactory(NoRunningKafkaForTests.HostName());
+        return new KafkaMQFactory(new NoRunningKafkaForTests().HostName());
     }
 }
 

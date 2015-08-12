@@ -18,7 +18,7 @@ public class MongoConnector {
     @IgnoreIf(condition = NoRunningMongoDbForTests.class)
     public void connectsToTheCluster() throws Exception {
 
-        MongoClient mongoClient = new MongoClient(NoRunningMongoDbForTests.HostName(), 27017);
+        MongoClient mongoClient = new MongoClient(new NoRunningMongoDbForTests().HostName(), 27017);
         MongoIterable<String> strings = mongoClient.listDatabaseNames();
         MongoCursor<String> iterator = strings.iterator();
         while (iterator.hasNext()) {

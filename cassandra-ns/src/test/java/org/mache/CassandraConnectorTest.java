@@ -24,7 +24,7 @@ public class CassandraConnectorTest {
         Cluster cluster;
         Session session;
 
-        cluster = Cluster.builder().addContactPoint(NoRunningCassandraDbForTests.HostName()).withPort(9042).withClusterName("BluePrint").build();
+        cluster = Cluster.builder().addContactPoint(new NoRunningCassandraDbForTests().HostName()).withPort(9042).withClusterName("BluePrint").build();
         Metadata metadata = cluster.getMetadata();
         System.out.println("Clustername:" + metadata.getClusterName());
         System.out.println("Partitioner:" + metadata.getPartitioner());
