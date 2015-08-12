@@ -145,13 +145,13 @@ public abstract class TestEventingBase{
         try {
             CoordinationEntryEvent<Integer> receivedEvent;
 
-            receivedEvent = collector1.pollWithTimeout();
+            receivedEvent = collector1.pollWithTimeout(5000);
             assertNotNull("Expected FIRST consumer to receive and root an event message", receivedEvent);
             assertEquals(receivedEvent.getUniqueId(), event.getUniqueId());
             assertEquals(receivedEvent.getKey(), event.getKey());
             assertNull("Expected no more messages", collector1.pollWithTimeout(1));
 
-            receivedEvent = collector2.pollWithTimeout();
+            receivedEvent = collector2.pollWithTimeout(5000);
             assertNotNull("Expected SECOND consumer to receive and root an event message", receivedEvent);
             assertEquals(receivedEvent.getUniqueId(), event.getUniqueId());
             assertEquals(receivedEvent.getKey(), event.getKey());
