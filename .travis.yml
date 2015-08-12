@@ -19,3 +19,6 @@ install:
   - nohup bash -c "cd kafka && bin/kafka-server-start.sh config/server.properties &"
   - sleep 5
   - kafka/bin/kafka-topics.sh --create --partitions 1 --replication-factor 1 --topic org.mache.integrations.eventing.TestEventingBase.TestOtherEntity --zookeeper localhost:2181
+
+after_error:
+  - cat file:///home/travis/build/Excelian/Mache/core-observable/build/reports/tests/index.html
