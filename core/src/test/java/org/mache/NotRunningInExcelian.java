@@ -5,9 +5,6 @@ import com.codeaffine.test.ConditionalIgnoreRule.IgnoreCondition;
 import java.io.IOException;
 import java.net.InetAddress;
 
-/**
- * Created by jbowkett on 22/07/15.
- */
 public class NotRunningInExcelian implements IgnoreCondition {
   static{
     try {
@@ -24,3 +21,4 @@ public class NotRunningInExcelian implements IgnoreCondition {
   }
 
 }
+

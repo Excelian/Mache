@@ -21,7 +21,7 @@ import java.util.*;
 public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Session> {
 
   //TODO: Breakout into configuration
-  private static final int REPLICATION_FACTOR = 3;
+  private static final int REPLICATION_FACTOR = 1; //Note: Travis only provides a single DSE node
   private static final String REPLICATION_CLASS = "SimpleStrategy";
 
   final private Cluster cluster;
