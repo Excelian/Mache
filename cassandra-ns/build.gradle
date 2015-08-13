@@ -25,9 +25,22 @@ dependencies {
     testCompile project(path: ':core', configuration: 'tests')
 
 }
+
 test {
-    systemProperties 'property': 'value'
+    testLogging.exceptionFormat = 'full'
+    testLogging.showStackTraces = true
+    testLogging.showStandardStreams = true
+
+    beforeTest { descriptor ->
+        logger.lifecycle("Running test: " + descriptor)
+    }
+
+    // listen to standard out and standard error of the test JVM(s)
+    onOutput { descriptor, event ->
+        logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
+    }
 }
+
 
 uploadArchives {
     repositories {
