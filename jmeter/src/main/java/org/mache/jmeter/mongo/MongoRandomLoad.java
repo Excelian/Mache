@@ -1,5 +1,6 @@
 package org.mache.jmeter.mongo;
 
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.jmeter.config.Arguments;
@@ -12,27 +13,26 @@ public class MongoRandomLoad extends MacheAbstractMongoSamplerClient {
 
 	@Override
 	public SampleResult runTest(JavaSamplerContext context) {
+		Map<String, String>	mapParams = ExtractParameters(context);
 		final SampleResult result = new SampleResult();
         result.sampleStart();
         
-        initMongoEntity();
+        initMongoEntity(mapParams);
 		
         final String cache1Value = String.valueOf(r.nextInt());
 
         getLogger().debug("Putting new random values " + cache1Value);
+
+		MongoTestEntity e = initMongoEntity(mapParams);
 
         cache1.put(e.pkString, new MongoTestEntity(e.pkString, cache1Value));
 		try {
 			Thread.sleep(Long.parseLong(mapParams.get("write.sleepMs")));
 		} catch (InterruptedException e1) {
 			getLogger().error("Put value (" + e.description
-					+ ") from Cache - error occured " +e1.getMessage(), e1);
-			result.sampleEnd();
-			result.setSuccessful(false);
-			result.setResponseMessage("Put value (" + e.description
-					+ ") from Cache - error occured " +e1.getMessage());
+					+ ") from Cache - error occured " + e1.getMessage(), e1);
 
-			return result;
+			return super.SetupResultForError(result,e1);
 		}
 
 		result.sampleEnd();

@@ -80,9 +80,6 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
     public void put(Object k, Object v) {
         System.out.println("Saving to mongo key=" + k + ", newValue=" + v);
         ops().save(v);
-
-        Object o = ops().findById(k, clazz);
-        System.out.println("In mongo after save value=" + o);
     }
 
     public void remove(Object k) {

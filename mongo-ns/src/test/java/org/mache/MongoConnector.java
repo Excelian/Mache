@@ -9,18 +9,16 @@ import com.mongodb.client.MongoIterable;
 import org.junit.Rule;
 import org.junit.Test;
 
-/**
- * Created by neil.avery on 27/05/2015.
- */
 public class MongoConnector {
 
     @Rule
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     @Test
-    @IgnoreIf(condition = NotRunningInExcelian.class)
+    @IgnoreIf(condition = NoRunningMongoDbForTests.class)
     public void connectsToTheCluster() throws Exception {
-        MongoClient mongoClient = new MongoClient("10.28.1.140", 27017);
+
+        MongoClient mongoClient = new MongoClient(new NoRunningMongoDbForTests().HostName(), 27017);
         MongoIterable<String> strings = mongoClient.listDatabaseNames();
         MongoCursor<String> iterator = strings.iterator();
         while (iterator.hasNext()) {

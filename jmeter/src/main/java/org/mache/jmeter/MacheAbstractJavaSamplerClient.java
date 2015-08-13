@@ -11,10 +11,9 @@ import org.apache.jmeter.samplers.SampleResult;
 
 @SuppressWarnings("serial")
 abstract public class MacheAbstractJavaSamplerClient  extends AbstractJavaSamplerClient implements Serializable {
-	protected Map<String, String> mapParams = null;
-	
-    protected Map<String, String> ExtractParameters(JavaSamplerContext context) {
-    	mapParams = new ConcurrentHashMap<String, String>();
+
+    static protected Map<String, String> ExtractParameters(JavaSamplerContext context) {
+        Map<String, String> mapParams = new ConcurrentHashMap<String, String>();
         for (Iterator<String> it = context.getParameterNamesIterator(); it.hasNext();) {
             String paramName =  it.next();
             String paramValue = context.getParameter(paramName);
@@ -23,12 +22,15 @@ abstract public class MacheAbstractJavaSamplerClient  extends AbstractJavaSample
         return mapParams;
     }
 
-    protected void SetupResultForError(SampleResult result, Exception e) {
+    static protected SampleResult SetupResultForError(SampleResult result, Exception e) {
         e.printStackTrace();
         System.out.println(e);
+        //getLogger().error(e.getMessage());
 
         result.sampleEnd();
         result.setSuccessful(false);
         result.setResponseMessage("Exception: " + e);
+
+        return result;
     }
 }

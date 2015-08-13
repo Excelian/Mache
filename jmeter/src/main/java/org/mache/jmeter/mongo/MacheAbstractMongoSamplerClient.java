@@ -1,6 +1,7 @@
 package org.mache.jmeter.mongo;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.jms.JMSException;
@@ -25,24 +26,24 @@ public abstract class MacheAbstractMongoSamplerClient extends
 	
 	protected ActiveMQFactory mqFactory1 = null;
 	protected ExCache<String, MongoTestEntity> cache1 = null;
-	protected MongoTestEntity e = null;
+
 
 	@Override
     public void setupTest(JavaSamplerContext context) {
+        Map<String, String> mapParams = ExtractParameters(context);
         getLogger().info("mache setupTest started  \n");
-        ExtractParameters(context);
 
         try {
-            createCache();
+            createCache(mapParams);
             getLogger().info("mache setupTest completed. ");
-            
-    		initMongoEntity();
-            cache1.get(e.pkString);
-            cache1.invalidate(e.pkString);
-            
+
+            MongoTestEntity e = initMongoEntity(mapParams);
+            cache1.put(e.pkString,e);
+
             getLogger().info("cache connection completed. ");
         } catch (Exception e) {
             getLogger().error("mache error building factory", e);
+            System.err.println(e);
         }
     }
 	
@@ -73,7 +74,7 @@ public abstract class MacheAbstractMongoSamplerClient extends
         };
 	}
 
-	protected void createCache()
+	protected void createCache(Map<String, String> mapParams)
 			throws JMSException {
 		mqFactory1 = new ActiveMQFactory(mapParams.get("activemq.connection"));
 		CacheFactoryImpl cacheFactory1 = new CacheFactoryImpl(mqFactory1,
@@ -87,7 +88,8 @@ public abstract class MacheAbstractMongoSamplerClient extends
 						SchemaOptions.CREATEANDDROPSCHEMA, mapParams.get("keyspace.name")));
 	}
 
-	protected void initMongoEntity() {
-		e = new MongoTestEntity(mapParams.get("entity.key"), mapParams.get("entity.value"));
+	protected MongoTestEntity initMongoEntity(Map<String, String> mapParams) {
+        MongoTestEntity e = new MongoTestEntity(mapParams.get("entity.key"), mapParams.get("entity.value"));
+        return e;
 	}
 }

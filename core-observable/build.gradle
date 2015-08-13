@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 version = '1.0'
 jar {
     manifest {
@@ -36,7 +36,18 @@ dependencies {
 }
 
 test {
-    systemProperties 'property': 'value'
+    testLogging.exceptionFormat = 'full'
+    testLogging.showStackTraces = true
+    testLogging.showStandardStreams = true
+
+    beforeTest { descriptor ->
+        logger.lifecycle("Running test: " + descriptor)
+    }
+
+    // listen to standard out and standard error of the test JVM(s)
+    onOutput { descriptor, event ->
+        logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
+    }
 }
 
 uploadArchives {
