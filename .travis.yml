@@ -20,3 +20,5 @@ install:
   - sleep 5
   - kafka/bin/kafka-topics.sh --create --partitions 1 --replication-factor 1 --topic org.mache.integrations.eventing.TestEventingBase.TestOtherEntity --zookeeper localhost:2181
 
+notifications:
+  slack: excelian-bigdata:zR1fW9d5eW5C3i0oLrHmoCf5
