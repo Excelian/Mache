@@ -1,23 +1,31 @@
 package org.mache.builder;
 
 
+import org.mache.CacheFactoryImpl;
+import org.mache.CacheThingFactory;
 import org.mache.ExCache;
 import org.mache.SchemaOptions;
-import org.mache.builder.Builder.MacheDescriptor.StorageServerDetails;
+import org.mache.builder.StorageProvisioner.ClusterDetails;
+import org.mache.builder.StorageProvisioner.IgnoredClusterDetails;
+import org.mache.builder.StorageProvisioner.StorageServerDetails;
+import org.mache.events.MQConfiguration;
+import org.mache.events.MQFactory;
+import org.mache.utils.UUIDUtils;
 
-import java.util.Arrays;
+import javax.jms.JMSException;
+import java.io.IOException;
+import java.util.ServiceLoader;
 
-import static org.mache.builder.Builder.Storage.*;
 import static org.mache.builder.Builder.Messaging.*;
+import static org.mache.builder.Builder.Storage.*;
 
 /**
  * Created by jbowkett on 04/08/15.
  */
 public class Builder {
 
-  public static enum Storage {Cassandra, Mongo}
-
-  public static enum Messaging {RabbitMQ, Kafka, None}
+  static enum Storage { Cassandra, Mongo}
+  static enum Messaging {ActiveMQ, RabbitMQ, Kafka, None}
 
   public static StorageServerDetails server(String host, int port) {
     return new StorageServerDetails(host, port);
@@ -30,14 +38,6 @@ public class Builder {
   public static ClusterDetails namedCluster(String name) {
     return new ClusterDetails(name);
   }
-
-  //rename to MacheDescriptor
-  //then have a macheUp() method that will return a mache instance with the correct type info
-  //the method calls out to the service interface to find the MacheFactory with the
-  //correct published type and then calls into it to create the mache
-  //then wires in any messaging as necessary
-  //calls through to the messaging service interface to find if that's available
-
 
   static class MacheDescriptor<T> {
     public final Storage storage;
@@ -64,30 +64,78 @@ public class Builder {
       this.topic = topic;
     }
 
-
-    @Override
-    public String toString() {
-      return "Mache{" +
-          "storage=" + storage +
-          ", storageServers=" + Arrays.toString(storageServers) +
-          ", cluster=" + cluster +
-          ", keyspace='" + keyspace + '\'' +
-          ", macheType=" + macheType +
-          ", schemaOption=" + schemaOption +
-          ", messaging=" + messaging +
-          ", messagingLocation='" + messagingLocation + '\'' +
-          ", topic='" + topic + '\'' +
-          '}';
-    }
-
     public static StorageTypeBuilder mache() {
       return new StorageTypeBuilder() {
       };
     }
 
-
+    /**
+     * Returns a mache instance with the correct type info.
+     * Calls out to the service interface to find the StorageProvisioner with the
+     * correct published type and then calls into it to create the mache
+     * then wires in any messaging as necessary
+     * calls through to the messaging service interface to find if that's available
+     *
+     * @return a cache mapping strings to the given type, using the options
+     * specified in the constructor
+     */
     public ExCache<String, T> macheUp() {
-      return (ExCache<String, T>) null;
+      final StorageProvisioner storageProvisioner = getStorageProvisionerOrThrow();
+
+      final ExCache<String, T> cache = storageProvisioner.getCache(
+          this.keyspace, macheType, this.schemaOption, this.cluster, this.storageServers);
+
+      if (this.messaging != None) {
+        final MessagingProvisioner messagingProvisioner = getMessagingProvisionerOrThrow();
+        final MQFactory mqFactory = getMqFactoryOrThrowRuntimeException(messagingProvisioner);
+        final MQConfiguration mqConfiguration = () -> this.topic;
+
+        final CacheThingFactory cacheThingFactory = new CacheThingFactory();
+
+        final CacheFactoryImpl cacheFactory = new CacheFactoryImpl(
+            mqFactory, mqConfiguration, cacheThingFactory, new UUIDUtils());
+        return cacheFactory.createCache(cache);
+      }
+      return cache;
+    }
+
+    private MQFactory getMqFactoryOrThrowRuntimeException(MessagingProvisioner messagingProvisioner) {
+      try {
+        return messagingProvisioner.getMQFactory(this.messagingLocation);
+      }
+      catch (IOException | JMSException e) {
+        throw new RuntimeException("Cannot connect to message queue at:[" + this.messagingLocation + "]", e);
+      }
+    }
+
+    private StorageProvisioner getStorageProvisionerOrThrow() {
+      final ServiceLoader<StorageProvisioner> allInClasspath = ServiceLoader.load(StorageProvisioner.class);
+      StorageProvisioner provisioner = null;
+      for (StorageProvisioner storageProvisioner : allInClasspath) {
+        if (this.storage.name().equalsIgnoreCase(storageProvisioner.getStorage())) {
+          provisioner = storageProvisioner;
+        }
+      }
+      if (provisioner == null) {
+        throw new RuntimeException("Cannot find storage provisioner for platform :[" +
+            storage + "].  Please ensure a " + storage + "-ns.jar is present in the classpath");
+      }
+      return provisioner;
+    }
+
+    private MessagingProvisioner getMessagingProvisionerOrThrow() {
+      final ServiceLoader<MessagingProvisioner> allInClasspath = ServiceLoader.load(MessagingProvisioner.class);
+      MessagingProvisioner provisioner = null;
+      for (MessagingProvisioner messagingProvisioner : allInClasspath) {
+        if (this.messaging.name().equalsIgnoreCase(messagingProvisioner.getMessaging())) {
+          provisioner = messagingProvisioner;
+        }
+      }
+      if (provisioner == null) {
+        throw new RuntimeException("Cannot find messaging provisioner for platform :[" +
+            messaging + "].  Please ensure the core-observable.jar is present in the classpath");
+      }
+      return provisioner;
     }
 
     interface StorageTypeBuilder {
@@ -104,21 +152,22 @@ public class Builder {
       }
 
       default CassandraServerAddressBuilder backedByCassandra() {
-        return storageServers -> cluster ->
+        return storageServer -> cluster ->
             keyspace -> new MacheTypeBuilder() {
               public <T> SchemaPolicyBuilder<T> toStore(Class<T> macheType) {
                 return schemaOption ->
                     messaging -> messagingLocation -> topic ->
-                        new MacheDescriptor<>(Cassandra, storageServers, cluster, keyspace,
-                            macheType, schemaOption, messaging, messagingLocation,
-                            topic);
+                        new MacheDescriptor<>(Cassandra,
+                            new StorageServerDetails[]{storageServer},
+                            cluster, keyspace, macheType, schemaOption,
+                            messaging, messagingLocation, topic);
               }
             };
       }
     }
 
     public interface CassandraServerAddressBuilder {
-      ClusterBuilder servedFrom(StorageServerDetails... details);
+      ClusterBuilder at(StorageServerDetails details);
     }
 
     public interface MongoServerAddressBuilder {
@@ -134,7 +183,7 @@ public class Builder {
     }
 
     public interface MacheTypeBuilder {
-      <T>SchemaPolicyBuilder<T> toStore(Class<T> macheType);
+      <T> SchemaPolicyBuilder<T> toStore(Class<T> macheType);
     }
 
     public interface SchemaPolicyBuilder<T> {
@@ -155,44 +204,6 @@ public class Builder {
 
     public interface TopicBuilder<T> {
       MacheDescriptor<T> listeningOnTopic(String topic);
-    }
-
-    public static class StorageServerDetails {
-      private final String address;
-      private final int port;
-
-      private StorageServerDetails(String address, int port) {
-        this.address = address;
-        this.port = port;
-      }
-
-      @Override
-      public String toString() {
-        return "StorageServerDetails{" +
-            "address='" + address + '\'' +
-            ", port=" + port +
-            '}';
-      }
-    }
-  }
-
-  private static class ClusterDetails {
-    private final String name;
-
-    public ClusterDetails(String name) {
-      this.name = name;
-    }
-    public String toString() {
-      return "Cluster['" + name + "']";
-    }
-  }
-
-  private static class IgnoredClusterDetails extends ClusterDetails {
-    public IgnoredClusterDetails() {
-      super("");
-    }
-    public String toString() {
-      return "NoCluster";
     }
   }
 }
