@@ -23,12 +23,7 @@ public class CacheFactoryImplIntegrationTest {
 	private static final String LOCAL_MQ = "vm://localhost";
 
 	ExCacheLoader<String, TestEntity, String> cacheLoader;
-	MQConfiguration mqConfiguration = new MQConfiguration() {
-		@Override
-		public String getTopicName() {
-			return "testTopic";
-		}
-	};
+	MQConfiguration mqConfiguration = () -> "testTopic";
 
 	MQFactory mqFactory1;
 	CacheFactory cacheFactory1;
@@ -53,16 +48,16 @@ public class CacheFactoryImplIntegrationTest {
 	public void beforeTest() throws JMSException {
 		MockitoAnnotations.initMocks(this);
 		
-		cacheLoader = new InMemoryCacheLoader("loaderForTestEntity");
+		cacheLoader = new InMemoryCacheLoader<>("loaderForTestEntity");
 
 		cacheThingFactory = new CacheThingFactory();
 
 		mqFactory1 = new ActiveMQFactory(LOCAL_MQ);
 		cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, spiedCacheThingFactory, uuidUtils);
 
-		unspiedCache1 = cacheThingFactory.create(cacheLoader, (String[]) null);
+		unspiedCache1 = cacheThingFactory.create(cacheLoader);
 		spiedCache1 = spy(unspiedCache1);
-		when(spiedCacheThingFactory.create(cacheLoader, (String[]) null)).thenReturn(spiedCache1);
+		when(spiedCacheThingFactory.create(cacheLoader)).thenReturn(spiedCache1);
 
 		mqFactory2 = new ActiveMQFactory(LOCAL_MQ);
 		cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, cacheThingFactory, uuidUtils);
