@@ -11,7 +11,7 @@ import org.mache.examples.cassandra.CassandraAnnotatedMessage;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mache.SchemaOptions.CREATEANDDROPSCHEMA;
-import static org.mache.builder.Builder.MacheDescriptor.mache;
+import static org.mache.builder.Builder.mache;
 import static org.mache.builder.Builder.Messaging.RabbitMQ;
 import static org.mache.builder.Builder.namedCluster;
 import static org.mache.builder.Builder.server;

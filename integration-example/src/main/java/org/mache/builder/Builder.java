@@ -5,6 +5,7 @@ import org.mache.CacheFactoryImpl;
 import org.mache.CacheThingFactory;
 import org.mache.ExCache;
 import org.mache.SchemaOptions;
+import org.mache.builder.Builder.MacheDescriptor.StorageTypeBuilder;
 import org.mache.builder.StorageProvisioner.ClusterDetails;
 import org.mache.builder.StorageProvisioner.IgnoredClusterDetails;
 import org.mache.builder.StorageProvisioner.StorageServerDetails;
@@ -39,7 +40,13 @@ public class Builder {
     return new ClusterDetails(name);
   }
 
-  static class MacheDescriptor<T> {
+  public static StorageTypeBuilder mache() {
+      return new StorageTypeBuilder() {
+      };
+  }
+
+
+  public static class MacheDescriptor<T> {
     public final Storage storage;
     private final StorageServerDetails[] storageServers;
     private final ClusterDetails cluster;
@@ -64,10 +71,6 @@ public class Builder {
       this.topic = topic;
     }
 
-    public static StorageTypeBuilder mache() {
-      return new StorageTypeBuilder() {
-      };
-    }
 
     /**
      * Returns a mache instance with the correct type info.
@@ -138,7 +141,7 @@ public class Builder {
       return provisioner;
     }
 
-    interface StorageTypeBuilder {
+    public interface StorageTypeBuilder {
       default MongoServerAddressBuilder backedByMongo() {
         return (StorageServerDetails... storageServers) -> keyspace -> new MacheTypeBuilder() {
           public <T> SchemaPolicyBuilder<T> toStore(Class<T> macheType) {

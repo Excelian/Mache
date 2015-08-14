@@ -1,14 +1,10 @@
 package org.mache;
 
-import org.mache.examples.cassandra.CassandraAnnotatedMessage;
+import org.mache.examples.Example;
 import org.mache.examples.cassandra.CassandraExample;
-import org.mache.examples.mongo.MongoAnnotatedMessage;
 import org.mache.examples.mongo.MongoExample;
 
-import javax.jms.JMSException;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by jbowkett on 17/07/15.
@@ -20,50 +16,28 @@ public class GettingCacheClient {
   public static void main(String...commandLine) {
     final Args args = parseArgs(commandLine);
     final int count = args.count;
+    final Example example;
     switch(args.cacheType){
       case Cassandra:
-        doCassandra(count);
+        example = new CassandraExample();
         break;
       case Mongo:
-        doMongo(count);
+        example = new MongoExample();
         break;
+      default:
+        throw new RuntimeException("Invalid cache type: ["+args.cacheType+"].  Valid values are:"+Arrays.toString(CacheType.values()));
     }
+    doExample(count, example);
   }
 
-  private static void doMongo(int count) {
-    try (final MongoExample mongoExample = new MongoExample()) {
-      doMongoExample(count, mongoExample);
-    }
-    catch (IOException | JMSException | ExecutionException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private static void doCassandra(int count) {
-    try (final CassandraExample mongoExample = new CassandraExample()) {
-      doCassandraExample(count, mongoExample);
-    }
-    catch (JMSException | IOException | ExecutionException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private static void doMongoExample(int count, MongoExample mongoExample) throws IOException, JMSException, ExecutionException {
-    final ExCache<String, MongoAnnotatedMessage> cache = mongoExample.exampleCache();
+  private static <T> void doExample(int count, Example<T> example) {
+    final ExCache<String, T> cache = example.exampleCache();
     System.out.println("Getting...");
     for (int i = 0; i < count ; i++) {
-      final MongoAnnotatedMessage hello = cache.get("msg_"+i);
+      final T hello = cache.get("msg_"+i);
       System.out.println("hello = " + hello);
     }
-  }
-
-  private static void doCassandraExample(int count, CassandraExample example) throws IOException, JMSException, ExecutionException {
-    final ExCache<String, CassandraAnnotatedMessage> cache = example.exampleCache();
-    System.out.println("Getting...");
-    for (int i = 0; i < count ; i++) {
-      final CassandraAnnotatedMessage hello = cache.get("msg_"+i);
-      System.out.println("hello = " + hello);
-    }
+    cache.close();
   }
 
   private static Args parseArgs(String[] args) {
