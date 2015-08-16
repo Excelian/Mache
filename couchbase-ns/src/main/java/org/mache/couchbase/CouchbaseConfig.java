@@ -1,18 +1,19 @@
 package org.mache.couchbase;
 
+import com.couchbase.client.java.env.CouchbaseEnvironment;
 import org.mache.SchemaOptions;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CouchbaseConfig  {
 
     private Class cacheType;
+    private CouchbaseEnvironment couchbaseEnvironment;
     private String adminUser;
     private String adminPassword;
-    private List<URI> serverAddresses;
+    private List<String> serverAddresses;
     private String bucketName;
     private String bucketPassword;
     private int bucketSize;
@@ -20,10 +21,11 @@ public class CouchbaseConfig  {
     private boolean flushEnabled;
     private SchemaOptions schemaOptions;
 
-    private CouchbaseConfig(Class cacheType, String adminUser, String adminPassword,
-                            List<URI> serverAddresses, String bucketName, String bucketPassword,
+    private CouchbaseConfig(Class cacheType, CouchbaseEnvironment couchbaseEnvironment, String adminUser, String adminPassword,
+                            List<String> serverAddresses, String bucketName, String bucketPassword,
                             int bucketSize, int numReplicas, boolean flushEnabled, SchemaOptions schemaOptions) {
         this.cacheType = cacheType;
+        this.couchbaseEnvironment = couchbaseEnvironment;
         this.adminUser = adminUser;
         this.adminPassword = adminPassword;
         this.serverAddresses = serverAddresses;
@@ -39,13 +41,14 @@ public class CouchbaseConfig  {
         private Class cacheType;
         private String adminUser = "Administrator";
         private String adminPassword = "password";
-        private List<URI> serverAddresses = new ArrayList<>(1);
+        private List<String> serverAddresses = new ArrayList<>(Collections.singletonList("localhost"));
         private String bucketName;
         private String bucketPassword = "";
         private int bucketSize = 512;
         private int numReplicas = 0;
         private boolean flushEnabled = false;
-        private SchemaOptions schemaOptions = SchemaOptions.CREATEANDDROPSCHEMA;
+        private SchemaOptions schemaOptions = SchemaOptions.USEEXISTINGSCHEMA;
+        private CouchbaseEnvironment couchbaseEnvironment;
 
         public Builder withCacheType(Class cacheType) {
             this.cacheType = cacheType;
@@ -63,13 +66,7 @@ public class CouchbaseConfig  {
         }
 
         public Builder withServerAdresses(List<String> serverAddresses) {
-            for (String address : serverAddresses) {
-                try {
-                    this.serverAddresses.add(new URI(address));
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            this.serverAddresses = serverAddresses;
             return this;
         }
 
@@ -103,9 +100,20 @@ public class CouchbaseConfig  {
             return this;
         }
 
+        public Builder withCouchbaseEnvironment(CouchbaseEnvironment couchbaseEnvironment) {
+            this.couchbaseEnvironment = couchbaseEnvironment;
+            return this;
+        }
+
         public CouchbaseConfig build() {
-            return new CouchbaseConfig(cacheType, adminUser, adminPassword, serverAddresses,bucketName, bucketPassword,
-                    bucketSize, numReplicas, flushEnabled, schemaOptions);
+            if (bucketName == null || bucketName.isEmpty()) {
+                throw new IllegalArgumentException("Must provide bucket name.");
+            } else if (cacheType == null) {
+                throw new IllegalArgumentException("Must provide cache type.");
+            }
+
+            return new CouchbaseConfig(cacheType, couchbaseEnvironment, adminUser, adminPassword, serverAddresses,
+                    bucketName, bucketPassword, bucketSize, numReplicas, flushEnabled, schemaOptions);
         }
     }
 
@@ -115,6 +123,7 @@ public class CouchbaseConfig  {
     }
 
 
+    @SuppressWarnings("unchecked")
     public <V> Class<V> getCacheType() {
         return cacheType;
     }
@@ -127,7 +136,7 @@ public class CouchbaseConfig  {
         return adminPassword;
     }
 
-    public List<URI> getServerAddresses() {
+    public List<String> getServerAddresses() {
         return serverAddresses;
     }
 
@@ -153,5 +162,9 @@ public class CouchbaseConfig  {
 
     public SchemaOptions getSchemaOptions() {
         return schemaOptions;
+    }
+
+    public CouchbaseEnvironment getCouchbaseEnvironment() {
+        return couchbaseEnvironment;
     }
 }

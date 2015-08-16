@@ -1,125 +1,123 @@
 package org.mache.couchbase;
 
-import com.couchbase.client.ClusterManager;
-import com.couchbase.client.CouchbaseClient;
-import com.couchbase.client.clustermanager.BucketType;
+import com.couchbase.client.java.Bucket;
+import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.CouchbaseCluster;
+import com.couchbase.client.java.cluster.BucketSettings;
+import com.couchbase.client.java.cluster.ClusterManager;
+import com.couchbase.client.java.cluster.DefaultBucketSettings;
 import org.mache.AbstractCacheLoader;
-import org.mache.SchemaOptions;
-import org.springframework.data.couchbase.core.CouchbaseOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
 
-import java.io.IOException;
-import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
-// FIXME - a Spring Data update for Couchbase 2.1 SDK will soon be available. This loader should be updated when it is.
-public class CouchbaseCacheLoader<K extends String, V> extends AbstractCacheLoader<K, V, CouchbaseClient> {
+public class CouchbaseCacheLoader<K extends String, V> extends AbstractCacheLoader<K, V, Cluster> {
 
-    private CouchbaseClient client;
-    private CouchbaseConfig config;
+    private static final Logger LOG = LoggerFactory.getLogger(CouchbaseCacheLoader.class);
+    public static final long TIMEOUT = 20;
 
-    static {
-        // Use SLF4J logging.
-        Properties systemProperties = System.getProperties();
-        systemProperties.put("net.spy.log.LoggerImpl", "net.spy.memcached.compat.log.SLF4JLogger");
-        System.setProperties(systemProperties);
-    }
+    private Cluster cluster;
+    private ClusterManager manager;
+    private final CouchbaseConfig config;
+    private CouchbaseTemplate template;
 
     public CouchbaseCacheLoader(CouchbaseConfig config) {
+        if (config == null) {
+            throw new IllegalArgumentException("Couchbase config must be provided.");
+        }
         this.config = config;
     }
 
     @Override
-    public void create(String name, K key) {
-        if (client == null) {
+    public void create(String whyAre, K theseParamsHere) {
+        create();
+    }
+
+    public void create() {
+        if (cluster == null) {
             synchronized (this) {
-                if (client == null) {
-                    try {
-                        ClusterManager manager = new ClusterManager(config.getServerAddresses(),
-                                config.getAdminUser(), config.getAdminPassword());
+                if (cluster == null) {
+                    LOG.info("Attempting to connect to Couchbase cluster hosted at {}", config.getServerAddresses());
 
-                        try {
-                            SchemaOptions schemaOptions = config.getSchemaOptions();
-                            String bucketName = config.getBucketName();
+                    cluster = CouchbaseCluster.create(config.getCouchbaseEnvironment(), config.getServerAddresses());
+                    manager = cluster.clusterManager(config.getAdminUser(), config.getAdminPassword());
 
-                            if (schemaOptions.ShouldDropSchema() && manager.listBuckets().contains(bucketName)) {
-                                manager.deleteBucket(bucketName);
-                            }
+                    dropBucket();
 
-                            if (schemaOptions.ShouldCreateSchema() && !manager.listBuckets().contains(bucketName)) {
-                                manager.createNamedBucket(BucketType.COUCHBASE, bucketName, config.getBucketSize(),
-                                        config.getNumReplicas(), config.getBucketPassword(), config.isFlushEnabled());
-                            }
+                    createBucket();
 
-                            try {
-                                /*
-                                    TODO - query for when the bucket is ready.
+                    Bucket bucket = cluster.openBucket(config.getBucketName(), TIMEOUT, TimeUnit.SECONDS);
 
-                                    The cluster manager in the Couchbase 1.4 SDK creates buckets via a REST API.
-                                    It returns before the bucket is finished, and if you try to create a client to
-                                    it before it's finished, you'll get a warning in the logs. I can't find a way
-                                    of querying if it's finished (listBuckets returns it, flushing it directly after
-                                    creating throws 503), so just have a wait here for now.
-
-                                    Likely moot when new couchbase spring data is available.
-                                */
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                // NO OP
-                            }
-
-                            client = new CouchbaseClient(config.getServerAddresses(), bucketName,
-                                    config.getBucketPassword());
-
-                        } finally {
-                            manager.shutdown();
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    template = new CouchbaseTemplate(cluster.clusterManager(config.getAdminUser(),
+                            config.getAdminPassword()).info(), bucket);
                 }
             }
         }
     }
 
+    @Override
     public V load(K key) throws Exception {
-        return ops().findById(key, config.<V> getCacheType());
+        return template.findById(key, config.<V>getCacheType());
     }
 
     @Override
     public void put(K key, V value) {
-        ops().save(value);
+        template.save(value);
     }
 
     @Override
     public void remove(K key) {
-        ops().remove(ops().findById(key, config.getCacheType()));
+        try {
+            template.remove(load(key));
+        } catch (Exception e) {
+            // FIXME - Should load really throw Exception?
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void close() {
-        if (client != null) {
-            if (config.getSchemaOptions().ShouldDropSchema()) {
-                ClusterManager manager = new ClusterManager(config.getServerAddresses(), config.getAdminUser(),
-                        config.getAdminPassword());
-                manager.deleteBucket(config.getBucketName());
-            }
+        if (cluster != null) {
+            dropBucket();
 
-            client.shutdown();
+            LOG.info("Disconnecting from Couchbase cluster {}", config.getServerAddresses());
+            cluster.disconnect();
+            cluster = null;
         }
     }
 
-    private CouchbaseOperations ops() {
-        return new CouchbaseTemplate(client);
-    }
-
     @Override
-    public CouchbaseClient getDriverSession() {
-        return client;
+    public Cluster getDriverSession() {
+        return cluster;
     }
 
     @Override
     public String getName() {
         return config.getCacheType().getSimpleName();
+    }
+
+    private void dropBucket() {
+        if (config.getSchemaOptions().ShouldDropSchema() && manager.hasBucket(config.getBucketName())) {
+            LOG.debug("Removing bucket {}", config.getBucketName());
+            manager.removeBucket(config.getBucketName(), TIMEOUT, TimeUnit.SECONDS);
+        }
+    }
+
+    private void createBucket() {
+        if (config.getSchemaOptions().ShouldCreateSchema() && !manager.hasBucket(config.getBucketName())) {
+            LOG.debug("Creating bucket {}", config.getBucketName());
+            BucketSettings settings = DefaultBucketSettings.builder()
+                    .name(config.getBucketName())
+                    .password(config.getBucketPassword())
+                    .enableFlush(config.isFlushEnabled())
+                    .quota(config.getBucketSize())
+                    .replicas(config.getNumReplicas())
+                    .build();
+
+            manager.insertBucket(settings, TIMEOUT, TimeUnit.SECONDS);
+        }
     }
 }
 
