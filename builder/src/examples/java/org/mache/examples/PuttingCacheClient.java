@@ -1,10 +1,10 @@
-package org.mache.examples.examples;
+package org.mache.examples;
 
 import org.mache.ExCache;
-import org.mache.examples.examples.cassandra.CassandraAnnotatedMessage;
-import org.mache.examples.examples.cassandra.CassandraExample;
-import org.mache.examples.examples.mongo.MongoAnnotatedMessage;
-import org.mache.examples.examples.mongo.MongoExample;
+import org.mache.examples.cassandra.CassandraAnnotatedMessage;
+import org.mache.examples.cassandra.CassandraExample;
+import org.mache.examples.mongo.MongoAnnotatedMessage;
+import org.mache.examples.mongo.MongoExample;
 
 import java.util.Arrays;
 

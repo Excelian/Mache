@@ -1,4 +1,4 @@
-package org.mache.examples.examples.cassandra;
+package org.mache.examples.cassandra;
 
 import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;

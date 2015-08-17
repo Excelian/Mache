@@ -1,7 +1,7 @@
-package org.mache.examples.examples.cassandra;
+package org.mache.examples.cassandra;
 
 import org.mache.*;
-import org.mache.examples.examples.Example;
+import org.mache.examples.Example;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
