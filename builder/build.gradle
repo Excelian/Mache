@@ -4,6 +4,16 @@ apply plugin: 'idea'
 
 sourceCompatibility = 1.8
 version = '1.0'
+
+sourceSets {
+  main {
+    java {
+      srcDirs= ['src/main/java', 'src/examples/java']
+    }
+  }
+}
+
+
 jar {
   manifest {
     attributes 'Implementation-Title': 'Cache-Builder',

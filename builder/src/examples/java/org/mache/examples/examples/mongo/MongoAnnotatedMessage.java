@@ -1,4 +1,4 @@
-package org.mache.examples.mongo;
+package org.mache.examples.examples.mongo;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.mapping.PrimaryKey;

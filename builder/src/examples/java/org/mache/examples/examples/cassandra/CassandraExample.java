@@ -1,34 +1,33 @@
-package org.mache.examples.mongo;
+package org.mache.examples.examples.cassandra;
 
 import org.mache.*;
-import org.mache.examples.Example;
+import org.mache.examples.examples.Example;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.mache.SchemaOptions.CREATEANDDROPSCHEMA;
 import static org.mache.builder.Builder.mache;
+import static org.mache.builder.Builder.namedCluster;
 import static org.mache.builder.Builder.server;
 
 /**
  * Created by jbowkett on 17/07/15.
  */
-public class MongoExample implements Example<MongoAnnotatedMessage> {
+public class CassandraExample implements Example<CassandraAnnotatedMessage> {
   
   protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 
   @Override
-  public ExCache<String, MongoAnnotatedMessage> exampleCache() {
+  public ExCache<String, CassandraAnnotatedMessage> exampleCache() {
     final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
     return mache()
-        .backedByMongo()
+        .backedByCassandra()
         .at(server("10.28.1.140", 9042))
+        .with(namedCluster("BluePrint"))
         .withKeyspace(keySpace)
-        .toStore(MongoAnnotatedMessage.class)
+        .toStore(CassandraAnnotatedMessage.class)
         .withPolicy(CREATEANDDROPSCHEMA)
-        .withNoMessaging()
-        .macheUp();
+        .withNoMessaging().macheUp();
   }
-
 }
-

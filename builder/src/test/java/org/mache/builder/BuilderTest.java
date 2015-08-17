@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.mache.ExCache;
 import org.mache.NoRunningCassandraDbForTests;
 import org.mache.builder.StorageProvisioner.StorageServerDetails;
-import org.mache.examples.cassandra.CassandraAnnotatedMessage;
+import org.mache.examples.examples.cassandra.CassandraAnnotatedMessage;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mache.SchemaOptions.CREATEANDDROPSCHEMA;

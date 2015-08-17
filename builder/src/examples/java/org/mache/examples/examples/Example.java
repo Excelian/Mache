@@ -1,4 +1,4 @@
-package org.mache.examples;
+package org.mache.examples.examples;
 
 import org.mache.ExCache;
 

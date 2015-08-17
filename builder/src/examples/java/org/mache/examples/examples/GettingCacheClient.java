@@ -1,8 +1,8 @@
-package org.mache.examples;
+package org.mache.examples.examples;
 
 import org.mache.ExCache;
-import org.mache.examples.cassandra.CassandraExample;
-import org.mache.examples.mongo.MongoExample;
+import org.mache.examples.examples.cassandra.CassandraExample;
+import org.mache.examples.examples.mongo.MongoExample;
 
 import java.util.Arrays;
 
