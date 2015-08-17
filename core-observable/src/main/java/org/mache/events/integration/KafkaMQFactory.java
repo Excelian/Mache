@@ -12,7 +12,7 @@ import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
 
 
-public class KafkaMQFactory<K, V extends CoordinationEntryEvent<K>> implements MQFactory {
+public class KafkaMQFactory implements MQFactory {
 	private final String connectionString;
 
     public KafkaMQFactory(String connectionString) throws JMSException, IOException

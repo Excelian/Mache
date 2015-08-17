@@ -1,21 +1,16 @@
 package org.mache;
 
-import java.io.IOException;
-
 import javax.cache.event.CacheEntryListenerException;
-import javax.jms.JMSException;
 
 import org.mache.coordination.CoordinationEntryEvent;
-import org.mache.coordination.RemoteCacheEntryInvalidateListener;
 import org.mache.coordination.RemoteCacheEntryListener;
-import org.mache.coordination.RemoteCacheEntryRemovedListener;
 import org.mache.events.BaseCoordinationEntryEventConsumer;
-import org.mache.events.BaseCoordinationEntryEventProducer;
 import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
 import org.mache.utils.UUIDUtils;
 
 //TODO create artifact to put this class into - it probably will be final artifact depending on anything else
+//this is actually a MessageQueueObservableCacheFactory
 public class CacheFactoryImpl implements CacheFactory {
 	private final MQFactory communicationFactory;
 	private final MQConfiguration configuration;
@@ -31,15 +26,14 @@ public class CacheFactoryImpl implements CacheFactory {
 
 	@Override
 	public <K, V, D> ExCache<K, V> createCache(final ExCacheLoader<K, V, D> cacheLoader) {
-		return createCache(cacheLoader, (String[]) null);
+		return createCache(cacheThingFactory.create(cacheLoader));
 	}
 
 
 	// TODO introduce cacheLoaderFactory after moved to proper artifact
 	@Override
-	public <K, V, D> ExCache<K, V> createCache(ExCacheLoader<K, V, D> cacheLoader, String... options) {
-		final ExCache<K, V> underlyingCache = cacheThingFactory.create(cacheLoader, options);
-		final ObservableMap<K, V> observable = new ObservableMap<K, V>(underlyingCache, uuidUtils);
+	public <K, V> ExCache<K, V> createCache(final ExCache<K, V> underlyingCache) {
+	  final ObservableMap<K, V> observable = new ObservableMap<K, V>(underlyingCache, uuidUtils);
 
 		observable.registerListener(communicationFactory.getProducer(configuration));
 
@@ -81,7 +75,7 @@ public class CacheFactoryImpl implements CacheFactory {
 					});
 			consumer.beginSubscriptionThread();
 		} catch (Exception  e ) {
-			throw new RuntimeException("Error creating cache consumer from loader " + cacheLoader + " and options " + options, e);
+			throw new RuntimeException("Error creating cache consumer from underlying cache " + underlyingCache , e);
 		}
 		return observable;
 	}
