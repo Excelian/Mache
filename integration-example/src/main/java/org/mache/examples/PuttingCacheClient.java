@@ -1,7 +1,9 @@
-package org.mache;
+package org.mache.examples;
 
-import org.mache.examples.Example;
+import org.mache.ExCache;
+import org.mache.examples.cassandra.CassandraAnnotatedMessage;
 import org.mache.examples.cassandra.CassandraExample;
+import org.mache.examples.mongo.MongoAnnotatedMessage;
 import org.mache.examples.mongo.MongoExample;
 
 import java.util.Arrays;
@@ -9,35 +11,38 @@ import java.util.Arrays;
 /**
  * Created by jbowkett on 17/07/15.
  */
-public class GettingCacheClient {
-
+public class PuttingCacheClient {
   private enum CacheType {Cassandra, Mongo}
 
   public static void main(String...commandLine) {
     final Args args = parseArgs(commandLine);
     final int count = args.count;
-    final Example example;
     switch(args.cacheType){
       case Cassandra:
-        example = new CassandraExample();
+        populateWithCassandraMsgs(count, new CassandraExample().exampleCache());
         break;
       case Mongo:
-        example = new MongoExample();
+        populateWithMongoMsgs(count, new MongoExample().exampleCache());
         break;
       default:
         throw new RuntimeException("Invalid cache type: ["+args.cacheType+"].  Valid values are:"+Arrays.toString(CacheType.values()));
     }
-    doExample(count, example);
   }
 
-  private static <T> void doExample(int count, Example<T> example) {
-    final ExCache<String, T> cache = example.exampleCache();
-    System.out.println("Getting...");
-    for (int i = 0; i < count ; i++) {
-      final T hello = cache.get("msg_"+i);
-      System.out.println("hello = " + hello);
+  private static void populateWithMongoMsgs(int count, ExCache<String, MongoAnnotatedMessage> cache) {
+    System.out.println("Putting...");
+    for(int i = 0; i< count ; i++){
+      final MongoAnnotatedMessage v = new MongoAnnotatedMessage("msg_" + i, "Hello World - " + i);
+      cache.put(v.getPrimaryKey(), v);
     }
-    cache.close();
+  }
+
+  private static <T> void populateWithCassandraMsgs(int count, ExCache<String, CassandraAnnotatedMessage> cache)  {
+    System.out.println("Putting...");
+    for (int i = 0; i < count ; i++) {
+      final CassandraAnnotatedMessage v = new CassandraAnnotatedMessage("msg_" + i, "Hello World - " + i);
+      cache.put(v.getPrimaryKey(), v);
+    }
   }
 
   private static Args parseArgs(String[] args) {
@@ -47,7 +52,7 @@ public class GettingCacheClient {
       return new Args(count, cacheType);
     }
     else{
-      throw new RuntimeException("Usage : GettingCacheClient <get count> "+ Arrays.toString(CacheType.values()));
+      throw new RuntimeException("Usage : PuttingCacheClient <put count> "+ Arrays.toString(CacheType.values()));
     }
   }
 
