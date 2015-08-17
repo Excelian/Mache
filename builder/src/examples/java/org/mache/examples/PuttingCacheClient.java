@@ -37,7 +37,7 @@ public class PuttingCacheClient {
     }
   }
 
-  private static <T> void populateWithCassandraMsgs(int count, ExCache<String, CassandraAnnotatedMessage> cache)  {
+  private static void populateWithCassandraMsgs(int count, ExCache<String, CassandraAnnotatedMessage> cache)  {
     System.out.println("Putting...");
     for (int i = 0; i < count ; i++) {
       final CassandraAnnotatedMessage v = new CassandraAnnotatedMessage("msg_" + i, "Hello World - " + i);
