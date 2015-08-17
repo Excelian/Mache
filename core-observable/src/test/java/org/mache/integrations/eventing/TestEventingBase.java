@@ -1,6 +1,8 @@
 package org.mache.integrations.eventing;
 
 import com.fasterxml.uuid.Generators;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mache.EventType;
 import org.mache.coordination.CoordinationEntryEvent;
@@ -59,18 +61,17 @@ public abstract class TestEventingBase{
 
         CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(), TestEntity.class.getName(),"ID1",EventType.CREATED, new UUIDUtils());
 
-        while(collector.pollWithTimeout(1000)!=null);//drain queues
-
+        while(collector.pollWithTimeout(150)!=null);//drain queues
         producer.send(event);
 
         try {
-            CoordinationEntryEvent<Integer> receivedEvent = collector.pollWithTimeout(15000);
+            CoordinationEntryEvent<Integer> receivedEvent = collector.pollWithTimeout(150);
             assertNotNull("Expected consumer to receive and root an event message but got none", receivedEvent);
             assertEquals(event.getKey(), receivedEvent.getKey());
             assertEquals("Expected Id of message received to same as that sent", event.getUniqueId(),receivedEvent.getUniqueId());
             System.out.println("Test got message");
 
-            assertNull("Expected no more messages", collector.pollWithTimeout(1));
+            assertNull("Expected no more messages", collector.pollWithTimeout(150));
         }
 
         finally {
@@ -80,7 +81,7 @@ public abstract class TestEventingBase{
         }
     }
 
-    private UUID getUuid() {
+    protected UUID getUuid() {
         return Generators.randomBasedGenerator().generate();
     }
 
@@ -101,11 +102,11 @@ public abstract class TestEventingBase{
 
         CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(), TestOtherEntity.class.getName(),"ID1", EventType.CREATED, new UUIDUtils());
 
-        while(collector.pollWithTimeout(10)!=null);//drain queues
+        //while(collector.pollWithTimeout(10)!=null);//drain queues
         producer.send(event);
 
         try {
-            assertNull("Expected no message", collector.pollWithTimeout());
+            assertNull("Expected no message", collector.pollWithTimeout(200));
         }
 
         finally {
@@ -129,13 +130,13 @@ public abstract class TestEventingBase{
 
         consumer1.registerEventListener(collector1);
         consumer1.beginSubscriptionThread();
-        while(collector1.pollWithTimeout(10)!=null);//d0rain queues
+        while(collector1.pollWithTimeout(120)!=null);//drain queues
 
         consumer2.registerEventListener(collector2);
         consumer2.beginSubscriptionThread();
-        while(collector2.pollWithTimeout(10)!=null);//drain queues
+        while(collector2.pollWithTimeout(120)!=null);//drain queues
 
-        Thread.sleep(3000);
+        //Thread.sleep(3000);
 
         CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(), TestEntity.class.getName(), "ID1", EventType.CREATED, new UUIDUtils());
         //Publish just the once
@@ -145,17 +146,17 @@ public abstract class TestEventingBase{
         try {
             CoordinationEntryEvent<Integer> receivedEvent;
 
-            receivedEvent = collector1.pollWithTimeout(5000);
+            receivedEvent = collector1.pollWithTimeout(150);
             assertNotNull("Expected FIRST consumer to receive and root an event message", receivedEvent);
             assertEquals(receivedEvent.getUniqueId(), event.getUniqueId());
             assertEquals(receivedEvent.getKey(), event.getKey());
-            assertNull("Expected no more messages", collector1.pollWithTimeout(1));
+            assertNull("Expected no more messages", collector1.pollWithTimeout(150));
 
-            receivedEvent = collector2.pollWithTimeout(5000);
+            receivedEvent = collector2.pollWithTimeout(150);
             assertNotNull("Expected SECOND consumer to receive and root an event message", receivedEvent);
             assertEquals(receivedEvent.getUniqueId(), event.getUniqueId());
             assertEquals(receivedEvent.getKey(), event.getKey());
-            assertNull("Expected no more messages", collector2.pollWithTimeout(1));
+            assertNull("Expected no more messages", collector2.pollWithTimeout(150));
         }
         finally {
             producer.close();
