@@ -133,7 +133,6 @@ public abstract class TestEventingBase{
         consumer2.beginSubscriptionThread();
         while(collector2.pollWithTimeout(120)!=null);//drain queues
 
-
         CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(), TestEntity.class.getName(), "ID1", EventType.CREATED, new UUIDUtils());
 
         producer.send(event);
