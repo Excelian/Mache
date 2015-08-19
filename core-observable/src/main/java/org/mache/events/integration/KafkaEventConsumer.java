@@ -20,10 +20,12 @@ import org.mache.coordination.CoordinationEntryEvent;
 import org.mache.events.BaseCoordinationEntryEventConsumer;
 
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
 
-
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaEventConsumer.class);
     ConsumerConnector consumer;
     ExecutorService executor = Executors.newSingleThreadExecutor();
     volatile boolean taskStarted = false;
@@ -36,7 +38,8 @@ public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
 		consumerConfig.put("group.id", consumerGroup);
         consumer = kafka.consumer.Consumer.createJavaConsumerConnector( new ConsumerConfig(consumerConfig) );
         
-        System.out.println("[KafkaEventConsumer"+ Thread.currentThread().getId()+"] Created consumer with props :" + consumerConfig);
+        LOG.info("[KafkaEventConsumer {}] Created consumer with props : {}",
+                Thread.currentThread().getId(), consumerConfig);
     }
 
     private static String getUniqueConsumerGroupName()
@@ -60,7 +63,7 @@ public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
         task = executor.submit(new Runnable() {
             @Override
             public void run() {
-            	System.out.println("[KafkaEventConsumer"+ Thread.currentThread().getId()+"] Signed up for topic :" + TOPIC + ", stream - " + stream);
+            	LOG.info("[KafkaEventConsumer{}] Signed up for topic : {} stream - {}", Thread.currentThread().getId(), TOPIC, stream);
 
             	ConsumerIterator<byte[], byte[]> iterator = stream.iterator();
                 taskStarted = true;
@@ -69,7 +72,7 @@ public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
 
                     if (next.message() != null) {
                         String message = new String(next.message());
-                        System.out.println("[KafkaEventConsumer"+ Thread.currentThread().getId()+"] Received Message:" + message);
+                        LOG.info("[KafkaEventConsumer{}] Received Message: {}", Thread.currentThread().getId(), message);
 
                         Gson gson = new Gson();
 						final CoordinationEntryEvent<?> event = gson.fromJson(message, CoordinationEntryEvent.class);
@@ -92,8 +95,7 @@ public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
             executor.shutdown();
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
-            System.out.println("[KafkaEventConsumer] " + e.getMessage());
+            // ignored
         }
 
         if (consumer != null) {

@@ -18,7 +18,7 @@ public class ReadFromCassandra extends MacheAbstractJavaSamplerClient
 
     @Override
     public void setupTest(JavaSamplerContext context) {
-        System.out.println("ReadFromCassandra.setupTest");
+        getLogger().info("ReadFromCassandra.setupTest");
 
         Map<String, String> mapParams=ExtractParameters(context);
         String keySpace = mapParams.get("keyspace.name");

@@ -10,8 +10,11 @@ import org.mache.coordination.CoordinationEntryEvent;
 import org.mache.events.BaseCoordinationEntryEventProducer;
 
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KafkaEventProducer extends BaseCoordinationEntryEventProducer {
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaEventProducer.class);
     private final Gson gson = new Gson();
     private final Producer<String, String> producer;
     public KafkaEventProducer(final Properties producerConfig, final String topicName) {
@@ -25,7 +28,7 @@ public class KafkaEventProducer extends BaseCoordinationEntryEventProducer {
 
         KeyedMessage<String, String> data = new KeyedMessage<String, String>(TOPIC, "0", gson.toJson(event));
         producer.send(data);
-        System.out.println("Sent message " + data);
+        LOG.info("Sent message {}", data);
     }
 
     @Override

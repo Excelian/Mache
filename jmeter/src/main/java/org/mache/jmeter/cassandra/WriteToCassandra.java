@@ -11,13 +11,13 @@ import org.mache.jmeter.cassandra.CassandraTestEntity;
 
 import java.util.Map;
 
-public class WriteToCassandra extends MacheAbstractJavaSamplerClient
-{
+public class WriteToCassandra extends MacheAbstractJavaSamplerClient {
+
     private CassandraCacheLoader<String, CassandraTestEntity> db;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
-        System.out.println("WriteToCassandra.setupTest");
+        getLogger().info("WriteToCassandra.setupTest");
         Map<String, String> mapParams=ExtractParameters(context);
         String keySpace = mapParams.get("keyspace.name");
 

@@ -6,11 +6,13 @@ import javax.jms.*;
 
 import org.mache.coordination.CoordinationEntryEvent;
 import org.mache.events.BaseCoordinationEntryEventConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.*;
 
 public class ActiveMQEventConsumer extends BaseCoordinationEntryEventConsumer {
-
+    private static final Logger LOG = LoggerFactory.getLogger(ActiveMQEventConsumer.class);
     private Session session;
     private MessageConsumer consumer;
 
@@ -35,15 +37,17 @@ public class ActiveMQEventConsumer extends BaseCoordinationEntryEventConsumer {
                         TextMessage message = (TextMessage) consumer.receive();
 
                         if (message != null) {
-                            System.out.println("[ActiveMQEventConsumer"+ Thread.currentThread().getId()+"] Received Message:" + message.getText());
+                            LOG.info("[ActiveMQEventConsumer {}] Received Message: {}",
+                                    Thread.currentThread().getId(), message.getText());
 
-                            Gson gson = new Gson();
-							final CoordinationEntryEvent<?> event = gson.fromJson(message.getText(), CoordinationEntryEvent.class);
+							final CoordinationEntryEvent<?> event = new Gson().fromJson(message.getText(),
+                                    CoordinationEntryEvent.class);
+
                             routeEventToListeners(eventMap, event);
                         }
-                    }
-                    catch (Exception e) {
-                        System.out.println("[ActiveMQEventConsumer"+ Thread.currentThread().getId()+"] eventConsumer - could not 'take' event. " + e.getMessage());
+                    } catch (JMSException e) {
+                        LOG.error("[ActiveMQEventConsumer {}] eventConsumer - could not 'take' event.\\n{}",
+                                Thread.currentThread().getId(), e);
                         break;
                     }
                 }
@@ -53,25 +57,24 @@ public class ActiveMQEventConsumer extends BaseCoordinationEntryEventConsumer {
 
     @Override
     public void close() {
-
-        System.out.println("[ActiveMQEventConsumer] Closing");
+        LOG.info("[ActiveMQEventConsumer] Closing");
 
         try {
-            if (task != null) task.cancel(true);
+            if (task != null) {
+                task.cancel(true);
+            }
             executor.shutdown();
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
-            System.out.println("[ActiveMQEventConsumer] " + e.getMessage());
+            LOG.error("[ActiveMQEventConsumer] {}", e);
         }
 
         try {
             session.close();
         } catch (JMSException e) {
-            e.printStackTrace();
-            System.out.println("[ActiveMQEventConsumer] " + e.getMessage());
+            LOG.error("[ActiveMQEventConsumer] ", e);
         }
 
-        session=null;
+        session = null;
     }
 }

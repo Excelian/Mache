@@ -21,7 +21,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient
 
     @Override
     public void setupTest(JavaSamplerContext context) {
-        System.out.println("CacheBackedByCassandra.setupTest");
+        getLogger().info("CacheBackedByCassandra.setupTest");
 
         Map<String, String> mapParams=ExtractParameters(context);
         String keySpace = mapParams.get("keyspace.name");

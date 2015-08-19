@@ -10,6 +10,8 @@ import org.mache.events.BaseCoordinationEntryEventProducer;
 import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
 import org.mache.utils.UUIDUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 
@@ -19,6 +21,8 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 public abstract class TestEventingBase{
+
+    private static final Logger LOG = LoggerFactory.getLogger(TestEventingBase.class);
 
     protected abstract MQFactory buildMQFactory() throws JMSException, IOException;
 
@@ -68,7 +72,7 @@ public abstract class TestEventingBase{
             assertNotNull("Expected consumer to receive and root an event message but got none", receivedEvent);
             assertEquals(event.getKey(), receivedEvent.getKey());
             assertEquals("Expected Id of message received to same as that sent", event.getUniqueId(),receivedEvent.getUniqueId());
-            System.out.println("Test got message");
+            LOG.info("Test got message");
 
             assertNull("Expected no more messages", collector.pollWithTimeout(150));
         }

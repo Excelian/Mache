@@ -6,6 +6,8 @@ import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
 import org.mache.events.integration.RabbitMQFactory;
 import org.mache.utils.UUIDUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 
@@ -19,7 +21,7 @@ import static org.mache.SchemaOptions.CREATEANDDROPSCHEMA;
  * Created by jbowkett on 17/07/15.
  */
 public class CassandraExample implements AutoCloseable{
-  
+  private static final Logger LOG = LoggerFactory.getLogger(CassandraExample.class);
   protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
   private MQFactory mqFactory;
   private Cluster cluster;
@@ -35,25 +37,25 @@ public class CassandraExample implements AutoCloseable{
   }
 
   private Cluster getCluster() {
-    System.out.println("Connecting to Cassandra cluster...");
+    LOG.info("Connecting to Cassandra cluster...");
     final Cluster cluster = CassandraCacheLoader.connect("10.28.1.140", "BluePrint", 9042);
-    System.out.println("Connected.");
+    LOG.info("Connected.");
     return cluster;
   }
 
 
   private CassandraCacheLoader<String, CassandraAnnotatedMessage> getCacheLoader(String keySpace, Cluster cluster){
-    System.out.println("Creating cache loader with keyspace:["+keySpace+"]");
+    LOG.info("Creating cache loader with keyspace:[{}]", keySpace);
     final CassandraCacheLoader<String, CassandraAnnotatedMessage> cacheLoader = new CassandraCacheLoader<>(
         CassandraAnnotatedMessage.class,
         cluster, CREATEANDDROPSCHEMA,
         keySpace);
-    System.out.println("CacheLoader created.");
+    LOG.info("CacheLoader created.");
     return cacheLoader;
   }
 
   private CacheFactory getCacheFactory(MQFactory mqFactory) throws JMSException, IOException {
-    System.out.println("Creating CacheFactory...");
+    LOG.info("Creating CacheFactory...");
 
     final CacheThingFactory cacheThingFactory = new CacheThingFactory();
     final MQConfiguration mqConfiguration = new MQConfiguration() {
@@ -62,7 +64,7 @@ public class CassandraExample implements AutoCloseable{
         return "testTopic";
       }};
     final CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, cacheThingFactory, new UUIDUtils());
-    System.out.println("Cache Factory Created.");
+    LOG.info("Cache Factory Created.");
     return cacheFactory;
   }
 
@@ -84,7 +86,7 @@ public class CassandraExample implements AutoCloseable{
         mqFactory.close();
       }
       catch (IOException e) {
-        e.printStackTrace();
+        //ignored
       }
     }
   }

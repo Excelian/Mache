@@ -3,6 +3,8 @@ package org.mache;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -15,7 +17,7 @@ import java.util.*;
  * TODO: Replication class and factor need to be configurable.
  */
 public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
-
+    private static final Logger LOG = LoggerFactory.getLogger(MongoDBCacheLoader.class);
 
     private Mongo mongoClient;
     private List<ServerAddress> hosts;
@@ -51,8 +53,7 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
                         }
                         createTable();
                     } catch (Throwable t) {
-                        t.printStackTrace();
-                        System.err.println("Failed to create:" + t.getMessage());
+                        LOG.error("Failed to create: {}", t);
 
                     }
                 }
@@ -78,7 +79,7 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
     }
 
     public void put(Object k, Object v) {
-        System.out.println("Saving to mongo key=" + k + ", newValue=" + v);
+        LOG.trace("Saving to mongo key={}, newValue={}", k, v);
         ops().save(v);
     }
 
@@ -91,7 +92,7 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
     @Override
     public Object load(Object key) throws Exception {
         Object o = ops().findById(key, clazz);
-        System.out.println("Loading from mongo by key " + key + " - result " + o);
+        LOG.trace("Loading from mongo by key {} - result {}", key, o);
         return (V) o;
     }
 
@@ -101,7 +102,7 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
             if(schemaOptions.ShouldDropSchema())
             {
                 mongoClient.dropDatabase(keySpace);
-                System.out.println("Dropped database" + keySpace);
+                LOG.info("Dropped database {}", keySpace);
             }
             mongoClient.close();
             mongoClient=null;

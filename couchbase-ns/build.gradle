@@ -1,11 +1,4 @@
-version '1.0'
-
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-
 repositories {
-    mavenCentral()
     maven {
         url 'http://repo.spring.io/milestone'
     }
@@ -19,7 +12,6 @@ dependencies {
     compile 'org.springframework.data:spring-data-couchbase:2.0.0.M1'
 
     testCompile project(path: ':core', configuration: 'tests')
-    testCompile 'junit:junit:4.11'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.powermock:powermock-core:1.6.2'
     testCompile 'org.powermock:powermock-module-junit4:1.6.2'

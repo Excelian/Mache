@@ -2,10 +2,7 @@ import com.codeaffine.test.ConditionalIgnoreRule;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.google.common.cache.CacheLoader;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.mache.CacheThing;
 import org.mache.NotRunningInExcelian;
 import org.mache.SchemaOptions;
@@ -19,7 +16,8 @@ import java.util.Objects;
 
 import static org.junit.Assert.*;
 
-@ConditionalIgnoreRule.IgnoreIf(condition = NotRunningInExcelian.class)
+//@ConditionalIgnoreRule.IgnoreIf(condition = NotRunningInExcelian.class)
+@Ignore
 public class CouchbaseCacheLoaderIntegrationTest {
 
     @Rule

@@ -4,6 +4,8 @@ import org.mache.examples.cassandra.CassandraAnnotatedMessage;
 import org.mache.examples.cassandra.CassandraExample;
 import org.mache.examples.mongo.MongoAnnotatedMessage;
 import org.mache.examples.mongo.MongoExample;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 import java.io.IOException;
@@ -14,7 +16,7 @@ import java.util.concurrent.ExecutionException;
  * Created by jbowkett on 17/07/15.
  */
 public class GettingCacheClient {
-
+  private static final Logger LOG = LoggerFactory.getLogger(GettingCacheClient.class);
   private enum CacheType {Cassandra, Mongo}
 
   public static void main(String...commandLine) {
@@ -35,7 +37,7 @@ public class GettingCacheClient {
       doMongoExample(count, mongoExample);
     }
     catch (IOException | JMSException | ExecutionException e) {
-      e.printStackTrace();
+      LOG.error("Mongo example failed.", e);
     }
   }
 
@@ -44,25 +46,25 @@ public class GettingCacheClient {
       doCassandraExample(count, mongoExample);
     }
     catch (JMSException | IOException | ExecutionException e) {
-      e.printStackTrace();
+      LOG.error("Cassandra example failed.", e);
     }
   }
 
   private static void doMongoExample(int count, MongoExample mongoExample) throws IOException, JMSException, ExecutionException {
     final ExCache<String, MongoAnnotatedMessage> cache = mongoExample.exampleCache();
-    System.out.println("Getting...");
+    LOG.info("Getting...");
     for (int i = 0; i < count ; i++) {
       final MongoAnnotatedMessage hello = cache.get("msg_"+i);
-      System.out.println("hello = " + hello);
+      LOG.info("hello = " + hello);
     }
   }
 
   private static void doCassandraExample(int count, CassandraExample example) throws IOException, JMSException, ExecutionException {
     final ExCache<String, CassandraAnnotatedMessage> cache = example.exampleCache();
-    System.out.println("Getting...");
+    LOG.info("Getting...");
     for (int i = 0; i < count ; i++) {
       final CassandraAnnotatedMessage hello = cache.get("msg_"+i);
-      System.out.println("hello = " + hello);
+      LOG.info("hello = " + hello);
     }
   }
 

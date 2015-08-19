@@ -43,7 +43,6 @@ public abstract class MacheAbstractMongoSamplerClient extends
             getLogger().info("cache connection completed. ");
         } catch (Exception e) {
             getLogger().error("mache error building factory", e);
-            System.err.println(e);
         }
     }
 	

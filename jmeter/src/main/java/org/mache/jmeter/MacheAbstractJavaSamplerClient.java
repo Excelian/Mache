@@ -8,9 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 abstract public class MacheAbstractJavaSamplerClient  extends AbstractJavaSamplerClient implements Serializable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MacheAbstractJavaSamplerClient.class);
 
     static protected Map<String, String> ExtractParameters(JavaSamplerContext context) {
         Map<String, String> mapParams = new ConcurrentHashMap<String, String>();
@@ -23,9 +27,7 @@ abstract public class MacheAbstractJavaSamplerClient  extends AbstractJavaSample
     }
 
     static protected SampleResult SetupResultForError(SampleResult result, Exception e) {
-        e.printStackTrace();
-        System.out.println(e);
-        //getLogger().error(e.getMessage());
+        LOG.error("Error occured during jmeter run.", e);
 
         result.sampleEnd();
         result.setSuccessful(false);

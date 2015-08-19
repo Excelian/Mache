@@ -4,6 +4,8 @@ import org.mache.examples.cassandra.CassandraAnnotatedMessage;
 import org.mache.examples.cassandra.CassandraExample;
 import org.mache.examples.mongo.MongoAnnotatedMessage;
 import org.mache.examples.mongo.MongoExample;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.util.concurrent.ExecutionException;
  * Created by jbowkett on 17/07/15.
  */
 public class PuttingCacheClient {
+  private static final Logger LOG = LoggerFactory.getLogger(PuttingCacheClient.class);
   private enum CacheType {Cassandra, Mongo}
 
   public static void main(String...commandLine) {
@@ -49,7 +52,7 @@ public class PuttingCacheClient {
 
   private static void doMongoExample(int count, MongoExample mongoExample) throws IOException, JMSException, ExecutionException {
     final ExCache<String, MongoAnnotatedMessage> cache = mongoExample.exampleCache();
-    System.out.println("Putting...");
+    LOG.info("Putting...");
     for (int i = 0; i < count ; i++) {
       final MongoAnnotatedMessage v = new MongoAnnotatedMessage("msg_" + i, "Hello World - " + i);
       cache.put(v.getPrimaryKey(), v);
@@ -58,7 +61,7 @@ public class PuttingCacheClient {
 
   private static void doCassandraExample(int count, CassandraExample example) throws IOException, JMSException, ExecutionException {
     final ExCache<String, CassandraAnnotatedMessage> cache = example.exampleCache();
-    System.out.println("Putting...");
+    LOG.info("Putting...");
     for (int i = 0; i < count ; i++) {
       final CassandraAnnotatedMessage v = new CassandraAnnotatedMessage("msg_" + i, "Hello World - " + i);
       cache.put(v.getPrimaryKey(), v);

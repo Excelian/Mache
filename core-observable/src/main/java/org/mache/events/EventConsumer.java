@@ -7,11 +7,14 @@ import java.util.concurrent.Executors;
 import javax.jms.JMSException;
 
 import org.mache.coordination.CoordinationEntryEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by sundance on 14/03/15.
  */
 public class EventConsumer extends BaseCoordinationEntryEventConsumer {
+	private static final Logger LOG = LoggerFactory.getLogger(EventConsumer.class);
 	private final BlockingQueue<CoordinationEntryEvent<?>> eventQueue;
 	private final ExecutorService executor = Executors
 			.newSingleThreadExecutor();
@@ -30,14 +33,11 @@ public class EventConsumer extends BaseCoordinationEntryEventConsumer {
 				while (true) {
 					try {
 						CoordinationEntryEvent<?> event = eventQueue.take();
-						System.out
-								.println("[XEventConsumer] take - CacheEntryEvent:"
-										+ event.getEventType().toString());
+						LOG.info("[XEventConsumer] take - CacheEntryEvent: {}", event.getEventType());
 						routeEventToListeners(eventMap, event);
 
-					} catch (Exception e) {
-						System.out
-								.println("[XCache] eventConsumer - could not 'take' event");
+					} catch (InterruptedException e) {
+						LOG.error("[XCache] eventConsumer - could not 'take' event");
 						break;
 					}
 				}

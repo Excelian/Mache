@@ -14,9 +14,12 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RabbitMQEventConsumer extends BaseCoordinationEntryEventConsumer {
 
+    private static final Logger LOG = LoggerFactory.getLogger(RabbitMQEventConsumer.class);
     private final Channel channel;
     private final String queueName;
     String consumerTag="";
@@ -59,7 +62,7 @@ public class RabbitMQEventConsumer extends BaseCoordinationEntryEventConsumer {
             {
                 long deliveryTag = envelope.getDeliveryTag();
 
-                System.out.println("[RabbitMQEventConsumer"+ Thread.currentThread().getId()+"] Received Message:" + new String(body));
+                LOG.info("[RabbitMQEventConsumer {}] Received Message: {}", Thread.currentThread().getId(), new String(body));
 
                 Gson gson=new Gson();
 				final CoordinationEntryEvent<?> event= gson.fromJson(new String(body), CoordinationEntryEvent.class);

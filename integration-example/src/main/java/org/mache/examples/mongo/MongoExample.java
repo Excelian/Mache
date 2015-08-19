@@ -6,6 +6,8 @@ import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
 import org.mache.events.integration.RabbitMQFactory;
 import org.mache.utils.UUIDUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import static org.mache.SchemaOptions.CREATEANDDROPSCHEMA;
  * Created by jbowkett on 17/07/15.
  */
 public class MongoExample implements AutoCloseable {
+  private static final Logger LOG = LoggerFactory.getLogger(MongoExample.class);
   
   protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
   private MongoDBCacheLoader<String, MongoAnnotatedMessage> cacheLoader;
@@ -44,7 +47,7 @@ public class MongoExample implements AutoCloseable {
 
 
   private CacheFactory getCacheFactory(MQFactory mqFactory) throws IOException, JMSException {
-    System.out.println("Creating CacheFactory...");
+    LOG.info("Creating CacheFactory...");
     final MQConfiguration mqConfiguration = new MQConfiguration() {
       @Override
       public String getTopicName() {
@@ -53,7 +56,7 @@ public class MongoExample implements AutoCloseable {
 
     final CacheThingFactory cacheThingFactory = new CacheThingFactory();
     final CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, cacheThingFactory, new UUIDUtils());
-    System.out.println("Cache Factory Created.");
+    LOG.info("Cache Factory Created.");
     return cacheFactory;
   }
 

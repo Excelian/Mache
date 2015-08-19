@@ -8,8 +8,12 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MongoConnector {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MongoConnector.class);
 
     @Rule
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
@@ -22,12 +26,12 @@ public class MongoConnector {
         MongoIterable<String> strings = mongoClient.listDatabaseNames();
         MongoCursor<String> iterator = strings.iterator();
         while (iterator.hasNext()) {
-            System.out.println("Database:" + iterator.next());
+            LOG.info("Database: {}", iterator.next());
         }
 
         MongoDatabase db = mongoClient.getDatabase(strings.iterator().next());
         String name = db.getName();
-        System.out.println("Got:" + name);
+        LOG.info("Got: {}", name);
 
         mongoClient.close();
     }

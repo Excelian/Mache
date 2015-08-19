@@ -1,7 +1,10 @@
 package org.mache;
 
 import com.datastax.driver.core.*;
+import com.datastax.driver.core.exceptions.DriverException;
 import com.datastax.driver.core.policies.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cassandra.core.cql.CqlIdentifier;
 import org.springframework.data.cassandra.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.core.CassandraAdminTemplate;
@@ -19,6 +22,8 @@ import java.util.*;
  * @implNote : Replication class and factor need to be configurable.
  */
 public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Session> {
+
+  private static final Logger LOG = LoggerFactory.getLogger(CassandraCacheLoader.class);
 
   //TODO: Breakout into configuration
   private static final int REPLICATION_FACTOR = 1; //Note: Travis only provides a single DSE node
@@ -52,10 +57,8 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
             }
             createTable();
           }
-          catch (Throwable t) {
-            System.err.println("Keyspace:" + keySpace);
-            t.printStackTrace();
-            System.err.println("Failed to create:" + t.getMessage());
+          catch (DriverException e) {
+            LOG.error("Failed to create keyspace : {}.\\n{}", keySpace, e);
           }
         }
       }
@@ -68,7 +71,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
   private void createKeySpace() {
     session.execute(String.format("CREATE KEYSPACE IF NOT EXISTS %s  WITH REPLICATION = {'class':'%s', 'replication_factor':%d}; ", keySpace, REPLICATION_CLASS, REPLICATION_FACTOR));
     session.execute(String.format("USE %s ", keySpace));
-    System.out.println("Created keyspace if missing " + keySpace);
+    LOG.info("Created keyspace if missing {}", keySpace);
   }
 
   void createTable() {
@@ -92,7 +95,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
   @Override
   public V load(K key) throws Exception {
     Object o = ops().selectOneById(clazz, key);
-    System.out.println("Loaded value from DB : "+key.toString());
+    LOG.trace("Loaded value from DB : {}", key);
     return (V) o;
   }
 
@@ -102,11 +105,10 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
       if (schemaOption.ShouldDropSchema()) {
         try {
           session.execute(String.format("DROP KEYSPACE %s; ", keySpace));
-          System.out.println("Dropped keyspace" + keySpace);
+          LOG.info("Dropped keyspace {}", keySpace);
         }
-        catch (Throwable t) {
-          t.printStackTrace();
-          System.err.println("Failed to drop keyspace :" + keySpace + ". err=" + t.getMessage());
+        catch (DriverException e) {
+          LOG.error("Failed to drop keyspace : {}. err={}", keySpace, e);
         }
       }
       session.close();
