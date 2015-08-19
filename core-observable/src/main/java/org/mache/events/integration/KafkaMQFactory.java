@@ -43,8 +43,8 @@ public class KafkaMQFactory<K, V extends CoordinationEntryEvent<K>> implements M
         consumerProperties.put("metadata.broker.list", ZK_CONNECTION);
         consumerProperties.put("zookeeper.connect", ZK_CONNECTION);
         consumerProperties.put("zookeeper.session.timeout.ms", "8000");
-        consumerProperties.put("zookeeper.sync.time.ms", "200");
-        consumerProperties.put("auto.commit.interval.ms", "1000");
+        consumerProperties.put("zookeeper.sync.time.ms", "100");
+        consumerProperties.put("auto.commit.interval.ms", "50");
         consumerProperties.put("auto.offset.reset", "largest");//seeks to end
 
         return consumerProperties;
