@@ -1,5 +1,16 @@
 package org.mache.events.integration;
 
+import com.google.gson.Gson;
+import kafka.consumer.ConsumerConfig;
+import kafka.consumer.ConsumerIterator;
+import kafka.consumer.KafkaStream;
+import kafka.javaapi.consumer.ConsumerConnector;
+import kafka.message.MessageAndMetadata;
+import org.mache.coordination.CoordinationEntryEvent;
+import org.mache.events.BaseCoordinationEntryEventConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -9,19 +20,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
-import kafka.consumer.ConsumerConfig;
-import kafka.consumer.ConsumerIterator;
-import kafka.consumer.KafkaStream;
-import kafka.javaapi.consumer.ConsumerConnector;
-import kafka.message.MessageAndMetadata;
-
-import org.mache.coordination.CoordinationEntryEvent;
-import org.mache.events.BaseCoordinationEntryEventConsumer;
-
-import com.google.gson.Gson;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
 
@@ -35,15 +33,14 @@ public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
         super(producerTypeName);
 
         final String consumerGroup = getUniqueConsumerGroupName();
-		consumerConfig.put("group.id", consumerGroup);
-        consumer = kafka.consumer.Consumer.createJavaConsumerConnector( new ConsumerConfig(consumerConfig) );
-        
+        consumerConfig.put("group.id", consumerGroup);
+        consumer = kafka.consumer.Consumer.createJavaConsumerConnector(new ConsumerConfig(consumerConfig));
+
         LOG.info("[KafkaEventConsumer {}] Created consumer with props : {}",
                 Thread.currentThread().getId(), consumerConfig);
     }
 
-    private static String getUniqueConsumerGroupName()
-    {
+    private static String getUniqueConsumerGroupName() {
         return java.util.UUID.randomUUID().toString();
     }
 
@@ -57,17 +54,17 @@ public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
         Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCountMap);
         final List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(TOPIC);
         final KafkaStream<byte[], byte[]> stream = streams.get(0);
-        
+
         taskStarted = false;
 
         task = executor.submit(new Runnable() {
             @Override
             public void run() {
-            	LOG.info("[KafkaEventConsumer{}] Signed up for topic : {} stream - {}", Thread.currentThread().getId(), TOPIC, stream);
+                LOG.info("[KafkaEventConsumer{}] Signed up for topic : {} stream - {}", Thread.currentThread().getId(), TOPIC, stream);
 
-            	ConsumerIterator<byte[], byte[]> iterator = stream.iterator();
+                ConsumerIterator<byte[], byte[]> iterator = stream.iterator();
                 taskStarted = true;
-                while(iterator.hasNext()) {
+                while (iterator.hasNext()) {
                     MessageAndMetadata<byte[], byte[]> next = iterator.next();
 
                     if (next.message() != null) {
@@ -75,16 +72,16 @@ public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
                         LOG.info("[KafkaEventConsumer{}] Received Message: {}", Thread.currentThread().getId(), message);
 
                         Gson gson = new Gson();
-						final CoordinationEntryEvent<?> event = gson.fromJson(message, CoordinationEntryEvent.class);
+                        final CoordinationEntryEvent<?> event = gson.fromJson(message, CoordinationEntryEvent.class);
                         routeEventToListeners(eventMap, event);
                     }
                 }
-                
+
             }
         });
-        
-        while(!taskStarted) {
-        	Thread.sleep(1);
+
+        while (!taskStarted) {
+            Thread.sleep(1);
         }
     }
 

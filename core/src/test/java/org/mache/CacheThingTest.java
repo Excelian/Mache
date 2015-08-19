@@ -6,7 +6,8 @@ import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class CacheThingTest {
 
@@ -74,7 +75,7 @@ public class CacheThingTest {
 
         final int invalidateTimes = 3;
 
-        for (int i=0;i<invalidateTimes;++i) {
+        for (int i = 0; i < invalidateTimes; ++i) {
             cacheThing.invalidate(key);
             cacheThing.get(key);
         }
@@ -91,19 +92,31 @@ public class CacheThingTest {
                 return "FIXTURE:loaded_" + key;
             }
 
-            public void close() {}
+            public void close() {
+            }
+
             public void create(String name, String s) {
                 created++;
             }
+
             public void put(String s, String s2) {
                 put++;
             }
+
             public void remove(String s) {
                 removed++;
             }
-            public String getName() { return "myCache"; }
-            public String getDriverSession() {  return "yay"; }
-            public void invalidateAll() {}
+
+            public String getName() {
+                return "myCache";
+            }
+
+            public String getDriverSession() {
+                return "yay";
+            }
+
+            public void invalidateAll() {
+            }
         };
         cacheThing = new CacheThing<String, String>(fixture);
     }

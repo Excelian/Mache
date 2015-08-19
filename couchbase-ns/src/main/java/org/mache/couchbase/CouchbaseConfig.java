@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CouchbaseConfig  {
+public class CouchbaseConfig {
 
     private Class cacheType;
     private CouchbaseEnvironment couchbaseEnvironment;

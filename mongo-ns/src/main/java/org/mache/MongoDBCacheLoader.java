@@ -8,15 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * CacheLoader to bind Cassandra API onto the GuavaCache
- *
- * Created by neil.avery on 29/05/2015.
  * TODO: Replication class and factor need to be configurable.
  */
-public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
+public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
     private static final Logger LOG = LoggerFactory.getLogger(MongoDBCacheLoader.class);
 
     private Mongo mongoClient;
@@ -32,7 +30,7 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
         this.hosts = hosts;
         this.schemaOptions = schemaOptions;
         this.keySpace = keySpace;
-        this.keySpace = keySpace.replace("-","_").replace(" ","_").replace(":","_");
+        this.keySpace = keySpace.replace("-", "_").replace(" ", "_").replace(":", "_");
         this.clazz = clazz;
     }
 
@@ -48,7 +46,7 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
                     try {
                         this.mongoClient = connect(hosts);
 
-                        if(schemaOptions.ShouldCreateSchema()) {
+                        if (schemaOptions.ShouldCreateSchema()) {
                             createKeySpace();
                         }
                         createTable();
@@ -98,20 +96,20 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
 
     @Override
     public void close() {
-        if (mongoClient != null){
-            if(schemaOptions.ShouldDropSchema())
-            {
+        if (mongoClient != null) {
+            if (schemaOptions.ShouldDropSchema()) {
                 mongoClient.dropDatabase(keySpace);
                 LOG.info("Dropped database {}", keySpace);
             }
             mongoClient.close();
-            mongoClient=null;
+            mongoClient = null;
         }
     }
 
     @Override
     public Mongo getDriverSession() {
-        if (mongoClient == null) throw  new IllegalStateException("Session has not been created - read/write to cache first");
+        if (mongoClient == null)
+            throw new IllegalStateException("Session has not been created - read/write to cache first");
         return mongoClient;
     }
 

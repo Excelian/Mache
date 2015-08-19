@@ -12,7 +12,7 @@ import javax.jms.JMSException;
 
 import java.io.IOException;
 
-import static com.codeaffine.test.ConditionalIgnoreRule.*;
+import static com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 
 @IgnoreIf(condition = NotRunningInExcelian.class)
 public class KafkaEventingTest extends TestEventingBase {

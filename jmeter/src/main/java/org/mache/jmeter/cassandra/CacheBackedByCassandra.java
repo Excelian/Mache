@@ -14,8 +14,7 @@ import org.mache.utils.UUIDUtils;
 import java.io.IOException;
 import java.util.Map;
 
-public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient
-{
+public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
     MQFactory mqFactory;
     ExCache<String, CassandraTestEntity> cache;
 
@@ -23,7 +22,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient
     public void setupTest(JavaSamplerContext context) {
         getLogger().info("CacheBackedByCassandra.setupTest");
 
-        Map<String, String> mapParams=ExtractParameters(context);
+        Map<String, String> mapParams = ExtractParameters(context);
         String keySpace = mapParams.get("keyspace.name");
 
         MQConfiguration mqConfiguration = () -> "testTopic";
@@ -31,9 +30,9 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient
         try {
             mqFactory = new ActiveMQFactory(mapParams.get("activemq.connection"));
 
-            Cluster cluster = CassandraCacheLoader.connect( mapParams.get("server.ip.address"), mapParams.get("cluster.name") , 9042);
-            CassandraCacheLoader<String, CassandraTestEntity> db= new CassandraCacheLoader(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
-            db.create("","");//this is to force the connection to occur within our setup
+            Cluster cluster = CassandraCacheLoader.connect(mapParams.get("server.ip.address"), mapParams.get("cluster.name"), 9042);
+            CassandraCacheLoader<String, CassandraTestEntity> db = new CassandraCacheLoader(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
+            db.create("", "");//this is to force the connection to occur within our setup
 
             CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
             cache = cacheFactory.createCache(db);
@@ -48,10 +47,9 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient
     }
 
     @Override
-    public void teardownTest(JavaSamplerContext context)
-    {
-        if(cache!=null) cache.close();
-        if(mqFactory!=null) try {
+    public void teardownTest(JavaSamplerContext context) {
+        if (cache != null) cache.close();
+        if (mqFactory != null) try {
             mqFactory.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -61,7 +59,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
 
-        Map<String, String> mapParams=ExtractParameters(context);
+        Map<String, String> mapParams = ExtractParameters(context);
         SampleResult result = new SampleResult();
         boolean success = false;
 
@@ -69,7 +67,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient
 
         try {
 
-            if(mapParams.get("action").contentEquals("read")) {
+            if (mapParams.get("action").contentEquals("read")) {
                 String entityKey = mapParams.get("entity.key");
                 CassandraTestEntity entity = cache.get(entityKey);
 
@@ -78,9 +76,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient
                 }
 
                 result.setResponseMessage("Read " + entity.pkString + " from Cache");
-            }
-            else
-            {
+            } else {
                 String entityKey = mapParams.get("entity.key");
                 String entityValue = mapParams.get("entity.value");
 
@@ -89,7 +85,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient
 
                 result.setResponseMessage("Put " + entity.pkString + " into Cache");
             }
-            success=true;
+            success = true;
         } catch (Exception e) {
             SetupResultForError(result, e);
             return result;

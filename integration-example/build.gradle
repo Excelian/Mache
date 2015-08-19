@@ -1,28 +1,28 @@
 repositories {
-  maven { url 'https://repository.jboss.org/nexus/content/groups/public' }
+    maven { url 'https://repository.jboss.org/nexus/content/groups/public' }
 }
 
 dependencies {
-  compile project(':core')
-  compile project(':cassandra-ns')
-  compile project(':mongo-ns')
-  compile project(':core-observable')
-  compile 'javax.jms:jms:1.1'
-  compile 'org.springframework.data:spring-data-cassandra:1.2.0.RELEASE'
-  compile 'org.springframework.data:spring-data-mongodb:1.7.0.RELEASE'
+    compile project(':core')
+    compile project(':cassandra-ns')
+    compile project(':mongo-ns')
+    compile project(':core-observable')
+    compile 'javax.jms:jms:1.1'
+    compile 'org.springframework.data:spring-data-cassandra:1.2.0.RELEASE'
+    compile 'org.springframework.data:spring-data-mongodb:1.7.0.RELEASE'
 }
 
 test {
-  systemProperties 'property': 'value'
+    systemProperties 'property': 'value'
 }
 
 task getClient(dependsOn: 'classes', type: JavaExec) {
-  main = 'org.mache.GettingCacheClient'
-  classpath = sourceSets.main.runtimeClasspath
+    main = 'org.mache.GettingCacheClient'
+    classpath = sourceSets.main.runtimeClasspath
 }
 
 task putClient(dependsOn: 'classes', type: JavaExec) {
-  main = 'org.mache.PuttingCacheClient'
-  classpath = sourceSets.main.runtimeClasspath
+    main = 'org.mache.PuttingCacheClient'
+    classpath = sourceSets.main.runtimeClasspath
 }
 

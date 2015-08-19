@@ -1,28 +1,26 @@
 package org.mache.events.integration;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.jms.JMSException;
-
-import org.mache.coordination.CoordinationEntryEvent;
-import org.mache.events.BaseCoordinationEntryEventConsumer;
-
 import com.google.gson.Gson;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import org.mache.coordination.CoordinationEntryEvent;
+import org.mache.events.BaseCoordinationEntryEventConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jms.JMSException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RabbitMQEventConsumer extends BaseCoordinationEntryEventConsumer {
 
     private static final Logger LOG = LoggerFactory.getLogger(RabbitMQEventConsumer.class);
     private final Channel channel;
     private final String queueName;
-    String consumerTag="";
+    String consumerTag = "";
 
     public RabbitMQEventConsumer(final Channel channel, String exchangeName, String producerTypeName) throws JMSException, IOException {
         super(producerTypeName);
@@ -34,8 +32,7 @@ public class RabbitMQEventConsumer extends BaseCoordinationEntryEventConsumer {
         channel.queueBind(queueName, exchangeName, getTopicName());
     }
 
-    private static String getUniqueQueueName()
-    {
+    private static String getUniqueQueueName() {
         return java.util.UUID.randomUUID().toString();
     }
 
@@ -51,34 +48,31 @@ public class RabbitMQEventConsumer extends BaseCoordinationEntryEventConsumer {
 
     @Override
     public void beginSubscriptionThread() throws InterruptedException, IOException {
-        DefaultConsumer consumer=new DefaultConsumer(channel)
-        {
+        DefaultConsumer consumer = new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(String consumerTag,
                                        Envelope envelope,
                                        AMQP.BasicProperties properties,
                                        byte[] body)
-                    throws IOException
-            {
+                    throws IOException {
                 long deliveryTag = envelope.getDeliveryTag();
 
                 LOG.info("[RabbitMQEventConsumer {}] Received Message: {}", Thread.currentThread().getId(), new String(body));
 
-                Gson gson=new Gson();
-				final CoordinationEntryEvent<?> event= gson.fromJson(new String(body), CoordinationEntryEvent.class);
+                Gson gson = new Gson();
+                final CoordinationEntryEvent<?> event = gson.fromJson(new String(body), CoordinationEntryEvent.class);
                 routeEventToListeners(eventMap, event);
 
                 channel.basicAck(deliveryTag, false);
             }
         };
 
-        consumerTag=channel.basicConsume(queueName, false, consumer);
+        consumerTag = channel.basicConsume(queueName, false, consumer);
     }
 
-    public void close()
-    {
+    public void close() {
         try {
-            if(channel!=null) {
+            if (channel != null) {
                 channel.basicCancel(consumerTag);
             }
 

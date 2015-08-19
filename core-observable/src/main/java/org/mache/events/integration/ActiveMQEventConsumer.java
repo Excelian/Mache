@@ -1,15 +1,16 @@
 package org.mache.events.integration;
 
 import com.google.gson.Gson;
-
-import javax.jms.*;
-
 import org.mache.coordination.CoordinationEntryEvent;
 import org.mache.events.BaseCoordinationEntryEventConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
+import javax.jms.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class ActiveMQEventConsumer extends BaseCoordinationEntryEventConsumer {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQEventConsumer.class);
@@ -21,7 +22,7 @@ public class ActiveMQEventConsumer extends BaseCoordinationEntryEventConsumer {
 
     public ActiveMQEventConsumer(final Connection connection, final String producerTopicName) throws JMSException {
         super(producerTopicName);
-        session=connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         Destination destination = session.createTopic(getTopicName());
         this.consumer = session.createConsumer(destination);
     }
@@ -40,7 +41,7 @@ public class ActiveMQEventConsumer extends BaseCoordinationEntryEventConsumer {
                             LOG.info("[ActiveMQEventConsumer {}] Received Message: {}",
                                     Thread.currentThread().getId(), message.getText());
 
-							final CoordinationEntryEvent<?> event = new Gson().fromJson(message.getText(),
+                            final CoordinationEntryEvent<?> event = new Gson().fromJson(message.getText(),
                                     CoordinationEntryEvent.class);
 
                             routeEventToListeners(eventMap, event);

@@ -4,7 +4,6 @@ import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.google.common.cache.CacheLoader;
 import org.junit.*;
 import org.mache.CacheThing;
-import org.mache.NotRunningInExcelian;
 import org.mache.SchemaOptions;
 import org.mache.couchbase.CouchbaseCacheLoader;
 import org.mache.couchbase.CouchbaseConfig;
@@ -37,10 +36,10 @@ public class CouchbaseCacheLoaderIntegrationTest {
     public void setup() {
         cache = new CacheThing<>(new CouchbaseCacheLoader<>(CouchbaseConfig.builder()
                 .withServerAdresses(Collections.singletonList(EXCELIAN_COUCHBASE))
-                //.withServerAdresses(Collections.singletonList(LOCAL_COUCHBASE))
+                        //.withServerAdresses(Collections.singletonList(LOCAL_COUCHBASE))
                 .withCouchbaseEnvironment(DefaultCouchbaseEnvironment.create())
                 .withAdminUser(EXCELIAN_ADMIN)
-                //.withAdminUser(LOCAL_ADMIN)
+                        //.withAdminUser(LOCAL_ADMIN)
                 .withAdminPassword(PASSWORD)
                 .withBucketName(BUCKET)
                 .withSchemaOptions(SchemaOptions.CREATEANDDROPSCHEMA)

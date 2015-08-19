@@ -1,13 +1,10 @@
 package org.mache;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
-/**
- * Created by neil.avery on 02/06/2015.
- */
-public interface ExCache<K,V> {
+public interface ExCache<K, V> {
     String getName();
+
     UUID getId();
 
     V get(K k);

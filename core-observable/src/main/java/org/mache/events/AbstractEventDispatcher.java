@@ -9,29 +9,27 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/**
- * Created by sundance on 08/03/15.
- */
-public abstract class AbstractEventDispatcher<K,V> implements EventDispatcherIF<K,V> {
-    ConcurrentLinkedQueue<CacheEntryEvent<K,V>> dispatchQueue;
-    ConcurrentLinkedQueue<CacheEntryEvent<K,V>> consumerQueue;
+public abstract class AbstractEventDispatcher<K, V> implements EventDispatcherIF<K, V> {
+    ConcurrentLinkedQueue<CacheEntryEvent<K, V>> dispatchQueue;
+    ConcurrentLinkedQueue<CacheEntryEvent<K, V>> consumerQueue;
 
-    protected ConcurrentHashMap<EventType,ArrayList<CacheEntryListener<K,V>>> eventMapper;
-    public AbstractEventDispatcher(){
-        dispatchQueue =  new ConcurrentLinkedQueue<CacheEntryEvent<K, V>>();
-        consumerQueue =  new ConcurrentLinkedQueue<CacheEntryEvent<K, V>>();
+    protected ConcurrentHashMap<EventType, ArrayList<CacheEntryListener<K, V>>> eventMapper;
+
+    public AbstractEventDispatcher() {
+        dispatchQueue = new ConcurrentLinkedQueue<CacheEntryEvent<K, V>>();
+        consumerQueue = new ConcurrentLinkedQueue<CacheEntryEvent<K, V>>();
     }
 
     @Override
-    public void addEvent(CacheEntryEvent<K, V> event){
+    public void addEvent(CacheEntryEvent<K, V> event) {
         dispatchQueue.add(event);
     }
 
     @Override
-    public List<? extends CacheEntryEvent<K,V>> getQueuedEvents(){
-        List<CacheEntryEvent<K,V>> events = new ArrayList<CacheEntryEvent<K, V>>();
-        Iterator<CacheEntryEvent<K,V>> iterator = dispatchQueue.iterator();
-        while(iterator.hasNext()){
+    public List<? extends CacheEntryEvent<K, V>> getQueuedEvents() {
+        List<CacheEntryEvent<K, V>> events = new ArrayList<CacheEntryEvent<K, V>>();
+        Iterator<CacheEntryEvent<K, V>> iterator = dispatchQueue.iterator();
+        while (iterator.hasNext()) {
             events.add(iterator.next());
         }
         return events;

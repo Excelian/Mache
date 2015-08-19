@@ -7,12 +7,10 @@ import org.apache.jmeter.samplers.SampleResult;
 import org.mache.CassandraCacheLoader;
 import org.mache.SchemaOptions;
 import org.mache.jmeter.MacheAbstractJavaSamplerClient;
-import org.mache.jmeter.cassandra.CassandraTestEntity;
 
 import java.util.Map;
 
-public class ReadFromCassandra extends MacheAbstractJavaSamplerClient
-{
+public class ReadFromCassandra extends MacheAbstractJavaSamplerClient {
 
     private CassandraCacheLoader<String, CassandraTestEntity> db;
 
@@ -20,45 +18,43 @@ public class ReadFromCassandra extends MacheAbstractJavaSamplerClient
     public void setupTest(JavaSamplerContext context) {
         getLogger().info("ReadFromCassandra.setupTest");
 
-        Map<String, String> mapParams=ExtractParameters(context);
+        Map<String, String> mapParams = ExtractParameters(context);
         String keySpace = mapParams.get("keyspace.name");
 
         try {
             Cluster cluster = CassandraCacheLoader.connect(
-                    mapParams.get("server.ip.address"), mapParams.get("cluster.name") , 9042);
-            db= new CassandraCacheLoader(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
-            db.create("","");//ensure we are connected and schema exists
+                    mapParams.get("server.ip.address"), mapParams.get("cluster.name"), 9042);
+            db = new CassandraCacheLoader(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
+            db.create("", "");//ensure we are connected and schema exists
         } catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);
         }
     }
 
     @Override
-    public void teardownTest(JavaSamplerContext context)
-    {
-        if(db!=null) db.close();
+    public void teardownTest(JavaSamplerContext context) {
+        if (db != null) db.close();
     }
 
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
 
-        Map<String, String> mapParams=ExtractParameters(context);
+        Map<String, String> mapParams = ExtractParameters(context);
         SampleResult result = new SampleResult();
         boolean success = false;
 
         result.sampleStart();
 
         try {
-            String keyValue=mapParams.get("entity.key");
-            CassandraTestEntity entity= db.load(keyValue);
+            String keyValue = mapParams.get("entity.key");
+            CassandraTestEntity entity = db.load(keyValue);
 
-            if(entity==null)
-            {
-                throw new Exception("No data found in db for key value of "+keyValue);
+            if (entity == null) {
+                throw new Exception("No data found in db for key value of " + keyValue);
             }
 
-            result.setResponseMessage("Read " + entity.pkString+ " from database");
-            success=true;
+            result.setResponseMessage("Read " + entity.pkString + " from database");
+            success = true;
         } catch (Exception e) {
             SetupResultForError(result, e);
             return result;

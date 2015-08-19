@@ -1,22 +1,16 @@
 package org.mache.events;
 
+import org.mache.EventType;
+import org.mache.coordination.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.jms.JMSException;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.jms.JMSException;
-
-import org.mache.EventType;
-import org.mache.coordination.CoordinationEntryEvent;
-import org.mache.coordination.CoordinationEventListener;
-import org.mache.coordination.RemoteCacheEntryCreatedListener;
-import org.mache.coordination.RemoteCacheEntryInvalidateListener;
-import org.mache.coordination.RemoteCacheEntryRemovedListener;
-import org.mache.coordination.RemoteCacheEntryUpdatedListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class BaseCoordinationEntryEventConsumer implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(BaseCoordinationEntryEventConsumer.class);

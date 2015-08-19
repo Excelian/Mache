@@ -3,7 +3,6 @@ package org.mache;
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import com.datastax.driver.core.Cluster;
-
 import org.junit.Rule;
 
 /**
@@ -18,6 +17,6 @@ public class CassandraLoaderTest extends TestCacheLoaderBase {
     @Override
     protected ExCacheLoader buildCacheLoader(Class cls) throws Exception {
         Cluster cluster = CassandraCacheLoader.connect(new NoRunningCassandraDbForTests().HostName(), "BluePrint", 9042);
-        return new CassandraCacheLoader<String,TestEntity>(cls, cluster, SchemaOptions.CREATEANDDROPSCHEMA, keySpace);
+        return new CassandraCacheLoader<String, TestEntity>(cls, cluster, SchemaOptions.CREATEANDDROPSCHEMA, keySpace);
     }
 }

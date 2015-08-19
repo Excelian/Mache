@@ -38,7 +38,7 @@ public class CouchbaseCacheLoaderMockedTest {
         mockedManager = mock(ClusterManager.class);
         when(mockedCluster.clusterManager(anyString(), anyString())).thenReturn(mockedManager);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentWhenNotGivenConfig() throws Exception {
         new CouchbaseCacheLoader<>(null);

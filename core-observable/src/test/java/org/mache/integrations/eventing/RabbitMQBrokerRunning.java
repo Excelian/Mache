@@ -1,13 +1,12 @@
 package org.mache.integrations.eventing;
 
-import java.io.IOException;
-
 import org.junit.Assume;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-
 import org.mache.events.integration.RabbitMQFactory;
+
+import java.io.IOException;
 
 /**
  * Borrowed idea from org.springframework.amqp.rabbit.test.BrokerRunning
@@ -28,16 +27,15 @@ public class RabbitMQBrokerRunning extends TestWatcher {
         RabbitMQFactory factory = null;
         try {
             factory = new RabbitMQFactory(null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             brokerOnline = false;
             Assume.assumeNoException("Could not connect to Rabbit MQ", e);
-        }
-        finally {
+        } finally {
             if (factory != null) {
                 try {
                     factory.close();
-                } catch (IOException e) {}
+                } catch (IOException e) {
+                }
             }
         }
 

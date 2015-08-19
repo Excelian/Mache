@@ -7,7 +7,7 @@ import org.springframework.data.cassandra.mapping.Table;
 @Table
 public class CassandraTestEntity {
 
-    @Column(value="mappedColumn")
+    @Column(value = "mappedColumn")
     public String description = "description for item";
 
     @PrimaryKey

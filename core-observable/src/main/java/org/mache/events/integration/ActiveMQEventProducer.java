@@ -1,19 +1,12 @@
 package org.mache.events.integration;
 
-import javax.jms.Connection;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-
+import com.google.gson.Gson;
 import org.mache.coordination.CoordinationEntryEvent;
 import org.mache.events.BaseCoordinationEntryEventProducer;
-
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jms.*;
 
 public class ActiveMQEventProducer extends BaseCoordinationEntryEventProducer {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQEventProducer.class);

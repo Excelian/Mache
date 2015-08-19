@@ -1,12 +1,11 @@
 package org.mache.integrations.eventing;
 
+import com.codeaffine.test.ConditionalIgnoreRule;
+import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import org.junit.Rule;
 import org.mache.NoRunningRabbitMQForTests;
 import org.mache.events.MQFactory;
 import org.mache.events.integration.RabbitMQFactory;
-
-import com.codeaffine.test.ConditionalIgnoreRule;
-import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 
 import javax.jms.JMSException;
 import java.io.IOException;

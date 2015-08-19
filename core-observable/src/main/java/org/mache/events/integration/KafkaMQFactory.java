@@ -1,27 +1,24 @@
 package org.mache.events.integration;
 
-import java.io.IOException;
-import java.util.Properties;
-
-import javax.jms.JMSException;
-
 import org.mache.coordination.CoordinationEntryEvent;
 import org.mache.events.BaseCoordinationEntryEventConsumer;
 import org.mache.events.BaseCoordinationEntryEventProducer;
 import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
 
+import javax.jms.JMSException;
+import java.io.IOException;
+import java.util.Properties;
+
 
 public class KafkaMQFactory<K, V extends CoordinationEntryEvent<K>> implements MQFactory {
-	private final String connectionString;
+    private final String connectionString;
 
-    public KafkaMQFactory(String connectionString) throws JMSException, IOException
-    {
+    public KafkaMQFactory(String connectionString) throws JMSException, IOException {
         this.connectionString = connectionString;
     }
 
-    Properties CreateProducerConfig(String zooKeeper)
-    {
+    Properties CreateProducerConfig(String zooKeeper) {
         String ZK_PORT = "9092";
         String ZK_CONNECTION = zooKeeper + ":" + ZK_PORT;
 
@@ -34,8 +31,7 @@ public class KafkaMQFactory<K, V extends CoordinationEntryEvent<K>> implements M
         return producerProperies;
     }
 
-    Properties CreateConsumerConfig(String zooKeeper)
-    {
+    Properties CreateConsumerConfig(String zooKeeper) {
         String ZK_PORT = "2181";
         String ZK_CONNECTION = zooKeeper + ":" + ZK_PORT;
 
@@ -51,15 +47,13 @@ public class KafkaMQFactory<K, V extends CoordinationEntryEvent<K>> implements M
     }
 
     @Override
-    public BaseCoordinationEntryEventProducer getProducer(MQConfiguration config)
-    {
+    public BaseCoordinationEntryEventProducer getProducer(MQConfiguration config) {
         BaseCoordinationEntryEventProducer producer = new KafkaEventProducer(CreateProducerConfig(connectionString), config.getTopicName());
         return producer;
     }
 
     @Override
-    public BaseCoordinationEntryEventConsumer getConsumer(MQConfiguration config) throws IOException, JMSException
-    {
+    public BaseCoordinationEntryEventConsumer getConsumer(MQConfiguration config) throws IOException, JMSException {
         BaseCoordinationEntryEventConsumer consumer = new KafkaEventConsumer(CreateConsumerConfig(connectionString), config.getTopicName());
         return consumer;
     }
