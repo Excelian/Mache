@@ -7,7 +7,8 @@ import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.integration.ActiveMQFactory;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 import com.excelian.mache.mongo.MongoDBCacheLoader;
-import com.excelian.mache.observable.CacheFactoryImpl;
+import com.excelian.mache.observable.MessageQueueObservableCacheFactory;
+import com.excelian.mache.observable.ObservableCacheFactory;
 import com.excelian.mache.observable.utils.UUIDUtils;
 import com.mongodb.ServerAddress;
 import org.apache.jmeter.config.Arguments;
@@ -73,10 +74,10 @@ public abstract class MacheAbstractMongoSamplerClient extends
     protected void createCache(Map<String, String> mapParams)
             throws JMSException {
         mqFactory1 = new ActiveMQFactory(mapParams.get("activemq.connection"));
-        CacheFactoryImpl cacheFactory1 = new CacheFactoryImpl(mqFactory1,
+        ObservableCacheFactory cacheFactory1 = new MessageQueueObservableCacheFactory(mqFactory1,
                 getMQConfiguration(), new MacheFactory(), new UUIDUtils());
         cache1 = cacheFactory1
-                .createCache(new MongoDBCacheLoader<String, MongoTestEntity>(
+                .createCache(new MongoDBCacheLoader<>(
                         MongoTestEntity.class,
                         new CopyOnWriteArrayList<>(
                                 Arrays.asList(new ServerAddress(mapParams
@@ -85,7 +86,6 @@ public abstract class MacheAbstractMongoSamplerClient extends
     }
 
     protected MongoTestEntity initMongoEntity(Map<String, String> mapParams) {
-        MongoTestEntity e = new MongoTestEntity(mapParams.get("entity.key"), mapParams.get("entity.value"));
-        return e;
+        return new MongoTestEntity(mapParams.get("entity.key"), mapParams.get("entity.value"));
     }
 }

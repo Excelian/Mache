@@ -1,7 +1,7 @@
 package com.excelian.mache.builder;
 
 
-import com.excelian.mache.observable.CacheFactoryImpl;
+import com.excelian.mache.observable.MessageQueueObservableCacheFactory;
 import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
@@ -25,9 +25,8 @@ import static com.excelian.mache.builder.Builder.Messaging.*;
  * Created by jbowkett on 04/08/15.
  */
 public class Builder {
-
-  static enum Storage { Cassandra, Mongo}
-  static enum Messaging {ActiveMQ, RabbitMQ, Kafka, None}
+    enum Storage { Cassandra, Mongo}
+    enum Messaging {ActiveMQ, RabbitMQ, Kafka, None}
 
   public static StorageServerDetails server(String host, int port) {
     return new StorageServerDetails(host, port);
@@ -96,7 +95,7 @@ public class Builder {
 
         final MacheFactory macheFactory = new MacheFactory();
 
-        final CacheFactoryImpl cacheFactory = new CacheFactoryImpl(
+        final MessageQueueObservableCacheFactory cacheFactory = new MessageQueueObservableCacheFactory(
             mqFactory, mqConfiguration, macheFactory, new UUIDUtils());
         return cacheFactory.createCache(cache);
       }

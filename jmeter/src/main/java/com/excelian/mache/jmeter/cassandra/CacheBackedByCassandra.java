@@ -9,7 +9,7 @@ import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.events.integration.ActiveMQFactory;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
-import com.excelian.mache.observable.CacheFactoryImpl;
+import com.excelian.mache.observable.MessageQueueObservableCacheFactory;
 import com.excelian.mache.observable.utils.UUIDUtils;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -37,7 +37,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
             CassandraCacheLoader<String, CassandraTestEntity> db = new CassandraCacheLoader(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
             db.create("", "");//this is to force the connection to occur within our setup
 
-            CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, new MacheFactory(), new UUIDUtils());
+            MessageQueueObservableCacheFactory cacheFactory = new MessageQueueObservableCacheFactory(mqFactory, mqConfiguration, new MacheFactory(), new UUIDUtils());
             cache = cacheFactory.createCache(db);
 
 

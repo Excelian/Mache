@@ -20,17 +20,17 @@ import com.excelian.mache.observable.utils.UUIDUtils;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class CacheFactoryImplIntegrationTest {
+public class MessageQueueObservableCacheFactoryIntegrationTest {
 	private static final String LOCAL_MQ = "vm://localhost";
 
 	MacheLoader<String, TestEntity, String> cacheLoader;
 	MQConfiguration mqConfiguration = () -> "testTopic";
 
 	MQFactory mqFactory1;
-	CacheFactory cacheFactory1;
+	ObservableCacheFactory observableCacheFactory1;
 
 	MQFactory mqFactory2;
-	CacheFactory cacheFactory2;
+	ObservableCacheFactory observableCacheFactory2;
 
 	Mache<String, TestEntity> unspiedCache1;
 	Mache<String, TestEntity> spiedCache1;
@@ -40,7 +40,7 @@ public class CacheFactoryImplIntegrationTest {
 
 	@Mock
 	MacheFactory spiedMacheFactory;
-	
+
 	MacheFactory macheFactory;
 
 	private final UUIDUtils uuidUtils = new UUIDUtils();
@@ -48,20 +48,20 @@ public class CacheFactoryImplIntegrationTest {
 	@Before
 	public void beforeTest() throws JMSException {
 		MockitoAnnotations.initMocks(this);
-		
+
 		cacheLoader = new InMemoryCacheLoader<>("loaderForTestEntity");
 
 		macheFactory = new MacheFactory();
 
 		mqFactory1 = new ActiveMQFactory(LOCAL_MQ);
-		cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, spiedMacheFactory, uuidUtils);
+		observableCacheFactory1 = new MessageQueueObservableCacheFactory(mqFactory1, mqConfiguration, spiedMacheFactory, uuidUtils);
 
 		unspiedCache1 = macheFactory.create(cacheLoader);
 		spiedCache1 = spy(unspiedCache1);
 		when(spiedMacheFactory.create(cacheLoader)).thenReturn(spiedCache1);
 
 		mqFactory2 = new ActiveMQFactory(LOCAL_MQ);
-		cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, macheFactory, uuidUtils);
+		observableCacheFactory2 = new MessageQueueObservableCacheFactory(mqFactory2, mqConfiguration, macheFactory, uuidUtils);
 	}
 
 	@After
@@ -72,10 +72,10 @@ public class CacheFactoryImplIntegrationTest {
 
 	@Test
 	public void shouldProperlySetupCachesUsingSameCacheLoader() throws ExecutionException, InterruptedException {
-		Mache<String, TestEntity> cache1 = cacheFactory1.createCache(cacheLoader);
+		Mache<String, TestEntity> cache1 = observableCacheFactory1.createCache(cacheLoader);
 		cache1.put(testValue.pkey, testValue);
 
-		Mache<String, TestEntity> cache2 = cacheFactory2.createCache(cacheLoader);
+		Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(cacheLoader);
 
 		assertEquals(testValue, cache2.get(testValue.pkey));
 	}
@@ -83,8 +83,8 @@ public class CacheFactoryImplIntegrationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldProperlyInvalidateFromAnotherCacheWhenItemPut() throws ExecutionException, InterruptedException {
-		Mache<String, TestEntity> cache1 = cacheFactory1.createCache(cacheLoader);
-		Mache<String, TestEntity> cache2 = cacheFactory2.createCache(cacheLoader);
+		Mache<String, TestEntity> cache1 = observableCacheFactory1.createCache(cacheLoader);
+		Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(cacheLoader);
 
 		reset(spiedCache1);
 
@@ -100,12 +100,12 @@ public class CacheFactoryImplIntegrationTest {
 	public void shouldProperlyPropagateValues() throws ExecutionException, InterruptedException, JMSException {
 		MacheLoader<String, TestEntity2, String> cacheLoader = new InMemoryCacheLoader<>("loaderForTestEntity2");
 		MQFactory mqFactory1 = new ActiveMQFactory(LOCAL_MQ);
-		CacheFactory cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, new MacheFactory(), new UUIDUtils());
+		ObservableCacheFactory observableCacheFactory1 = new MessageQueueObservableCacheFactory(mqFactory1, mqConfiguration, new MacheFactory(), new UUIDUtils());
 		MQFactory mqFactory2 = new ActiveMQFactory(LOCAL_MQ);
-		CacheFactory cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, new MacheFactory(), new UUIDUtils());
+		ObservableCacheFactory observableCacheFactory2 = new MessageQueueObservableCacheFactory(mqFactory2, mqConfiguration, new MacheFactory(), new UUIDUtils());
 
-		Mache<String, TestEntity2> cache1 = cacheFactory1.createCache(cacheLoader);
-		Mache<String, TestEntity2> cache2 = cacheFactory2.createCache(cacheLoader);
+		Mache<String, TestEntity2> cache1 = observableCacheFactory1.createCache(cacheLoader);
+		Mache<String, TestEntity2> cache2 = observableCacheFactory2.createCache(cacheLoader);
 
 		final String key1 = "X1";
 		final String val1 = "someValue1";
@@ -122,8 +122,8 @@ public class CacheFactoryImplIntegrationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldNotInvalidateFromAnotherCacheWhenItemFetched() throws ExecutionException, InterruptedException {
-		Mache<String, TestEntity> cache1 = cacheFactory1.createCache(cacheLoader);
-		Mache<String, TestEntity> cache2 = cacheFactory2.createCache(cacheLoader);
+		Mache<String, TestEntity> cache1 = observableCacheFactory1.createCache(cacheLoader);
+		Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(cacheLoader);
 
 		/* insert data into loader and ensure it is within cache */
 		cache1.put(testValue2.pkey, testValue2);
@@ -142,7 +142,7 @@ public class CacheFactoryImplIntegrationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldNotInvalidateSameCacheOnPut() throws ExecutionException, InterruptedException {
-		Mache<String, TestEntity> cache1 = cacheFactory1.createCache(cacheLoader);
+		Mache<String, TestEntity> cache1 = observableCacheFactory1.createCache(cacheLoader);
 
 		reset(spiedCache1);
 		cache1.put(testValue2.pkey, testValue2);

@@ -13,14 +13,13 @@ import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.observable.utils.UUIDUtils;
 
 //TODO create artifact to put this class into - it probably will be final artifact depending on anything else
-//this is actually a MessageQueueObservableCacheFactory
-public class CacheFactoryImpl implements CacheFactory {
+public class MessageQueueObservableCacheFactory implements ObservableCacheFactory {
 	private final MQFactory communicationFactory;
 	private final MQConfiguration configuration;
 	private final MacheFactory macheFactory;
 	private final UUIDUtils uuidUtils;
 
-	public CacheFactoryImpl(final MQFactory communicationFactory, final MQConfiguration configuration, final MacheFactory macheFactory, final UUIDUtils uuidUtils) {
+	public MessageQueueObservableCacheFactory(final MQFactory communicationFactory, final MQConfiguration configuration, final MacheFactory macheFactory, final UUIDUtils uuidUtils) {
 		this.communicationFactory = communicationFactory;
 		this.configuration = configuration;
 		this.macheFactory = macheFactory;
