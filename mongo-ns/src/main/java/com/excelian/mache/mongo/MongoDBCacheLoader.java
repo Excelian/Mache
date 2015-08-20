@@ -65,35 +65,33 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
 
     private void createKeySpace() {
         // implicit in connect?
-//        session.execute(String.format("CREATE KEYSPACE IF NOT EXISTS %s  WITH REPLICATION = {'class':'%s', 'replication_factor':%d}; ", keySpace, REPLICATION_CLASS, REPLICATION_FACTOR));
-//        session.execute(String.format("USE %s ", keySpace));
     }
 
     void createTable() {
         if (!isTableCreated) {
             isTableCreated = true;
             if (!ops().collectionExists(clazz)) {
-                ops().createCollection(clazz);//, new CollectionOptions());
+                ops().createCollection(clazz);
             }
         }
     }
 
-    public void put(Object k, Object v) {
-        LOG.trace("Saving to mongo key={}, newValue={}", k, v);
-        ops().save(v);
+    public void put(K key, V value) {
+        LOG.trace("Saving to mongo key={}, newValue={}", key, value);
+        ops().save(value);
     }
 
-    public void remove(Object k) {
-        // crappy API - cant i delete by id?
-        V byId = ops().findById(k, clazz);
+    public void remove(K key) {
+        // unfortunately cant delete by id
+        V byId = ops().findById(key, clazz);
         ops().remove(byId);
     }
 
     @Override
-    public Object load(Object key) throws Exception {
-        Object o = ops().findById(key, clazz);
-        LOG.trace("Loading from mongo by key {} - result {}", key, o);
-        return (V) o;
+    public V load(K key) throws Exception {
+        V value = ops().findById(key, clazz);
+        LOG.trace("Loading from mongo by key {} - result {}", key, value);
+        return value;
     }
 
     @Override
@@ -110,8 +108,9 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
 
     @Override
     public Mongo getDriverSession() {
-        if (mongoClient == null)
+        if (mongoClient == null) {
             throw new IllegalStateException("Session has not been created - read/write to cache first");
+        }
         return mongoClient;
     }
 
