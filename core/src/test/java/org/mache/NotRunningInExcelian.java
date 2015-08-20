@@ -6,15 +6,16 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 public class NotRunningInExcelian implements IgnoreCondition {
-    static {
+
+    public static boolean hostIsReachable(String host){
         try {
-            RUNNING_IN_EXCELIAN = InetAddress.getByName("10.28.1.140").isReachable(2000);
+            return InetAddress.getByName(host).isReachable(2000);
         } catch (IOException e) {
-            RUNNING_IN_EXCELIAN = false;
+            return false;
         }
     }
 
-    private static boolean RUNNING_IN_EXCELIAN;
+    private static boolean RUNNING_IN_EXCELIAN = hostIsReachable("10.28.1.140");
 
     public boolean isSatisfied() {
         return !RUNNING_IN_EXCELIAN;
