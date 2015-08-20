@@ -10,7 +10,7 @@ public class MongoWriteThrough extends MacheAbstractMongoSamplerClient {
 
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
-        Map<String, String> mapParams = ExtractParameters(context);
+        Map<String, String> mapParams = extractParameters(context);
         final SampleResult result = new SampleResult();
 
         result.sampleStart();
@@ -24,7 +24,7 @@ public class MongoWriteThrough extends MacheAbstractMongoSamplerClient {
             result.setSuccessful(true);
             result.setResponseMessage("Put value (" + e.description + ") from Cache");
         } catch (Exception e1) {
-            return super.SetupResultForError(result, e1);
+            return super.setupResultForError(result, e1);
         }
 
         return result;

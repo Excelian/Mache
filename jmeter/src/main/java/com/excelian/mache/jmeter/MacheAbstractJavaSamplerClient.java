@@ -12,12 +12,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("serial")
-abstract public class MacheAbstractJavaSamplerClient extends AbstractJavaSamplerClient implements Serializable {
+public abstract class MacheAbstractJavaSamplerClient extends AbstractJavaSamplerClient implements Serializable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MacheAbstractJavaSamplerClient.class);
 
-    static protected Map<String, String> ExtractParameters(JavaSamplerContext context) {
-        Map<String, String> mapParams = new ConcurrentHashMap<String, String>();
+    protected Map<String, String> extractParameters(JavaSamplerContext context) {
+        Map<String, String> mapParams = new ConcurrentHashMap<>();
         for (Iterator<String> it = context.getParameterNamesIterator(); it.hasNext(); ) {
             String paramName = it.next();
             String paramValue = context.getParameter(paramName);
@@ -26,7 +26,7 @@ abstract public class MacheAbstractJavaSamplerClient extends AbstractJavaSampler
         return mapParams;
     }
 
-    static protected SampleResult SetupResultForError(SampleResult result, Exception e) {
+    protected SampleResult setupResultForError(SampleResult result, Exception e) {
         LOG.error("Error occured during jmeter run.", e);
 
         result.sampleEnd();

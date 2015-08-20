@@ -13,7 +13,7 @@ public class MongoRandomLoad extends MacheAbstractMongoSamplerClient {
 
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
-        Map<String, String> mapParams = ExtractParameters(context);
+        Map<String, String> mapParams = extractParameters(context);
         final SampleResult result = new SampleResult();
         result.sampleStart();
 
@@ -32,7 +32,7 @@ public class MongoRandomLoad extends MacheAbstractMongoSamplerClient {
             getLogger().error("Put value (" + e.description
                     + ") from Cache - error occured " + e1.getMessage(), e1);
 
-            return super.SetupResultForError(result, e1);
+            return super.setupResultForError(result, e1);
         }
 
         result.sampleEnd();

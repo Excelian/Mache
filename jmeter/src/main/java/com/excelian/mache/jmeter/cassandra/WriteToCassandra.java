@@ -17,7 +17,7 @@ public class WriteToCassandra extends MacheAbstractJavaSamplerClient {
     @Override
     public void setupTest(JavaSamplerContext context) {
         getLogger().info("WriteToCassandra.setupTest");
-        Map<String, String> mapParams = ExtractParameters(context);
+        Map<String, String> mapParams = extractParameters(context);
         String keySpace = mapParams.get("keyspace.name");
 
         try {
@@ -40,7 +40,7 @@ public class WriteToCassandra extends MacheAbstractJavaSamplerClient {
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
 
-        Map<String, String> mapParams = ExtractParameters(context);
+        Map<String, String> mapParams = extractParameters(context);
         SampleResult result = new SampleResult();
         boolean success = false;
 
@@ -53,7 +53,7 @@ public class WriteToCassandra extends MacheAbstractJavaSamplerClient {
             success = true;
         } catch (Exception e) {
 
-            SetupResultForError(result, e);
+            setupResultForError(result, e);
             return result;
         }
 

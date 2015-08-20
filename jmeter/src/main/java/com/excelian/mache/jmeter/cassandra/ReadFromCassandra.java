@@ -18,7 +18,7 @@ public class ReadFromCassandra extends MacheAbstractJavaSamplerClient {
     public void setupTest(JavaSamplerContext context) {
         getLogger().info("ReadFromCassandra.setupTest");
 
-        Map<String, String> mapParams = ExtractParameters(context);
+        Map<String, String> mapParams = extractParameters(context);
         String keySpace = mapParams.get("keyspace.name");
 
         try {
@@ -39,7 +39,7 @@ public class ReadFromCassandra extends MacheAbstractJavaSamplerClient {
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
 
-        Map<String, String> mapParams = ExtractParameters(context);
+        Map<String, String> mapParams = extractParameters(context);
         SampleResult result = new SampleResult();
         boolean success = false;
 
@@ -56,7 +56,7 @@ public class ReadFromCassandra extends MacheAbstractJavaSamplerClient {
             result.setResponseMessage("Read " + entity.pkString + " from database");
             success = true;
         } catch (Exception e) {
-            SetupResultForError(result, e);
+            setupResultForError(result, e);
             return result;
         }
 

@@ -29,7 +29,7 @@ public abstract class MacheAbstractMongoSamplerClient extends
 
     @Override
     public void setupTest(JavaSamplerContext context) {
-        Map<String, String> mapParams = ExtractParameters(context);
+        Map<String, String> mapParams = extractParameters(context);
         getLogger().info("mache setupTest started  \n");
 
         try {

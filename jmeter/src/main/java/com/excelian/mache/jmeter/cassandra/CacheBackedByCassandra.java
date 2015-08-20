@@ -26,7 +26,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
     public void setupTest(JavaSamplerContext context) {
         getLogger().info("CacheBackedByCassandra.setupTest");
 
-        Map<String, String> mapParams = ExtractParameters(context);
+        Map<String, String> mapParams = extractParameters(context);
         String keySpace = mapParams.get("keyspace.name");
 
         MQConfiguration mqConfiguration = () -> "testTopic";
@@ -64,7 +64,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
 
-        Map<String, String> mapParams = ExtractParameters(context);
+        Map<String, String> mapParams = extractParameters(context);
         SampleResult result = new SampleResult();
         boolean success = false;
 
@@ -94,7 +94,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
             success = true;
         }
         catch (Exception e) {
-            SetupResultForError(result, e);
+            setupResultForError(result, e);
             return result;
         }
         result.sampleEnd();

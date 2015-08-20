@@ -12,7 +12,7 @@ public class MongoReadThrough extends MacheAbstractMongoSamplerClient {
 
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
-        Map<String, String> mapParams = ExtractParameters(context);
+        Map<String, String> mapParams = extractParameters(context);
         int sleepMilis = Integer.parseInt(mapParams.get("read.sleepMs"));
         int timeoutMs = Integer.parseInt(mapParams.get("read.timeoutMs"));
 
@@ -29,7 +29,7 @@ public class MongoReadThrough extends MacheAbstractMongoSamplerClient {
                 Thread.sleep(sleepMilis);
             } catch (InterruptedException e1) {
                 getLogger().error("Error while reading value through cache from mongo " + e1.getMessage(), e1);
-                return super.SetupResultForError(result, e1);
+                return super.setupResultForError(result, e1);
             }
         }
         while (new Date().getTime() - startTime <= timeoutMs && (readEntity == null || !e.description.equals(readEntity.description)));
