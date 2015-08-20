@@ -19,7 +19,7 @@ import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.mapping.Table;
 
-import java.util.Map;
+import java.util.HashMap;
 
 /**
  * CacheLoader to bind Cassandra API onto the GuavaCache
@@ -81,25 +81,23 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
         if (!isTableCreated) {
             isTableCreated = true;
             CassandraAdminTemplate adminTemplate = new CassandraAdminTemplate(session, new MappingCassandraConverter());
-            Map<String, Object> optionsByName = null;
-            adminTemplate.createTable(true, new CqlIdentifier(getTableName()), clazz, optionsByName);
-
+            adminTemplate.createTable(true, new CqlIdentifier(getTableName()), clazz, new HashMap<>());
         }
     }
 
-    public void put(K k, V v) {
-        ops().insert(v);
+    public void put(K key, V value) {
+        ops().insert(value);
     }
 
-    public void remove(K k) {
-        ops().deleteById(clazz, k);
+    public void remove(K key) {
+        ops().deleteById(clazz, key);
     }
 
     @Override
     public V load(K key) throws Exception {
-        Object o = ops().selectOneById(clazz, key);
+        V value = ops().selectOneById(clazz, key);
         LOG.trace("Loaded value from DB : {}", key);
-        return (V) o;
+        return  value;
     }
 
     @Override
@@ -141,7 +139,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
                 .withReconnectionPolicy(new ConstantReconnectionPolicy(100L))
                 .withLoadBalancingPolicy(new TokenAwarePolicy(new DCAwareRoundRobinPolicy())) // go to the node with data
                 .build();
-        Metadata metadata = cluster.getMetadata();
+        Metadata metadataToWarmConnection = cluster.getMetadata();
         return cluster;
     }
 
