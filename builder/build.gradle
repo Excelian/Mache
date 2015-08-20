@@ -10,6 +10,15 @@ dependencies {
     compile 'javax.jms:jms:1.1'
     compile 'org.springframework.data:spring-data-cassandra:1.2.0.RELEASE'
     compile 'org.springframework.data:spring-data-mongodb:1.7.0.RELEASE'
+    testCompile project(path: ':core', configuration: 'tests')
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs= ['src/main/java', 'src/examples/java']
+        }
+    }
 }
 
 test {

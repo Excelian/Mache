@@ -2,7 +2,7 @@ include 'core'
 include 'cassandra-ns'
 include 'mongo-ns'
 include 'core-observable'
-include 'integration-example'
+include 'builder'
 include 'jmeter'
 include 'couchbase-ns'
 

@@ -10,9 +10,8 @@ import javax.jms.JMSException;
 import java.io.IOException;
 import java.util.Properties;
 
-
-public class KafkaMQFactory<K, V extends CoordinationEntryEvent<K>> implements MQFactory {
-    private final String connectionString;
+public class KafkaMQFactory implements MQFactory {
+	private final String connectionString;
 
     public KafkaMQFactory(String connectionString) throws JMSException, IOException {
         this.connectionString = connectionString;
