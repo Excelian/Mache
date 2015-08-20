@@ -2,7 +2,7 @@ package com.excelian.mache.observable;
 
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.excelian.mache.core.ExCache;
-import com.excelian.mache.core.ExCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.observable.utils.UUIDUtils;
 
 import java.util.UUID;
@@ -66,7 +66,7 @@ public class ObservableMap<K, V> implements ExCache<K, V> {
     }
 
     @Override
-    public ExCacheLoader getCacheLoader() {
+    public MacheLoader getCacheLoader() {
         return delegate.getCacheLoader();
     }
 

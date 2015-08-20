@@ -9,7 +9,7 @@ import java.util.UUID;
 public class CacheThing<K, V> implements ExCache<K, V> {
 
     private final ForwardingCache<K, V> fwdCache;
-    final private ExCacheLoader cacheLoader;
+    final private MacheLoader cacheLoader;
     private final UUID cacheId;
 
     //XXX weak keys cause invalidation tto fail because of using identity function for quivalence see http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilder.html#weakKeys()
@@ -19,7 +19,7 @@ public class CacheThing<K, V> implements ExCache<K, V> {
     private final LoadingCache<K, V> cache;
     private volatile boolean created;
 
-    public CacheThing(final ExCacheLoader cacheLoader, String... optionalSpec) {
+    public CacheThing(final MacheLoader cacheLoader, String... optionalSpec) {
         this.cacheLoader = cacheLoader;
         if (optionalSpec != null && optionalSpec.length > 0) this.spec = optionalSpec[0];
 
@@ -109,7 +109,7 @@ public class CacheThing<K, V> implements ExCache<K, V> {
     }
 
     @Override
-    public ExCacheLoader getCacheLoader() {
+    public MacheLoader getCacheLoader() {
         return cacheLoader;
     }
 }

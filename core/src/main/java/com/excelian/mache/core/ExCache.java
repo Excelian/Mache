@@ -19,5 +19,5 @@ public interface ExCache<K, V> {
 
     void close();
 
-    ExCacheLoader getCacheLoader();
+    MacheLoader getCacheLoader();
 }

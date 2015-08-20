@@ -23,7 +23,7 @@ import org.mockito.MockitoAnnotations;
 public class CacheFactoryImplIntegrationTest {
 	private static final String LOCAL_MQ = "vm://localhost";
 
-	ExCacheLoader<String, TestEntity, String> cacheLoader;
+	MacheLoader<String, TestEntity, String> cacheLoader;
 	MQConfiguration mqConfiguration = () -> "testTopic";
 
 	MQFactory mqFactory1;
@@ -98,7 +98,7 @@ public class CacheFactoryImplIntegrationTest {
 
 	@Test
 	public void shouldProperlyPropagateValues() throws ExecutionException, InterruptedException, JMSException {
-		ExCacheLoader<String, TestEntity2, String> cacheLoader = new InMemoryCacheLoader<>("loaderForTestEntity2");
+		MacheLoader<String, TestEntity2, String> cacheLoader = new InMemoryCacheLoader<>("loaderForTestEntity2");
 		MQFactory mqFactory1 = new ActiveMQFactory(LOCAL_MQ);
 		CacheFactory cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
 		MQFactory mqFactory2 = new ActiveMQFactory(LOCAL_MQ);

@@ -1,7 +1,7 @@
 package com.excelian.mache.cassandra;
 
 import com.excelian.mache.core.CacheThing;
-import com.excelian.mache.core.ExCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 import com.google.common.cache.CacheLoader;
 import org.junit.After;
 import org.junit.Before;
@@ -24,7 +24,7 @@ public abstract class TestCacheLoaderBase {
     protected String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
     private CacheThing<String, TestEntity> cacheThing;
 
-    abstract protected ExCacheLoader buildCacheLoader(Class cls) throws Exception;
+    abstract protected MacheLoader buildCacheLoader(Class cls) throws Exception;
 
     @Before
     public void setUp() throws Exception {
@@ -38,7 +38,7 @@ public abstract class TestCacheLoaderBase {
 
     @Test
     public void testCanGetDriverSession() throws Exception {
-        ExCacheLoader cacheloader = buildCacheLoader(TestEntity.class);
+        MacheLoader cacheloader = buildCacheLoader(TestEntity.class);
         CacheThing cache = new CacheThing<String, TestEntity>(cacheloader);
         cache.put("test-2", new TestEntity("test-2"));
         cache.get("test-2");

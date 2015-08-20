@@ -6,7 +6,7 @@ import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.excelian.mache.observable.coordination.RemoteCacheEntryListener;
 import com.excelian.mache.core.CacheThingFactory;
 import com.excelian.mache.core.ExCache;
-import com.excelian.mache.core.ExCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
@@ -28,7 +28,7 @@ public class CacheFactoryImpl implements CacheFactory {
 	}
 
 	@Override
-	public <K, V, D> ExCache<K, V> createCache(final ExCacheLoader<K, V, D> cacheLoader) {
+	public <K, V, D> ExCache<K, V> createCache(final MacheLoader<K, V, D> cacheLoader) {
 		return createCache(cacheThingFactory.create(cacheLoader));
 	}
 

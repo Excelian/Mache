@@ -3,7 +3,7 @@ package com.excelian.mache.core;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 
-public interface ExCacheLoader<K, V, D> extends RemovalListener<K, V> {
+public interface MacheLoader<K, V, D> extends RemovalListener<K, V> {
 
     void create(String name, K k);
 
