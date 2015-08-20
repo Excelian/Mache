@@ -1,7 +1,7 @@
 package com.excelian.mache.mongo;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
-import com.excelian.mache.core.CacheThing;
+import com.excelian.mache.core.MacheImpl;
 import com.excelian.mache.core.NoRunningMongoDbForTests;
 import com.excelian.mache.core.SchemaOptions;
 import com.google.common.cache.CacheLoader;
@@ -32,48 +32,48 @@ public class MongoCacheIntegrationTest {
 
 
     private String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
-    private CacheThing<String, TestEntity> cacheThing;
+    private MacheImpl<String, TestEntity> mache;
 
     @Before
     public void setUp() throws Exception {
         List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(new NoRunningMongoDbForTests().HostName(), 27017));
-        cacheThing = new CacheThing<String, TestEntity>(
+        mache = new MacheImpl<String, TestEntity>(
                 new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
     }
 
     @After
     public void tearDown() throws Exception {
-        cacheThing.close();
+        mache.close();
     }
 
     @Test
     public void testGetDriver() throws Exception {
-        cacheThing.put("test-1", new TestEntity("test-1"));
-        cacheThing.get("test-1");
-        MongoDBCacheLoader cacheLoader = (MongoDBCacheLoader) cacheThing.getCacheLoader();
+        mache.put("test-1", new TestEntity("test-1"));
+        mache.get("test-1");
+        MongoDBCacheLoader cacheLoader = (MongoDBCacheLoader) mache.getCacheLoader();
         Mongo driver = cacheLoader.getDriverSession();
         assertNotNull(driver.getAddress());
     }
 
     @Test
     public void testPut() throws Exception {
-        cacheThing.put("test-1", new TestEntity("test-1"));
-        TestEntity test = cacheThing.get("test-1");
+        mache.put("test-1", new TestEntity("test-1"));
+        TestEntity test = mache.get("test-1");
         assertEquals("test-1", test.pkString);
     }
 
     @Test
     public void canPutTheSameItemAgainTest() throws Exception {
-        cacheThing.put("test-1", new TestEntity("test-1"));
-        cacheThing.put("test-1", new TestEntity("test-1"));//TODO: This should be passing
-        TestEntity test = cacheThing.get("test-1");
+        mache.put("test-1", new TestEntity("test-1"));
+        mache.put("test-1", new TestEntity("test-1"));//TODO: This should be passing
+        TestEntity test = mache.get("test-1");
         assertEquals("test-1", test.pkString);
     }
 
     @Test
     public void testReadCache() throws Exception {
-        cacheThing.put("test-2", new TestEntity("test-2"));
-        TestEntity test = cacheThing.get("test-2");
+        mache.put("test-2", new TestEntity("test-2"));
+        TestEntity test = mache.get("test-2");
         assertEquals("test-2", test.pkString);
     }
 
@@ -81,11 +81,11 @@ public class MongoCacheIntegrationTest {
     public void testRemove() throws Exception {
         CacheLoader.InvalidCacheLoadException exception = null;
         String key = "rem-test-2";
-        cacheThing.put(key, new TestEntity(key));
-        cacheThing.remove(key);
+        mache.put(key, new TestEntity(key));
+        mache.remove(key);
 
         try {
-            cacheThing.get(key);
+            mache.get(key);
         } catch (CacheLoader.InvalidCacheLoadException e) {
             exception = e;
         }
@@ -97,38 +97,38 @@ public class MongoCacheIntegrationTest {
     @Test
     public void testInvalidate() throws Exception {
         List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(new NoRunningMongoDbForTests().HostName(), 27017));
-        final CacheThing<String, TestEntity> cacheThing2 = new CacheThing<>(
+        final MacheImpl<String, TestEntity> mache = new MacheImpl<>(
                 new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
 
         final String key = "test-1";
         final String expectedDescription = "test1-description";
-        cacheThing.put(key, new TestEntity(key, expectedDescription));
-        assertEquals(expectedDescription, cacheThing.get(key).getaString());
-        assertEquals(expectedDescription, cacheThing2.get(key).getaString());
+        this.mache.put(key, new TestEntity(key, expectedDescription));
+        assertEquals(expectedDescription, this.mache.get(key).getaString());
+        assertEquals(expectedDescription, mache.get(key).getaString());
 
         final String expectedDescription2 = "test-description2";
-        cacheThing2.put(key, new TestEntity(key, expectedDescription2));
-        cacheThing.invalidate(key);
-        assertEquals(expectedDescription2, cacheThing.get(key).getaString());
-        assertEquals(expectedDescription2, cacheThing2.get(key).getaString());
+        mache.put(key, new TestEntity(key, expectedDescription2));
+        this.mache.invalidate(key);
+        assertEquals(expectedDescription2, this.mache.get(key).getaString());
+        assertEquals(expectedDescription2, mache.get(key).getaString());
 
-        cacheThing2.close();
+        mache.close();
     }
 
     @Test
     public void testReadThrough() throws Exception {
         List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(new NoRunningMongoDbForTests().HostName(), 27017));
-        cacheThing.put("test-2", new TestEntity("test-2"));
-        cacheThing.put("test-3", new TestEntity("test-3"));
+        this.mache.put("test-2", new TestEntity("test-2"));
+        this.mache.put("test-3", new TestEntity("test-3"));
         // replace the cache
         Thread.sleep(1000);
-        CacheThing<String, TestEntity> cacheThing1 = new CacheThing<String, TestEntity>(
+        MacheImpl<String, TestEntity> mache = new MacheImpl<String, TestEntity>(
                 new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
 
-        TestEntity test = cacheThing1.get("test-2");
+        TestEntity test = mache.get("test-2");
         assertEquals("test-2", test.pkString);
 
-        cacheThing1.close();
+        mache.close();
     }
 
     /**

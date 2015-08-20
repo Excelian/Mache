@@ -6,7 +6,7 @@ import com.google.common.cache.*;
 import java.util.UUID;
 
 
-public class CacheThing<K, V> implements Mache<K, V> {
+public class MacheImpl<K, V> implements Mache<K, V> {
 
     private final ForwardingCache<K, V> fwdCache;
     final private MacheLoader cacheLoader;
@@ -19,7 +19,7 @@ public class CacheThing<K, V> implements Mache<K, V> {
     private final LoadingCache<K, V> cache;
     private volatile boolean created;
 
-    public CacheThing(final MacheLoader cacheLoader, String... optionalSpec) {
+    public MacheImpl(final MacheLoader cacheLoader, String... optionalSpec) {
         this.cacheLoader = cacheLoader;
         if (optionalSpec != null && optionalSpec.length > 0) this.spec = optionalSpec[0];
 

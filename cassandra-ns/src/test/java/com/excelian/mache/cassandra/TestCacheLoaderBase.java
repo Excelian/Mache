@@ -1,6 +1,6 @@
 package com.excelian.mache.cassandra;
 
-import com.excelian.mache.core.CacheThing;
+import com.excelian.mache.core.MacheImpl;
 import com.excelian.mache.core.MacheLoader;
 import com.google.common.cache.CacheLoader;
 import org.junit.After;
@@ -22,24 +22,24 @@ Core common set of tests that all CacheLoader classes should pass
 public abstract class TestCacheLoaderBase {
 
     protected String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
-    private CacheThing<String, TestEntity> cacheThing;
+    private MacheImpl<String, TestEntity> mache;
 
     abstract protected MacheLoader buildCacheLoader(Class cls) throws Exception;
 
     @Before
     public void setUp() throws Exception {
-        cacheThing = new CacheThing<String, TestEntity>(buildCacheLoader(TestEntity.class));
+        mache = new MacheImpl<String, TestEntity>(buildCacheLoader(TestEntity.class));
     }
 
     @After
     public void tearDown() throws Exception {
-        cacheThing.close();
+        mache.close();
     }
 
     @Test
     public void testCanGetDriverSession() throws Exception {
         MacheLoader cacheloader = buildCacheLoader(TestEntity.class);
-        CacheThing cache = new CacheThing<String, TestEntity>(cacheloader);
+        MacheImpl cache = new MacheImpl<String, TestEntity>(cacheloader);
         cache.put("test-2", new TestEntity("test-2"));
         cache.get("test-2");
         assertNotNull(cacheloader.getDriverSession());
@@ -50,24 +50,24 @@ public abstract class TestCacheLoaderBase {
 
     @Test
     public void testPut() throws Exception {
-        cacheThing.put("value-yay", new TestEntity("value-yay"));
-        TestEntity test = cacheThing.get("value-yay");
+        mache.put("value-yay", new TestEntity("value-yay"));
+        TestEntity test = mache.get("value-yay");
         assertNotNull("Expected object to be retrieved from cache", test);
         assertEquals("value-yay", test.pkString);
     }
 
     @Test
     public void canPutTheSameItemAgainTest() throws Exception {
-        cacheThing.put("test-1", new TestEntity("test-1"));
-        cacheThing.put("test-1", new TestEntity("test-1"));
-        TestEntity test = cacheThing.get("test-1");
+        mache.put("test-1", new TestEntity("test-1"));
+        mache.put("test-1", new TestEntity("test-1"));
+        TestEntity test = mache.get("test-1");
         assertEquals("test-1", test.pkString);
     }
 
     @Test
     public void testReadCache() throws Exception {
-        cacheThing.put("test-2", new TestEntity("test-2"));
-        TestEntity test = cacheThing.get("test-2");
+        mache.put("test-2", new TestEntity("test-2"));
+        TestEntity test = mache.get("test-2");
         assertEquals("test-2", test.pkString);
     }
 
@@ -75,13 +75,13 @@ public abstract class TestCacheLoaderBase {
     public void testRemove() throws Exception {
         CacheLoader.InvalidCacheLoadException exception = null;
         String key = "rem-test-2";
-        cacheThing.put(key, new TestEntity(key));
-        assertNotNull("Expected entry to be in cache prior to remocal", cacheThing.get(key));
+        mache.put(key, new TestEntity(key));
+        assertNotNull("Expected entry to be in cache prior to remocal", mache.get(key));
 
-        cacheThing.remove(key);
+        mache.remove(key);
 
         try {
-            cacheThing.get(key);
+            mache.get(key);
         } catch (CacheLoader.InvalidCacheLoadException e) {
             exception = e;
         }
@@ -92,12 +92,12 @@ public abstract class TestCacheLoaderBase {
 
     @Test
     public void testReadThrough() throws Exception {
-        cacheThing.put("test-2", new TestEntity("test-2"));
-        cacheThing.put("test-3", new TestEntity("test-3"));
+        mache.put("test-2", new TestEntity("test-2"));
+        mache.put("test-3", new TestEntity("test-3"));
         // replace the cache
-        cacheThing = new CacheThing<String, TestEntity>(buildCacheLoader(TestEntity.class));
+        mache = new MacheImpl<String, TestEntity>(buildCacheLoader(TestEntity.class));
 
-        TestEntity test = cacheThing.get("test-2");
+        TestEntity test = mache.get("test-2");
         assertEquals("test-2", test.pkString);
     }
 
@@ -162,7 +162,7 @@ public abstract class TestCacheLoaderBase {
     @Test
     public void testPutComposite() throws Exception {
 
-        CacheThing<CompositeKey, TestEntityWithCompositeKey> compCache = new CacheThing<CompositeKey, TestEntityWithCompositeKey>(
+        MacheImpl<CompositeKey, TestEntityWithCompositeKey> compCache = new MacheImpl<CompositeKey, TestEntityWithCompositeKey>(
                 buildCacheLoader(TestEntityWithCompositeKey.class));
 
         TestEntityWithCompositeKey value = new TestEntityWithCompositeKey("neil", "mac", "explorer");

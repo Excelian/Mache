@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class CacheThingTest {
+public class MacheImplTest {
 
     private AbstractCacheLoader<String, String, String> fixture;
     private int created;
@@ -17,20 +17,20 @@ public class CacheThingTest {
     private int removed;
     private RemovalNotification receivedNotification;
     private int put;
-    private CacheThing<String, String> cacheThing;
+    private MacheImpl<String, String> mache;
 
     @Test
     public void canCreate() throws ExecutionException {
 
-        String test = cacheThing.get("TEST1");
-        test = cacheThing.get("TEST2");
+        String test = mache.get("TEST1");
+        test = mache.get("TEST2");
         assertEquals(1, created);
     }
 
 
     @Test
     public void canReadThrough() throws ExecutionException {
-        String test = cacheThing.get("TEST");
+        String test = mache.get("TEST");
         assertEquals(1, read);
         assertEquals("FIXTURE:loaded_TEST", test);
     }
@@ -38,32 +38,32 @@ public class CacheThingTest {
     @Test
     public void readsThroughOnceThenOnlyReadsFromCacheForSameKey() throws Exception {
 
-        assertNotNull(cacheThing.get("TEST"));
-        assertNotNull(cacheThing.get("TEST"));
-        assertNotNull(cacheThing.get("TEST"));
+        assertNotNull(mache.get("TEST"));
+        assertNotNull(mache.get("TEST"));
+        assertNotNull(mache.get("TEST"));
 
         assertEquals("Expected loader to have only been called once (the first time)", 1, read);
     }
 
     @Test
     public void canWriteThrough() throws ExecutionException {
-        cacheThing.put("TEST", "VALUE");
+        mache.put("TEST", "VALUE");
         assertEquals(1, put);
     }
 
     @Test
     public void canRemove() throws ExecutionException {
-        cacheThing.put("TEST", "VALUE");
-        cacheThing.remove("TEST");
+        mache.put("TEST", "VALUE");
+        mache.remove("TEST");
         assertEquals(1, removed);
     }
 
     @Test
     public void invalidateWorks() {
         final String key = "TEST";
-        cacheThing.put(key, "VALUE");
-        cacheThing.invalidate(key);
-        cacheThing.get(key);
+        mache.put(key, "VALUE");
+        mache.invalidate(key);
+        mache.get(key);
 
         assertEquals(1, read);
     }
@@ -71,13 +71,13 @@ public class CacheThingTest {
     @Test
     public void multipleInvalidateWorks() {
         final String key = "TEST";
-        cacheThing.put(key, "VALUE");
+        mache.put(key, "VALUE");
 
         final int invalidateTimes = 3;
 
         for (int i = 0; i < invalidateTimes; ++i) {
-            cacheThing.invalidate(key);
-            cacheThing.get(key);
+            mache.invalidate(key);
+            mache.get(key);
         }
 
         assertEquals(invalidateTimes, read);
@@ -118,6 +118,6 @@ public class CacheThingTest {
             public void invalidateAll() {
             }
         };
-        cacheThing = new CacheThing<String, String>(fixture);
+        mache = new MacheImpl<String, String>(fixture);
     }
 }
