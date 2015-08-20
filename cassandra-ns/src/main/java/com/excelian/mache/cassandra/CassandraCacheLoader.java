@@ -34,14 +34,14 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
     private static final int REPLICATION_FACTOR = 1; //Note: Travis only provides a single DSE node
     private static final String REPLICATION_CLASS = "SimpleStrategy";
 
-    final private Cluster cluster;
+    private final Cluster cluster;
     private Session session;
     private SchemaOptions schemaOption;
-    final private String keySpace;
+    private final String keySpace;
 
     private boolean isTableCreated = false;
 
-    final private Class<V> clazz;
+    private final Class<V> clazz;
 
     public CassandraCacheLoader(Class<V> clazz, Cluster cluster, SchemaOptions schemaOption, String keySpace) {
         this.cluster = cluster;
@@ -77,7 +77,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
         LOG.info("Created keyspace if missing {}", keySpace);
     }
 
-    void createTable() {
+    private void createTable() {
         if (!isTableCreated) {
             isTableCreated = true;
             CassandraAdminTemplate adminTemplate = new CassandraAdminTemplate(session, new MappingCassandraConverter());
