@@ -39,9 +39,9 @@ public class CacheFactoryImplIntegrationTest {
 	TestEntity testValue2 = new TestEntity("testValue2");
 
 	@Mock
-	CacheThingFactory spiedCacheThingFactory;
+	MacheFactory spiedMacheFactory;
 	
-	CacheThingFactory cacheThingFactory;
+	MacheFactory macheFactory;
 
 	private final UUIDUtils uuidUtils = new UUIDUtils();
 
@@ -51,17 +51,17 @@ public class CacheFactoryImplIntegrationTest {
 		
 		cacheLoader = new InMemoryCacheLoader<>("loaderForTestEntity");
 
-		cacheThingFactory = new CacheThingFactory();
+		macheFactory = new MacheFactory();
 
 		mqFactory1 = new ActiveMQFactory(LOCAL_MQ);
-		cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, spiedCacheThingFactory, uuidUtils);
+		cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, spiedMacheFactory, uuidUtils);
 
-		unspiedCache1 = cacheThingFactory.create(cacheLoader);
+		unspiedCache1 = macheFactory.create(cacheLoader);
 		spiedCache1 = spy(unspiedCache1);
-		when(spiedCacheThingFactory.create(cacheLoader)).thenReturn(spiedCache1);
+		when(spiedMacheFactory.create(cacheLoader)).thenReturn(spiedCache1);
 
 		mqFactory2 = new ActiveMQFactory(LOCAL_MQ);
-		cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, cacheThingFactory, uuidUtils);
+		cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, macheFactory, uuidUtils);
 	}
 
 	@After
@@ -100,9 +100,9 @@ public class CacheFactoryImplIntegrationTest {
 	public void shouldProperlyPropagateValues() throws ExecutionException, InterruptedException, JMSException {
 		MacheLoader<String, TestEntity2, String> cacheLoader = new InMemoryCacheLoader<>("loaderForTestEntity2");
 		MQFactory mqFactory1 = new ActiveMQFactory(LOCAL_MQ);
-		CacheFactory cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
+		CacheFactory cacheFactory1 = new CacheFactoryImpl(mqFactory1, mqConfiguration, new MacheFactory(), new UUIDUtils());
 		MQFactory mqFactory2 = new ActiveMQFactory(LOCAL_MQ);
-		CacheFactory cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
+		CacheFactory cacheFactory2 = new CacheFactoryImpl(mqFactory2, mqConfiguration, new MacheFactory(), new UUIDUtils());
 
 		Mache<String, TestEntity2> cache1 = cacheFactory1.createCache(cacheLoader);
 		Mache<String, TestEntity2> cache2 = cacheFactory2.createCache(cacheLoader);

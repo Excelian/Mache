@@ -1,6 +1,6 @@
 package com.excelian.mache.jmeter.mongo;
 
-import com.excelian.mache.core.CacheThingFactory;
+import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.MQConfiguration;
@@ -74,7 +74,7 @@ public abstract class MacheAbstractMongoSamplerClient extends
             throws JMSException {
         mqFactory1 = new ActiveMQFactory(mapParams.get("activemq.connection"));
         CacheFactoryImpl cacheFactory1 = new CacheFactoryImpl(mqFactory1,
-                getMQConfiguration(), new CacheThingFactory(), new UUIDUtils());
+                getMQConfiguration(), new MacheFactory(), new UUIDUtils());
         cache1 = cacheFactory1
                 .createCache(new MongoDBCacheLoader<String, MongoTestEntity>(
                         MongoTestEntity.class,

@@ -2,7 +2,7 @@ package com.excelian.mache.builder;
 
 
 import com.excelian.mache.observable.CacheFactoryImpl;
-import com.excelian.mache.core.CacheThingFactory;
+import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.builder.Builder.MacheDescriptor.StorageTypeBuilder;
@@ -94,10 +94,10 @@ public class Builder {
         final MQFactory mqFactory = getMqFactoryOrThrowRuntimeException(messagingProvisioner);
         final MQConfiguration mqConfiguration = () -> this.topic;
 
-        final CacheThingFactory cacheThingFactory = new CacheThingFactory();
+        final MacheFactory macheFactory = new MacheFactory();
 
         final CacheFactoryImpl cacheFactory = new CacheFactoryImpl(
-            mqFactory, mqConfiguration, cacheThingFactory, new UUIDUtils());
+            mqFactory, mqConfiguration, macheFactory, new UUIDUtils());
         return cacheFactory.createCache(cache);
       }
       return cache;

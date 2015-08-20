@@ -2,7 +2,7 @@ package com.excelian.mache.jmeter.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.excelian.mache.cassandra.CassandraCacheLoader;
-import com.excelian.mache.core.CacheThingFactory;
+import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.MQConfiguration;
@@ -37,7 +37,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
             CassandraCacheLoader<String, CassandraTestEntity> db = new CassandraCacheLoader(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
             db.create("", "");//this is to force the connection to occur within our setup
 
-            CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, new CacheThingFactory(), new UUIDUtils());
+            CacheFactoryImpl cacheFactory = new CacheFactoryImpl(mqFactory, mqConfiguration, new MacheFactory(), new UUIDUtils());
             cache = cacheFactory.createCache(db);
 
 

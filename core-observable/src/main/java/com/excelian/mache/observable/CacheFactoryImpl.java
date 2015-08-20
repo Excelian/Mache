@@ -4,7 +4,7 @@ import javax.cache.event.CacheEntryListenerException;
 
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.excelian.mache.observable.coordination.RemoteCacheEntryListener;
-import com.excelian.mache.core.CacheThingFactory;
+import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
@@ -17,19 +17,19 @@ import com.excelian.mache.observable.utils.UUIDUtils;
 public class CacheFactoryImpl implements CacheFactory {
 	private final MQFactory communicationFactory;
 	private final MQConfiguration configuration;
-	private final CacheThingFactory cacheThingFactory;
+	private final MacheFactory macheFactory;
 	private final UUIDUtils uuidUtils;
 
-	public CacheFactoryImpl(final MQFactory communicationFactory, final MQConfiguration configuration, final CacheThingFactory cacheThingFactory, final UUIDUtils uuidUtils) {
+	public CacheFactoryImpl(final MQFactory communicationFactory, final MQConfiguration configuration, final MacheFactory macheFactory, final UUIDUtils uuidUtils) {
 		this.communicationFactory = communicationFactory;
 		this.configuration = configuration;
-		this.cacheThingFactory = cacheThingFactory;
+		this.macheFactory = macheFactory;
 		this.uuidUtils = uuidUtils;
 	}
 
 	@Override
 	public <K, V, D> Mache<K, V> createCache(final MacheLoader<K, V, D> cacheLoader) {
-		return createCache(cacheThingFactory.create(cacheLoader));
+		return createCache(macheFactory.create(cacheLoader));
 	}
 
 
