@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryCacheLoader<K, V> extends AbstractCacheLoader<K, V, String> {
     private final String cacheName;
-    private final Map<K, V> store = new ConcurrentHashMap<K, V>();
+    private final Map<K, V> store = new ConcurrentHashMap<>();
 
     public InMemoryCacheLoader(final String name) {
         this.cacheName = name;
