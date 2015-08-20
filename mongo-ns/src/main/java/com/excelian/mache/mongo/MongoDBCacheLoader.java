@@ -67,7 +67,7 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
         // implicit in connect?
     }
 
-    void createTable() {
+    private void createTable() {
         if (!isTableCreated) {
             isTableCreated = true;
             if (!ops().collectionExists(clazz)) {
@@ -118,7 +118,7 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
         return new MongoTemplate(mongoClient, keySpace);
     }
 
-    public static Mongo connect(List<ServerAddress> hosts) {
+    private Mongo connect(List<ServerAddress> hosts) {
         return new MongoClient(hosts);
     }
 }
