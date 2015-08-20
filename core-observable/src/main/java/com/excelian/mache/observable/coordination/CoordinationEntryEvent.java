@@ -44,8 +44,4 @@ public class CoordinationEntryEvent<K> {
     public UUID getUniqueId() {
         return uniqueIdType1;
     }
-
-    public Date getUniqueIdTime() throws Exception {
-        return uniqueIdTime;
-    }
 }
