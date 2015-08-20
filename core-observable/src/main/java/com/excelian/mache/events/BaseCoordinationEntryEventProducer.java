@@ -15,7 +15,7 @@ public abstract class BaseCoordinationEntryEventProducer implements MapEventList
         this.topicName = topicName;
     }
 
-    abstract public void send(CoordinationEntryEvent<?> event);
+    public abstract void send(CoordinationEntryEvent<?> event);
 
-    abstract public void close();
+    public abstract void close();
 }
