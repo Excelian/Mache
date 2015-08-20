@@ -14,11 +14,11 @@ public enum SchemaOptions {
         this.dropSchema = dropSchema;
     }
 
-    public boolean ShouldCreateSchema() {
+    public boolean shouldCreateSchema() {
         return createSchema;
     }
 
-    public boolean ShouldDropSchema() {
+    public boolean shouldDropSchema() {
         return dropSchema;
     }
 }

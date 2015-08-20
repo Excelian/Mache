@@ -42,13 +42,13 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
     }
 
     public void create(String name, Object k) {
-        if (schemaOptions.ShouldCreateSchema() && mongoClient == null) {
+        if (schemaOptions.shouldCreateSchema() && mongoClient == null) {
             synchronized (this) {
                 if (mongoClient == null) {
                     try {
                         this.mongoClient = connect(hosts);
 
-                        if (schemaOptions.ShouldCreateSchema()) {
+                        if (schemaOptions.shouldCreateSchema()) {
                             createKeySpace();
                         }
                         createTable();
@@ -99,7 +99,7 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
     @Override
     public void close() {
         if (mongoClient != null) {
-            if (schemaOptions.ShouldDropSchema()) {
+            if (schemaOptions.shouldDropSchema()) {
                 mongoClient.dropDatabase(keySpace);
                 LOG.info("Dropped database {}", keySpace);
             }

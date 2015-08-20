@@ -52,12 +52,12 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
     }
 
     public void create(String ignored1, K ignored2) {
-        if (schemaOption.ShouldCreateSchema() && session == null) {
+        if (schemaOption.shouldCreateSchema() && session == null) {
             synchronized (this) {
                 if (session == null) {
                     try {
                         session = cluster.connect();
-                        if (schemaOption.ShouldCreateSchema()) {
+                        if (schemaOption.shouldCreateSchema()) {
                             createKeySpace();
                         }
                         createTable();
@@ -105,7 +105,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
     @Override
     public void close() {
         if (session != null && !session.isClosed()) {
-            if (schemaOption.ShouldDropSchema()) {
+            if (schemaOption.shouldDropSchema()) {
                 try {
                     session.execute(String.format("DROP KEYSPACE %s; ", keySpace));
                     LOG.info("Dropped keyspace {}", keySpace);

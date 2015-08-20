@@ -99,14 +99,14 @@ public class CouchbaseCacheLoader<K extends String, V> extends AbstractCacheLoad
     }
 
     private void dropBucket() {
-        if (config.getSchemaOptions().ShouldDropSchema() && manager.hasBucket(config.getBucketName())) {
+        if (config.getSchemaOptions().shouldDropSchema() && manager.hasBucket(config.getBucketName())) {
             LOG.debug("Removing bucket {}", config.getBucketName());
             manager.removeBucket(config.getBucketName(), TIMEOUT, TimeUnit.SECONDS);
         }
     }
 
     private void createBucket() {
-        if (config.getSchemaOptions().ShouldCreateSchema() && !manager.hasBucket(config.getBucketName())) {
+        if (config.getSchemaOptions().shouldCreateSchema() && !manager.hasBucket(config.getBucketName())) {
             LOG.debug("Creating bucket {}", config.getBucketName());
             BucketSettings settings = DefaultBucketSettings.builder()
                     .name(config.getBucketName())
