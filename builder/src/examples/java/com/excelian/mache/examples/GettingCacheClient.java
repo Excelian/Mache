@@ -11,52 +11,53 @@ import java.util.Arrays;
  */
 public class GettingCacheClient {
 
-  private enum CacheType {Cassandra, Mongo}
+    public static void main(String... commandLine) {
+        final Args args = parseArgs(commandLine);
+        final int count = args.count;
+        final Example example;
+        switch (args.cacheType) {
+            case Cassandra:
+                example = new CassandraExample();
+                break;
+            case Mongo:
+                example = new MongoExample();
+                break;
+            default:
+                throw new RuntimeException("Invalid cache type: [" + args.cacheType + "].  Valid values are:" + Arrays.toString(CacheType.values()));
+        }
+        doExample(count, example);
+    }
 
-  public static void main(String...commandLine) {
-    final Args args = parseArgs(commandLine);
-    final int count = args.count;
-    final Example example;
-    switch(args.cacheType){
-      case Cassandra:
-        example = new CassandraExample();
-        break;
-      case Mongo:
-        example = new MongoExample();
-        break;
-      default:
-        throw new RuntimeException("Invalid cache type: ["+args.cacheType+"].  Valid values are:"+Arrays.toString(CacheType.values()));
+    private static <T> void doExample(int count, Example<T> example) {
+        final Mache<String, T> cache = example.exampleCache();
+        System.out.println("Getting...");
+        for (int i = 0; i < count; i++) {
+            final T hello = cache.get("msg_" + i);
+            System.out.println("hello = " + hello);
+        }
+        cache.close();
     }
-    doExample(count, example);
-  }
 
-  private static <T> void doExample(int count, Example<T> example) {
-    final Mache<String, T> cache = example.exampleCache();
-    System.out.println("Getting...");
-    for (int i = 0; i < count ; i++) {
-      final T hello = cache.get("msg_"+i);
-      System.out.println("hello = " + hello);
+    private static Args parseArgs(String[] args) {
+        if (args.length == 2) {
+            final CacheType cacheType = CacheType.valueOf(args[1]);
+            final int count = Integer.parseInt(args[0]);
+            return new Args(count, cacheType);
+        }
+        else {
+            throw new RuntimeException("Usage : GettingCacheClient <get count> " + Arrays.toString(CacheType.values()));
+        }
     }
-    cache.close();
-  }
 
-  private static Args parseArgs(String[] args) {
-    if (args.length == 2){
-      final CacheType cacheType = CacheType.valueOf(args[1]);
-      final int count = Integer.parseInt(args[0]);
-      return new Args(count, cacheType);
-    }
-    else{
-      throw new RuntimeException("Usage : GettingCacheClient <get count> "+ Arrays.toString(CacheType.values()));
-    }
-  }
+    private enum CacheType {Cassandra, Mongo}
 
-  private static class Args {
-    private final int count;
-    private final CacheType cacheType;
-    public Args(int count, CacheType cacheType) {
-      this.count = count;
-      this.cacheType = cacheType;
+    private static class Args {
+        private final int count;
+        private final CacheType cacheType;
+
+        public Args(int count, CacheType cacheType) {
+            this.count = count;
+            this.cacheType = cacheType;
+        }
     }
-  }
 }
