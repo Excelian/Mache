@@ -13,6 +13,14 @@ dependencies {
     testCompile project(path: ':core', configuration: 'tests')
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs= ['src/main/java', 'src/examples/java']
+        }
+    }
+}
+
 test {
     systemProperties 'property': 'value'
 }
