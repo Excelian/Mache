@@ -2,8 +2,8 @@ package com.excelian.mache.jmeter.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.excelian.mache.cassandra.CassandraCacheLoader;
-import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.core.Mache;
+import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
@@ -14,6 +14,7 @@ import com.excelian.mache.observable.utils.UUIDUtils;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -34,17 +35,17 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
             mqFactory = new ActiveMQFactory(mapParams.get("activemq.connection"));
 
             Cluster cluster = CassandraCacheLoader.connect(mapParams.get("server.ip.address"), mapParams.get("cluster.name"), 9042);
-            CassandraCacheLoader<String, CassandraTestEntity> db = new CassandraCacheLoader(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
+            CassandraCacheLoader<String, CassandraTestEntity> db = new CassandraCacheLoader<>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
             db.create("", "");//this is to force the connection to occur within our setup
 
             MessageQueueObservableCacheFactory cacheFactory = new MessageQueueObservableCacheFactory(mqFactory, mqConfiguration, new MacheFactory(), new UUIDUtils());
             cache = cacheFactory.createCache(db);
 
-
             CassandraTestEntity entity = new CassandraTestEntity("dummy", "warmup");
             cache.put(entity.pkString, entity);
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);
         }
     }
@@ -54,7 +55,8 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
         if (cache != null) cache.close();
         if (mqFactory != null) try {
             mqFactory.close();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -79,7 +81,8 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
                 }
 
                 result.setResponseMessage("Read " + entity.pkString + " from Cache");
-            } else {
+            }
+            else {
                 String entityKey = mapParams.get("entity.key");
                 String entityValue = mapParams.get("entity.value");
 
@@ -89,11 +92,11 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
                 result.setResponseMessage("Put " + entity.pkString + " into Cache");
             }
             success = true;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             SetupResultForError(result, e);
             return result;
         }
-
         result.sampleEnd();
         result.setSuccessful(success);
         return result;
