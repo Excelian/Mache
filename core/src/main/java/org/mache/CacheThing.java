@@ -1,16 +1,12 @@
 package org.mache;
 
+import com.fasterxml.uuid.Generators;
+import com.google.common.cache.*;
+
 import java.util.UUID;
 
-import com.fasterxml.uuid.Generators;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.ForwardingCache;
-import com.google.common.cache.LoadingCache;
 
-
-public class CacheThing<K,V> implements ExCache<K,V>  {
+public class CacheThing<K, V> implements ExCache<K, V> {
 
     private final ForwardingCache<K, V> fwdCache;
     final private ExCacheLoader cacheLoader;
@@ -27,9 +23,9 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
         this.cacheLoader = cacheLoader;
         if (optionalSpec != null && optionalSpec.length > 0) this.spec = optionalSpec[0];
 
-        cache = CacheBuilder.from(spec).
-                recordStats()/*.removalListener((RemovalListener<K,V>) cacheLoader)*/.
-                build((CacheLoader<K,V>) cacheLoader);
+        cache = CacheBuilder.from(spec)
+                .recordStats()/*.removalListener((RemovalListener<K,V>) cacheLoader)*/
+                .build((CacheLoader<K, V>) cacheLoader);
 
         fwdCache = new ForwardingCache<K, V>() {
             @Override
@@ -57,7 +53,9 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
     }
 
     @Override
-    public UUID getId() { return cacheId; }
+    public UUID getId() {
+        return cacheId;
+    }
 
     @Override
     public V get(final K k) {
@@ -75,12 +73,14 @@ public class CacheThing<K,V> implements ExCache<K,V>  {
         fwdCache.invalidate(k);
         cacheLoader.put(k, v);
     }
+
     @Override
     public void remove(K k) {
         createMaybe(k);
         cacheLoader.remove(k);
         fwdCache.invalidate(k);
     }
+
     @Override
     public void invalidateAll() {
         fwdCache.invalidateAll();

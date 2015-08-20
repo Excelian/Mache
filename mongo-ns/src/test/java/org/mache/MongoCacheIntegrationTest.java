@@ -4,7 +4,10 @@ import com.codeaffine.test.ConditionalIgnoreRule;
 import com.google.common.cache.CacheLoader;
 import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,13 +17,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static com.codeaffine.test.ConditionalIgnoreRule.*;
+import static com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * Created by neil.avery on 09/06/2015.
- */
 @IgnoreIf(condition = NoRunningMongoDbForTests.class)
 public class MongoCacheIntegrationTest {
 
@@ -35,7 +35,7 @@ public class MongoCacheIntegrationTest {
     public void setUp() throws Exception {
         List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(new NoRunningMongoDbForTests().HostName(), 27017));
         cacheThing = new CacheThing<String, TestEntity>(
-                new MongoDBCacheLoader<String,TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
+                new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
     }
 
     @After
@@ -76,16 +76,15 @@ public class MongoCacheIntegrationTest {
 
     @Test
     public void testRemove() throws Exception {
-        CacheLoader.InvalidCacheLoadException exception=null;
+        CacheLoader.InvalidCacheLoadException exception = null;
         String key = "rem-test-2";
         cacheThing.put(key, new TestEntity(key));
         cacheThing.remove(key);
 
         try {
             cacheThing.get(key);
-        }
-        catch(CacheLoader.InvalidCacheLoadException e) {
-            exception=e;
+        } catch (CacheLoader.InvalidCacheLoadException e) {
+            exception = e;
         }
 
         assertNotNull("Exception expected to have been thrown", exception);
@@ -130,7 +129,7 @@ public class MongoCacheIntegrationTest {
     }
 
     /**
-     *  @see "http://docs.spring.io/spring-data/data-mongo/docs/1.8.0.M1/reference/html/#mapping-usage"
+     * @see "http://docs.spring.io/spring-data/data-mongo/docs/1.8.0.M1/reference/html/#mapping-usage"
      */
     @Document
     public static class TestEntity {
@@ -145,8 +144,7 @@ public class MongoCacheIntegrationTest {
         @Indexed
         private String aString = "yay";
 
-        public TestEntity()
-        {
+        public TestEntity() {
             /*Default constructor required by mongo driver (findbyid call) */
         }
 

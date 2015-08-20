@@ -1,17 +1,14 @@
 package org.mache.events;
 
+import org.mache.coordination.CoordinationEntryEvent;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import org.mache.coordination.CoordinationEntryEvent;
-
-/**
- * Created by sundance on 14/03/15.
- */
-public class MQFactoryImpl implements  MQFactory {
+public class MQFactoryImpl implements MQFactory {
     private BlockingQueue<CoordinationEntryEvent<?>> eventQueue;
-    
-    public MQFactoryImpl(){
+
+    public MQFactoryImpl() {
         eventQueue = new ArrayBlockingQueue<CoordinationEntryEvent<?>>(100);
     }
 

@@ -1,11 +1,11 @@
 package org.mache;
 
 import org.junit.Test;
-import org.mache.utils.UUIDUtils;
 import org.mache.coordination.CoordinationEntryEvent;
+import org.mache.utils.UUIDUtils;
 
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 public class ObservableMapTest {
     private int fired;
@@ -14,7 +14,7 @@ public class ObservableMapTest {
     @Test
     public void testGet() throws Exception {
         @SuppressWarnings("unchecked")
-		ExCache<String, String> cache = mock(ExCache.class);
+        ExCache<String, String> cache = mock(ExCache.class);
         ObservableMap<String, String> observable = new ObservableMap<String, String>(cache, uuidUtils);
         observable.registerListener(new MapEventListener() {
             @Override
@@ -29,8 +29,8 @@ public class ObservableMapTest {
 
     @Test
     public void testPut() throws Exception {
-    	@SuppressWarnings("unchecked")
-    	ExCache<String, String> cache = mock(ExCache.class);
+        @SuppressWarnings("unchecked")
+        ExCache<String, String> cache = mock(ExCache.class);
         ObservableMap<String, String> observable = new ObservableMap<>(cache, uuidUtils);
         observable.registerListener(new MapEventListener() {
             @Override

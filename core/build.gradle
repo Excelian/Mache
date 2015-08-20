@@ -1,16 +1,3 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-
-sourceCompatibility = 1.8
-version = '1.0'
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'Cache-Core',
-                   'Implementation-Version': version
-    }
-}
-
 task testJar(type: Jar, dependsOn: testClasses) {
     baseName = "test-${project.archivesBaseName}"
     from sourceSets.test.output
@@ -24,40 +11,6 @@ artifacts {
     tests testJar
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
-    compile 'com.google.guava:guava:18.0'
-    compile 'org.springframework.data:spring-data-cassandra:1.2.0.RELEASE'
     compile 'com.fasterxml.uuid:java-uuid-generator:3.1.3'
-
-    testCompile group: 'junit', name: 'junit', version: '4.+'
 }
-
-test {
-    testLogging.exceptionFormat = 'full'
-    testLogging.showStackTraces = true
-    testLogging.showStandardStreams = true
-
-    beforeTest { descriptor ->
-        logger.lifecycle("Running test: " + descriptor)
-    }
-
-    // listen to standard out and standard error of the test JVM(s)
-    onOutput { descriptor, event ->
-        logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
-    }
-}
-
-
-uploadArchives {
-    repositories {
-       flatDir {
-           dirs 'repos'
-       }
-    }
-}
-
