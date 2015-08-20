@@ -1,4 +1,4 @@
-package com.excelian.mache;
+package com.excelian.mache.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ConsistencyLevel;
@@ -8,6 +8,8 @@ import com.datastax.driver.core.exceptions.DriverException;
 import com.datastax.driver.core.policies.ConstantReconnectionPolicy;
 import com.datastax.driver.core.policies.DCAwareRoundRobinPolicy;
 import com.datastax.driver.core.policies.TokenAwarePolicy;
+import com.excelian.mache.AbstractCacheLoader;
+import com.excelian.mache.SchemaOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cassandra.core.cql.CqlIdentifier;

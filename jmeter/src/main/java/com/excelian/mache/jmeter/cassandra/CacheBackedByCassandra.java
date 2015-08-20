@@ -2,6 +2,7 @@ package com.excelian.mache.jmeter.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.excelian.mache.*;
+import com.excelian.mache.cassandra.CassandraCacheLoader;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.events.integration.ActiveMQFactory;

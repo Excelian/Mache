@@ -6,7 +6,7 @@ import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
-import com.excelian.mache.CassandraCacheLoader;
+import com.excelian.mache.cassandra.CassandraCacheLoader;
 
 import java.util.Map;
 

@@ -1,8 +1,9 @@
-package com.excelian.mache.builder;
+package com.excelian.mache.cassandra.builder;
 
 import com.datastax.driver.core.Cluster;
 import com.excelian.mache.CacheThingFactory;
-import com.excelian.mache.CassandraCacheLoader;
+import com.excelian.mache.builder.StorageProvisioner;
+import com.excelian.mache.cassandra.CassandraCacheLoader;
 import com.excelian.mache.ExCache;
 import com.excelian.mache.SchemaOptions;
 
