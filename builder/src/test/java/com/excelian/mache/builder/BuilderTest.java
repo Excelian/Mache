@@ -2,10 +2,10 @@ package com.excelian.mache.builder;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
-import com.excelian.mache.ExCache;
-import com.excelian.mache.NoRunningCassandraDbForTests;
-import com.excelian.mache.NoRunningMongoDbForTests;
-import com.excelian.mache.SchemaOptions;
+import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.NoRunningCassandraDbForTests;
+import com.excelian.mache.core.NoRunningMongoDbForTests;
+import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.examples.cassandra.CassandraAnnotatedMessage;
 import org.junit.BeforeClass;
 import org.junit.Rule;

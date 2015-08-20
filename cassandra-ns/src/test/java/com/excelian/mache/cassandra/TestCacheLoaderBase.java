@@ -1,7 +1,7 @@
 package com.excelian.mache.cassandra;
 
-import com.excelian.mache.CacheThing;
-import com.excelian.mache.ExCacheLoader;
+import com.excelian.mache.core.CacheThing;
+import com.excelian.mache.core.ExCacheLoader;
 import com.google.common.cache.CacheLoader;
 import org.junit.After;
 import org.junit.Before;

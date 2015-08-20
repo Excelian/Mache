@@ -2,11 +2,11 @@ package com.excelian.mache.integrations.eventing;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 
-import com.excelian.mache.NoRunningKafkaForTests;
+import com.excelian.mache.core.NoRunningKafkaForTests;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.events.integration.KafkaMQFactory;
 import org.junit.Rule;
-import com.excelian.mache.NotRunningInExcelian;
+import com.excelian.mache.core.NotRunningInExcelian;
 
 import javax.jms.JMSException;
 

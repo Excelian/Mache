@@ -1,6 +1,9 @@
 package com.excelian.mache;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
+import com.excelian.mache.core.CacheThing;
+import com.excelian.mache.core.NoRunningMongoDbForTests;
+import com.excelian.mache.core.SchemaOptions;
 import com.google.common.cache.CacheLoader;
 import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;

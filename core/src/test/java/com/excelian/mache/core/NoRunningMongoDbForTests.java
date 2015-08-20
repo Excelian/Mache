@@ -1,4 +1,4 @@
-package com.excelian.mache;
+package com.excelian.mache.core;
 
 public class NoRunningMongoDbForTests extends TestEnvironmentPortCheckIgnoreCondition {
     public NoRunningMongoDbForTests() {

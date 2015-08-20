@@ -1,7 +1,7 @@
 package com.excelian.mache.examples.cassandra;
 
-import com.excelian.mache.ExCache;
-import com.excelian.mache.SchemaOptions;
+import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.builder.Builder;
 import com.excelian.mache.examples.Example;
 

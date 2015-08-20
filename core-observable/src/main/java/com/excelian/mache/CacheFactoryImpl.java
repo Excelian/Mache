@@ -4,6 +4,9 @@ import javax.cache.event.CacheEntryListenerException;
 
 import com.excelian.mache.coordination.CoordinationEntryEvent;
 import com.excelian.mache.coordination.RemoteCacheEntryListener;
+import com.excelian.mache.core.CacheThingFactory;
+import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.ExCacheLoader;
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;

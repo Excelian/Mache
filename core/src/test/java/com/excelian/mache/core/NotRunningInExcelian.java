@@ -1,4 +1,4 @@
-package com.excelian.mache;
+package com.excelian.mache.core;
 
 import com.codeaffine.test.ConditionalIgnoreRule.IgnoreCondition;
 

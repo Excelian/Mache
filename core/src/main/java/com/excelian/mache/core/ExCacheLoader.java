@@ -1,4 +1,4 @@
-package com.excelian.mache;
+package com.excelian.mache.core;
 
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;

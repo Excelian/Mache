@@ -1,6 +1,9 @@
 package com.excelian.mache.jmeter.mongo;
 
 import com.excelian.mache.*;
+import com.excelian.mache.core.CacheThingFactory;
+import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.integration.ActiveMQFactory;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;

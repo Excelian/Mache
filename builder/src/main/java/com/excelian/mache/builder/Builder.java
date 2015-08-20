@@ -2,9 +2,9 @@ package com.excelian.mache.builder;
 
 
 import com.excelian.mache.CacheFactoryImpl;
-import com.excelian.mache.CacheThingFactory;
-import com.excelian.mache.ExCache;
-import com.excelian.mache.SchemaOptions;
+import com.excelian.mache.core.CacheThingFactory;
+import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.builder.Builder.MacheDescriptor.StorageTypeBuilder;
 import com.excelian.mache.builder.StorageProvisioner.ClusterDetails;
 import com.excelian.mache.builder.StorageProvisioner.IgnoredClusterDetails;

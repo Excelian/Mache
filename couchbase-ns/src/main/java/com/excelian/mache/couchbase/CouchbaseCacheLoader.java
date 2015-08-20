@@ -6,7 +6,7 @@ import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.cluster.ClusterManager;
 import com.couchbase.client.java.cluster.DefaultBucketSettings;
-import com.excelian.mache.AbstractCacheLoader;
+import com.excelian.mache.core.AbstractCacheLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;

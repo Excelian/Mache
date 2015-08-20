@@ -1,4 +1,4 @@
-package com.excelian.mache;
+package com.excelian.mache.core;
 
 public class NoRunningCassandraDbForTests extends TestEnvironmentPortCheckIgnoreCondition {
     public NoRunningCassandraDbForTests() {

@@ -1,8 +1,8 @@
-package com.excelian.mache;
+package com.excelian.mache.core;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 
-import static com.excelian.mache.PortCheck.PortAccessible;
+import static com.excelian.mache.core.PortCheck.PortAccessible;
 
 public abstract class TestEnvironmentPortCheckIgnoreCondition implements ConditionalIgnoreRule.IgnoreCondition {
     protected final String hostName;

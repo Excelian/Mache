@@ -1,11 +1,11 @@
 package com.excelian.mache.cassandra.builder;
 
 import com.datastax.driver.core.Cluster;
-import com.excelian.mache.CacheThingFactory;
+import com.excelian.mache.core.CacheThingFactory;
 import com.excelian.mache.builder.StorageProvisioner;
 import com.excelian.mache.cassandra.CassandraCacheLoader;
-import com.excelian.mache.ExCache;
-import com.excelian.mache.SchemaOptions;
+import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.SchemaOptions;
 
 /**
  * Created by jbowkett on 11/08/15.

@@ -2,7 +2,7 @@ package com.excelian.mache.jmeter.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.excelian.mache.cassandra.CassandraCacheLoader;
-import com.excelian.mache.SchemaOptions;
+import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;

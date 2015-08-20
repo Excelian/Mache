@@ -1,6 +1,7 @@
 package com.excelian.mache;
 
 import com.excelian.mache.coordination.CoordinationEntryEvent;
+import com.excelian.mache.core.ExCache;
 import org.junit.Test;
 import com.excelian.mache.utils.UUIDUtils;
 

@@ -3,9 +3,9 @@ package com.excelian.mache.cassandra;
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import com.datastax.driver.core.Cluster;
-import com.excelian.mache.ExCacheLoader;
-import com.excelian.mache.NoRunningCassandraDbForTests;
-import com.excelian.mache.SchemaOptions;
+import com.excelian.mache.core.ExCacheLoader;
+import com.excelian.mache.core.NoRunningCassandraDbForTests;
+import com.excelian.mache.core.SchemaOptions;
 import org.junit.Rule;
 
 /**

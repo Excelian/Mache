@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.jms.JMSException;
 
+import com.excelian.mache.core.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

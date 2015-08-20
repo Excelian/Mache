@@ -1,4 +1,4 @@
-package com.excelian.mache;
+package com.excelian.mache.core;
 
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.RemovalCause;

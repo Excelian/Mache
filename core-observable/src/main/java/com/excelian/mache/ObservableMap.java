@@ -1,6 +1,8 @@
 package com.excelian.mache;
 
 import com.excelian.mache.coordination.CoordinationEntryEvent;
+import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.ExCacheLoader;
 import com.excelian.mache.utils.UUIDUtils;
 
 import java.util.UUID;

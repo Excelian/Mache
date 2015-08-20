@@ -5,7 +5,7 @@ import com.couchbase.client.java.env.CouchbaseEnvironment;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import com.excelian.mache.SchemaOptions;
+import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.couchbase.CouchbaseCacheLoader;
 import com.excelian.mache.couchbase.CouchbaseConfig;
 import org.mockito.invocation.InvocationOnMock;

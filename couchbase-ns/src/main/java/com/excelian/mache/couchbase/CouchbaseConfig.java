@@ -1,7 +1,7 @@
 package com.excelian.mache.couchbase;
 
 import com.couchbase.client.java.env.CouchbaseEnvironment;
-import com.excelian.mache.SchemaOptions;
+import com.excelian.mache.core.SchemaOptions;
 
 import java.util.ArrayList;
 import java.util.Collections;

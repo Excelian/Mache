@@ -1,5 +1,7 @@
 package com.excelian.mache;
 
+import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.SchemaOptions;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;

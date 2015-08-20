@@ -1,30 +1,7 @@
-package com.excelian.mache;
+package com.excelian.mache.core;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-class TestEntity {
-    String pkey;
-
-    TestEntity(String key) {
-        this.pkey = key;
-    }
-}
-
-class TestEntity2 {
-    String pkey;
-    String otherValue;
-
-    TestEntity2(String key, String otherValue) {
-        this.pkey = key;
-        this.otherValue = otherValue;
-    }
-
-    @Override
-    public String toString() {
-        return "TestEntity2 [pkey=" + pkey + ", otherValue=" + otherValue + "]";
-    }
-}
 
 public class InMemoryCacheLoader<K, V> extends AbstractCacheLoader<K, V, String> {
     private final String cacheName;

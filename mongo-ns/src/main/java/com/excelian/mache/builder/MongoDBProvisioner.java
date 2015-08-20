@@ -1,10 +1,10 @@
 package com.excelian.mache.builder;
 
 import com.mongodb.ServerAddress;
-import com.excelian.mache.CacheThingFactory;
-import com.excelian.mache.ExCache;
+import com.excelian.mache.core.CacheThingFactory;
+import com.excelian.mache.core.ExCache;
 import com.excelian.mache.MongoDBCacheLoader;
-import com.excelian.mache.SchemaOptions;
+import com.excelian.mache.core.SchemaOptions;
 
 import java.util.Arrays;
 

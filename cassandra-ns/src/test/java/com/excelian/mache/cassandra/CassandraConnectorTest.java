@@ -5,7 +5,7 @@ import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Metadata;
 import com.datastax.driver.core.Session;
-import com.excelian.mache.NoRunningCassandraDbForTests;
+import com.excelian.mache.core.NoRunningCassandraDbForTests;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
