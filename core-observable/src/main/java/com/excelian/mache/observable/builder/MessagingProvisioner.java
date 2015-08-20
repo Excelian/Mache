@@ -1,4 +1,4 @@
-package com.excelian.mache.builder;
+package com.excelian.mache.observable.builder;
 
 import com.excelian.mache.events.MQFactory;
 

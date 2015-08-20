@@ -1,4 +1,4 @@
-package com.excelian.mache.coordination;
+package com.excelian.mache.observable.coordination;
 
 import javax.cache.event.CacheEntryListenerException;
 

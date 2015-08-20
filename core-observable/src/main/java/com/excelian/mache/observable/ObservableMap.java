@@ -1,9 +1,9 @@
-package com.excelian.mache;
+package com.excelian.mache.observable;
 
-import com.excelian.mache.coordination.CoordinationEntryEvent;
+import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.excelian.mache.core.ExCache;
 import com.excelian.mache.core.ExCacheLoader;
-import com.excelian.mache.utils.UUIDUtils;
+import com.excelian.mache.observable.utils.UUIDUtils;
 
 import java.util.UUID;
 

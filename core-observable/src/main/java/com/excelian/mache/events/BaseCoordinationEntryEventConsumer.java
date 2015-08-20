@@ -1,7 +1,7 @@
 package com.excelian.mache.events;
 
-import com.excelian.mache.coordination.*;
-import com.excelian.mache.EventType;
+import com.excelian.mache.observable.coordination.*;
+import com.excelian.mache.observable.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

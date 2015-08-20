@@ -1,4 +1,4 @@
-package com.excelian.mache;
+package com.excelian.mache.observable;
 
 import com.excelian.mache.core.ExCache;
 import com.excelian.mache.core.ExCacheLoader;

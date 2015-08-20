@@ -1,6 +1,5 @@
 package com.excelian.mache.jmeter.mongo;
 
-import com.excelian.mache.*;
 import com.excelian.mache.core.CacheThingFactory;
 import com.excelian.mache.core.ExCache;
 import com.excelian.mache.core.SchemaOptions;
@@ -8,7 +7,8 @@ import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.integration.ActiveMQFactory;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 import com.excelian.mache.mongo.MongoDBCacheLoader;
-import com.excelian.mache.utils.UUIDUtils;
+import com.excelian.mache.observable.CacheFactoryImpl;
+import com.excelian.mache.observable.utils.UUIDUtils;
 import com.mongodb.ServerAddress;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;

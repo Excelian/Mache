@@ -1,4 +1,4 @@
-package com.excelian.mache;
+package com.excelian.mache.observable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -16,7 +16,7 @@ import org.junit.Test;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.events.integration.ActiveMQFactory;
-import com.excelian.mache.utils.UUIDUtils;
+import com.excelian.mache.observable.utils.UUIDUtils;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 

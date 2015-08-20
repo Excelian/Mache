@@ -1,16 +1,16 @@
-package com.excelian.mache;
+package com.excelian.mache.observable;
 
 import javax.cache.event.CacheEntryListenerException;
 
-import com.excelian.mache.coordination.CoordinationEntryEvent;
-import com.excelian.mache.coordination.RemoteCacheEntryListener;
+import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
+import com.excelian.mache.observable.coordination.RemoteCacheEntryListener;
 import com.excelian.mache.core.CacheThingFactory;
 import com.excelian.mache.core.ExCache;
 import com.excelian.mache.core.ExCacheLoader;
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
-import com.excelian.mache.utils.UUIDUtils;
+import com.excelian.mache.observable.utils.UUIDUtils;
 
 //TODO create artifact to put this class into - it probably will be final artifact depending on anything else
 //this is actually a MessageQueueObservableCacheFactory

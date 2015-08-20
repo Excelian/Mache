@@ -1,4 +1,4 @@
-package com.excelian.mache.utils;
+package com.excelian.mache.observable.utils;
 
 import com.fasterxml.uuid.Generators;
 import org.junit.Test;

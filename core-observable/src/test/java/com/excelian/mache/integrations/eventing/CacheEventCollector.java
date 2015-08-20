@@ -1,6 +1,6 @@
 package com.excelian.mache.integrations.eventing;
 
-import com.excelian.mache.coordination.*;
+import com.excelian.mache.observable.coordination.*;
 
 import javax.cache.event.CacheEntryListenerException;
 import java.util.concurrent.ArrayBlockingQueue;

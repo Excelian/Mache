@@ -1,9 +1,9 @@
-package com.excelian.mache;
+package com.excelian.mache.observable;
 
-import com.excelian.mache.coordination.CoordinationEntryEvent;
+import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.excelian.mache.core.ExCache;
 import org.junit.Test;
-import com.excelian.mache.utils.UUIDUtils;
+import com.excelian.mache.observable.utils.UUIDUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;

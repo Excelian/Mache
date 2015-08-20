@@ -1,6 +1,6 @@
 package com.excelian.mache.events.integration.builder;
 
-import com.excelian.mache.builder.MessagingProvisioner;
+import com.excelian.mache.observable.builder.MessagingProvisioner;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.events.integration.KafkaMQFactory;
 

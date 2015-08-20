@@ -1,8 +1,8 @@
-package com.excelian.mache.coordination;
+package com.excelian.mache.observable.coordination;
 
 import com.fasterxml.uuid.Generators;
-import com.excelian.mache.EventType;
-import com.excelian.mache.utils.UUIDUtils;
+import com.excelian.mache.observable.EventType;
+import com.excelian.mache.observable.utils.UUIDUtils;
 
 import java.util.Date;
 import java.util.UUID;

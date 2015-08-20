@@ -1,4 +1,4 @@
-package com.excelian.mache;
+package com.excelian.mache.observable;
 
 /**
  * The type of event received by the listener.

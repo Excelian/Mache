@@ -1,6 +1,6 @@
 package com.excelian.mache.events.integration;
 
-import com.excelian.mache.coordination.CoordinationEntryEvent;
+import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.google.gson.Gson;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;

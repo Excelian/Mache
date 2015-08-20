@@ -1,7 +1,7 @@
 package com.excelian.mache.builder;
 
 
-import com.excelian.mache.CacheFactoryImpl;
+import com.excelian.mache.observable.CacheFactoryImpl;
 import com.excelian.mache.core.CacheThingFactory;
 import com.excelian.mache.core.ExCache;
 import com.excelian.mache.core.SchemaOptions;
@@ -11,7 +11,8 @@ import com.excelian.mache.builder.StorageProvisioner.IgnoredClusterDetails;
 import com.excelian.mache.builder.StorageProvisioner.StorageServerDetails;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
-import com.excelian.mache.utils.UUIDUtils;
+import com.excelian.mache.observable.builder.MessagingProvisioner;
+import com.excelian.mache.observable.utils.UUIDUtils;
 
 import javax.jms.JMSException;
 import java.io.IOException;

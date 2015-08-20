@@ -1,6 +1,6 @@
 package com.excelian.mache.events;
 
-import com.excelian.mache.coordination.CoordinationEntryEvent;
+import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

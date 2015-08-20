@@ -1,7 +1,6 @@
 package com.excelian.mache.jmeter.cassandra;
 
 import com.datastax.driver.core.Cluster;
-import com.excelian.mache.*;
 import com.excelian.mache.cassandra.CassandraCacheLoader;
 import com.excelian.mache.core.CacheThingFactory;
 import com.excelian.mache.core.ExCache;
@@ -10,7 +9,8 @@ import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.events.integration.ActiveMQFactory;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
-import com.excelian.mache.utils.UUIDUtils;
+import com.excelian.mache.observable.CacheFactoryImpl;
+import com.excelian.mache.observable.utils.UUIDUtils;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;

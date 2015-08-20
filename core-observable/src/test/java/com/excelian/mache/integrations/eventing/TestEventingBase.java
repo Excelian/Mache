@@ -1,11 +1,11 @@
 package com.excelian.mache.integrations.eventing;
 
-import com.excelian.mache.EventType;
-import com.excelian.mache.coordination.CoordinationEntryEvent;
+import com.excelian.mache.observable.EventType;
+import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
-import com.excelian.mache.utils.UUIDUtils;
+import com.excelian.mache.observable.utils.UUIDUtils;
 import com.fasterxml.uuid.Generators;
 import org.junit.Test;
 import com.excelian.mache.events.BaseCoordinationEntryEventProducer;
