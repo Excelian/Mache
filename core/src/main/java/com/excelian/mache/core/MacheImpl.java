@@ -9,7 +9,7 @@ import java.util.UUID;
 public class MacheImpl<K, V> implements Mache<K, V> {
 
     private final ForwardingCache<K, V> fwdCache;
-    final private MacheLoader cacheLoader;
+    final private MacheLoader<K, V, ?> cacheLoader;
     private final UUID cacheId;
 
     //XXX weak keys cause invalidation tto fail because of using identity function for quivalence see http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilder.html#weakKeys()
@@ -19,12 +19,12 @@ public class MacheImpl<K, V> implements Mache<K, V> {
     private final LoadingCache<K, V> cache;
     private volatile boolean created;
 
-    public MacheImpl(final MacheLoader cacheLoader, String... optionalSpec) {
+    public MacheImpl(final MacheLoader<K, V, ?> cacheLoader, String... optionalSpec) {
         this.cacheLoader = cacheLoader;
         if (optionalSpec != null && optionalSpec.length > 0) this.spec = optionalSpec[0];
 
         cache = CacheBuilder.from(spec)
-                .recordStats()/*.removalListener((RemovalListener<K,V>) cacheLoader)*/
+                .recordStats()
                 .build((CacheLoader<K, V>) cacheLoader);
 
         fwdCache = new ForwardingCache<K, V>() {
@@ -60,10 +60,8 @@ public class MacheImpl<K, V> implements Mache<K, V> {
     @Override
     public V get(final K k) {
         createMaybe(k);
-        // a bit crappy - but the fwdrCache doesnt expose 'getOrLoad(K, Loader)'
-
-        final V result = cache.getUnchecked(k);
-        return result;
+        //the fwdrCache doesnt expose 'getOrLoad(K, Loader)'
+        return cache.getUnchecked(k);
     }
 
     @Override
