@@ -2,10 +2,12 @@ package org.mache.builder;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mache.ExCache;
 import org.mache.NoRunningCassandraDbForTests;
+import org.mache.NoRunningMongoDbForTests;
 import org.mache.builder.StorageProvisioner.StorageServerDetails;
 import org.mache.examples.cassandra.CassandraAnnotatedMessage;
 
@@ -20,6 +22,10 @@ import static org.mache.builder.Builder.server;
  * Created by jbowkett on 10/08/15.
  */
 public class BuilderTest {
+  private static String CASSANDRA_HOST;
+  private static int CASSANDRA_PORT;
+  private static int MONGO_PORT;
+  private static String MONGO_HOST;
 
   //can test for the constraints and also that the annotations are inspected
   //this is a mache descriptor
@@ -27,13 +33,21 @@ public class BuilderTest {
   @Rule
   public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
+  @BeforeClass
+  public static void initServerAddressesOnLoadingTestClass(){
+    CASSANDRA_HOST = new NoRunningCassandraDbForTests().HostName();
+    CASSANDRA_PORT = 9042;
+    MONGO_HOST = new NoRunningMongoDbForTests().HostName();
+    MONGO_PORT = 27017;
+  }
+
   @Test
   @IgnoreIf(condition = NoRunningCassandraDbForTests.class)
   public void testAMacheCanBeCreatedBackedByCassandraWithANamedClusterAndRabbitForMessaging() {
     final ExCache<String, CassandraAnnotatedMessage> mache =
         mache()
             .backedByCassandra()
-            .at(server("10.28.1.140", 27017))
+            .at(server(CASSANDRA_HOST, CASSANDRA_PORT))
             .with(namedCluster("Blueprint"))
             .withKeyspace("Keyspace")
             .toStore(CassandraAnnotatedMessage.class)
@@ -51,7 +65,7 @@ public class BuilderTest {
     final ExCache<String, CassandraAnnotatedMessage> mache =
         mache()
             .backedByCassandra()
-            .at(server("10.28.1.140", 27017))
+            .at(server(CASSANDRA_HOST, CASSANDRA_PORT))
             .with(namedCluster("Blueprint"))
             .withKeyspace("Keyspace")
             .toStore(CassandraAnnotatedMessage.class)
@@ -66,7 +80,7 @@ public class BuilderTest {
     final ExCache<String, CassandraAnnotatedMessage> mache =
         mache()
             .backedByMongo()
-            .at(server("10.28.1.140", 27017))
+            .at(server(MONGO_HOST, MONGO_PORT))
             .withKeyspace("Keyspace")
             .toStore(CassandraAnnotatedMessage.class)
             .withPolicy(CREATEANDDROPSCHEMA)
@@ -82,7 +96,7 @@ public class BuilderTest {
     final ExCache<String, CassandraAnnotatedMessage> mache =
         mache()
             .backedByMongo()
-            .at(server("10.28.1.140", 27017), server("10.28.1.140", 27017))
+            .at(server(MONGO_HOST, MONGO_PORT), server(MONGO_HOST, MONGO_PORT))
             .withKeyspace("Keyspace")
             .toStore(CassandraAnnotatedMessage.class)
             .withPolicy(CREATEANDDROPSCHEMA)
@@ -93,7 +107,7 @@ public class BuilderTest {
 
   @Test
   public void testAMongoCacheCanBeCreatedWithoutMessaging() {
-    final StorageServerDetails dbServer = server("10.28.1.140", 27017);
+    final StorageServerDetails dbServer = server(MONGO_HOST, MONGO_PORT);
     final ExCache<String, Value> mache =
 mache().backedByMongo().at(dbServer).withKeyspace("Kspace").toStore(Value.class).withPolicy(CREATEANDDROPSCHEMA).withNoMessaging().macheUp();
     assertNotNull(mache);
