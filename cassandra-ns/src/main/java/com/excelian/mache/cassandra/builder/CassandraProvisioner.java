@@ -4,7 +4,7 @@ import com.datastax.driver.core.Cluster;
 import com.excelian.mache.core.CacheThingFactory;
 import com.excelian.mache.builder.StorageProvisioner;
 import com.excelian.mache.cassandra.CassandraCacheLoader;
-import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 
 /**
@@ -17,7 +17,7 @@ public class CassandraProvisioner implements StorageProvisioner {
   }
 
   @Override
-  public <K, V> ExCache<K, V> getCache(String keySpace, Class<V> valueType, SchemaOptions schemaOption, ClusterDetails clusterDetails, StorageServerDetails...serverDetails){
+  public <K, V> Mache<K, V> getCache(String keySpace, Class<V> valueType, SchemaOptions schemaOption, ClusterDetails clusterDetails, StorageServerDetails...serverDetails){
     final Cluster cluster = getCluster(serverDetails[0], clusterDetails);
     final CassandraCacheLoader<K, V> cacheLoader = getCacheLoader(keySpace, cluster, valueType, schemaOption);
 

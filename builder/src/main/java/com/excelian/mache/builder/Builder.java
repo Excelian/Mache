@@ -3,7 +3,7 @@ package com.excelian.mache.builder;
 
 import com.excelian.mache.observable.CacheFactoryImpl;
 import com.excelian.mache.core.CacheThingFactory;
-import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.builder.Builder.MacheDescriptor.StorageTypeBuilder;
 import com.excelian.mache.builder.StorageProvisioner.ClusterDetails;
@@ -83,10 +83,10 @@ public class Builder {
      * @return a cache mapping strings to the given type, using the options
      * specified in the constructor
      */
-    public ExCache<String, T> macheUp() {
+    public Mache<String, T> macheUp() {
       final StorageProvisioner storageProvisioner = getStorageProvisionerOrThrow();
 
-      final ExCache<String, T> cache = storageProvisioner.getCache(
+      final Mache<String, T> cache = storageProvisioner.getCache(
           this.keyspace, macheType, this.schemaOption, this.cluster, this.storageServers);
 
       if (this.messaging != None) {

@@ -1,7 +1,7 @@
 package com.excelian.mache.observable;
 
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
-import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.Mache;
 import org.junit.Test;
 import com.excelian.mache.observable.utils.UUIDUtils;
 
@@ -15,7 +15,7 @@ public class ObservableMapTest {
     @Test
     public void testGet() throws Exception {
         @SuppressWarnings("unchecked")
-        ExCache<String, String> cache = mock(ExCache.class);
+        Mache<String, String> cache = mock(Mache.class);
         ObservableMap<String, String> observable = new ObservableMap<String, String>(cache, uuidUtils);
         observable.registerListener(new MapEventListener() {
             @Override
@@ -31,7 +31,7 @@ public class ObservableMapTest {
     @Test
     public void testPut() throws Exception {
         @SuppressWarnings("unchecked")
-        ExCache<String, String> cache = mock(ExCache.class);
+        Mache<String, String> cache = mock(Mache.class);
         ObservableMap<String, String> observable = new ObservableMap<>(cache, uuidUtils);
         observable.registerListener(new MapEventListener() {
             @Override

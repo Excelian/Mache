@@ -1,7 +1,7 @@
 package com.excelian.mache.jmeter.mongo;
 
 import com.excelian.mache.core.CacheThingFactory;
-import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.integration.ActiveMQFactory;
@@ -23,7 +23,7 @@ public abstract class MacheAbstractMongoSamplerClient extends
     MacheAbstractJavaSamplerClient {
 
     protected ActiveMQFactory mqFactory1 = null;
-    protected ExCache<String, MongoTestEntity> cache1 = null;
+    protected Mache<String, MongoTestEntity> cache1 = null;
 
 
     @Override

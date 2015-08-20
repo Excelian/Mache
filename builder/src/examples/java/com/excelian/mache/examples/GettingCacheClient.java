@@ -1,6 +1,6 @@
 package com.excelian.mache.examples;
 
-import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.examples.cassandra.CassandraExample;
 import com.excelian.mache.examples.mongo.MongoExample;
 
@@ -31,7 +31,7 @@ public class GettingCacheClient {
   }
 
   private static <T> void doExample(int count, Example<T> example) {
-    final ExCache<String, T> cache = example.exampleCache();
+    final Mache<String, T> cache = example.exampleCache();
     System.out.println("Getting...");
     for (int i = 0; i < count ; i++) {
       final T hello = cache.get("msg_"+i);

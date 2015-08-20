@@ -1,19 +1,19 @@
 package com.excelian.mache.observable;
 
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
-import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.observable.utils.UUIDUtils;
 
 import java.util.UUID;
 
-public class ObservableMap<K, V> implements ExCache<K, V> {
+public class ObservableMap<K, V> implements Mache<K, V> {
 
-    private final ExCache<K, V> delegate;
+    private final Mache<K, V> delegate;
     private final UUIDUtils uuidUtils;
     private MapEventListener listener;
 
-    public ObservableMap(final ExCache<K, V> delegate, final UUIDUtils uuidUtils) {
+    public ObservableMap(final Mache<K, V> delegate, final UUIDUtils uuidUtils) {
         this.delegate = delegate;
         this.uuidUtils = uuidUtils;
     }

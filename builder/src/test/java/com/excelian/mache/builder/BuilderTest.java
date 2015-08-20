@@ -2,7 +2,7 @@ package com.excelian.mache.builder;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
-import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.NoRunningCassandraDbForTests;
 import com.excelian.mache.core.NoRunningMongoDbForTests;
 import com.excelian.mache.core.SchemaOptions;
@@ -39,7 +39,7 @@ public class BuilderTest {
   @Test
   @IgnoreIf(condition = NoRunningCassandraDbForTests.class)
   public void testAMacheCanBeCreatedBackedByCassandraWithANamedClusterAndRabbitForMessaging() {
-    final ExCache<String, CassandraAnnotatedMessage> mache =
+    final Mache<String, CassandraAnnotatedMessage> mache =
         Builder.mache()
             .backedByCassandra()
             .at(Builder.server(CASSANDRA_HOST, CASSANDRA_PORT))
@@ -57,7 +57,7 @@ public class BuilderTest {
   @Test
   @IgnoreIf(condition = NoRunningCassandraDbForTests.class)
   public void testAMacheCanBeCreatedBackedByCassandraWithANamedClusterAndNoMessaging() {
-    final ExCache<String, CassandraAnnotatedMessage> mache =
+    final Mache<String, CassandraAnnotatedMessage> mache =
         Builder.mache()
             .backedByCassandra()
             .at(Builder.server(CASSANDRA_HOST, CASSANDRA_PORT))
@@ -72,7 +72,7 @@ public class BuilderTest {
 
   @Test
   public void testAMacheCanBeCreatedBackedByMongoWithRabbitForMessaging() {
-    final ExCache<String, CassandraAnnotatedMessage> mache =
+    final Mache<String, CassandraAnnotatedMessage> mache =
         Builder.mache()
             .backedByMongo()
             .at(Builder.server(MONGO_HOST, MONGO_PORT))
@@ -88,7 +88,7 @@ public class BuilderTest {
 
   @Test
   public void testAMongoCacheCanBeCreatedWithMultipleServers() {
-    final ExCache<String, CassandraAnnotatedMessage> mache =
+    final Mache<String, CassandraAnnotatedMessage> mache =
         Builder.mache()
             .backedByMongo()
             .at(Builder.server(MONGO_HOST, MONGO_PORT), Builder.server(MONGO_HOST, MONGO_PORT))
@@ -103,7 +103,7 @@ public class BuilderTest {
   @Test
   public void testAMongoCacheCanBeCreatedWithoutMessaging() {
     final StorageProvisioner.StorageServerDetails dbServer = Builder.server(MONGO_HOST, MONGO_PORT);
-    final ExCache<String, Value> mache =
+    final Mache<String, Value> mache =
 Builder.mache().backedByMongo().at(dbServer).withKeyspace("Kspace").toStore(Value.class).withPolicy(SchemaOptions.CREATEANDDROPSCHEMA).withNoMessaging().macheUp();
     assertNotNull(mache);
   }

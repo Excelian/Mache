@@ -2,7 +2,7 @@ package com.excelian.mache.core;
 
 import java.util.UUID;
 
-public interface ExCache<K, V> {
+public interface Mache<K, V> {
     String getName();
 
     UUID getId();

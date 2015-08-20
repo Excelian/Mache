@@ -1,6 +1,6 @@
 package com.excelian.mache.examples;
 
-import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.examples.cassandra.CassandraAnnotatedMessage;
 import com.excelian.mache.examples.mongo.MongoAnnotatedMessage;
 import com.excelian.mache.examples.cassandra.CassandraExample;
@@ -29,7 +29,7 @@ public class PuttingCacheClient {
     }
   }
 
-  private static void populateWithMongoMsgs(int count, ExCache<String, MongoAnnotatedMessage> cache) {
+  private static void populateWithMongoMsgs(int count, Mache<String, MongoAnnotatedMessage> cache) {
     System.out.println("Putting...");
     for(int i = 0; i< count ; i++){
       final MongoAnnotatedMessage v = new MongoAnnotatedMessage("msg_" + i, "Hello World - " + i);
@@ -37,7 +37,7 @@ public class PuttingCacheClient {
     }
   }
 
-  private static void populateWithCassandraMsgs(int count, ExCache<String, CassandraAnnotatedMessage> cache)  {
+  private static void populateWithCassandraMsgs(int count, Mache<String, CassandraAnnotatedMessage> cache)  {
     System.out.println("Putting...");
     for (int i = 0; i < count ; i++) {
       final CassandraAnnotatedMessage v = new CassandraAnnotatedMessage("msg_" + i, "Hello World - " + i);

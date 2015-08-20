@@ -1,6 +1,6 @@
 package com.excelian.mache.examples.mongo;
 
-import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.builder.Builder;
 import com.excelian.mache.examples.Example;
@@ -16,7 +16,7 @@ public class MongoExample implements Example<MongoAnnotatedMessage> {
   protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 
   @Override
-  public ExCache<String, MongoAnnotatedMessage> exampleCache() {
+  public Mache<String, MongoAnnotatedMessage> exampleCache() {
     final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
     return Builder.mache()
         .backedByMongo()

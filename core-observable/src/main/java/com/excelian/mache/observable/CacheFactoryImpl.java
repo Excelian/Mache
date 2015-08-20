@@ -5,7 +5,7 @@ import javax.cache.event.CacheEntryListenerException;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.excelian.mache.observable.coordination.RemoteCacheEntryListener;
 import com.excelian.mache.core.CacheThingFactory;
-import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
 import com.excelian.mache.events.MQConfiguration;
@@ -28,14 +28,14 @@ public class CacheFactoryImpl implements CacheFactory {
 	}
 
 	@Override
-	public <K, V, D> ExCache<K, V> createCache(final MacheLoader<K, V, D> cacheLoader) {
+	public <K, V, D> Mache<K, V> createCache(final MacheLoader<K, V, D> cacheLoader) {
 		return createCache(cacheThingFactory.create(cacheLoader));
 	}
 
 
 	// TODO introduce cacheLoaderFactory after moved to proper artifact
 	@Override
-	public <K, V> ExCache<K, V> createCache(final ExCache<K, V> underlyingCache) {
+	public <K, V> Mache<K, V> createCache(final Mache<K, V> underlyingCache) {
 	  final ObservableMap<K, V> observable = new ObservableMap<K, V>(underlyingCache, uuidUtils);
 
 		observable.registerListener(communicationFactory.getProducer(configuration));

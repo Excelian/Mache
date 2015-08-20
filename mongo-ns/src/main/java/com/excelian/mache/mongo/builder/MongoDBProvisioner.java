@@ -3,7 +3,7 @@ package com.excelian.mache.mongo.builder;
 import com.excelian.mache.builder.StorageProvisioner;
 import com.mongodb.ServerAddress;
 import com.excelian.mache.core.CacheThingFactory;
-import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.mongo.MongoDBCacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 
@@ -20,7 +20,7 @@ public class MongoDBProvisioner implements StorageProvisioner {
   }
 
   @Override
-  public <K, V> ExCache<K, V> getCache(String keySpace, Class<V> valueType, SchemaOptions schemaOption, ClusterDetails clusterDetails, StorageServerDetails... serverDetails) {
+  public <K, V> Mache<K, V> getCache(String keySpace, Class<V> valueType, SchemaOptions schemaOption, ClusterDetails clusterDetails, StorageServerDetails... serverDetails) {
     final MongoDBCacheLoader<K, V> cacheLoader = getCacheLoader(valueType, keySpace, schemaOption, serverDetails);
     final CacheThingFactory cacheThingFactory = new CacheThingFactory();
     return cacheThingFactory.create(cacheLoader);

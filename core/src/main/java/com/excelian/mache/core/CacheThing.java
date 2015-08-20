@@ -6,7 +6,7 @@ import com.google.common.cache.*;
 import java.util.UUID;
 
 
-public class CacheThing<K, V> implements ExCache<K, V> {
+public class CacheThing<K, V> implements Mache<K, V> {
 
     private final ForwardingCache<K, V> fwdCache;
     final private MacheLoader cacheLoader;

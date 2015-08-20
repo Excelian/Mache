@@ -3,7 +3,7 @@ package com.excelian.mache.jmeter.cassandra;
 import com.datastax.driver.core.Cluster;
 import com.excelian.mache.cassandra.CassandraCacheLoader;
 import com.excelian.mache.core.CacheThingFactory;
-import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
     MQFactory mqFactory;
-    ExCache<String, CassandraTestEntity> cache;
+    Mache<String, CassandraTestEntity> cache;
 
     @Override
     public void setupTest(JavaSamplerContext context) {

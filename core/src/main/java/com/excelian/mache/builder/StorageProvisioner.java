@@ -1,6 +1,6 @@
 package com.excelian.mache.builder;
 
-import com.excelian.mache.core.ExCache;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 
 /**
@@ -9,7 +9,7 @@ import com.excelian.mache.core.SchemaOptions;
 public interface StorageProvisioner {
   String getStorage();
 
-  <K, V> ExCache<K, V> getCache(String keySpace, Class<V> valueType, SchemaOptions schemaOption, ClusterDetails clusterDetails, StorageServerDetails...serverDetails);
+  <K, V> Mache<K, V> getCache(String keySpace, Class<V> valueType, SchemaOptions schemaOption, ClusterDetails clusterDetails, StorageServerDetails...serverDetails);
 
 
   public static class StorageServerDetails {
