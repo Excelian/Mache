@@ -1,4 +1,4 @@
-package com.excelian.mache;
+package com.excelian.mache.mongo;
 
 import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.SchemaOptions;

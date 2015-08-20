@@ -1,4 +1,4 @@
-package com.excelian.mache;
+package com.excelian.mache.mongo;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.excelian.mache.core.CacheThing;

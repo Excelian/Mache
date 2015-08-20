@@ -7,6 +7,7 @@ import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.integration.ActiveMQFactory;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
+import com.excelian.mache.mongo.MongoDBCacheLoader;
 import com.excelian.mache.utils.UUIDUtils;
 import com.mongodb.ServerAddress;
 import org.apache.jmeter.config.Arguments;

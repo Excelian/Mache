@@ -1,9 +1,10 @@
-package com.excelian.mache.builder;
+package com.excelian.mache.mongo.builder;
 
+import com.excelian.mache.builder.StorageProvisioner;
 import com.mongodb.ServerAddress;
 import com.excelian.mache.core.CacheThingFactory;
 import com.excelian.mache.core.ExCache;
-import com.excelian.mache.MongoDBCacheLoader;
+import com.excelian.mache.mongo.MongoDBCacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 
 import java.util.Arrays;
