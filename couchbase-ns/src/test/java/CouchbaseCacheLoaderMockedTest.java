@@ -68,17 +68,7 @@ public class CouchbaseCacheLoaderMockedTest {
     public void shouldDropAndCreateBucket() throws Exception {
         givenCacheLoaderWith(SchemaOptions.CREATEANDDROPSCHEMA);
 
-        when(mockedManager.hasBucket(anyString())).thenAnswer(new Answer<Boolean>() {
-            boolean returnValue = false;
-
-            @Override
-            public Boolean answer(InvocationOnMock invocation) throws Throwable {
-                returnValue = !returnValue;
-
-                return returnValue;
-            }
-        });
-
+        when(mockedManager.hasBucket(anyString())).thenAnswer(getAlternatingBooleanAnswer());
         when(mockedCluster.clusterManager(anyString(), anyString())).thenReturn(mockedManager);
 
         loader.create();
@@ -123,7 +113,6 @@ public class CouchbaseCacheLoaderMockedTest {
         verify(mockedCluster).openBucket("test", CouchbaseCacheLoader.TIMEOUT, TimeUnit.SECONDS);
     }
 
-
     private void givenCacheLoaderWith(SchemaOptions schemaOptions) {
         config = CouchbaseConfig.builder()
                 .withSchemaOptions(schemaOptions)
@@ -132,6 +121,20 @@ public class CouchbaseCacheLoaderMockedTest {
                 .build();
 
         loader = new CouchbaseCacheLoader<>(config);
+    }
+
+
+    private Answer<Boolean> getAlternatingBooleanAnswer() {
+        return new Answer<Boolean>() {
+            boolean returnValue = false;
+
+            @Override
+            public Boolean answer(InvocationOnMock invocation) throws Throwable {
+                returnValue = !returnValue;
+
+                return returnValue;
+            }
+        };
     }
 
 }
