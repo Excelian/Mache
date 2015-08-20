@@ -3,6 +3,8 @@ package com.excelian.mache.examples;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.examples.cassandra.CassandraExample;
 import com.excelian.mache.examples.mongo.MongoExample;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -10,6 +12,8 @@ import java.util.Arrays;
  * Created by jbowkett on 17/07/15.
  */
 public class GettingCacheClient {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GettingCacheClient.class);
 
     public static void main(String... commandLine) {
         final Args args = parseArgs(commandLine);
@@ -30,10 +34,10 @@ public class GettingCacheClient {
 
     private static <T> void doExample(int count, Example<T> example) {
         final Mache<String, T> cache = example.exampleCache();
-        System.out.println("Getting...");
+        LOG.info("Getting...");
         for (int i = 0; i < count; i++) {
             final T hello = cache.get("msg_" + i);
-            System.out.println("hello = " + hello);
+            LOG.info("hello = " + hello);
         }
         cache.close();
     }

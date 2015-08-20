@@ -5,6 +5,8 @@ import com.excelian.mache.examples.cassandra.CassandraAnnotatedMessage;
 import com.excelian.mache.examples.cassandra.CassandraExample;
 import com.excelian.mache.examples.mongo.MongoAnnotatedMessage;
 import com.excelian.mache.examples.mongo.MongoExample;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -12,6 +14,8 @@ import java.util.Arrays;
  * Created by jbowkett on 17/07/15.
  */
 public class PuttingCacheClient {
+    private static final Logger LOG = LoggerFactory.getLogger(PuttingCacheClient.class);
+
     public static void main(String... commandLine) {
         final Args args = parseArgs(commandLine);
         final int count = args.count;
@@ -28,7 +32,7 @@ public class PuttingCacheClient {
     }
 
     private static void populateWithMongoMsgs(int count, Mache<String, MongoAnnotatedMessage> cache) {
-        System.out.println("Putting...");
+        LOG.info("Putting...");
         for (int i = 0; i < count; i++) {
             final MongoAnnotatedMessage v = new MongoAnnotatedMessage("msg_" + i, "Hello World - " + i);
             cache.put(v.getPrimaryKey(), v);
@@ -36,7 +40,7 @@ public class PuttingCacheClient {
     }
 
     private static void populateWithCassandraMsgs(int count, Mache<String, CassandraAnnotatedMessage> cache) {
-        System.out.println("Putting...");
+        LOG.info("Putting...");
         for (int i = 0; i < count; i++) {
             final CassandraAnnotatedMessage v = new CassandraAnnotatedMessage("msg_" + i, "Hello World - " + i);
             cache.put(v.getPrimaryKey(), v);
