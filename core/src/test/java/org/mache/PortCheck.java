@@ -4,15 +4,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.net.SocketTimeoutException;
 
-/**
- * Created on 11/08/2015.
- */
-public class PortCheck
-{
-    public static boolean PortAccessible(String hostName, int port)
-    {
+public class PortCheck {
+    public static boolean PortAccessible(String hostName, int port) {
         SocketAddress sockaddr = new InetSocketAddress(hostName, port);
 
         Socket socket = new Socket();
@@ -23,8 +17,7 @@ public class PortCheck
             socket.connect(sockaddr, 10000);
             online = true;
         } catch (IOException ex) {
-        }
-        finally {
+        } finally {
             // As the close() operation can also throw an IOException
             // it must caught here
             try {

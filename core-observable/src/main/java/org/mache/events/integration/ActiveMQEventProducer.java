@@ -1,20 +1,15 @@
 package org.mache.events.integration;
 
-import javax.jms.Connection;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-
+import com.google.gson.Gson;
 import org.mache.coordination.CoordinationEntryEvent;
 import org.mache.events.BaseCoordinationEntryEventProducer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
+import javax.jms.*;
 
 public class ActiveMQEventProducer extends BaseCoordinationEntryEventProducer {
-
+    private static final Logger LOG = LoggerFactory.getLogger(ActiveMQEventProducer.class);
     Session session;
     MessageProducer producer;
 
@@ -37,30 +32,27 @@ public class ActiveMQEventProducer extends BaseCoordinationEntryEventProducer {
 
         Gson gson = new Gson();
         TextMessage message;
-		try {
+        try {
             String payload = gson.toJson(event);
-			message = session.createTextMessage(payload);
-			producer.send(message);
-            System.out.println("SEND:"+payload);
-		} catch (JMSException e) {
-			System.out.println("Error sending message ");
-			e.printStackTrace();
-			
-			throw new RuntimeException("Error while sending event", e);
-		}
+            message = session.createTextMessage(payload);
+            producer.send(message);
+            LOG.debug("SEND: {}", payload);
+        } catch (JMSException e) {
+            LOG.error("Error sending message: {}", e);
+            throw new RuntimeException("Error while sending event", e);
+        }
     }
 
     @Override
     public void close() {
-        if(producer!=null)
-        {
+        if (producer != null) {
             try {
                 producer.close();
                 session.close();
             } catch (JMSException e) {
-                e.printStackTrace();
+                // ignored
             }
-            producer=null;
+            producer = null;
         }
     }
 }

@@ -7,7 +7,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class CacheEventCollector<K> implements RemoteCacheEntryCreatedListener, RemoteCacheEntryUpdatedListener,RemoteCacheEntryRemovedListener,RemoteCacheEntryInvalidateListener {
+public class CacheEventCollector<K> implements RemoteCacheEntryCreatedListener, RemoteCacheEntryUpdatedListener, RemoteCacheEntryRemovedListener, RemoteCacheEntryInvalidateListener {
 
     BlockingQueue<CoordinationEntryEvent<K>> queue = new ArrayBlockingQueue<CoordinationEntryEvent<K>>(1);
 
@@ -21,28 +21,28 @@ public class CacheEventCollector<K> implements RemoteCacheEntryCreatedListener, 
 
     @Override
     public void onCreated(Iterable iterable) throws CacheEntryListenerException {
-        for(CoordinationEntryEvent<K> evt: (Iterable<CoordinationEntryEvent<K>>) iterable){
+        for (CoordinationEntryEvent<K> evt : (Iterable<CoordinationEntryEvent<K>>) iterable) {
             queue.add(evt);
         }
     }
 
     @Override
     public void onInvalidate(Iterable iterable) throws CacheEntryListenerException {
-        for(CoordinationEntryEvent<K> evt: (Iterable<CoordinationEntryEvent<K>>) iterable){
+        for (CoordinationEntryEvent<K> evt : (Iterable<CoordinationEntryEvent<K>>) iterable) {
             queue.add(evt);
         }
     }
 
     @Override
     public void onRemoved(Iterable iterable) throws CacheEntryListenerException {
-        for(CoordinationEntryEvent<K> evt: (Iterable<CoordinationEntryEvent<K>>) iterable){
+        for (CoordinationEntryEvent<K> evt : (Iterable<CoordinationEntryEvent<K>>) iterable) {
             queue.add(evt);
         }
     }
 
     @Override
     public void onUpdated(Iterable iterable) throws CacheEntryListenerException {
-        for(CoordinationEntryEvent<K> evt: (Iterable<CoordinationEntryEvent<K>>) iterable){
+        for (CoordinationEntryEvent<K> evt : (Iterable<CoordinationEntryEvent<K>>) iterable) {
             queue.add(evt);
         }
     }

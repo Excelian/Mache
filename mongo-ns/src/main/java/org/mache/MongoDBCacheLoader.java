@@ -3,19 +3,19 @@ package org.mache;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * CacheLoader to bind Cassandra API onto the GuavaCache
- *
- * Created by neil.avery on 29/05/2015.
  * TODO: Replication class and factor need to be configurable.
  */
-public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
-
+public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
+    private static final Logger LOG = LoggerFactory.getLogger(MongoDBCacheLoader.class);
 
     private Mongo mongoClient;
     private List<ServerAddress> hosts;
@@ -30,7 +30,7 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
         this.hosts = hosts;
         this.schemaOptions = schemaOptions;
         this.keySpace = keySpace;
-        this.keySpace = keySpace.replace("-","_").replace(" ","_").replace(":","_");
+        this.keySpace = keySpace.replace("-", "_").replace(" ", "_").replace(":", "_");
         this.clazz = clazz;
     }
 
@@ -46,13 +46,12 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
                     try {
                         this.mongoClient = connect(hosts);
 
-                        if(schemaOptions.ShouldCreateSchema()) {
+                        if (schemaOptions.ShouldCreateSchema()) {
                             createKeySpace();
                         }
                         createTable();
                     } catch (Throwable t) {
-                        t.printStackTrace();
-                        System.err.println("Failed to create:" + t.getMessage());
+                        LOG.error("Failed to create: {}", t);
 
                     }
                 }
@@ -78,7 +77,7 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
     }
 
     public void put(Object k, Object v) {
-        System.out.println("Saving to mongo key=" + k + ", newValue=" + v);
+        LOG.trace("Saving to mongo key={}, newValue={}", k, v);
         ops().save(v);
     }
 
@@ -91,26 +90,26 @@ public class MongoDBCacheLoader<K,V> extends AbstractCacheLoader<K,V,Mongo> {
     @Override
     public Object load(Object key) throws Exception {
         Object o = ops().findById(key, clazz);
-        System.out.println("Loading from mongo by key " + key + " - result " + o);
+        LOG.trace("Loading from mongo by key {} - result {}", key, o);
         return (V) o;
     }
 
     @Override
     public void close() {
-        if (mongoClient != null){
-            if(schemaOptions.ShouldDropSchema())
-            {
+        if (mongoClient != null) {
+            if (schemaOptions.ShouldDropSchema()) {
                 mongoClient.dropDatabase(keySpace);
-                System.out.println("Dropped database" + keySpace);
+                LOG.info("Dropped database {}", keySpace);
             }
             mongoClient.close();
-            mongoClient=null;
+            mongoClient = null;
         }
     }
 
     @Override
     public Mongo getDriverSession() {
-        if (mongoClient == null) throw  new IllegalStateException("Session has not been created - read/write to cache first");
+        if (mongoClient == null)
+            throw new IllegalStateException("Session has not been created - read/write to cache first");
         return mongoClient;
     }
 

@@ -7,25 +7,24 @@ import org.apache.jmeter.samplers.SampleResult;
 import org.mache.CassandraCacheLoader;
 import org.mache.SchemaOptions;
 import org.mache.jmeter.MacheAbstractJavaSamplerClient;
-import org.mache.jmeter.cassandra.CassandraTestEntity;
 
 import java.util.Map;
 
-public class WriteToCassandra extends MacheAbstractJavaSamplerClient
-{
+public class WriteToCassandra extends MacheAbstractJavaSamplerClient {
+
     private CassandraCacheLoader<String, CassandraTestEntity> db;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
-        System.out.println("WriteToCassandra.setupTest");
-        Map<String, String> mapParams=ExtractParameters(context);
+        getLogger().info("WriteToCassandra.setupTest");
+        Map<String, String> mapParams = ExtractParameters(context);
         String keySpace = mapParams.get("keyspace.name");
 
         try {
             Cluster cluster = CassandraCacheLoader.connect(
                     mapParams.get("server.ip.address"), mapParams.get("cluster.name")
                     , 9042);
-            db= new CassandraCacheLoader<>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
+            db = new CassandraCacheLoader<>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
 
             db.create(db.getName(), "");
         } catch (Exception e) {
@@ -34,25 +33,24 @@ public class WriteToCassandra extends MacheAbstractJavaSamplerClient
     }
 
     @Override
-    public void teardownTest(JavaSamplerContext context)
-    {
-        if(db!=null) db.close();
+    public void teardownTest(JavaSamplerContext context) {
+        if (db != null) db.close();
     }
 
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
 
-        Map<String, String> mapParams=ExtractParameters(context);
+        Map<String, String> mapParams = ExtractParameters(context);
         SampleResult result = new SampleResult();
         boolean success = false;
 
         result.sampleStart();
 
         try {
-            CassandraTestEntity t1= new CassandraTestEntity(mapParams.get("entity.key"), mapParams.get("entity.value"));
+            CassandraTestEntity t1 = new CassandraTestEntity(mapParams.get("entity.key"), mapParams.get("entity.value"));
             db.put(t1.pkString, t1);
-            result.setResponseMessage("Created "+t1.pkString);
-            success=true;
+            result.setResponseMessage("Created " + t1.pkString);
+            success = true;
         } catch (Exception e) {
 
             SetupResultForError(result, e);

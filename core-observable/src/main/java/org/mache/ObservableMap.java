@@ -1,23 +1,19 @@
 package org.mache;
 
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-
 import org.mache.coordination.CoordinationEntryEvent;
 import org.mache.utils.UUIDUtils;
 
-/**
- * Created by neil.avery on 11/06/2015.
- */
-public class ObservableMap<K,V> implements ExCache<K,V> {
+import java.util.UUID;
+
+public class ObservableMap<K, V> implements ExCache<K, V> {
 
     private final ExCache<K, V> delegate;
     private final UUIDUtils uuidUtils;
     private MapEventListener listener;
-    
-    public ObservableMap(final ExCache<K,V> delegate, final UUIDUtils uuidUtils) {
-    	this.delegate = delegate;
-		this.uuidUtils = uuidUtils;
+
+    public ObservableMap(final ExCache<K, V> delegate, final UUIDUtils uuidUtils) {
+        this.delegate = delegate;
+        this.uuidUtils = uuidUtils;
     }
 
     public void registerListener(MapEventListener listener) {
@@ -71,9 +67,9 @@ public class ObservableMap<K,V> implements ExCache<K,V> {
     public ExCacheLoader getCacheLoader() {
         return delegate.getCacheLoader();
     }
-    
+
     private void fireInvalidate(K k) {
-    	final CoordinationEntryEvent<K> event = new CoordinationEntryEvent<K>(getId(), getName(), k, EventType.INVALIDATE, uuidUtils);
-    	listener.send(event);
+        final CoordinationEntryEvent<K> event = new CoordinationEntryEvent<K>(getId(), getName(), k, EventType.INVALIDATE, uuidUtils);
+        listener.send(event);
     }
 }

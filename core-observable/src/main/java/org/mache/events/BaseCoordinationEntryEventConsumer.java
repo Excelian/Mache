@@ -1,67 +1,62 @@
 package org.mache.events;
 
+import org.mache.EventType;
+import org.mache.coordination.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.jms.JMSException;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.jms.JMSException;
-
-import org.mache.EventType;
-import org.mache.coordination.CoordinationEntryEvent;
-import org.mache.coordination.CoordinationEventListener;
-import org.mache.coordination.RemoteCacheEntryCreatedListener;
-import org.mache.coordination.RemoteCacheEntryInvalidateListener;
-import org.mache.coordination.RemoteCacheEntryRemovedListener;
-import org.mache.coordination.RemoteCacheEntryUpdatedListener;
-
 public abstract class BaseCoordinationEntryEventConsumer implements Closeable {
+    private static final Logger LOG = LoggerFactory.getLogger(BaseCoordinationEntryEventConsumer.class);
 
     abstract public void beginSubscriptionThread() throws InterruptedException, JMSException, IOException;
+
     abstract public void close();
 
-    protected ConcurrentHashMap<EventType,ArrayList<CoordinationEventListener>> eventMap;
+    protected ConcurrentHashMap<EventType, ArrayList<CoordinationEventListener>> eventMap;
     private String topicName;
 
-    protected BaseCoordinationEntryEventConsumer(String topicName)
-    {
-    	//TODO lists need to be threadsafe ?
+    protected BaseCoordinationEntryEventConsumer(String topicName) {
+        //TODO lists need to be threadsafe ?
         eventMap = new ConcurrentHashMap<EventType, ArrayList<CoordinationEventListener>>();
-        eventMap.putIfAbsent(EventType.CREATED,new ArrayList<CoordinationEventListener>());
-        eventMap.putIfAbsent(EventType.REMOVED,new ArrayList<CoordinationEventListener>());
-        eventMap.putIfAbsent(EventType.UPDATED,new ArrayList<CoordinationEventListener>());
+        eventMap.putIfAbsent(EventType.CREATED, new ArrayList<CoordinationEventListener>());
+        eventMap.putIfAbsent(EventType.REMOVED, new ArrayList<CoordinationEventListener>());
+        eventMap.putIfAbsent(EventType.UPDATED, new ArrayList<CoordinationEventListener>());
         eventMap.putIfAbsent(EventType.INVALIDATE, new ArrayList<CoordinationEventListener>());
 
         this.topicName = topicName;
     }
 
-    public String getTopicName()
-    {
+    public String getTopicName() {
         return topicName;
     }
 
     public void registerEventListener(CoordinationEventListener listener) {
-        if(listener instanceof RemoteCacheEntryCreatedListener){
+        if (listener instanceof RemoteCacheEntryCreatedListener) {
             eventMap.get(EventType.CREATED).add(listener);
         }
 
-        if(listener instanceof RemoteCacheEntryUpdatedListener){
+        if (listener instanceof RemoteCacheEntryUpdatedListener) {
             eventMap.get(EventType.UPDATED).add(listener);
         }
 
-        if(listener instanceof RemoteCacheEntryRemovedListener){
+        if (listener instanceof RemoteCacheEntryRemovedListener) {
             eventMap.get(EventType.REMOVED).add(listener);
         }
 
-        if(listener instanceof RemoteCacheEntryInvalidateListener){
+        if (listener instanceof RemoteCacheEntryInvalidateListener) {
             eventMap.get(EventType.INVALIDATE).add(listener);
         }
     }
 
     protected CoordinationEntryEvent<?> routeEventToListeners(
-            ConcurrentHashMap<EventType,ArrayList<CoordinationEventListener>> eventMap, CoordinationEntryEvent<?> event)
-    {
+            ConcurrentHashMap<EventType, ArrayList<CoordinationEventListener>> eventMap, CoordinationEntryEvent<?> event) {
         EventType eventType = event.getEventType();
 
         List<CoordinationEntryEvent<?>> events = new ArrayList<CoordinationEntryEvent<?>>();
@@ -70,15 +65,14 @@ public abstract class BaseCoordinationEntryEventConsumer implements Closeable {
         for (CoordinationEventListener listener : eventMap.get(eventType)) {
             if (eventType == EventType.CREATED) {
                 ((RemoteCacheEntryCreatedListener) listener).onCreated(events);
-            }else if (eventType == EventType.REMOVED) {
+            } else if (eventType == EventType.REMOVED) {
                 ((RemoteCacheEntryRemovedListener) listener).onRemoved(events);
-            }else if (eventType == EventType.UPDATED) {
+            } else if (eventType == EventType.UPDATED) {
                 ((RemoteCacheEntryUpdatedListener) listener).onUpdated(events);
-            }else if(eventType == EventType.INVALIDATE) {
+            } else if (eventType == EventType.INVALIDATE) {
                 ((RemoteCacheEntryInvalidateListener) listener).onInvalidate(events);
-            }else
-            {
-                System.err.print("Error. Unsupported coordination event type received - "+eventType);
+            } else {
+                LOG.error("Error. Unsupported coordination event type received - {}", eventType);
             }
 
         }

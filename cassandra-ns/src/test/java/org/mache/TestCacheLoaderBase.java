@@ -71,7 +71,7 @@ public abstract class TestCacheLoaderBase {
 
     @Test
     public void testRemove() throws Exception {
-        CacheLoader.InvalidCacheLoadException exception=null;
+        CacheLoader.InvalidCacheLoadException exception = null;
         String key = "rem-test-2";
         cacheThing.put(key, new TestEntity(key));
         assertNotNull("Expected entry to be in cache prior to remocal", cacheThing.get(key));
@@ -80,9 +80,8 @@ public abstract class TestCacheLoaderBase {
 
         try {
             cacheThing.get(key);
-        }
-        catch(CacheLoader.InvalidCacheLoadException e) {
-            exception=e;
+        } catch (CacheLoader.InvalidCacheLoadException e) {
+            exception = e;
         }
 
         assertNotNull("Exception expected to have been thrown", exception);
@@ -106,7 +105,7 @@ public abstract class TestCacheLoaderBase {
         private int firstInt = 1;
         @Column
         private double aDouble = 1.0;
-        @Column(value="mappedColumn")
+        @Column(value = "mappedColumn")
         private String aString = "yay";
         @PrimaryKey
         String pkString = "yay";
@@ -122,13 +121,14 @@ public abstract class TestCacheLoaderBase {
         private int firstInt = 1;
         @Column
         private double aDouble = 1.0;
-        @Column(value="mappedColumn")
+        @Column(value = "mappedColumn")
         private String aString = "yay";
         @PrimaryKey
-        private CompositeKey compositeKey = new CompositeKey("a","b", "c");
+        private CompositeKey compositeKey = new CompositeKey("a", "b", "c");
 
-        public TestEntityWithCompositeKey(){
+        public TestEntityWithCompositeKey() {
         }
+
         public TestEntityWithCompositeKey(String person, String workstation, String app) {
             compositeKey = new CompositeKey(person, workstation, app);
         }
@@ -139,6 +139,7 @@ public abstract class TestCacheLoaderBase {
 
         public CompositeKey() {
         }
+
         public CompositeKey(String personId, String workstationId, String application) {
 
             this.personId = personId;
@@ -160,7 +161,7 @@ public abstract class TestCacheLoaderBase {
     public void testPutComposite() throws Exception {
 
         CacheThing<CompositeKey, TestEntityWithCompositeKey> compCache = new CacheThing<CompositeKey, TestEntityWithCompositeKey>(
-                buildCacheLoader(TestEntityWithCompositeKey.class) );
+                buildCacheLoader(TestEntityWithCompositeKey.class));
 
         TestEntityWithCompositeKey value = new TestEntityWithCompositeKey("neil", "mac", "explorer");
         compCache.put(value.compositeKey, value);

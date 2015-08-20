@@ -2,7 +2,6 @@ package org.mache;
 
 /**
  * The type of event received by the listener.
- *
  */
 public enum EventType {
 

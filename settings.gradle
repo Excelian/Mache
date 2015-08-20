@@ -1,3 +1,8 @@
-include 'core', 'cassandra-ns', 'mongo-ns', 'core-observable', 'builder'
+include 'core'
+include 'cassandra-ns'
+include 'mongo-ns'
+include 'core-observable'
+include 'builder'
 include 'jmeter'
+include 'couchbase-ns'
 

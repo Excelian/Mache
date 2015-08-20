@@ -7,6 +7,8 @@ import com.datastax.driver.core.Metadata;
 import com.datastax.driver.core.Session;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -14,6 +16,8 @@ import static org.junit.Assert.assertNotNull;
  * Created by neil.avery on 27/05/2015.
  */
 public class CassandraConnectorTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CassandraConnectorTest.class);
 
     @Rule
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
@@ -26,10 +30,10 @@ public class CassandraConnectorTest {
 
         cluster = Cluster.builder().addContactPoint(new NoRunningCassandraDbForTests().HostName()).withPort(9042).withClusterName("BluePrint").build();
         Metadata metadata = cluster.getMetadata();
-        System.out.println("Clustername:" + metadata.getClusterName());
-        System.out.println("Partitioner:" + metadata.getPartitioner());
-        System.out.println("Hosts:" + metadata.getAllHosts());
-        System.out.println("KeySpaces:" + metadata.getKeyspaces());
+        LOG.info("Clustername:" + metadata.getClusterName());
+        LOG.info("Partitioner:" + metadata.getPartitioner());
+        LOG.info("Hosts:" + metadata.getAllHosts());
+        LOG.info("KeySpaces:" + metadata.getKeyspaces());
 
         session = cluster.connect("system");//system keyspace should always be present
         assertNotNull(session);

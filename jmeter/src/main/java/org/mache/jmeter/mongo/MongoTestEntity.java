@@ -17,12 +17,11 @@ public class MongoTestEntity {
         this.description = description;
     }
 
-    public MongoTestEntity()
-    {
+    public MongoTestEntity() {
     }
 
     @Override
     public String toString() {
-        return "[TestEntity key=" + pkString + " (hC="+ pkString.hashCode() +"), description=" + description + "]";
+        return "[TestEntity key=" + pkString + " (hC=" + pkString.hashCode() + "), description=" + description + "]";
     }
 }

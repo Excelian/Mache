@@ -2,29 +2,33 @@ package org.mache;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 
-public abstract class TestEnvironmentPortCheckIgnoreCondition implements ConditionalIgnoreRule.IgnoreCondition
-{
-    public TestEnvironmentPortCheckIgnoreCondition(int port)
-    {
-        if(new NotRunningInExcelian().isSatisfied()) {
-            if (PortCheck.PortAccessible("localhost", port)) {
-                hostName = "localhost";
-                hostPresent = true;
-            }
-        }
-        else {
-            hostName = "10.28.1.140";// internal test environment - we don't check port as we'd like to fail if service is down
+import static org.mache.NotRunningInExcelian.*;
+import static org.mache.PortCheck.PortAccessible;
+
+public abstract class TestEnvironmentPortCheckIgnoreCondition implements ConditionalIgnoreRule.IgnoreCondition {
+    protected final String hostName;
+    private final boolean hostPresent;
+
+    public TestEnvironmentPortCheckIgnoreCondition(int port, String testEnvIp) {
+        if (hostIsReachable(testEnvIp)) {
+            hostName = testEnvIp;// internal test environment - we don't check port as we'd like to fail if service is down
             hostPresent = true;
         }
+        else if (PortAccessible("localhost", port)) {
+            hostName = "localhost";
+            hostPresent = true;
+        }
+        else{
+            hostName = "not-set";
+            hostPresent = false;
+        }
     }
 
-    private String hostName="not-set";
-    private boolean hostPresent =false;
-
-    public String HostName(){
+    public String HostName() {
         return hostName;
     }
-    public boolean isSatisfied(){
+
+    public boolean isSatisfied() {
         return !hostPresent;
     }
 }

@@ -1,18 +1,16 @@
 package org.mache.events.integration;
 
-import java.io.IOException;
-
-import javax.jms.JMSException;
-
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import org.mache.coordination.CoordinationEntryEvent;
 import org.mache.events.BaseCoordinationEntryEventConsumer;
 import org.mache.events.BaseCoordinationEntryEventProducer;
 import org.mache.events.MQConfiguration;
 import org.mache.events.MQFactory;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
+import javax.jms.JMSException;
+import java.io.IOException;
 
 public class RabbitMQFactory<K, V extends CoordinationEntryEvent<K>> implements MQFactory {
 
@@ -21,8 +19,7 @@ public class RabbitMQFactory<K, V extends CoordinationEntryEvent<K>> implements 
     private final Channel channel;
     private final Connection connection;
 
-    public RabbitMQFactory(String connectionString) throws JMSException, IOException
-    {
+    public RabbitMQFactory(String connectionString) throws JMSException, IOException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setAutomaticRecoveryEnabled(true);
         factory.setNetworkRecoveryInterval(1000);
@@ -34,15 +31,13 @@ public class RabbitMQFactory<K, V extends CoordinationEntryEvent<K>> implements 
     }
 
     @Override
-    public BaseCoordinationEntryEventProducer getProducer(MQConfiguration config)
-    {
+    public BaseCoordinationEntryEventProducer getProducer(MQConfiguration config) {
         BaseCoordinationEntryEventProducer producer = new RabbitMQEventProducer(channel, EXCHANGE_NAME, config.getTopicName());
         return producer;
     }
 
     @Override
-    public BaseCoordinationEntryEventConsumer getConsumer(MQConfiguration config) throws IOException, JMSException
-    {
+    public BaseCoordinationEntryEventConsumer getConsumer(MQConfiguration config) throws IOException, JMSException {
         BaseCoordinationEntryEventConsumer consumer = new RabbitMQEventConsumer(channel, EXCHANGE_NAME, config.getTopicName());
         return consumer;
     }
