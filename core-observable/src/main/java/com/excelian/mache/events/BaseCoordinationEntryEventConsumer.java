@@ -70,17 +70,13 @@ public abstract class BaseCoordinationEntryEventConsumer implements Closeable {
         for (CoordinationEventListener listener : eventMap.get(eventType)) {
             if (eventType == EventType.CREATED) {
                 ((RemoteCacheEntryCreatedListener) listener).onCreated(events);
-            }
-            else if (eventType == EventType.REMOVED) {
+            } else if (eventType == EventType.REMOVED) {
                 ((RemoteCacheEntryRemovedListener) listener).onRemoved(events);
-            }
-            else if (eventType == EventType.UPDATED) {
+            } else if (eventType == EventType.UPDATED) {
                 ((RemoteCacheEntryUpdatedListener) listener).onUpdated(events);
-            }
-            else if (eventType == EventType.INVALIDATE) {
+            } else if (eventType == EventType.INVALIDATE) {
                 ((RemoteCacheEntryInvalidateListener) listener).onInvalidate(events);
-           }
-            else {
+            } else {
                 LOG.error("Error. Unsupported coordination event type received - {}", eventType);
             }
         }
