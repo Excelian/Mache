@@ -3,10 +3,10 @@ import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.google.common.cache.CacheLoader;
 import org.junit.*;
-import org.mache.CacheThing;
-import org.mache.SchemaOptions;
-import org.mache.couchbase.CouchbaseCacheLoader;
-import org.mache.couchbase.CouchbaseConfig;
+import com.excelian.mache.CacheThing;
+import com.excelian.mache.SchemaOptions;
+import com.excelian.mache.couchbase.CouchbaseCacheLoader;
+import com.excelian.mache.couchbase.CouchbaseConfig;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.couchbase.core.mapping.Document;
 
