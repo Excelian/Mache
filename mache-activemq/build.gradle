@@ -1,8 +1,8 @@
 dependencies {
-  compile project(':core')
-  compile project(':core-observable')
+  compile project(':mache-core')
+  compile project(':mache-observable')
   compile 'org.apache.activemq:activemq-core:5.7.0'
   testCompile 'org.mockito:mockito-all:1.10.19'
-  testCompile project(path: ':core-observable', configuration: 'tests')
-  testCompile project(path: ':core', configuration: 'tests')
+  testCompile project(path: ':mache-observable', configuration: 'tests')
+  testCompile project(path: ':mache-core', configuration: 'tests')
 }

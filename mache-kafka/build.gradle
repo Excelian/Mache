@@ -1,10 +1,10 @@
 dependencies {
-  compile project(':core')
-  compile project(':core-observable')
+  compile project(':mache-core')
+  compile project(':mache-observable')
   compile('org.apache.kafka:kafka_2.9.2:0.8.2.1') {
     exclude module: 'slf4j-log4j12'
     exclude module: 'log4j'
   }
-  testCompile project(path: ':core-observable', configuration: 'tests')
-  testCompile project(path: ':core', configuration: 'tests')
+  testCompile project(path: ':mache-observable', configuration: 'tests')
+  testCompile project(path: ':mache-core', configuration: 'tests')
 }
