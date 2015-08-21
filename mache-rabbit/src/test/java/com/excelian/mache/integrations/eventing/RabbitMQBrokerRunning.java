@@ -1,5 +1,6 @@
 package com.excelian.mache.integrations.eventing;
 
+import com.excelian.mache.events.integration.DefaultRabbitMqConfig;
 import com.excelian.mache.events.integration.RabbitMQFactory;
 import org.junit.Assume;
 import org.junit.rules.TestWatcher;
@@ -26,7 +27,7 @@ public class RabbitMQBrokerRunning extends TestWatcher {
 
         RabbitMQFactory factory = null;
         try {
-            factory = new RabbitMQFactory(null);
+            factory = new RabbitMQFactory(null, new DefaultRabbitMqConfig());
         } catch (Exception e) {
             brokerOnline = false;
             Assume.assumeNoException("Could not connect to Rabbit MQ", e);

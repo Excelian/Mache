@@ -4,6 +4,7 @@ import com.codeaffine.test.ConditionalIgnoreRule;
 import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import com.excelian.mache.core.NoRunningRabbitMQForTests;
 import com.excelian.mache.events.MQFactory;
+import com.excelian.mache.events.integration.DefaultRabbitMqConfig;
 import com.excelian.mache.events.integration.RabbitMQFactory;
 import org.junit.Rule;
 
@@ -18,6 +19,6 @@ public class RabbitMQEventingTest extends TestEventingBase {
 
     @Override
     protected MQFactory buildMQFactory() throws JMSException, IOException {
-        return new RabbitMQFactory(new NoRunningRabbitMQForTests().HostName());
+        return new RabbitMQFactory(new NoRunningRabbitMQForTests().HostName(), new DefaultRabbitMqConfig());
     }
 }

@@ -1,6 +1,7 @@
 package com.excelian.mache.events.integration.builder;
 
 import com.excelian.mache.events.MQFactory;
+import com.excelian.mache.events.integration.DefaultRabbitMqConfig;
 import com.excelian.mache.events.integration.RabbitMQFactory;
 import com.excelian.mache.observable.builder.AbstractMessagingProvisioner;
 
@@ -19,6 +20,6 @@ public class RabbitMQMessagingProvisioner extends AbstractMessagingProvisioner {
 
     @Override
     public MQFactory getMqFactory(String messagingLocation) throws IOException, JMSException {
-        return new RabbitMQFactory(messagingLocation);
+        return new RabbitMQFactory(messagingLocation, new DefaultRabbitMqConfig());
     }
 }
