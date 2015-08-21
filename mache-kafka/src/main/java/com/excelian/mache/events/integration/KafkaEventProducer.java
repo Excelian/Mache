@@ -1,11 +1,14 @@
 package com.excelian.mache.events.integration;
 
+import com.excelian.mache.events.BaseCoordinationEntryEventProducer;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
+
 import com.google.gson.Gson;
+
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
-import com.excelian.mache.events.BaseCoordinationEntryEventProducer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,9 +26,9 @@ public class KafkaEventProducer extends BaseCoordinationEntryEventProducer {
 
     @Override
     public void send(final CoordinationEntryEvent<?> event) {
-        String TOPIC = getTopicName().replace("$", ".");
+        final String topic = getTopicName().replace("$", ".");
 
-        KeyedMessage<String, String> data = new KeyedMessage<String, String>(TOPIC, "0", gson.toJson(event));
+        KeyedMessage<String, String> data = new KeyedMessage<>(topic, "0", gson.toJson(event));
         producer.send(data);
         LOG.info("Sent message {}", data);
     }

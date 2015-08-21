@@ -2,14 +2,14 @@ package com.excelian.mache.observable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+
+import com.excelian.mache.core.*;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import javax.jms.JMSException;
 
-import com.excelian.mache.core.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +18,7 @@ import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.events.integration.ActiveMQFactory;
 import com.excelian.mache.observable.utils.UUIDUtils;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 public class MessageQueueObservableCacheFactoryIntegrationTest {
@@ -57,8 +58,8 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 		observableCacheFactory1 = new MessageQueueObservableCacheFactory(mqFactory1, mqConfiguration, spiedMacheFactory, uuidUtils);
 
 		unspiedCache1 = macheFactory.create(cacheLoader);
-		spiedCache1 = spy(unspiedCache1);
-		when(spiedMacheFactory.create(cacheLoader)).thenReturn(spiedCache1);
+		spiedCache1 = Mockito.spy(unspiedCache1);
+		Mockito.when(spiedMacheFactory.create(cacheLoader)).thenReturn(spiedCache1);
 
 		mqFactory2 = new ActiveMQFactory(LOCAL_MQ);
 		observableCacheFactory2 = new MessageQueueObservableCacheFactory(mqFactory2, mqConfiguration, macheFactory, uuidUtils);
@@ -86,14 +87,14 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 		Mache<String, TestEntity> cache1 = observableCacheFactory1.createCache(cacheLoader);
 		Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(cacheLoader);
 
-		reset(spiedCache1);
+		Mockito.reset(spiedCache1);
 
 		Thread.sleep(500); //some time for all listeners to connect
 		cache2.put(testValue2.pkey, testValue2);
 
 		Thread.sleep(2000);//give time for the message to propagate and invalidate to be called
 
-		verify(spiedCache1).invalidate(testValue2.pkey);
+		Mockito.verify(spiedCache1).invalidate(testValue2.pkey);
 	}
 
 	@Test
@@ -131,12 +132,12 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 		Thread.sleep(1000);//give time for the message to propagate and invalidate to be called from put
 
 		/* reset mocks */
-		reset(spiedCache1);
+		Mockito.reset(spiedCache1);
 		/* pull it into 2nd cache (this should NOT affect any other cache*/
 		assertNotNull(cache2.get(testValue2.pkey));
 		Thread.sleep(1000);//give time for any messages to propagate and invalidate to 'potentially' called
 
-		verify(spiedCache1, never()).invalidate(testValue2.pkey);
+		Mockito.verify(spiedCache1, Mockito.never()).invalidate(testValue2.pkey);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -144,11 +145,11 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 	public void shouldNotInvalidateSameCacheOnPut() throws ExecutionException, InterruptedException {
 		Mache<String, TestEntity> cache1 = observableCacheFactory1.createCache(cacheLoader);
 
-		reset(spiedCache1);
+		Mockito.reset(spiedCache1);
 		cache1.put(testValue2.pkey, testValue2);
 
 		Thread.sleep(1000);//give time for the message to propagate and invalidate to be called
 
-		verify(spiedCache1, times(0)).invalidate(testValue2.pkey);
+		Mockito.verify(spiedCache1, Mockito.times(0)).invalidate(testValue2.pkey);
 	}
 }

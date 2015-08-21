@@ -1,13 +1,16 @@
 package com.excelian.mache.events.integration;
 
-import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
+import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
+
 import com.google.gson.Gson;
+
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.ConsumerIterator;
 import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
 import kafka.message.MessageAndMetadata;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,9 +89,10 @@ public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
     }
 
     public void close() {
-
         try {
-            if (task != null) task.cancel(true);
+            if (task != null) {
+                task.cancel(true);
+            }
             executor.shutdown();
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {

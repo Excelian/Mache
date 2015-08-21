@@ -1,16 +1,22 @@
 package com.excelian.mache.events.integration;
 
-import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
+import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
+
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import javax.jms.Connection;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 
 public class ActiveMQEventConsumer extends BaseCoordinationEntryEventConsumer {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQEventConsumer.class);

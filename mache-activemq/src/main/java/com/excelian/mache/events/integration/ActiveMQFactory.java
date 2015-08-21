@@ -1,10 +1,10 @@
 package com.excelian.mache.events.integration;
 
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
-import com.excelian.mache.events.MQFactory;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import com.excelian.mache.events.BaseCoordinationEntryEventProducer;
 import com.excelian.mache.events.MQConfiguration;
+import com.excelian.mache.events.MQFactory;
+import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.cache.CacheException;
 import javax.jms.Connection;
@@ -31,8 +31,7 @@ public class ActiveMQFactory implements MQFactory {
     @Override
     public BaseCoordinationEntryEventConsumer getConsumer(final MQConfiguration config) {
         try {
-            final BaseCoordinationEntryEventConsumer consumer = new ActiveMQEventConsumer(connection, config.getTopicName());
-            return consumer;
+            return new ActiveMQEventConsumer(connection, config.getTopicName());
         } catch (JMSException e) {
             throw new CacheException(e);
         }

@@ -5,18 +5,18 @@ import com.excelian.mache.events.BaseCoordinationEntryEventProducer;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
 
-import javax.jms.JMSException;
 import java.io.IOException;
 import java.util.Properties;
+import javax.jms.JMSException;
 
 public class KafkaMQFactory implements MQFactory {
-	private final String connectionString;
+    private final String connectionString;
 
     public KafkaMQFactory(String connectionString) throws JMSException, IOException {
         this.connectionString = connectionString;
     }
 
-    Properties CreateProducerConfig(String zooKeeper) {
+    Properties createProducerConfig(String zooKeeper) {
         String ZK_PORT = "9092";
         String ZK_CONNECTION = zooKeeper + ":" + ZK_PORT;
 
@@ -46,14 +46,12 @@ public class KafkaMQFactory implements MQFactory {
 
     @Override
     public BaseCoordinationEntryEventProducer getProducer(MQConfiguration config) {
-        BaseCoordinationEntryEventProducer producer = new KafkaEventProducer(CreateProducerConfig(connectionString), config.getTopicName());
-        return producer;
+        return new KafkaEventProducer(createProducerConfig(connectionString), config.getTopicName());
     }
 
     @Override
     public BaseCoordinationEntryEventConsumer getConsumer(MQConfiguration config) throws IOException, JMSException {
-        BaseCoordinationEntryEventConsumer consumer = new KafkaEventConsumer(CreateConsumerConfig(connectionString), config.getTopicName());
-        return consumer;
+        return new KafkaEventConsumer(CreateConsumerConfig(connectionString), config.getTopicName());
     }
 
     @Override
