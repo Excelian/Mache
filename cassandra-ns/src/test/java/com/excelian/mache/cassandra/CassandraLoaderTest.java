@@ -19,7 +19,8 @@ public class CassandraLoaderTest extends TestCacheLoaderBase {
 
     @Override
     protected MacheLoader buildCacheLoader(Class cls) throws Exception {
-        Cluster cluster = CassandraCacheLoader.connect(new NoRunningCassandraDbForTests().HostName(), "BluePrint", 9042);
-        return new CassandraCacheLoader<String, TestEntity>(cls, cluster, SchemaOptions.CREATEANDDROPSCHEMA, keySpace);
+        final DefaultCassandraConfig config = new DefaultCassandraConfig();
+        Cluster cluster = CassandraCacheLoader.connect(new NoRunningCassandraDbForTests().HostName(), "BluePrint", 9042, config);
+        return new CassandraCacheLoader<String, TestEntity>(cls, cluster, SchemaOptions.CREATEANDDROPSCHEMA, keySpace, config);
     }
 }

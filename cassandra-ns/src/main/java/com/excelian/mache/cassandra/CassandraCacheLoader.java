@@ -1,11 +1,9 @@
 package com.excelian.mache.cassandra;
 
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Metadata;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.DriverException;
-import com.datastax.driver.core.policies.ConstantReconnectionPolicy;
 import com.datastax.driver.core.policies.DCAwareRoundRobinPolicy;
 import com.datastax.driver.core.policies.TokenAwarePolicy;
 import com.excelian.mache.core.AbstractCacheLoader;
@@ -30,11 +28,8 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
 
     private static final Logger LOG = LoggerFactory.getLogger(CassandraCacheLoader.class);
 
-    //TODO: Breakout into configuration
-    private static final int REPLICATION_FACTOR = 1; //Note: Travis only provides a single DSE node
-    private static final String REPLICATION_CLASS = "SimpleStrategy";
-
     private final Cluster cluster;
+    private final CassandraConfig config;
     private Session session;
     private SchemaOptions schemaOption;
     private final String keySpace;
@@ -43,9 +38,10 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
 
     private final Class<V> clazz;
 
-    public CassandraCacheLoader(Class<V> clazz, Cluster cluster, SchemaOptions schemaOption, String keySpace) {
+    public CassandraCacheLoader(Class<V> clazz, Cluster cluster, SchemaOptions schemaOption, String keySpace, CassandraConfig config) {
         this.cluster = cluster;
-        this.cluster.getConfiguration().getQueryOptions().setConsistencyLevel(ConsistencyLevel.LOCAL_QUORUM);
+        this.config = config;
+        this.cluster.getConfiguration().getQueryOptions().setConsistencyLevel(config.getConsistencyLevel());
         this.schemaOption = schemaOption;
         this.keySpace = keySpace.replace("-", "_").replace(" ", "_").replace(":", "_");
         this.clazz = clazz;
@@ -73,7 +69,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
     }
 
     private void createKeySpace() {
-        session.execute(String.format("CREATE KEYSPACE IF NOT EXISTS %s  WITH REPLICATION = {'class':'%s', 'replication_factor':%d}; ", keySpace, REPLICATION_CLASS, REPLICATION_FACTOR));
+        session.execute(String.format("CREATE KEYSPACE IF NOT EXISTS %s  WITH REPLICATION = {'class':'%s', 'replication_factor':%d}; ", keySpace, config.getReplicationClass(), config.getReplicationFactor()));
         session.execute(String.format("USE %s ", keySpace));
         LOG.info("Created keyspace if missing {}", keySpace);
     }
@@ -98,7 +94,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
     public V load(K key) throws Exception {
         V value = ops().selectOneById(clazz, key);
         LOG.trace("Loaded value from DB : {}", key);
-        return  value;
+        return value;
     }
 
     @Override
@@ -132,14 +128,14 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
         return new CassandraTemplate(session);
     }
 
-    public static Cluster connect(String contactPoint, String clusterName, int port) {
+    public static Cluster connect(String contactPoint, String clusterName, int port, CassandraConfig config) {
         Cluster cluster = Cluster.builder()
-                .addContactPoint(contactPoint)
-                .withPort(port)
-                .withClusterName(clusterName)
-                .withReconnectionPolicy(new ConstantReconnectionPolicy(100L))
-                .withLoadBalancingPolicy(new TokenAwarePolicy(new DCAwareRoundRobinPolicy())) // go to the node with data
-                .build();
+            .addContactPoint(contactPoint)
+            .withPort(port)
+            .withClusterName(clusterName)
+            .withReconnectionPolicy(config.getReconnectionPolicy())
+            .withLoadBalancingPolicy(new TokenAwarePolicy(new DCAwareRoundRobinPolicy())) // go to the node with data
+            .build();
         Metadata metadataToWarmConnection = cluster.getMetadata();
         return cluster;
     }
