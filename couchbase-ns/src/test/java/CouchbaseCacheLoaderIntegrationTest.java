@@ -3,10 +3,10 @@ import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.google.common.cache.CacheLoader;
 import org.junit.*;
-import org.mache.CacheThing;
-import org.mache.SchemaOptions;
-import org.mache.couchbase.CouchbaseCacheLoader;
-import org.mache.couchbase.CouchbaseConfig;
+import com.excelian.mache.core.MacheImpl;
+import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.couchbase.CouchbaseCacheLoader;
+import com.excelian.mache.couchbase.CouchbaseConfig;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.couchbase.core.mapping.Document;
 
@@ -30,11 +30,11 @@ public class CouchbaseCacheLoaderIntegrationTest {
     private static final String EXCELIAN_COUCHBASE = "10.28.1.140";
     //private static final String LOCAL_COUCHBASE = "192.168.56.100";
 
-    private CacheThing<String, TestEntity> cache;
+    private MacheImpl<String, TestEntity> cache;
 
     @Before
     public void setup() {
-        cache = new CacheThing<>(new CouchbaseCacheLoader<>(CouchbaseConfig.builder()
+        cache = new MacheImpl<>(new CouchbaseCacheLoader<>(CouchbaseConfig.builder()
                 .withServerAdresses(Collections.singletonList(EXCELIAN_COUCHBASE))
                         //.withServerAdresses(Collections.singletonList(LOCAL_COUCHBASE))
                 .withCouchbaseEnvironment(DefaultCouchbaseEnvironment.create())
@@ -78,7 +78,7 @@ public class CouchbaseCacheLoaderIntegrationTest {
     @SuppressWarnings("unchecked")
     public void canGetDriver() {
         CouchbaseCacheLoader<String, Object> loader = (CouchbaseCacheLoader) cache.getCacheLoader();
-        loader.create(null, null);
+        loader.create();
         Cluster cluster = loader.getDriverSession();
         assertNotNull(cluster);
         loader.close();

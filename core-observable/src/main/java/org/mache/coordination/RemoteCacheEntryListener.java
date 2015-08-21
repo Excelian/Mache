@@ -1,5 +1,0 @@
-package org.mache.coordination;
-
-public interface RemoteCacheEntryListener extends RemoteCacheEntryRemovedListener, RemoteCacheEntryInvalidateListener, RemoteCacheEntryCreatedListener, RemoteCacheEntryUpdatedListener {
-
-}

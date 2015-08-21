@@ -1,3 +1,0 @@
-org.mache.events.integration.builder.ActiveMQMessagingProvisioner
-org.mache.events.integration.builder.KafkaMessagingProvisioner
-org.mache.events.integration.builder.RabbitMQMessagingProvisioner
