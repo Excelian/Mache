@@ -36,28 +36,29 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
 
             Cluster cluster = CassandraCacheLoader.connect(mapParams.get("server.ip.address"), mapParams.get("cluster.name"), 9042);
             CassandraCacheLoader<String, CassandraTestEntity> db = new CassandraCacheLoader<>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
-            db.create("", "");//this is to force the connection to occur within our setup
+            db.create();//this is to force the connection to occur within our setup
 
             MessageQueueObservableCacheFactory cacheFactory = new MessageQueueObservableCacheFactory(mqFactory, mqConfiguration, new MacheFactory(), new UUIDUtils());
             cache = cacheFactory.createCache(db);
 
             CassandraTestEntity entity = new CassandraTestEntity("dummy", "warmup");
             cache.put(entity.pkString, entity);
-
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);
         }
     }
 
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        if (cache != null) cache.close();
-        if (mqFactory != null) try {
-            mqFactory.close();
+        if (cache != null) {
+            cache.close();
         }
-        catch (IOException e) {
-            e.printStackTrace();
+        if (mqFactory != null) {
+            try {
+                mqFactory.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -81,8 +82,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
                 }
 
                 result.setResponseMessage("Read " + entity.pkString + " from Cache");
-            }
-            else {
+            } else {
                 String entityKey = mapParams.get("entity.key");
                 String entityValue = mapParams.get("entity.value");
 
@@ -92,8 +92,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
                 result.setResponseMessage("Put " + entity.pkString + " into Cache");
             }
             success = true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             setupResultForError(result, e);
             return result;
         }

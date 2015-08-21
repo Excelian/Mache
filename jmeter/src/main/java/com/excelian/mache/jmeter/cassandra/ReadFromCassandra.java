@@ -25,7 +25,7 @@ public class ReadFromCassandra extends MacheAbstractJavaSamplerClient {
             Cluster cluster = CassandraCacheLoader.connect(
                     mapParams.get("server.ip.address"), mapParams.get("cluster.name"), 9042);
             db = new CassandraCacheLoader(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
-            db.create("", "");//ensure we are connected and schema exists
+            db.create();//ensure we are connected and schema exists
         } catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);
         }

@@ -21,12 +21,12 @@ public class WriteToCassandra extends MacheAbstractJavaSamplerClient {
         String keySpace = mapParams.get("keyspace.name");
 
         try {
-            Cluster cluster = CassandraCacheLoader.connect(
-                    mapParams.get("server.ip.address"), mapParams.get("cluster.name")
-                    , 9042);
+            final Cluster cluster = CassandraCacheLoader.connect(
+                mapParams.get("server.ip.address"),
+                mapParams.get("cluster.name"),
+                9042);
             db = new CassandraCacheLoader<>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
-
-            db.create(db.getName(), "");
+            db.create();
         } catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);
         }
@@ -39,24 +39,19 @@ public class WriteToCassandra extends MacheAbstractJavaSamplerClient {
 
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
-
         Map<String, String> mapParams = extractParameters(context);
         SampleResult result = new SampleResult();
         boolean success = false;
-
         result.sampleStart();
-
         try {
             CassandraTestEntity t1 = new CassandraTestEntity(mapParams.get("entity.key"), mapParams.get("entity.value"));
             db.put(t1.pkString, t1);
             result.setResponseMessage("Created " + t1.pkString);
             success = true;
         } catch (Exception e) {
-
             setupResultForError(result, e);
             return result;
         }
-
         result.sampleEnd();
         result.setSuccessful(success);
         return result;
@@ -72,5 +67,4 @@ public class WriteToCassandra extends MacheAbstractJavaSamplerClient {
         defaultParameters.addArgument("entity.value", "ValueOne");
         return defaultParameters;
     }
-
 }
