@@ -10,11 +10,8 @@ import com.excelian.mache.builder.StorageProvisioner.IgnoredClusterDetails;
 import com.excelian.mache.builder.StorageProvisioner.StorageServerDetails;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.observable.builder.MessagingProvisioner;
 
-import java.io.IOException;
 import java.util.ServiceLoader;
-import javax.jms.JMSException;
 
 
 /**
@@ -87,7 +84,7 @@ public class Builder {
             final MessagingProvisioner messagingProvisioner = getMessagingProvisionerOrThrow();
             try {
                 return messagingProvisioner.wireInMessaging(cache, topic, this.messagingLocation);
-            } catch (IOException | JMSException e) {
+            } catch (Exception e) {
                 throw new RuntimeException("Cannot locate messaging at :[" + messagingLocation + "]");
             }
         }

@@ -1,5 +1,6 @@
 package com.excelian.mache.observable.builder;
 
+import com.excelian.mache.builder.MessagingProvisioner;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.events.MQConfiguration;
@@ -16,7 +17,7 @@ import javax.jms.JMSException;
 public abstract class AbstractMessagingProvisioner implements MessagingProvisioner {
 
     @Override
-    public <K, V> Mache<K, V> wireInMessaging(Mache<K, V> toWireIn, String topic, String messagingLocation) throws IOException, JMSException {
+    public <K, V> Mache<K, V> wireInMessaging(Mache<K, V> toWireIn, String topic, String messagingLocation) throws Exception {
         final MQFactory mqFactory = getMqFactory(messagingLocation);
         final MQConfiguration mqConfiguration = () -> topic;
 
