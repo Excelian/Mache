@@ -1,3 +1,4 @@
 com.excelian.mache.events.integration.builder.ActiveMQMessagingProvisioner
 com.excelian.mache.events.integration.builder.KafkaMessagingProvisioner
 com.excelian.mache.events.integration.builder.RabbitMQMessagingProvisioner
+com.excelian.mache.observable.builder.NoMessagingProvisioner

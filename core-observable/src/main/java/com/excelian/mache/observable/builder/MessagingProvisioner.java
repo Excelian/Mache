@@ -1,6 +1,6 @@
 package com.excelian.mache.observable.builder;
 
-import com.excelian.mache.events.MQFactory;
+import com.excelian.mache.core.Mache;
 
 import java.io.IOException;
 import javax.jms.JMSException;
@@ -11,5 +11,5 @@ import javax.jms.JMSException;
 public interface MessagingProvisioner {
     String getMessaging();
 
-    MQFactory getMQFactory(String messagingLocation) throws IOException, JMSException;
+    <K, V> Mache<K, V> wireInMessaging(Mache<K, V> toWireIn, String topic, String messagingLocation) throws IOException, JMSException;
 }
