@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
@@ -19,21 +20,21 @@ import javax.jms.TextMessage;
 
 public class ActiveMQEventProducer extends BaseCoordinationEntryEventProducer {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQEventProducer.class);
+    private final ActiveMqConfig config;
     Session session;
     MessageProducer producer;
 
-    protected ActiveMQEventProducer(Connection connection, String topicName) throws JMSException {
+    protected ActiveMQEventProducer(Connection connection, String topicName, ActiveMqConfig config) throws JMSException {
         super(topicName);
+        this.config = config;
 
-        int oneMinuteMSecs = 60000;
-
-        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        session = connection.createSession(false, config.getAutoAcknowledge());
         Destination destination = session.createTopic(getTopicName());
 
         producer = session.createProducer(destination);
-        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+        producer.setDeliveryMode(config.getDeliveryMode());
 
-        producer.setTimeToLive(oneMinuteMSecs);
+        producer.setTimeToLive(config.getTimeToLiveInMillis());
     }
 
     @Override

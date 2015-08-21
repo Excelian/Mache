@@ -12,8 +12,10 @@ import javax.jms.JMSException;
 
 public class ActiveMQFactory implements MQFactory {
     private final Connection connection;
+    private final ActiveMqConfig activeMqConfig;
 
-    public ActiveMQFactory(final String connectionString) throws JMSException {
+    public ActiveMQFactory(final String connectionString, ActiveMqConfig activeMqConfig) throws JMSException {
+        this.activeMqConfig = activeMqConfig;
         final ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(connectionString);
         connection = connectionFactory.createConnection();
         connection.start();
@@ -22,7 +24,7 @@ public class ActiveMQFactory implements MQFactory {
     @Override
     public BaseCoordinationEntryEventProducer getProducer(final MQConfiguration config) {
         try {
-            return new ActiveMQEventProducer(connection, config.getTopicName());
+            return new ActiveMQEventProducer(connection, config.getTopicName(), activeMqConfig);
         } catch (JMSException e) {
             throw new CacheException(e);
         }
@@ -31,7 +33,7 @@ public class ActiveMQFactory implements MQFactory {
     @Override
     public BaseCoordinationEntryEventConsumer getConsumer(final MQConfiguration config) {
         try {
-            return new ActiveMQEventConsumer(connection, config.getTopicName());
+            return new ActiveMQEventConsumer(connection, config.getTopicName(), activeMqConfig);
         } catch (JMSException e) {
             throw new CacheException(e);
         }

@@ -10,6 +10,8 @@ import java.util.concurrent.ExecutionException;
 
 import javax.jms.JMSException;
 
+import com.excelian.mache.events.integration.ActiveMqConfig;
+import com.excelian.mache.events.integration.DefaultActiveMqConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +47,7 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 	MacheFactory macheFactory;
 
 	private final UUIDUtils uuidUtils = new UUIDUtils();
+	private DefaultActiveMqConfig activeMqConfig;
 
 	@Before
 	public void beforeTest() throws JMSException {
@@ -54,14 +57,16 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 
 		macheFactory = new MacheFactory();
 
-		mqFactory1 = new ActiveMQFactory(LOCAL_MQ);
+		activeMqConfig = new DefaultActiveMqConfig();
+
+		mqFactory1 = new ActiveMQFactory(LOCAL_MQ, activeMqConfig);
 		observableCacheFactory1 = new MessageQueueObservableCacheFactory(mqFactory1, mqConfiguration, spiedMacheFactory, uuidUtils);
 
 		unspiedCache1 = macheFactory.create(cacheLoader);
 		spiedCache1 = Mockito.spy(unspiedCache1);
 		Mockito.when(spiedMacheFactory.create(cacheLoader)).thenReturn(spiedCache1);
 
-		mqFactory2 = new ActiveMQFactory(LOCAL_MQ);
+		mqFactory2 = new ActiveMQFactory(LOCAL_MQ, activeMqConfig);
 		observableCacheFactory2 = new MessageQueueObservableCacheFactory(mqFactory2, mqConfiguration, macheFactory, uuidUtils);
 	}
 
@@ -100,9 +105,9 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 	@Test
 	public void shouldProperlyPropagateValues() throws ExecutionException, InterruptedException, JMSException {
 		MacheLoader<String, TestEntity2, String> cacheLoader = new InMemoryCacheLoader<>("loaderForTestEntity2");
-		MQFactory mqFactory1 = new ActiveMQFactory(LOCAL_MQ);
+		MQFactory mqFactory1 = new ActiveMQFactory(LOCAL_MQ, activeMqConfig);
 		ObservableCacheFactory observableCacheFactory1 = new MessageQueueObservableCacheFactory(mqFactory1, mqConfiguration, new MacheFactory(), new UUIDUtils());
-		MQFactory mqFactory2 = new ActiveMQFactory(LOCAL_MQ);
+		MQFactory mqFactory2 = new ActiveMQFactory(LOCAL_MQ, activeMqConfig);
 		ObservableCacheFactory observableCacheFactory2 = new MessageQueueObservableCacheFactory(mqFactory2, mqConfiguration, new MacheFactory(), new UUIDUtils());
 
 		Mache<String, TestEntity2> cache1 = observableCacheFactory1.createCache(cacheLoader);

@@ -10,6 +10,7 @@ import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.events.integration.ActiveMQFactory;
+import com.excelian.mache.events.integration.DefaultActiveMqConfig;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 import com.excelian.mache.observable.MessageQueueObservableCacheFactory;
 import com.excelian.mache.observable.utils.UUIDUtils;
@@ -34,7 +35,7 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
         MQConfiguration mqConfiguration = () -> "testTopic";
 
         try {
-            mqFactory = new ActiveMQFactory(mapParams.get("activemq.connection"));
+            mqFactory = new ActiveMQFactory(mapParams.get("activemq.connection"), new DefaultActiveMqConfig());
 
             final CassandraConfig config = new DefaultCassandraConfig();
             Cluster cluster = CassandraCacheLoader.connect(mapParams.get("server.ip.address"), mapParams.get("cluster.name"), 9042, config);

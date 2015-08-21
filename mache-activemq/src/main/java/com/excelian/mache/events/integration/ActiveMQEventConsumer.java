@@ -20,15 +20,17 @@ import javax.jms.TextMessage;
 
 public class ActiveMQEventConsumer extends BaseCoordinationEntryEventConsumer {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQEventConsumer.class);
+    private final ActiveMqConfig config;
     private Session session;
     private MessageConsumer consumer;
 
     ExecutorService executor = Executors.newSingleThreadExecutor();
     private Future<?> task;
 
-    public ActiveMQEventConsumer(final Connection connection, final String producerTopicName) throws JMSException {
+    public ActiveMQEventConsumer(final Connection connection, final String producerTopicName, ActiveMqConfig config) throws JMSException {
         super(producerTopicName);
-        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        this.config = config;
+        session = connection.createSession(false, config.getAutoAcknowledge());
         Destination destination = session.createTopic(getTopicName());
         this.consumer = session.createConsumer(destination);
     }
