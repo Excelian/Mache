@@ -41,7 +41,7 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
         return clazz.getSimpleName();
     }
 
-    public void create(String name, Object k) {
+    public void create() {
         if (schemaOptions.shouldCreateSchema() && mongoClient == null) {
             synchronized (this) {
                 if (mongoClient == null) {

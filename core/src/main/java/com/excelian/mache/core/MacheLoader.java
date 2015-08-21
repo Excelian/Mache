@@ -5,7 +5,7 @@ import com.google.common.cache.RemovalNotification;
 
 public interface MacheLoader<K, V, D> extends RemovalListener<K, V> {
 
-    void create(String name, K k);
+    void create();
 
     void put(K k, V v);
 

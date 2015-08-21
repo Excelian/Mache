@@ -78,7 +78,7 @@ public class CouchbaseCacheLoaderIntegrationTest {
     @SuppressWarnings("unchecked")
     public void canGetDriver() {
         CouchbaseCacheLoader<String, Object> loader = (CouchbaseCacheLoader) cache.getCacheLoader();
-        loader.create(null, null);
+        loader.create();
         Cluster cluster = loader.getDriverSession();
         assertNotNull(cluster);
         loader.close();

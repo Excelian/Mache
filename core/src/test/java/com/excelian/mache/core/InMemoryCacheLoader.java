@@ -13,7 +13,7 @@ public class InMemoryCacheLoader<K, V> extends AbstractCacheLoader<K, V, String>
 
 
     @Override
-    public void create(String name, K k) {
+    public void create() {
 
     }
 

@@ -51,7 +51,8 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
         this.clazz = clazz;
     }
 
-    public void create(String ignored1, K ignored2) {
+    @Override
+    public void create() {
         if (schemaOption.shouldCreateSchema() && session == null) {
             synchronized (this) {
                 if (session == null) {

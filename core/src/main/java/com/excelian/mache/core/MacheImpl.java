@@ -59,22 +59,21 @@ public class MacheImpl<K, V> implements Mache<K, V> {
 
     @Override
     public V get(final K k) {
-        createMaybe(k);
+        createBackingStoreMaybe();
         //the fwdrCache doesnt expose 'getOrLoad(K, Loader)'
         return cache.getUnchecked(k);
     }
 
     @Override
     public void put(K k, V v) {
-
-        createMaybe(k);
+        createBackingStoreMaybe();
         fwdCache.invalidate(k);
         cacheLoader.put(k, v);
     }
 
     @Override
     public void remove(K k) {
-        createMaybe(k);
+        createBackingStoreMaybe();
         cacheLoader.remove(k);
         fwdCache.invalidate(k);
     }
@@ -90,11 +89,11 @@ public class MacheImpl<K, V> implements Mache<K, V> {
         fwdCache.invalidate(k);
     }
 
-    private void createMaybe(K k) {
+    private void createBackingStoreMaybe() {
         if (!created) {
             synchronized (this) {
                 if (!created) {
-                    cacheLoader.create(cacheLoader.getName(), k);
+                    cacheLoader.create();
                     created = true;
                 }
             }

@@ -94,8 +94,8 @@ public class MacheImplTest {
 
             public void close() {
             }
-
-            public void create(String name, String s) {
+            @Override
+            public void create() {
                 created++;
             }
 

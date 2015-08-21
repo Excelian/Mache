@@ -31,10 +31,6 @@ public class CouchbaseCacheLoader<K extends String, V> extends AbstractCacheLoad
     }
 
     @Override
-    public void create(String whyAre, K theseParamsHere) {
-        create();
-    }
-
     public void create() {
         if (cluster == null) {
             synchronized (this) {
