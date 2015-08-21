@@ -4,6 +4,7 @@ import com.codeaffine.test.ConditionalIgnoreRule;
 
 import com.excelian.mache.core.NoRunningKafkaForTests;
 import com.excelian.mache.events.MQFactory;
+import com.excelian.mache.events.integration.DefaultKafkaMqConfig;
 import com.excelian.mache.events.integration.KafkaMQFactory;
 import org.junit.Rule;
 import com.excelian.mache.core.NotRunningInExcelian;
@@ -23,7 +24,7 @@ public class KafkaEventingTest extends TestEventingBase {
     @SuppressWarnings("rawtypes")
 	@Override
     protected MQFactory buildMQFactory() throws JMSException, IOException {
-        return new KafkaMQFactory(new NoRunningKafkaForTests().HostName());
+        return new KafkaMQFactory(new NoRunningKafkaForTests().HostName(), new DefaultKafkaMqConfig());
     }
 }
 

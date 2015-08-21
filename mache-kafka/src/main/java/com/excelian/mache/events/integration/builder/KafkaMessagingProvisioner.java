@@ -1,6 +1,7 @@
 package com.excelian.mache.events.integration.builder;
 
 import com.excelian.mache.events.MQFactory;
+import com.excelian.mache.events.integration.DefaultKafkaMqConfig;
 import com.excelian.mache.events.integration.KafkaMQFactory;
 import com.excelian.mache.observable.builder.AbstractMessagingProvisioner;
 
@@ -18,6 +19,6 @@ public class KafkaMessagingProvisioner extends AbstractMessagingProvisioner {
 
   @Override
   public MQFactory getMqFactory(String messagingLocation) throws IOException, JMSException {
-    return new KafkaMQFactory(messagingLocation);
+    return new KafkaMQFactory(messagingLocation, new DefaultKafkaMqConfig());
   }
 }
