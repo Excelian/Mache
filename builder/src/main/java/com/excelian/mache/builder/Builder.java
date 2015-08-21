@@ -23,6 +23,7 @@ import java.util.ServiceLoader;
 import javax.jms.JMSException;
 
 
+
 /**
  * Created by jbowkett on 04/08/15.
  */
@@ -107,8 +108,7 @@ public class Builder {
         private MQFactory getMqFactoryOrThrowRuntimeException(MessagingProvisioner messagingProvisioner) {
             try {
                 return messagingProvisioner.getMQFactory(this.messagingLocation);
-            }
-            catch (IOException | JMSException e) {
+            } catch (IOException | JMSException e) {
                 throw new RuntimeException("Cannot connect to message queue at:[" + this.messagingLocation + "]", e);
             }
         }
@@ -122,8 +122,7 @@ public class Builder {
                 }
             }
             if (provisioner == null) {
-                throw new RuntimeException("Cannot find storage provisioner for platform :[" +
-                    storage + "].  Please ensure a " + storage + "-ns.jar is present in the classpath");
+                throw new RuntimeException("Cannot find storage provisioner for platform :[" + storage + "].  Please ensure a " + storage + "-ns.jar is present in the classpath");
             }
             return provisioner;
         }
@@ -137,8 +136,7 @@ public class Builder {
                 }
             }
             if (provisioner == null) {
-                throw new RuntimeException("Cannot find messaging provisioner for platform :[" +
-                    messaging + "].  Please ensure the core-observable.jar is present in the classpath");
+                throw new RuntimeException("Cannot find messaging provisioner for platform :[" + messaging + "].  Please ensure the core-observable.jar is present in the classpath");
             }
             return provisioner;
         }
