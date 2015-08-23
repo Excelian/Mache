@@ -30,6 +30,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
                 .collect(Collectors.toList());
 
         CouchbaseConfig config = CouchbaseConfig.builder()
+                .withCacheType(valueType)
                 .withServerAddresses(addresses)
                 .withBucketName(keySpace)
                 .build();
