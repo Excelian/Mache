@@ -13,6 +13,8 @@ import org.springframework.data.couchbase.core.CouchbaseTemplate;
 
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * An implementation of the Mache CacheLoader for Couchbase Server. Utilises the newer Spring Data Couchbase
  * that
@@ -60,6 +62,7 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
 
     @Override
     public V load(K key) throws Exception {
+        checkNotNull(key);
         return template.findById(key.toString(), config.<V>getCacheType());
     }
 

@@ -17,26 +17,25 @@ import java.util.Objects;
 import static org.junit.Assert.*;
 
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCouchbaseDbForTests.class)
-@Ignore
 public class CouchbaseCacheLoaderIntegrationTest {
 
     @Rule
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     private static final String BUCKET = "couchbase-test";
-    private static final String EXCELIAN_ADMIN = "Administrator";
+    private static final String DEFAULT_ADMIN = "Administrator";
     private static final String PASSWORD = "password";
     private static final double DELTA = 0.000001;
-    private static final String EXCELIAN_COUCHBASE = "10.28.1.140";
+    private static final String COUCHBASE_HOST = new NoRunningCouchbaseDbForTests().getHost();
 
     private MacheImpl<String, TestEntity> cache;
 
     @Before
     public void setup() {
         cache = new MacheImpl<>(new CouchbaseCacheLoader<>(CouchbaseConfig.builder()
-                .withServerAddresses(Collections.singletonList(EXCELIAN_COUCHBASE))
+                .withServerAddresses(Collections.singletonList(COUCHBASE_HOST))
                 .withCouchbaseEnvironment(DefaultCouchbaseEnvironment.create())
-                .withAdminUser(EXCELIAN_ADMIN)
+                .withAdminUser(DEFAULT_ADMIN)
                 .withAdminPassword(PASSWORD)
                 .withBucketName(BUCKET)
                 .withSchemaOptions(SchemaOptions.CREATEANDDROPSCHEMA)
