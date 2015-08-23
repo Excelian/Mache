@@ -1,20 +1,20 @@
-package com.excelian.mache.examples.cassandra;
+package com.excelian.mache.examples.couchbase;
 
-import org.springframework.data.cassandra.mapping.PrimaryKey;
-import org.springframework.data.cassandra.mapping.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.couchbase.core.mapping.Document;
 
 /**
- * Example Spring Data Cassandra Annotated Object.
+ * Example Spring Data Couchbase Annotated Object.
  */
-@Table
-public class CassandraAnnotatedMessage {
+@Document
+public class CouchbaseAnnotatedMessage {
 
     private final String msg;
 
-    @PrimaryKey
+    @Id
     private final String primaryKey;
 
-    public CassandraAnnotatedMessage(String primaryKey, String msg) {
+    public CouchbaseAnnotatedMessage(String primaryKey, String msg) {
         this.msg = msg;
         this.primaryKey = primaryKey;
     }

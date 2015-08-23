@@ -1,12 +1,13 @@
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
-import com.google.common.cache.CacheLoader;
-import org.junit.*;
 import com.excelian.mache.core.MacheImpl;
+import com.excelian.mache.core.NoRunningCouchbaseDbForTests;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.couchbase.CouchbaseCacheLoader;
 import com.excelian.mache.couchbase.CouchbaseConfig;
+import com.google.common.cache.CacheLoader;
+import org.junit.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.couchbase.core.mapping.Document;
 
@@ -15,7 +16,7 @@ import java.util.Objects;
 
 import static org.junit.Assert.*;
 
-//@ConditionalIgnoreRule.IgnoreIf(condition = NotRunningInExcelian.class)
+@ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCouchbaseDbForTests.class)
 @Ignore
 public class CouchbaseCacheLoaderIntegrationTest {
 
@@ -24,22 +25,18 @@ public class CouchbaseCacheLoaderIntegrationTest {
 
     private static final String BUCKET = "couchbase-test";
     private static final String EXCELIAN_ADMIN = "Administrator";
-    //private static final String LOCAL_ADMIN = "admin";
     private static final String PASSWORD = "password";
     private static final double DELTA = 0.000001;
     private static final String EXCELIAN_COUCHBASE = "10.28.1.140";
-    //private static final String LOCAL_COUCHBASE = "192.168.56.100";
 
     private MacheImpl<String, TestEntity> cache;
 
     @Before
     public void setup() {
         cache = new MacheImpl<>(new CouchbaseCacheLoader<>(CouchbaseConfig.builder()
-                .withServerAdresses(Collections.singletonList(EXCELIAN_COUCHBASE))
-                        //.withServerAdresses(Collections.singletonList(LOCAL_COUCHBASE))
+                .withServerAddresses(Collections.singletonList(EXCELIAN_COUCHBASE))
                 .withCouchbaseEnvironment(DefaultCouchbaseEnvironment.create())
                 .withAdminUser(EXCELIAN_ADMIN)
-                        //.withAdminUser(LOCAL_ADMIN)
                 .withAdminPassword(PASSWORD)
                 .withBucketName(BUCKET)
                 .withSchemaOptions(SchemaOptions.CREATEANDDROPSCHEMA)
@@ -101,13 +98,17 @@ public class CouchbaseCacheLoaderIntegrationTest {
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            TestEntity that = (TestEntity) o;
-            return Objects.equals(value, that.value) &&
-                    Objects.equals(key, that.key) &&
-                    Objects.equals(type, that.type);
+        public boolean equals(Object other) {
+            if (this == other) {
+                return true;
+            }
+            if (other == null || getClass() != other.getClass()) {
+                return false;
+            }
+            TestEntity that = (TestEntity) other;
+            return Objects.equals(value, that.value)
+                    && Objects.equals(key, that.key)
+                    && Objects.equals(type, that.type);
         }
 
         @Override

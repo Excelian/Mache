@@ -2,6 +2,7 @@ package com.excelian.mache.builder;
 
 import static com.excelian.mache.builder.Builder.Messaging.None;
 import static com.excelian.mache.builder.Builder.Storage.Cassandra;
+import static com.excelian.mache.builder.Builder.Storage.Couchbase;
 import static com.excelian.mache.builder.Builder.Storage.Mongo;
 
 import com.excelian.mache.builder.Builder.MacheDescriptor.StorageTypeBuilder;
@@ -14,9 +15,6 @@ import com.excelian.mache.core.SchemaOptions;
 import java.util.ServiceLoader;
 
 
-/**
- * Created by jbowkett on 04/08/15.
- */
 public class Builder {
     public static StorageServerDetails server(String host, int port) {
         return new StorageServerDetails(host, port);
@@ -35,7 +33,7 @@ public class Builder {
         };
     }
 
-    enum Storage {Cassandra, Mongo}
+    enum Storage {Cassandra, Mongo, Couchbase}
 
     enum Messaging {ActiveMQ, RabbitMQ, Kafka, None}
 
@@ -143,6 +141,21 @@ public class Builder {
                         }
                     };
             }
+
+            default CassandraServerAddressBuilder backedByCouchbase() {
+                return storageServer -> cluster ->
+                        keyspace -> new MacheTypeBuilder() {
+                            public <T> SchemaPolicyBuilder<T> toStore(Class<T> macheType) {
+                                return schemaOption ->
+                                        messaging -> messagingLocation -> topic ->
+                                                new MacheDescriptor<>(Couchbase,
+                                                        new StorageServerDetails[]{storageServer},
+                                                        cluster, keyspace, macheType, schemaOption,
+                                                        messaging, messagingLocation, topic);
+                            }
+                        };
+            }
+
         }
 
         public interface CassandraServerAddressBuilder {
