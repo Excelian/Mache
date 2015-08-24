@@ -1,7 +1,0 @@
-dependencies {
-    compile project(':core')
-    compile 'com.datastax.cassandra:cassandra-driver-core:2.1.4'
-    compile 'org.springframework.data:spring-data-cassandra:1.2.0.RELEASE'
-    testCompile project(path: ':core', configuration: 'tests')
-
-}

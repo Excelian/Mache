@@ -1,0 +1,8 @@
+dependencies {
+    compile project(':mache-core')
+    compile 'org.mongodb:mongo-java-driver:3.0.2'
+    compile 'org.springframework.data:spring-data-mongodb:1.7.0.RELEASE'
+    testCompile project(path: ':mache-core', configuration: 'tests')
+
+}
+

@@ -1,0 +1,19 @@
+repositories {
+    maven {
+        url 'http://repo.spring.io/milestone'
+    }
+    maven {
+        url 'http://files.couchbase.com/maven2'
+    }
+}
+
+dependencies {
+    compile project(':mache-core')
+    compile 'org.springframework.data:spring-data-couchbase:2.0.0.M1'
+
+    testCompile project(path: ':mache-core', configuration: 'tests')
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile 'org.powermock:powermock-core:1.6.2'
+    testCompile 'org.powermock:powermock-module-junit4:1.6.2'
+    testCompile 'org.powermock:powermock-api-mockito:1.6.2'
+}

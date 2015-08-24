@@ -51,8 +51,8 @@ task pluginJar(type: Jar, dependsOn: compileJava) {
      Builds the jar to be copied to JMETER/lib/ext folder
     */
 
-    println "Mongo:" + project(':mongo-ns').sourceSets.main.output.classesDir
-    println "Cassandra:" + project(':cassandra-ns').sourceSets.main.output.classesDir
+    println "Mongo:" + project(':mache-mongo').sourceSets.main.output.classesDir
+    println "Cassandra:" + project(':mache-cassandra').sourceSets.main.output.classesDir
 
 
     manifest {
@@ -64,32 +64,32 @@ task pluginJar(type: Jar, dependsOn: compileJava) {
     from sourceSets.main.output.classesDir
     include '**/*.class'
 
-    from project(':core-observable').sourceSets.main.output.classesDir
+    from project(':mache-observable').sourceSets.main.output.classesDir
     include '**/*.class'
 
     from project(':mache-activemq').sourceSets.main.output.classesDir
     include '**/*.class'
 
-    from project(':core').sourceSets.main.output.classesDir
+    from project(':mache-core').sourceSets.main.output.classesDir
     include '**/*.class'
 
-    from project(':mongo-ns').sourceSets.main.output.classesDir
+    from project(':mache-mongo').sourceSets.main.output.classesDir
     include '**/*.class'
 
-    from "../mongo-ns/build/classes/main" include '**/*.class'
+    from "../mache-mongo/build/classes/main" include '**/*.class'
 
-    from project(':cassandra-ns').sourceSets.main.output.classesDir
+    from project(':mache-cassandra').sourceSets.main.output.classesDir
     include '**/*.class'
 }
 
 
 dependencies {
     compile project(':mache-activemq')
-    compile project(':mongo-ns')
-    compile project(':core-observable')
-    compile project(':core')
+    compile project(':mache-mongo')
+    compile project(':mache-observable')
+    compile project(':mache-core')
 
-    compile project(':cassandra-ns')
+    compile project(':mache-cassandra')
 
     compile 'org.apache.jmeter:ApacheJMeter_java:2.11' // 2.11 and jcenter compiles ok
     compile 'commons-logging:commons-logging:1.1.1'
