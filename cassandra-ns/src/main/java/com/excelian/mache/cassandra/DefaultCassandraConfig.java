@@ -8,8 +8,9 @@ import com.datastax.driver.core.policies.ConstantReconnectionPolicy;
  */
 public class DefaultCassandraConfig implements CassandraConfig {
 
-    public static final int REPLICATION_FACTOR = 1; //Note: Travis only provides a single DSE node
-    public static final String REPLICATION_CLASS = "SimpleStrategy";
+    private static final int REPLICATION_FACTOR = 1; //Note: Travis only provides a single DSE node
+    private static final String REPLICATION_CLASS = "SimpleStrategy";
+    private static final long RECONNECTION_DELAY_MS = 100L;
 
 
     public ConsistencyLevel getConsistencyLevel() {
@@ -29,6 +30,6 @@ public class DefaultCassandraConfig implements CassandraConfig {
     }
 
     public static long getReconnectionDelayMs() {
-        return 100L;
+        return RECONNECTION_DELAY_MS;
     }
 }
