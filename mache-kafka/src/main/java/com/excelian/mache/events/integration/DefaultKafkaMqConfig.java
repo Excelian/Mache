@@ -5,44 +5,54 @@ package com.excelian.mache.events.integration;
  */
 public class DefaultKafkaMqConfig implements KafkaMqConfig {
 
+    private static final String AUTOCOMMIT_INTERVAL_MS = "50";
+    private static final String KAFKA_SERIALIZER_CLASS = "kafka.serializer.StringEncoder";
+    private static final String OFFSET_RESET = "largest";
+    private static final String REQUIRED_ACK_COUNT = "1";
+    private static final int SHUTDOWN_TIMEOUT_SECS = 5;
+    private static final String ZK_CONSUMER_PORT = "2181";
+    private static final String ZK_PRODUCER_PORT = "9092";
+    private static final String ZK_SESSION_TIMEOUT_MS = "8000";
+    private static final String ZK_SYNC_TIME_MS = "100";
+
     public int getShutdownTimeoutSeconds() {
-        return 5;
+        return SHUTDOWN_TIMEOUT_SECS;
     }
 
-    public String getZookeeperConnectionString(String zooKeeper, String ZK_PORT) {
-        return zooKeeper + ":" + ZK_PORT;
+    public String getZookeeperConnectionString(String zooKeeper, String port) {
+        return zooKeeper + ":" + port;
     }
 
     public String getZookeeperProducerPort() {
-        return "9092";
+        return ZK_PRODUCER_PORT;
     }
 
     public String getZookeeperConsumerPort() {
-        return "2181";
+        return ZK_CONSUMER_PORT;
     }
 
     public String getOffsetReset() {
-        return "largest";
+        return OFFSET_RESET;
     }
 
     public String getAutoCommitIntervalMilliseconds() {
-        return "50";
+        return AUTOCOMMIT_INTERVAL_MS;
     }
 
     public String getZookeeperSynchronisationTimeMilliseconds() {
-        return "100";
+        return ZK_SYNC_TIME_MS;
     }
 
     public String getZookeeperSessionTimeoutMilliseconds() {
-        return "8000";
+        return ZK_SESSION_TIMEOUT_MS;
     }
 
     public String getSerializerClassName() {
-        return "kafka.serializer.StringEncoder";
+        return KAFKA_SERIALIZER_CLASS;
     }
 
     public String getRequiredAcks() {
-        return "1";
+        return REQUIRED_ACK_COUNT;
     }
 
 }

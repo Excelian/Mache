@@ -1,7 +1,12 @@
 package com.excelian.mache.observable;
 
+import static java.lang.Thread.sleep;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import com.excelian.mache.core.*;
 
@@ -10,7 +15,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.jms.JMSException;
 
-import com.excelian.mache.events.integration.ActiveMqConfig;
 import com.excelian.mache.events.integration.DefaultActiveMqConfig;
 import org.junit.After;
 import org.junit.Before;
@@ -63,8 +67,8 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 		observableCacheFactory1 = new MessageQueueObservableCacheFactory(mqFactory1, mqConfiguration, spiedMacheFactory, uuidUtils);
 
 		unspiedCache1 = macheFactory.create(cacheLoader);
-		spiedCache1 = Mockito.spy(unspiedCache1);
-		Mockito.when(spiedMacheFactory.create(cacheLoader)).thenReturn(spiedCache1);
+		spiedCache1 = spy(unspiedCache1);
+		when(spiedMacheFactory.create(cacheLoader)).thenReturn(spiedCache1);
 
 		mqFactory2 = new ActiveMQFactory(LOCAL_MQ, activeMqConfig);
 		observableCacheFactory2 = new MessageQueueObservableCacheFactory(mqFactory2, mqConfiguration, macheFactory, uuidUtils);
@@ -92,14 +96,14 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 		Mache<String, TestEntity> cache1 = observableCacheFactory1.createCache(cacheLoader);
 		Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(cacheLoader);
 
-		Mockito.reset(spiedCache1);
+		reset(spiedCache1);
 
-		Thread.sleep(500); //some time for all listeners to connect
+		sleep(500); //some time for all listeners to connect
 		cache2.put(testValue2.pkey, testValue2);
 
-		Thread.sleep(2000);//give time for the message to propagate and invalidate to be called
+		sleep(2000);//give time for the message to propagate and invalidate to be called
 
-		Mockito.verify(spiedCache1).invalidate(testValue2.pkey);
+		verify(spiedCache1).invalidate(testValue2.pkey);
 	}
 
 	@Test
@@ -121,7 +125,7 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 
 		final String val2 = "someValue2";
 		cache1.put(key1, new TestEntity2(key1, val2));
-		Thread.sleep(500);
+		sleep(500);
 		assertEquals(val2, cache2.get(key1).otherValue);
 	}
 
@@ -134,15 +138,15 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 		/* insert data into loader and ensure it is within cache */
 		cache1.put(testValue2.pkey, testValue2);
 		assertNotNull(cache1.get(testValue2.pkey));
-		Thread.sleep(1000);//give time for the message to propagate and invalidate to be called from put
+		sleep(1000);//give time for the message to propagate and invalidate to be called from put
 
 		/* reset mocks */
-		Mockito.reset(spiedCache1);
+		reset(spiedCache1);
 		/* pull it into 2nd cache (this should NOT affect any other cache*/
 		assertNotNull(cache2.get(testValue2.pkey));
-		Thread.sleep(1000);//give time for any messages to propagate and invalidate to 'potentially' called
+		sleep(1000);//give time for any messages to propagate and invalidate to 'potentially' called
 
-		Mockito.verify(spiedCache1, Mockito.never()).invalidate(testValue2.pkey);
+		verify(spiedCache1, never()).invalidate(testValue2.pkey);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -150,11 +154,11 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 	public void shouldNotInvalidateSameCacheOnPut() throws ExecutionException, InterruptedException {
 		Mache<String, TestEntity> cache1 = observableCacheFactory1.createCache(cacheLoader);
 
-		Mockito.reset(spiedCache1);
+		reset(spiedCache1);
 		cache1.put(testValue2.pkey, testValue2);
 
-		Thread.sleep(1000);//give time for the message to propagate and invalidate to be called
+		sleep(1000);//give time for the message to propagate and invalidate to be called
 
-		Mockito.verify(spiedCache1, Mockito.times(0)).invalidate(testValue2.pkey);
+		verify(spiedCache1, times(0)).invalidate(testValue2.pkey);
 	}
 }

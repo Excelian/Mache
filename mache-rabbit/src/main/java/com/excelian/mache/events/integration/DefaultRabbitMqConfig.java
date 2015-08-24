@@ -1,29 +1,36 @@
 package com.excelian.mache.events.integration;
 
-import static com.rabbitmq.client.AMQP.*;
-import static com.rabbitmq.client.MessageProperties.*;
-import java.util.concurrent.TimeUnit;
+import static com.rabbitmq.client.AMQP.BasicProperties;
+import static com.rabbitmq.client.MessageProperties.PERSISTENT_TEXT_PLAIN;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Created by jbowkett on 21/08/2015.
  */
 public class DefaultRabbitMqConfig implements RabbitMqConfig {
 
+    private static final String EXCHANGE_NAME = "coherence-killer-exchange";
+    private static final int MAX_LENGTH = 10000;
+    private static final int MESSAGE_EXPIRY_SECONDS = 1;
+    private static final int NETWORK_RECOVERY_INTERVAL_SECONDS = 1;
+    private static final int MESSAGE_TTL_SECONDS = 1;
+
     public int getMaxLength() {
-        return 10000;
+        return MAX_LENGTH;
     }
 
     @Override
     public String getExchangeName() {
-        return "coherence-killer-exchange";
+        return EXCHANGE_NAME;
     }
 
     public long getMessageTTLMilliSeconds() {
-        return TimeUnit.MINUTES.toMillis(1);
+        return MINUTES.toMillis(MESSAGE_TTL_SECONDS);
     }
 
     public long getMessageExpiryMilliSeconds() {
-        return TimeUnit.MINUTES.toMillis(1);
+        return MINUTES.toMillis(MESSAGE_EXPIRY_SECONDS);
     }
 
     public BasicProperties getRoutingHeader() {
@@ -31,6 +38,6 @@ public class DefaultRabbitMqConfig implements RabbitMqConfig {
     }
 
     public int getNetworkRecoveryIntervalMilliSeconds() {
-        return 1000;
+        return (int) SECONDS.toMillis(NETWORK_RECOVERY_INTERVAL_SECONDS);
     }
 }

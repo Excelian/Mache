@@ -1,8 +1,8 @@
 package com.excelian.mache.events.integration;
 
-import java.util.concurrent.TimeUnit;
-import javax.jms.DeliveryMode;
-import javax.jms.Session;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static javax.jms.DeliveryMode.NON_PERSISTENT;
+import static javax.jms.Session.AUTO_ACKNOWLEDGE;
 
 /**
  * Created by jbowkett on 21/08/2015.
@@ -10,14 +10,14 @@ import javax.jms.Session;
 public class DefaultActiveMqConfig implements ActiveMqConfig {
 
     public long getTimeToLiveInMillis() {
-        return TimeUnit.MINUTES.toMillis(1);
+        return MINUTES.toMillis(1);
     }
 
     public int getDeliveryMode() {
-        return DeliveryMode.NON_PERSISTENT;
+        return NON_PERSISTENT;
     }
 
     public int getAutoAcknowledge() {
-        return Session.AUTO_ACKNOWLEDGE;
+        return AUTO_ACKNOWLEDGE;
     }
 }

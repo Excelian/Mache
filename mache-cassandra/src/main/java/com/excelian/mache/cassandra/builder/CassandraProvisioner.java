@@ -7,12 +7,17 @@ import com.excelian.mache.cassandra.DefaultCassandraConfig;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.core.SchemaOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * Created by jbowkett on 11/08/15.
  */
 public class CassandraProvisioner implements StorageProvisioner {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CassandraProvisioner.class);
+
     @Override
     public String getStorage() {
         return "Cassandra";
@@ -28,18 +33,18 @@ public class CassandraProvisioner implements StorageProvisioner {
     }
 
     private Cluster getCluster(StorageServerDetails server, ClusterDetails clusterDetails) {
-        System.out.println("Connecting to Cassandra cluster...");
+        LOG.info("Connecting to Cassandra cluster...");
         final Cluster cluster = CassandraCacheLoader.connect(server.getAddress(), clusterDetails.getName(), server.getPort(), new DefaultCassandraConfig());
-        System.out.println("Connected.");
+        LOG.info("Connected.");
         return cluster;
     }
 
 
     private <K, V> CassandraCacheLoader<K, V> getCacheLoader(String keySpace, Cluster cluster, Class<V> valueTypes, SchemaOptions createanddropschema) {
-        System.out.println("Creating cache loader with keyspace:[" + keySpace + "]");
+        LOG.info("Creating cache loader with keyspace:[" + keySpace + "]");
         final CassandraCacheLoader<K, V> cacheLoader = new CassandraCacheLoader<>(
             valueTypes, cluster, createanddropschema, keySpace, new DefaultCassandraConfig());
-        System.out.println("CacheLoader created.");
+        LOG.info("CacheLoader created.");
         return cacheLoader;
     }
 }
