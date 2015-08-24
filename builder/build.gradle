@@ -4,13 +4,16 @@ repositories {
 
 dependencies {
     compile project(':core')
-    compile project(':cassandra-ns')
-    compile project(':mongo-ns')
-    compile project(':core-observable')
-    compile 'javax.jms:jms:1.1'
     compile 'org.springframework.data:spring-data-cassandra:1.2.0.RELEASE'
     compile 'org.springframework.data:spring-data-mongodb:1.7.0.RELEASE'
+    compile 'javax.jms:jms:1.1'
     testCompile project(path: ':core', configuration: 'tests')
+    testRuntime project(':mache-activemq')
+    testRuntime project(':mache-rabbit')
+    testRuntime project(':mongo-ns')
+    testRuntime project(':cassandra-ns')
+    testRuntime project(':core-observable')
+    testRuntime project(':core')
 }
 
 sourceSets {

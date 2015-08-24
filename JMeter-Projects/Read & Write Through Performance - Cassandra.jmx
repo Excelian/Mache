@@ -148,7 +148,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">WriteToCassandra</stringProp>
+            <stringProp name="classname">com.excelian.mache.jmeter.cassandra.WriteToCassandra</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -208,7 +208,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">ReadFromCassandra</stringProp>
+            <stringProp name="classname">com.excelian.mache.jmeter.cassandra.ReadFromCassandra</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -283,7 +283,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">CacheBackedByCassandra</stringProp>
+            <stringProp name="classname">com.excelian.mache.jmeter.cassandra.CacheBackedByCassandra</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -358,7 +358,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">CacheBackedByCassandra</stringProp>
+            <stringProp name="classname">com.excelian.mache.jmeter.cassandra.CacheBackedByCassandra</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>

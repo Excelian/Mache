@@ -2,6 +2,7 @@ package com.excelian.mache.jmeter.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.excelian.mache.cassandra.CassandraCacheLoader;
+import com.excelian.mache.cassandra.DefaultCassandraConfig;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 import org.apache.jmeter.config.Arguments;
@@ -21,11 +22,12 @@ public class WriteToCassandra extends MacheAbstractJavaSamplerClient {
         String keySpace = mapParams.get("keyspace.name");
 
         try {
+            final DefaultCassandraConfig config = new DefaultCassandraConfig();
             final Cluster cluster = CassandraCacheLoader.connect(
                 mapParams.get("server.ip.address"),
                 mapParams.get("cluster.name"),
-                9042);
-            db = new CassandraCacheLoader<>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
+                9042, config);
+            db = new CassandraCacheLoader<>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace, config);
             db.create();
         } catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);

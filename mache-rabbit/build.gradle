@@ -1,0 +1,7 @@
+dependencies {
+  compile project(':core')
+  compile project(':core-observable')
+  compile 'com.rabbitmq:amqp-client:3.3.1'
+  testCompile project(path: ':core-observable', configuration: 'tests')
+  testCompile project(path: ':core', configuration: 'tests')
+}

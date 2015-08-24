@@ -2,12 +2,15 @@ package com.excelian.mache.jmeter.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.excelian.mache.cassandra.CassandraCacheLoader;
+import com.excelian.mache.cassandra.CassandraConfig;
+import com.excelian.mache.cassandra.DefaultCassandraConfig;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.events.integration.ActiveMQFactory;
+import com.excelian.mache.events.integration.DefaultActiveMqConfig;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 import com.excelian.mache.observable.MessageQueueObservableCacheFactory;
 import com.excelian.mache.observable.utils.UUIDUtils;
@@ -32,10 +35,11 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
         MQConfiguration mqConfiguration = () -> "testTopic";
 
         try {
-            mqFactory = new ActiveMQFactory(mapParams.get("activemq.connection"));
+            mqFactory = new ActiveMQFactory(mapParams.get("activemq.connection"), new DefaultActiveMqConfig());
 
-            Cluster cluster = CassandraCacheLoader.connect(mapParams.get("server.ip.address"), mapParams.get("cluster.name"), 9042);
-            CassandraCacheLoader<String, CassandraTestEntity> db = new CassandraCacheLoader<>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace);
+            final CassandraConfig config = new DefaultCassandraConfig();
+            Cluster cluster = CassandraCacheLoader.connect(mapParams.get("server.ip.address"), mapParams.get("cluster.name"), 9042, config);
+            CassandraCacheLoader<String, CassandraTestEntity> db = new CassandraCacheLoader<>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace, config);
             db.create();//this is to force the connection to occur within our setup
 
             MessageQueueObservableCacheFactory cacheFactory = new MessageQueueObservableCacheFactory(mqFactory, mqConfiguration, new MacheFactory(), new UUIDUtils());

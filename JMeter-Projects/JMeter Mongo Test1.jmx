@@ -75,7 +75,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">MongoRandomLoad</stringProp>
+            <stringProp name="classname">com.excelian.mache.jmeter.mongo.MongoRandomLoad</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -205,7 +205,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">MongoWriteThrough</stringProp>
+            <stringProp name="classname">com.excelian.mache.jmeter.mongo.MongoWriteThrough</stringProp>
           </JavaSampler>
           <hashTree/>
           <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="ReadThrough" enabled="true">
@@ -248,7 +248,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">MongoReadThrough</stringProp>
+            <stringProp name="classname">com.excelian.mache.jmeter.mongo.MongoReadThrough</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>

@@ -5,4 +5,7 @@ include 'core-observable'
 include 'builder'
 include 'jmeter'
 include 'couchbase-ns'
+include 'mache-kafka'
+include 'mache-activemq'
+include 'mache-rabbit'
 

@@ -19,7 +19,7 @@ install:
   - nohup bash -c "cd kafka && bin/zookeeper-server-start.sh config/zookeeper.properties &"
   - nohup bash -c "cd kafka && bin/kafka-server-start.sh config/server.properties &"
   - sleep 5
-  - kafka/bin/kafka-topics.sh --create --partitions 1 --replication-factor 1 --topic TestEventingBase.TestOtherEntity --zookeeper localhost:2181
+  - kafka/bin/kafka-topics.sh --create --partitions 1 --replication-factor 1 --topic com.excelian.mache.integrations.eventing.TestEventingBase.TestOtherEntity --zookeeper localhost:2181
 
 notifications:
   slack: excelian-bigdata:zR1fW9d5eW5C3i0oLrHmoCf5

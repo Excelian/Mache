@@ -67,6 +67,9 @@ task pluginJar(type: Jar, dependsOn: compileJava) {
     from project(':core-observable').sourceSets.main.output.classesDir
     include '**/*.class'
 
+    from project(':mache-activemq').sourceSets.main.output.classesDir
+    include '**/*.class'
+
     from project(':core').sourceSets.main.output.classesDir
     include '**/*.class'
 
@@ -81,6 +84,7 @@ task pluginJar(type: Jar, dependsOn: compileJava) {
 
 
 dependencies {
+    compile project(':mache-activemq')
     compile project(':mongo-ns')
     compile project(':core-observable')
     compile project(':core')

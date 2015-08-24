@@ -9,18 +9,9 @@ import com.excelian.mache.builder.StorageProvisioner.ClusterDetails;
 import com.excelian.mache.builder.StorageProvisioner.IgnoredClusterDetails;
 import com.excelian.mache.builder.StorageProvisioner.StorageServerDetails;
 import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.events.MQConfiguration;
-import com.excelian.mache.events.MQFactory;
-import com.excelian.mache.observable.MessageQueueObservableCacheFactory;
-import com.excelian.mache.observable.builder.MessagingProvisioner;
-import com.excelian.mache.observable.utils.UUIDUtils;
 
-
-import java.io.IOException;
 import java.util.ServiceLoader;
-import javax.jms.JMSException;
 
 
 /**
@@ -90,26 +81,11 @@ public class Builder {
             final Mache<String, T> cache = storageProvisioner.getCache(
                 this.keyspace, macheType, this.schemaOption, this.cluster, this.storageServers);
 
-            if (this.messaging != None) {
-                final MessagingProvisioner messagingProvisioner = getMessagingProvisionerOrThrow();
-                final MQFactory mqFactory = getMqFactoryOrThrowRuntimeException(messagingProvisioner);
-                final MQConfiguration mqConfiguration = () -> this.topic;
-
-                final MacheFactory macheFactory = new MacheFactory();
-
-                final MessageQueueObservableCacheFactory cacheFactory = new MessageQueueObservableCacheFactory(
-                    mqFactory, mqConfiguration, macheFactory, new UUIDUtils());
-                return cacheFactory.createCache(cache);
-            }
-            return cache;
-        }
-
-        private MQFactory getMqFactoryOrThrowRuntimeException(MessagingProvisioner messagingProvisioner) {
+            final MessagingProvisioner messagingProvisioner = getMessagingProvisionerOrThrow();
             try {
-                return messagingProvisioner.getMQFactory(this.messagingLocation);
-            }
-            catch (IOException | JMSException e) {
-                throw new RuntimeException("Cannot connect to message queue at:[" + this.messagingLocation + "]", e);
+                return messagingProvisioner.wireInMessaging(cache, topic, this.messagingLocation);
+            } catch (Exception e) {
+                throw new RuntimeException("Cannot locate messaging at :[" + messagingLocation + "]");
             }
         }
 
@@ -122,8 +98,7 @@ public class Builder {
                 }
             }
             if (provisioner == null) {
-                throw new RuntimeException("Cannot find storage provisioner for platform :[" +
-                    storage + "].  Please ensure a " + storage + "-ns.jar is present in the classpath");
+                throw new RuntimeException("Cannot find storage provisioner for platform :[" + storage + "].  Please ensure a " + storage + "-ns.jar is present in the classpath");
             }
             return provisioner;
         }
@@ -137,8 +112,7 @@ public class Builder {
                 }
             }
             if (provisioner == null) {
-                throw new RuntimeException("Cannot find messaging provisioner for platform :[" +
-                    messaging + "].  Please ensure the core-observable.jar is present in the classpath");
+                throw new RuntimeException("Cannot find messaging provisioner for platform :[" + messaging + "].  Please ensure the core-observable.jar is present in the classpath");
             }
             return provisioner;
         }

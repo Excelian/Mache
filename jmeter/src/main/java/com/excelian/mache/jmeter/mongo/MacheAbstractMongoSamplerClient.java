@@ -5,6 +5,7 @@ import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.integration.ActiveMQFactory;
+import com.excelian.mache.events.integration.DefaultActiveMqConfig;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 import com.excelian.mache.mongo.MongoDBCacheLoader;
 import com.excelian.mache.observable.MessageQueueObservableCacheFactory;
@@ -73,7 +74,7 @@ public abstract class MacheAbstractMongoSamplerClient extends
 
     protected void createCache(Map<String, String> mapParams)
             throws JMSException {
-        mqFactory1 = new ActiveMQFactory(mapParams.get("activemq.connection"));
+        mqFactory1 = new ActiveMQFactory(mapParams.get("activemq.connection"), new DefaultActiveMqConfig());
         ObservableCacheFactory cacheFactory1 = new MessageQueueObservableCacheFactory(mqFactory1,
                 getMQConfiguration(), new MacheFactory(), new UUIDUtils());
         cache1 = cacheFactory1
