@@ -94,6 +94,15 @@ task pluginJar(type: Jar, dependsOn: compileJava) {
 assemble.dependsOn pluginJar
 assemble.dependsOn pluginSupportJar
 
+compileJava {
+    doLast {
+        println "Building JMeter JARs..."
+        pluginJar.execute()
+        pluginSupportJar.execute()
+    }
+}
+
+
 dependencies {
     compile project(':mache-activemq')
     compile project(':mache-rabbit')
