@@ -96,6 +96,7 @@ assemble.dependsOn pluginSupportJar
 
 compileJava {
     doLast {
+        /* this is required for travis */
         println "Building JMeter JARs..."
         pluginJar.execute()
         pluginSupportJar.execute()
