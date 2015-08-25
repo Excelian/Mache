@@ -50,7 +50,6 @@ task pluginJar(type: Jar, dependsOn: compileJava) {
     /*
      Builds the jar to be copied to JMETER/lib/ext folder
     */
-
     println "Mongo:" + project(':mache-mongo').sourceSets.main.output.classesDir
     println "Cassandra:" + project(':mache-cassandra').sourceSets.main.output.classesDir
 
@@ -82,6 +81,8 @@ task pluginJar(type: Jar, dependsOn: compileJava) {
     include '**/*.class'
 }
 
+assemble.dependsOn pluginJar
+assemble.dependsOn pluginSupportJar
 
 dependencies {
     compile project(':mache-activemq')
