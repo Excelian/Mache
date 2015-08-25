@@ -65,7 +65,7 @@ public abstract class TestEventingBase {
         producer.send(event);
 
         try {
-            CoordinationEntryEvent<Integer> receivedEvent = collector.pollWithTimeout(150);
+            CoordinationEntryEvent<Integer> receivedEvent = collector.pollWithTimeout(5000);
             assertNotNull("Expected consumer to receive and root an event message but got none", receivedEvent);
             assertEquals(event.getKey(), receivedEvent.getKey());
             assertEquals("Expected Id of message received to same as that sent", event.getUniqueId(), receivedEvent.getUniqueId());
