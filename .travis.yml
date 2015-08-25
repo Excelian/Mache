@@ -5,7 +5,7 @@ branches:
   only:
     - master
     - development
-    - travis-further-integration
+    - jmeter-build-steps
     - couchbase-provider
 services:
   - rabbitmq

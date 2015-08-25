@@ -44,15 +44,16 @@ task pluginSupportJar(type: Zip) {
     exclude "xmpcore-*.*"
     exclude "xpp*.*"
     exclude "xstream-*.*"
+    exclude "mache*.*"
 }
 
 task pluginJar(type: Jar, dependsOn: compileJava) {
     /*
      Builds the jar to be copied to JMETER/lib/ext folder
     */
-
     println "Mongo:" + project(':mache-mongo').sourceSets.main.output.classesDir
     println "Cassandra:" + project(':mache-cassandra').sourceSets.main.output.classesDir
+    println "RabbitMQ:" + project(':mache-rabbit').sourceSets.main.output.classesDir
 
 
     manifest {
@@ -64,15 +65,23 @@ task pluginJar(type: Jar, dependsOn: compileJava) {
     from sourceSets.main.output.classesDir
     include '**/*.class'
 
-    from project(':mache-observable').sourceSets.main.output.classesDir
-    include '**/*.class'
-
-    from project(':mache-activemq').sourceSets.main.output.classesDir
-    include '**/*.class'
-
     from project(':mache-core').sourceSets.main.output.classesDir
     include '**/*.class'
 
+    from project(':mache-observable').sourceSets.main.output.classesDir
+    include '**/*.class'
+
+    /*Messaging*/
+    from project(':mache-activemq').sourceSets.main.output.classesDir
+    include '**/*.class'
+
+    from project(':mache-rabbit').sourceSets.main.output.classesDir
+    include '**/*.class'
+
+    from project(':mache-kafka').sourceSets.main.output.classesDir
+    include '**/*.class'
+
+    /*Persistence*/
     from project(':mache-mongo').sourceSets.main.output.classesDir
     include '**/*.class'
 
@@ -82,9 +91,24 @@ task pluginJar(type: Jar, dependsOn: compileJava) {
     include '**/*.class'
 }
 
+assemble.dependsOn pluginJar
+assemble.dependsOn pluginSupportJar
+
+compileJava {
+    doLast {
+        /* this is required for travis */
+        println "Building JMeter JARs..."
+        pluginJar.execute()
+        pluginSupportJar.execute()
+    }
+}
+
 
 dependencies {
     compile project(':mache-activemq')
+    compile project(':mache-rabbit')
+    compile project(':mache-kafka')
+
     compile project(':mache-mongo')
     compile project(':mache-observable')
     compile project(':mache-core')
@@ -93,5 +117,4 @@ dependencies {
 
     compile 'org.apache.jmeter:ApacheJMeter_java:2.11' // 2.11 and jcenter compiles ok
     compile 'commons-logging:commons-logging:1.1.1'
-
 }
