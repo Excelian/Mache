@@ -1,7 +1,5 @@
 package com.excelian.mache.core;
 
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 
 /*
  * Loads a cache with the values in some datastore
@@ -10,7 +8,7 @@ import com.google.common.cache.RemovalNotification;
  * @param <D> the type of the driver for the underlying store
  */
 //todo: Would this class be better named MacheDataStore ???
-public interface MacheLoader<K, V, D> extends RemovalListener<K, V> {
+public interface MacheLoader<K, V, D> {
 
     /*
      * Creates the underlying store
@@ -38,12 +36,6 @@ public interface MacheLoader<K, V, D> extends RemovalListener<K, V> {
      * @throws Exception if any issues with retrieval
      */
     V load(K key) throws Exception;
-
-    /**
-     * Triggered when something is removed from the underlying store
-     * @param notification
-     */
-    void onRemoval(RemovalNotification<K, V> notification);
 
     /*
      * Close the connection to the datastore
