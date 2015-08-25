@@ -44,6 +44,7 @@ task pluginSupportJar(type: Zip) {
     exclude "xmpcore-*.*"
     exclude "xpp*.*"
     exclude "xstream-*.*"
+    exclude "mache*.*"
 }
 
 task pluginJar(type: Jar, dependsOn: compileJava) {
