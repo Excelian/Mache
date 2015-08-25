@@ -1,5 +1,8 @@
 package com.excelian.mache.observable.coordination;
 
-public interface RemoteCacheEntryListener extends RemoteCacheEntryRemovedListener, RemoteCacheEntryInvalidateListener, RemoteCacheEntryCreatedListener, RemoteCacheEntryUpdatedListener {
+public interface RemoteCacheEntryListener<K> extends RemoteCacheEntryRemovedListener<K>,
+    RemoteCacheEntryInvalidateListener<K>,
+    RemoteCacheEntryCreatedListener<K>,
+    RemoteCacheEntryUpdatedListener<K> {
 
 }

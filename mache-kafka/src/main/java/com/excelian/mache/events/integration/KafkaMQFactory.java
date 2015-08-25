@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.Properties;
 import javax.jms.JMSException;
 
-public class KafkaMQFactory implements MQFactory {
+public class KafkaMQFactory<K> implements MQFactory<K> {
     private final String connectionString;
     private final KafkaMqConfig config;
 
@@ -46,13 +46,13 @@ public class KafkaMQFactory implements MQFactory {
     }
 
     @Override
-    public BaseCoordinationEntryEventProducer getProducer(MQConfiguration config) {
-        return new KafkaEventProducer(createProducerConfig(connectionString), config.getTopicName());
+    public BaseCoordinationEntryEventProducer<K> getProducer(MQConfiguration config) {
+        return new KafkaEventProducer<K>(createProducerConfig(connectionString), config.getTopicName());
     }
 
     @Override
-    public BaseCoordinationEntryEventConsumer getConsumer(MQConfiguration config) throws IOException, JMSException {
-        return new KafkaEventConsumer(createConsumerConfig(connectionString), config.getTopicName(), this.config);
+    public BaseCoordinationEntryEventConsumer<K> getConsumer(MQConfiguration config) throws IOException, JMSException {
+        return new KafkaEventConsumer<K>(createConsumerConfig(connectionString), config.getTopicName(), this.config);
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 
 import java.util.concurrent.BlockingQueue;
 
-public class EventProducer extends BaseCoordinationEntryEventProducer {
+public class EventProducer<K> extends BaseCoordinationEntryEventProducer<K> {
     private final BlockingQueue<CoordinationEntryEvent<?>> eventQueue;
 
     public EventProducer(BlockingQueue<CoordinationEntryEvent<?>> queue, String topicName) {
@@ -14,7 +14,7 @@ public class EventProducer extends BaseCoordinationEntryEventProducer {
     }
 
     @Override
-    public void send(CoordinationEntryEvent<?> event) {
+    public void send(CoordinationEntryEvent<K> event) {
         try {
             eventQueue.put(event);
         } catch (final InterruptedException e) {
