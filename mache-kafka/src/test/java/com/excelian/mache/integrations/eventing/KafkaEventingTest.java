@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import static com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 
-@IgnoreIf(condition = NoRunningKafkaForTests.class)
+@IgnoreIf(condition = NotRunningInExcelian.class)
 public class KafkaEventingTest extends TestEventingBase {
 
     @Rule
