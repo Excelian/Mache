@@ -17,14 +17,14 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.jms.JMSException;
 
-public abstract class BaseCoordinationEntryEventConsumer implements Closeable {
+public abstract class BaseCoordinationEntryEventConsumer<K> implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(BaseCoordinationEntryEventConsumer.class);
 
     public abstract void beginSubscriptionThread() throws InterruptedException, JMSException, IOException;
 
     public abstract void close();
 
-    protected ConcurrentHashMap<EventType, ArrayList<CoordinationEventListener>> eventMap;
+    protected ConcurrentHashMap<EventType, ArrayList<CoordinationEventListener<K>>> eventMap;
     private String topicName;
 
     protected BaseCoordinationEntryEventConsumer(String topicName) {
@@ -42,7 +42,7 @@ public abstract class BaseCoordinationEntryEventConsumer implements Closeable {
         return topicName;
     }
 
-    public void registerEventListener(CoordinationEventListener listener) {
+    public void registerEventListener(CoordinationEventListener<K> listener) {
         if (listener instanceof RemoteCacheEntryCreatedListener) {
             eventMap.get(EventType.CREATED).add(listener);
         }
@@ -60,22 +60,23 @@ public abstract class BaseCoordinationEntryEventConsumer implements Closeable {
         }
     }
 
-    protected CoordinationEntryEvent<?> routeEventToListeners(
-        ConcurrentHashMap<EventType, ArrayList<CoordinationEventListener>> eventMap, CoordinationEntryEvent<?> event) {
+    protected CoordinationEntryEvent<K> routeEventToListeners(
+        ConcurrentHashMap<EventType, ArrayList<CoordinationEventListener<K>>> eventMap,
+        CoordinationEntryEvent<K> event) {
         EventType eventType = event.getEventType();
 
-        List<CoordinationEntryEvent<?>> events = new ArrayList<CoordinationEntryEvent<?>>();
+        List<CoordinationEntryEvent<K>> events = new ArrayList<>();
         events.add(event);
 
-        for (CoordinationEventListener listener : eventMap.get(eventType)) {
+        for (CoordinationEventListener<K> listener : eventMap.get(eventType)) {
             if (eventType == EventType.CREATED) {
-                ((RemoteCacheEntryCreatedListener) listener).onCreated(events);
+                ((RemoteCacheEntryCreatedListener<K>) listener).onCreated(events);
             } else if (eventType == EventType.REMOVED) {
-                ((RemoteCacheEntryRemovedListener) listener).onRemoved(events);
+                ((RemoteCacheEntryRemovedListener<K>) listener).onRemoved(events);
             } else if (eventType == EventType.UPDATED) {
-                ((RemoteCacheEntryUpdatedListener) listener).onUpdated(events);
+                ((RemoteCacheEntryUpdatedListener<K>) listener).onUpdated(events);
             } else if (eventType == EventType.INVALIDATE) {
-                ((RemoteCacheEntryInvalidateListener) listener).onInvalidate(events);
+                ((RemoteCacheEntryInvalidateListener<K>) listener).onInvalidate(events);
             } else {
                 LOG.error("Error. Unsupported coordination event type received - {}", eventType);
             }
