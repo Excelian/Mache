@@ -16,12 +16,12 @@ import javax.cache.event.CacheEntryListenerException;
 public class MessageQueueObservableCacheFactory<K, V, D> implements ObservableCacheFactory<K, V, D> {
     private final MQFactory<K> communicationFactory;
     private final MQConfiguration configuration;
-    private final MacheFactory macheFactory;
+    private final MacheFactory<K, V, D> macheFactory;
     private final UUIDUtils uuidUtils;
 
     public MessageQueueObservableCacheFactory(final MQFactory<K> communicationFactory,
                                               final MQConfiguration configuration,
-                                              final MacheFactory macheFactory,
+                                              final MacheFactory<K, V, D> macheFactory,
                                               final UUIDUtils uuidUtils) {
         this.communicationFactory = communicationFactory;
         this.configuration = configuration;
