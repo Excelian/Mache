@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
- * Created by jbowkett on 17/07/15.
+ * Example Spring Data Mongo Annotated Object.
  */
 @Document
 public class MongoAnnotatedMessage {
@@ -27,10 +27,6 @@ public class MongoAnnotatedMessage {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Message{");
-        sb.append("msg='").append(msg).append('\'');
-        sb.append(", primaryKey='").append(primaryKey).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "Message{" + "msg='" + msg + '\'' + ", primaryKey='" + primaryKey + '\'' + '}';
     }
 }

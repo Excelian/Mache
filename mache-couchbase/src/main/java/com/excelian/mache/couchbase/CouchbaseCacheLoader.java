@@ -13,7 +13,16 @@ import org.springframework.data.couchbase.core.CouchbaseTemplate;
 
 import java.util.concurrent.TimeUnit;
 
-public class CouchbaseCacheLoader<K extends String, V> extends AbstractCacheLoader<K, V, Cluster> {
+import static com.google.common.base.Preconditions.checkNotNull;
+
+/**
+ * An implementation of the Mache CacheLoader for Couchbase Server. Utilises the newer Spring Data Couchbase
+ * that
+ *
+ * @param <K> Cache key type.
+ * @param <V> Cache value type.
+ */
+public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluster> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CouchbaseCacheLoader.class);
     public static final long TIMEOUT = 20;
@@ -23,6 +32,10 @@ public class CouchbaseCacheLoader<K extends String, V> extends AbstractCacheLoad
     private final CouchbaseConfig config;
     private CouchbaseTemplate template;
 
+    /**
+     *
+     * @param config {@link CouchbaseConfig} representing the Couchbase server and bucket config.
+     */
     public CouchbaseCacheLoader(CouchbaseConfig config) {
         if (config == null) {
             throw new IllegalArgumentException("Couchbase config must be provided.");
@@ -36,18 +49,12 @@ public class CouchbaseCacheLoader<K extends String, V> extends AbstractCacheLoad
             synchronized (this) {
                 if (cluster == null) {
                     LOG.info("Attempting to connect to Couchbase cluster hosted at {}", config.getServerAddresses());
-
                     cluster = CouchbaseCluster.create(config.getCouchbaseEnvironment(), config.getServerAddresses());
                     manager = cluster.clusterManager(config.getAdminUser(), config.getAdminPassword());
-
-                    dropBucket();
-
-                    createBucket();
-
-                    Bucket bucket = cluster.openBucket(config.getBucketName(), TIMEOUT, TimeUnit.SECONDS);
-
-                    template = new CouchbaseTemplate(cluster.clusterManager(config.getAdminUser(),
-                            config.getAdminPassword()).info(), bucket);
+                    dropBucketIfRequired();
+                    Bucket bucket = createBucket();
+                    template = new CouchbaseTemplate(manager.info(), bucket);
+                    LOG.info("Using Couchbase bucket: {}", bucket);
                 }
             }
         }
@@ -55,7 +62,8 @@ public class CouchbaseCacheLoader<K extends String, V> extends AbstractCacheLoad
 
     @Override
     public V load(K key) throws Exception {
-        return template.findById(key, config.<V>getCacheType());
+        checkNotNull(key);
+        return template.findById(key.toString(), config.<V>getCacheType());
     }
 
     @Override
@@ -65,22 +73,20 @@ public class CouchbaseCacheLoader<K extends String, V> extends AbstractCacheLoad
 
     @Override
     public void remove(K key) {
-        try {
-            template.remove(load(key));
-        } catch (Exception e) {
-            // FIXME - Should load really throw Exception?
-            throw new RuntimeException(e);
-        }
+        template.remove(key);
     }
 
     @Override
     public void close() {
         if (cluster != null) {
-            dropBucket();
-
-            LOG.info("Disconnecting from Couchbase cluster {}", config.getServerAddresses());
-            cluster.disconnect();
-            cluster = null;
+            synchronized (this) {
+                if (cluster != null) {
+                    dropBucketIfRequired();
+                    LOG.info("Disconnecting from Couchbase cluster {}", config.getServerAddresses());
+                    cluster.disconnect();
+                    cluster = null;
+                }
+            }
         }
     }
 
@@ -94,14 +100,14 @@ public class CouchbaseCacheLoader<K extends String, V> extends AbstractCacheLoad
         return config.getCacheType().getSimpleName();
     }
 
-    private void dropBucket() {
+    private void dropBucketIfRequired() {
         if (config.getSchemaOptions().shouldDropSchema() && manager.hasBucket(config.getBucketName())) {
             LOG.debug("Removing bucket {}", config.getBucketName());
             manager.removeBucket(config.getBucketName(), TIMEOUT, TimeUnit.SECONDS);
         }
     }
 
-    private void createBucket() {
+    private Bucket createBucket() {
         if (config.getSchemaOptions().shouldCreateSchema() && !manager.hasBucket(config.getBucketName())) {
             LOG.debug("Creating bucket {}", config.getBucketName());
             BucketSettings settings = DefaultBucketSettings.builder()
@@ -114,6 +120,8 @@ public class CouchbaseCacheLoader<K extends String, V> extends AbstractCacheLoad
 
             manager.insertBucket(settings, TIMEOUT, TimeUnit.SECONDS);
         }
+
+        return cluster.openBucket(config.getBucketName(), TIMEOUT, TimeUnit.SECONDS);
     }
 }
 

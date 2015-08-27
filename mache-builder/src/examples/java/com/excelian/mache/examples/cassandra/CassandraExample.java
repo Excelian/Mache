@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by jbowkett on 17/07/15.
+ * A factory for a Cassandra backed {@link Example}.
  */
 public class CassandraExample implements Example<CassandraAnnotatedMessage> {
 

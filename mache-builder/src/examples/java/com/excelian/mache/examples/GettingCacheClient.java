@@ -2,6 +2,7 @@ package com.excelian.mache.examples;
 
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.examples.cassandra.CassandraExample;
+import com.excelian.mache.examples.couchbase.CouchbaseExample;
 import com.excelian.mache.examples.mongo.MongoExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +10,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 
 /**
- * Created by jbowkett on 17/07/15.
+ * Shows a simple example of getting objects from the different {@link com.excelian.mache.core.MacheLoader}
+ * implementations.
  */
 public class GettingCacheClient {
 
@@ -26,8 +28,12 @@ public class GettingCacheClient {
             case Mongo:
                 example = new MongoExample();
                 break;
+            case Couchbase:
+                example = new CouchbaseExample();
+                break;
             default:
-                throw new RuntimeException("Invalid cache type: [" + args.cacheType + "].  Valid values are:" + Arrays.toString(CacheType.values()));
+                throw new RuntimeException("Invalid cache type: [" + args.cacheType + "].  Valid values are:"
+                        + Arrays.toString(CacheType.values()));
         }
         doExample(count, example);
     }
@@ -47,21 +53,8 @@ public class GettingCacheClient {
             final CacheType cacheType = CacheType.valueOf(args[1]);
             final int count = Integer.parseInt(args[0]);
             return new Args(count, cacheType);
-        }
-        else {
+        } else {
             throw new RuntimeException("Usage : GettingCacheClient <get count> " + Arrays.toString(CacheType.values()));
-        }
-    }
-
-    private enum CacheType {Cassandra, Mongo}
-
-    private static class Args {
-        private final int count;
-        private final CacheType cacheType;
-
-        public Args(int count, CacheType cacheType) {
-            this.count = count;
-            this.cacheType = cacheType;
         }
     }
 }

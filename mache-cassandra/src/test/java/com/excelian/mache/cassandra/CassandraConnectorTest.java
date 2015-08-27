@@ -29,7 +29,7 @@ public class CassandraConnectorTest {
         Cluster cluster;
         Session session;
 
-        cluster = Cluster.builder().addContactPoint(new NoRunningCassandraDbForTests().HostName()).withPort(9042).withClusterName("BluePrint").build();
+        cluster = Cluster.builder().addContactPoint(new NoRunningCassandraDbForTests().getHost()).withPort(9042).withClusterName("BluePrint").build();
         Metadata metadata = cluster.getMetadata();
         LOG.info("Clustername:" + metadata.getClusterName());
         LOG.info("Partitioner:" + metadata.getPartitioner());

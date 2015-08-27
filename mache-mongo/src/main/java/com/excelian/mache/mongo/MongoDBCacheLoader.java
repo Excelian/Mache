@@ -12,10 +12,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.List;
 
-/**
- * CacheLoader to bind Cassandra API onto the GuavaCache
- * TODO: Replication class and factor need to be configurable.
- */
 public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
     private static final Logger LOG = LoggerFactory.getLogger(MongoDBCacheLoader.class);
 
@@ -88,7 +84,7 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
     }
 
     @Override
-    public V load(K key) throws Exception {
+    public V load(K key) {
         V value = ops().findById(key, clazz);
         LOG.trace("Loading from mongo by key {} - result {}", key, value);
         return value;

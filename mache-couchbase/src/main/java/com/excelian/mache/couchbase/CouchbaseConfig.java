@@ -7,23 +7,27 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Configuration required to instantiate a {@link CouchbaseCacheLoader} for a Couchbase Cluster and Bucket.
+ */
 public class CouchbaseConfig {
 
-    private Class cacheType;
-    private CouchbaseEnvironment couchbaseEnvironment;
-    private String adminUser;
-    private String adminPassword;
-    private List<String> serverAddresses;
-    private String bucketName;
-    private String bucketPassword;
-    private int bucketSize;
-    private int numReplicas;
-    private boolean flushEnabled;
-    private SchemaOptions schemaOptions;
+    private final Class cacheType;
+    private final CouchbaseEnvironment couchbaseEnvironment;
+    private final String adminUser;
+    private final String adminPassword;
+    private final List<String> serverAddresses;
+    private final String bucketName;
+    private final String bucketPassword;
+    private final int bucketSize;
+    private final int numReplicas;
+    private final boolean flushEnabled;
+    private final SchemaOptions schemaOptions;
 
-    private CouchbaseConfig(Class cacheType, CouchbaseEnvironment couchbaseEnvironment, String adminUser, String adminPassword,
-                            List<String> serverAddresses, String bucketName, String bucketPassword,
-                            int bucketSize, int numReplicas, boolean flushEnabled, SchemaOptions schemaOptions) {
+    private CouchbaseConfig(Class cacheType, CouchbaseEnvironment couchbaseEnvironment, String adminUser,
+                            String adminPassword, List<String> serverAddresses, String bucketName,
+                            String bucketPassword, int bucketSize, int numReplicas, boolean flushEnabled,
+                            SchemaOptions schemaOptions) {
         this.cacheType = cacheType;
         this.couchbaseEnvironment = couchbaseEnvironment;
         this.adminUser = adminUser;
@@ -37,6 +41,9 @@ public class CouchbaseConfig {
         this.schemaOptions = schemaOptions;
     }
 
+    /**
+     * Offers a convenient way of creating {@link CouchbaseConfig} objects.
+     */
     public static class Builder {
         private Class cacheType;
         private String adminUser = "Administrator";
@@ -65,7 +72,7 @@ public class CouchbaseConfig {
             return this;
         }
 
-        public Builder withServerAdresses(List<String> serverAddresses) {
+        public Builder withServerAddresses(List<String> serverAddresses) {
             this.serverAddresses = serverAddresses;
             return this;
         }
@@ -105,6 +112,11 @@ public class CouchbaseConfig {
             return this;
         }
 
+        /**
+         * This method must be called to complete the builder.
+         *
+         * @return A configured {@link CouchbaseConfig}
+         */
         public CouchbaseConfig build() {
             if (bucketName == null || bucketName.isEmpty()) {
                 throw new IllegalArgumentException("Must provide bucket name.");

@@ -1,11 +1,14 @@
 repositories {
-    maven { url 'https://repository.jboss.org/nexus/content/groups/public' }
+    maven {
+        url 'http://files.couchbase.com/maven2'
+    }
 }
 
 dependencies {
     compile project(':mache-core')
     compile 'org.springframework.data:spring-data-cassandra:1.2.0.RELEASE'
     compile 'org.springframework.data:spring-data-mongodb:1.7.0.RELEASE'
+    compile 'org.springframework.data:spring-data-couchbase:2.0.0.M1'
     compile 'javax.jms:jms:1.1'
     testCompile project(path: ':mache-core', configuration: 'tests')
     testRuntime project(':mache-activemq')
@@ -14,6 +17,7 @@ dependencies {
     testRuntime project(':mache-cassandra')
     testRuntime project(':mache-observable')
     testRuntime project(':mache-core')
+    testRuntime project(':mache-couchbase')
 }
 
 sourceSets {
