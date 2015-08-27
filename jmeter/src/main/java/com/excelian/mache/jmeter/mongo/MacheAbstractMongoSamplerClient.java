@@ -11,6 +11,7 @@ import com.excelian.mache.mongo.MongoDBCacheLoader;
 import com.excelian.mache.observable.MessageQueueObservableCacheFactory;
 import com.excelian.mache.observable.ObservableCacheFactory;
 import com.excelian.mache.observable.utils.UUIDUtils;
+import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -24,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class MacheAbstractMongoSamplerClient extends
     MacheAbstractJavaSamplerClient {
 
-    protected ActiveMQFactory mqFactory1 = null;
+    protected ActiveMQFactory<String> mqFactory1 = null;
     protected Mache<String, MongoTestEntity> cache1 = null;
 
 
@@ -74,9 +75,9 @@ public abstract class MacheAbstractMongoSamplerClient extends
 
     protected void createCache(Map<String, String> mapParams)
             throws JMSException {
-        mqFactory1 = new ActiveMQFactory(mapParams.get("activemq.connection"), new DefaultActiveMqConfig());
-        ObservableCacheFactory cacheFactory1 = new MessageQueueObservableCacheFactory(mqFactory1,
-                getMQConfiguration(), new MacheFactory(), new UUIDUtils());
+        mqFactory1 = new ActiveMQFactory<>(mapParams.get("activemq.connection"), new DefaultActiveMqConfig());
+        ObservableCacheFactory<String, MongoTestEntity, Mongo> cacheFactory1 = new MessageQueueObservableCacheFactory<>(mqFactory1,
+            getMQConfiguration(), new MacheFactory<>(), new UUIDUtils());
         cache1 = cacheFactory1
                 .createCache(new MongoDBCacheLoader<>(
                         MongoTestEntity.class,

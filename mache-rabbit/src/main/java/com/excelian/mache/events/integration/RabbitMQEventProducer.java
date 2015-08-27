@@ -1,15 +1,18 @@
 package com.excelian.mache.events.integration;
 
-import com.excelian.mache.events.BaseCoordinationEntryEventProducer;
-import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.google.gson.Gson;
+
+import com.excelian.mache.events.BaseCoordinationEntryEventProducer;
+
+import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
+
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class RabbitMQEventProducer extends BaseCoordinationEntryEventProducer {
+public class RabbitMQEventProducer<K> extends BaseCoordinationEntryEventProducer<K> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RabbitMQEventProducer.class);
     private Channel channel;
@@ -24,11 +27,13 @@ public class RabbitMQEventProducer extends BaseCoordinationEntryEventProducer {
     }
 
     @Override
-    public void send(CoordinationEntryEvent<?> event) {
+    public void send(CoordinationEntryEvent<K> event) {
         Gson gson = new Gson();
-        LOG.trace("{} [RabbitMQEventProducer {}] Message: {}", super.getTopicName(), Thread.currentThread().getId(), event.getUniqueId());
+        LOG.trace("{} [RabbitMQEventProducer {}] Message: {}", super.getTopicName(),
+            Thread.currentThread().getId(), event.getUniqueId());
         try {
-            channel.basicPublish(exchangeName, getTopicName(), true, rabbitMqConfig.getRoutingHeader(), gson.toJson(event).getBytes());
+            channel.basicPublish(exchangeName, getTopicName(), true,
+                rabbitMqConfig.getRoutingHeader(), gson.toJson(event).getBytes());
         } catch (IOException e) {
             throw new RuntimeException("Error while sending message to rabbitmq", e);
         }

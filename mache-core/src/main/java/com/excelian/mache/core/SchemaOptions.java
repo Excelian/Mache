@@ -1,5 +1,9 @@
 package com.excelian.mache.core;
 
+/**
+ * Enum to denote what should be done with the schema created in the underlying
+ * datastore on startup and shutdown.
+ */
 public enum SchemaOptions {
     CREATESCHEMAIFNEEDED(true, false),
     USEEXISTINGSCHEMA(false, false),

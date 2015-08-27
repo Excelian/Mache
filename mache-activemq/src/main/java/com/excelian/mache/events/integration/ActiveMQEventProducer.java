@@ -1,16 +1,15 @@
 package com.excelian.mache.events.integration;
 
+import com.google.gson.Gson;
+
 import com.excelian.mache.events.BaseCoordinationEntryEventProducer;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 
-import com.google.gson.Gson;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.TimeUnit;
 import javax.jms.Connection;
-import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
@@ -18,15 +17,15 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 
-public class ActiveMQEventProducer extends BaseCoordinationEntryEventProducer {
+public class ActiveMQEventProducer<K> extends BaseCoordinationEntryEventProducer<K> {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQEventProducer.class);
-    private final ActiveMqConfig config;
     Session session;
     MessageProducer producer;
 
-    protected ActiveMQEventProducer(Connection connection, String topicName, ActiveMqConfig config) throws JMSException {
+    protected ActiveMQEventProducer(Connection connection,
+                                    String topicName,
+                                    ActiveMqConfig config) throws JMSException {
         super(topicName);
-        this.config = config;
 
         session = connection.createSession(false, config.getAutoAcknowledge());
         Destination destination = session.createTopic(getTopicName());
@@ -38,7 +37,7 @@ public class ActiveMQEventProducer extends BaseCoordinationEntryEventProducer {
     }
 
     @Override
-    public void send(final CoordinationEntryEvent<?> event) {
+    public void send(final CoordinationEntryEvent<K> event) {
 
         Gson gson = new Gson();
         TextMessage message;

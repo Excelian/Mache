@@ -1,7 +1,12 @@
 package com.excelian.mache.core;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.ForwardingCache;
+import com.google.common.cache.LoadingCache;
+
 import com.fasterxml.uuid.Generators;
-import com.google.common.cache.*;
 
 import java.util.UUID;
 
@@ -9,10 +14,10 @@ import java.util.UUID;
 public class MacheImpl<K, V> implements Mache<K, V> {
 
     private final ForwardingCache<K, V> fwdCache;
-    final private MacheLoader<K, V, ?> cacheLoader;
+    private final MacheLoader<K, V, ?> cacheLoader;
     private final UUID cacheId;
 
-    //XXX weak keys cause invalidation tto fail because of using identity function for quivalence see http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilder.html#weakKeys()
+    //XXX weak keys cause invalidation to fail because of using identity function for equivalence see http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilder.html#weakKeys()
     //private volatile String spec = "maximumSize=10000,weakKeys,softValues,expireAfterWrite=1d,expireAfterAccess=1d,recordStats";
     private volatile String spec = "maximumSize=10000,softValues,expireAfterWrite=1d,expireAfterAccess=1d,recordStats";
 
@@ -21,8 +26,9 @@ public class MacheImpl<K, V> implements Mache<K, V> {
 
     public MacheImpl(final MacheLoader<K, V, ?> cacheLoader, String... optionalSpec) {
         this.cacheLoader = cacheLoader;
-        if (optionalSpec != null && optionalSpec.length > 0)
+        if (optionalSpec != null && optionalSpec.length > 0) {
             this.spec = optionalSpec[0];
+        }
 
         cache = CacheBuilder.from(spec)
             .recordStats()
@@ -59,24 +65,24 @@ public class MacheImpl<K, V> implements Mache<K, V> {
     }
 
     @Override
-    public V get(final K k) {
+    public V get(final K key) {
         createBackingStoreMaybe();
         //the fwdrCache doesnt expose 'getOrLoad(K, Loader)'
-        return cache.getUnchecked(k);
+        return cache.getUnchecked(key);
     }
 
     @Override
-    public void put(K k, V v) {
+    public void put(K key, V value) {
         createBackingStoreMaybe();
-        fwdCache.invalidate(k);
-        cacheLoader.put(k, v);
+        fwdCache.invalidate(key);
+        cacheLoader.put(key, value);
     }
 
     @Override
-    public void remove(K k) {
+    public void remove(K key) {
         createBackingStoreMaybe();
-        cacheLoader.remove(k);
-        fwdCache.invalidate(k);
+        cacheLoader.remove(key);
+        fwdCache.invalidate(key);
     }
 
     @Override
@@ -86,8 +92,8 @@ public class MacheImpl<K, V> implements Mache<K, V> {
     }
 
     @Override
-    public void invalidate(K k) {
-        fwdCache.invalidate(k);
+    public void invalidate(K key) {
+        fwdCache.invalidate(key);
     }
 
     private void createBackingStoreMaybe() {

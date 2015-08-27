@@ -16,13 +16,8 @@ public class ObservableMapTest {
     public void testGet() throws Exception {
         @SuppressWarnings("unchecked")
         Mache<String, String> cache = mock(Mache.class);
-        ObservableMap<String, String> observable = new ObservableMap<String, String>(cache, uuidUtils);
-        observable.registerListener(new MapEventListener() {
-            @Override
-            public void send(CoordinationEntryEvent<?> event) {
-                fired++;
-            }
-        });
+        ObservableMap<String, String> observable = new ObservableMap<>(cache, uuidUtils);
+        observable.registerListener(event -> fired++);
 
         observable.put("a", "b");
         assertEquals(1, fired);
@@ -33,12 +28,7 @@ public class ObservableMapTest {
         @SuppressWarnings("unchecked")
         Mache<String, String> cache = mock(Mache.class);
         ObservableMap<String, String> observable = new ObservableMap<>(cache, uuidUtils);
-        observable.registerListener(new MapEventListener() {
-            @Override
-            public void send(CoordinationEntryEvent<?> event) {
-                fired++;
-            }
-        });
+        observable.registerListener(event -> fired++);
 
         observable.get("a");
         assertEquals(0, fired);
