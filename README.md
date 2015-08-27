@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Excelian/Mache.svg)](https://travis-ci.org/Excelian/Mache)
+[![Build Status](https://travis-ci.org/Excelian/Mache.svg?branch=master)](https://travis-ci.org/Excelian/Mache.svg?branch=master)
 
 # Mache
 A NearSide NoSQL Cache with eventing and other features; built from a 'mash'-up of OpenSource technologies for multiple NoSQL backends
