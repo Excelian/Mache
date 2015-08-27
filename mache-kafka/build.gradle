@@ -7,4 +7,5 @@ dependencies {
   }
   testCompile project(path: ':mache-observable', configuration: 'tests')
   testCompile project(path: ':mache-core', configuration: 'tests')
+  testCompile 'org.mockito:mockito-all:1.10.19'
 }
