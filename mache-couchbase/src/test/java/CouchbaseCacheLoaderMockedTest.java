@@ -101,18 +101,16 @@ public class CouchbaseCacheLoaderMockedTest {
     }
 
     private void thenBucketCreated() {
-        verify(mockedManager).insertBucket(
-                any(BucketSettings.class), eq(CouchbaseCacheLoader.TIMEOUT), eq(TimeUnit.SECONDS));
+        verify(mockedManager).insertBucket(any(BucketSettings.class));
     }
 
     private void thenBucketDropped() {
-        verify(mockedManager).removeBucket(
-                eq(config.getBucketName()), eq(CouchbaseCacheLoader.TIMEOUT), eq(TimeUnit.SECONDS));
+        verify(mockedManager).removeBucket(eq(config.getBucketName()));
     }
 
     private void thenClusterManagerAndBucketCreated(CouchbaseCluster mockedCluster) {
         verify(mockedCluster).clusterManager(config.getAdminUser(), config.getAdminPassword());
-        verify(mockedCluster).openBucket("test", CouchbaseCacheLoader.TIMEOUT, TimeUnit.SECONDS);
+        verify(mockedCluster).openBucket("test");
     }
 
     private void givenCacheLoaderWith(SchemaOptions schemaOptions) {

@@ -30,13 +30,15 @@ subprojects {
     }
 
     test {
-        testLogging.exceptionFormat = 'full'
-        testLogging.showStackTraces = true
-        testLogging.showStandardStreams = true
-
         beforeTest { descriptor ->
             logger.lifecycle("Running test: " + descriptor)
         }
 
+
+        testLogging {
+            events  "passed", "skipped", "failed", "standardOut", "standardError"
+            exceptionFormat = 'full'
+            showStackTraces = true
+        }
     }
 }
