@@ -18,7 +18,7 @@ public class RabbitMQEventingTest extends TestEventingBase {
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     @Override
-    protected MQFactory buildMQFactory() throws JMSException, IOException {
-        return new RabbitMQFactory(new NoRunningRabbitMQForTests().getHost(), new DefaultRabbitMqConfig());
+    protected MQFactory<String> buildMQFactory() throws JMSException, IOException {
+        return new RabbitMQFactory<>(new NoRunningRabbitMQForTests().getHost(), new DefaultRabbitMqConfig());
     }
 }

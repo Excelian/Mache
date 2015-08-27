@@ -70,7 +70,7 @@ public class RabbitMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
                 Gson gson = new Gson();
                 @SuppressWarnings("unchecked")
                 final CoordinationEntryEvent<K> event = gson.fromJson(new String(body), CoordinationEntryEvent.class);
-                routeEventToListeners(eventMap, event);
+                routeEventToListeners(event);
 
                 channel.basicAck(deliveryTag, false);
             }
