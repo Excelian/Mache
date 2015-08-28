@@ -82,7 +82,7 @@ public class KafkaEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K>
                         Gson gson = new Gson();
                         @SuppressWarnings("unchecked")
                         final CoordinationEntryEvent<K> event = gson.fromJson(message, CoordinationEntryEvent.class);
-                        routeEventToListeners(eventMap, event);
+                        routeEventToListeners(event);
                     }
                 }
             }

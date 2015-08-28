@@ -9,7 +9,7 @@ import javax.jms.JMSException;
 public class ActiveMQEventingTest extends TestEventingBase {
 
     @Override
-    protected MQFactory buildMQFactory() throws JMSException {
-        return new ActiveMQFactory("vm://localhost", new DefaultActiveMqConfig());
+    protected MQFactory<String> buildMQFactory() throws JMSException {
+        return new ActiveMQFactory<>("vm://localhost", new DefaultActiveMqConfig());
     }
 }

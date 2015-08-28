@@ -54,7 +54,7 @@ public class ActiveMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
                             final CoordinationEntryEvent<K> event =
                                 new Gson().fromJson(message.getText(), CoordinationEntryEvent.class);
 
-                            routeEventToListeners(eventMap, event);
+                            routeEventToListeners(event);
                         }
                     } catch (JMSException e) {
                         LOG.error("[ActiveMQEventConsumer {}] eventConsumer - could not 'take' event.\\n{}",
