@@ -1,6 +1,5 @@
 package com.excelian.mache.events;
 
-import com.excelian.mache.observable.EventType;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.excelian.mache.observable.coordination.CoordinationEventListener;
 import com.excelian.mache.observable.coordination.RemoteCacheEntryCreatedListener;
@@ -15,7 +14,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.jms.JMSException;
 
@@ -71,13 +69,13 @@ public abstract class BaseCoordinationEntryEventConsumer<K> implements Closeable
                 routeToRemoveConsumers(events);
                 break;
             case INVALIDATE:
-                routeToIvalidateConsumers(events);
+                routeToInvalidateConsumers(events);
                 break;
         }
         return event;
     }
 
-    private void routeToIvalidateConsumers(List<CoordinationEntryEvent<K>> events) {
+    private void routeToInvalidateConsumers(List<CoordinationEntryEvent<K>> events) {
         for (RemoteCacheEntryInvalidateListener<K> invalidatedEventConsumer : invalidatedEventConsumers) {
             invalidatedEventConsumer.onInvalidate(events);
         }
