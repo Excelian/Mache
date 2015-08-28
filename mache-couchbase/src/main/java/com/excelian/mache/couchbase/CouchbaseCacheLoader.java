@@ -25,7 +25,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluster> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CouchbaseCacheLoader.class);
-    public static final long TIMEOUT = 20;
 
     private Cluster cluster;
     private ClusterManager manager;
@@ -103,7 +102,7 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
     private void dropBucketIfRequired() {
         if (config.getSchemaOptions().shouldDropSchema() && manager.hasBucket(config.getBucketName())) {
             LOG.debug("Removing bucket {}", config.getBucketName());
-            manager.removeBucket(config.getBucketName(), TIMEOUT, TimeUnit.SECONDS);
+            manager.removeBucket(config.getBucketName());
         }
     }
 
@@ -118,10 +117,10 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
                     .replicas(config.getNumReplicas())
                     .build();
 
-            manager.insertBucket(settings, TIMEOUT, TimeUnit.SECONDS);
+            manager.insertBucket(settings);
         }
 
-        return cluster.openBucket(config.getBucketName(), TIMEOUT, TimeUnit.SECONDS);
+        return cluster.openBucket(config.getBucketName());
     }
 }
 

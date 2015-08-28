@@ -13,6 +13,7 @@ import org.springframework.data.couchbase.core.mapping.Document;
 
 import java.util.Collections;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -34,7 +35,10 @@ public class CouchbaseCacheLoaderIntegrationTest {
     public void setup() {
         cache = new MacheImpl<>(new CouchbaseCacheLoader<>(CouchbaseConfig.builder()
                 .withServerAddresses(Collections.singletonList(COUCHBASE_HOST))
-                .withCouchbaseEnvironment(DefaultCouchbaseEnvironment.create())
+                .withCouchbaseEnvironment(DefaultCouchbaseEnvironment.builder()
+                        .connectTimeout(TimeUnit.SECONDS.toMillis(100))
+                        .managementTimeout(TimeUnit.SECONDS.toMillis(100))
+                        .build())
                 .withAdminUser(DEFAULT_ADMIN)
                 .withAdminPassword(PASSWORD)
                 .withBucketName(BUCKET)
