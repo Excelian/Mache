@@ -2,50 +2,93 @@ package com.excelian.mache.cassandra.builder;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
-import com.excelian.mache.builder.StorageProvisioner;
+import com.excelian.mache.builder.storage.StorageProvisioner;
 import com.excelian.mache.cassandra.CassandraCacheLoader;
-import com.excelian.mache.cassandra.DefaultCassandraConfig;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.core.SchemaOptions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 /**
- * Created by jbowkett on 11/08/15.
+ * {@link StorageProvisioner} implementation for Cassandra.
  */
 public class CassandraProvisioner implements StorageProvisioner {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CassandraProvisioner.class);
+    private final Cluster cluster;
+    private final SchemaOptions schemaOptions;
+    private final String keySpace;
+    private final String replicationClass;
+    private final int replicationFactor;
 
-    @Override
-    public String getStorage() {
-        return "Cassandra";
+    private CassandraProvisioner(Cluster cluster, SchemaOptions schemaOptions, String keySpace,
+                                 String replicationClass, int replicationFactor) {
+        this.cluster = cluster;
+        this.schemaOptions = schemaOptions;
+        this.keySpace = keySpace;
+        this.replicationClass = replicationClass;
+        this.replicationFactor = replicationFactor;
     }
 
     @Override
-    public <K, V> Mache<K, V> getCache(String keySpace, Class<V> valueType, SchemaOptions schemaOption, ClusterDetails clusterDetails, StorageServerDetails... serverDetails) {
-        final Cluster cluster = getCluster(serverDetails[0], clusterDetails);
-        final CassandraCacheLoader<K, V> cacheLoader = getCacheLoader(keySpace, cluster, valueType, schemaOption);
-
-        final MacheFactory<K, V, Session> macheFactory = new MacheFactory<>();
+    public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType) {
+        final CassandraCacheLoader<K, V> cacheLoader =  new CassandraCacheLoader<>(keyType, valueType, cluster,
+                schemaOptions, keySpace, replicationClass, replicationFactor);
+        final MacheFactory macheFactory = new MacheFactory();
         return macheFactory.create(cacheLoader);
     }
 
-    private Cluster getCluster(StorageServerDetails server, ClusterDetails clusterDetails) {
-        LOG.info("Connecting to Cassandra cluster...");
-        final Cluster cluster = CassandraCacheLoader.connect(server.getAddress(), clusterDetails.getName(), server.getPort(), new DefaultCassandraConfig());
-        LOG.info("Connected.");
-        return cluster;
+    /**
+     * @return A builder for a {@link CassandraProvisioner}.
+     */
+    public static ClusterBuilder cassandra() {
+        return cluster -> keyspace -> new CassandraProvisionerBuilder(cluster, keyspace);
     }
 
+    /**
+     * Forces cluster settings to be provided.
+     */
+    public interface ClusterBuilder {
+        KeyspaceBuilder withCluster(Cluster cluster);
+    }
 
-    private <K, V> CassandraCacheLoader<K, V> getCacheLoader(String keySpace, Cluster cluster, Class<V> valueTypes, SchemaOptions createanddropschema) {
-        LOG.info("Creating cache loader with keyspace:[" + keySpace + "]");
-        final CassandraCacheLoader<K, V> cacheLoader = new CassandraCacheLoader<>(
-            valueTypes, cluster, createanddropschema, keySpace, new DefaultCassandraConfig());
-        LOG.info("CacheLoader created.");
-        return cacheLoader;
+    /**
+     * Forces a keyspace name to be provided.
+     */
+    public interface KeyspaceBuilder {
+        CassandraProvisionerBuilder withKeyspace(String keySpace);
+    }
+
+    /**
+     * A builder with defaults for a Cassandra cluster.
+     */
+    public static class CassandraProvisionerBuilder {
+        private final Cluster cluster;
+        private final String keySpace;
+        private SchemaOptions schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
+        private String replicationClass = "SimpleStrategy";
+        private int replicationFactor = 1;
+
+        private CassandraProvisionerBuilder(Cluster cluster, String keySpace) {
+            this.cluster = cluster;
+            this.keySpace = keySpace;
+        }
+
+        public CassandraProvisionerBuilder withSchemaOptions(SchemaOptions schemaOptions) {
+            this.schemaOptions = schemaOptions;
+            return this;
+        }
+
+        public CassandraProvisionerBuilder withReplicationClass(String replicationClass) {
+            this.replicationClass = replicationClass;
+            return this;
+        }
+
+        public CassandraProvisionerBuilder withReplicationFactor(int replicationFactor) {
+            this.replicationFactor = replicationFactor;
+            return this;
+        }
+
+        public CassandraProvisioner build() {
+            return new CassandraProvisioner(cluster, schemaOptions, keySpace, replicationClass, replicationFactor);
+        }
     }
 }

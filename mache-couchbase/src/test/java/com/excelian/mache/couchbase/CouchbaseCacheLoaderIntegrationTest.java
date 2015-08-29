@@ -1,20 +1,25 @@
+package com.excelian.mache.couchbase;
+
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
-import com.excelian.mache.core.MacheImpl;
-import com.excelian.mache.core.NoRunningCouchbaseDbForTests;
-import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.couchbase.CouchbaseCacheLoader;
-import com.excelian.mache.couchbase.CouchbaseConfig;
+import com.excelian.mache.builder.NoMessagingProvisioner;
+import com.excelian.mache.core.Mache;
 import com.google.common.cache.CacheLoader;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.couchbase.core.mapping.Document;
 
-import java.util.Collections;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
+import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
+import static com.excelian.mache.builder.MacheBuilder.mache;
+import static com.excelian.mache.core.SchemaOptions.CREATE_AND_DROP_SCHEMA;
+import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.*;
 
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCouchbaseDbForTests.class)
@@ -24,26 +29,25 @@ public class CouchbaseCacheLoaderIntegrationTest {
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     private static final String BUCKET = "couchbase-test";
-    private static final String DEFAULT_ADMIN = "Administrator";
+    private static final String ADMIN_USER = "Administrator";
     private static final String PASSWORD = "password";
     private static final double DELTA = 0.000001;
     private static final String COUCHBASE_HOST = new NoRunningCouchbaseDbForTests().getHost();
 
-    private MacheImpl<String, TestEntity> cache;
+    private Mache<String, TestEntity> cache;
 
     @Before
-    public void setup() {
-        cache = new MacheImpl<>(new CouchbaseCacheLoader<>(CouchbaseConfig.builder()
-                .withServerAddresses(Collections.singletonList(COUCHBASE_HOST))
-                .withCouchbaseEnvironment(DefaultCouchbaseEnvironment.builder()
-                        .connectTimeout(TimeUnit.SECONDS.toMillis(100))
-                        .managementTimeout(TimeUnit.SECONDS.toMillis(100))
-                        .build())
-                .withAdminUser(DEFAULT_ADMIN)
-                .withAdminPassword(PASSWORD)
-                .withBucketName(BUCKET)
-                .withSchemaOptions(SchemaOptions.CREATEANDDROPSCHEMA)
-                .withCacheType(TestEntity.class).build()));
+    public void setup() throws Exception {
+        cache = mache(String.class, TestEntity.class)
+                .backedBy(couchbase()
+                        .withBucketSettings(builder().name(BUCKET).quota(150).build())
+                        .withCouchbaseEnvironment(DefaultCouchbaseEnvironment.builder()
+                                .connectTimeout(SECONDS.toMillis(100)).build())
+                        .withAdminDetails(ADMIN_USER, PASSWORD)
+                        .withNodes(COUCHBASE_HOST)
+                        .withSchemaOptions(CREATE_AND_DROP_SCHEMA).create())
+                .withMessaging(new NoMessagingProvisioner())
+                .macheUp();
     }
 
     @After

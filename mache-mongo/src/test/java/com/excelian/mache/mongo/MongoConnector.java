@@ -2,7 +2,6 @@ package com.excelian.mache.mongo;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
-import com.excelian.mache.core.NoRunningMongoDbForTests;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;

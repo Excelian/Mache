@@ -1,34 +1,57 @@
 package com.excelian.mache.cassandra;
 
-import com.excelian.mache.core.MacheImpl;
-import com.excelian.mache.core.MacheLoader;
+import com.codeaffine.test.ConditionalIgnoreRule;
+import com.datastax.driver.core.Cluster;
+import com.excelian.mache.core.Mache;
+import com.excelian.mache.core.SchemaOptions;
 import com.google.common.cache.CacheLoader;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.cassandra.core.Ordering;
 import org.springframework.cassandra.core.PrimaryKeyType;
-import org.springframework.data.cassandra.mapping.*;
+import org.springframework.data.cassandra.mapping.Column;
+import org.springframework.data.cassandra.mapping.PrimaryKey;
+import org.springframework.data.cassandra.mapping.PrimaryKeyClass;
+import org.springframework.data.cassandra.mapping.PrimaryKeyColumn;
+import org.springframework.data.cassandra.mapping.Table;
 
 import java.io.Serializable;
 import java.util.Date;
 
+import static com.excelian.mache.builder.MacheBuilder.mache;
+import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-/*
-Core common set of tests that all CacheLoader classes should pass
- */
-public abstract class TestCacheLoaderBase {
+@ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCassandraDbForTests.class)
+public class CassandraCacheLoaderIntegrationTest {
+
+    @Rule
+    public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     protected String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
-    private MacheImpl<String, TestEntity> mache;
-
-    abstract protected MacheLoader buildCacheLoader(Class cls) throws Exception;
+    private Mache<String, TestEntity> mache;
 
     @Before
     public void setUp() throws Exception {
-        mache = new MacheImpl<String, TestEntity>(buildCacheLoader(TestEntity.class));
+        mache = getMache(String.class, TestEntity.class);
+    }
+
+    private <K, V> Mache<K, V> getMache(Class<K> keyType, Class<V> valueType) throws Exception {
+        return mache(keyType, valueType)
+                .backedBy(cassandra()
+                        .withCluster(Cluster.builder()
+                                .withClusterName("BluePrint")
+                                .addContactPoint(new NoRunningCassandraDbForTests().getHost())
+                                .withPort(9042)
+                                .build())
+                        .withKeyspace(keySpace)
+                        .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
+                        .build())
+                .withNoMessaging()
+                .macheUp();
     }
 
     @After
@@ -38,14 +61,9 @@ public abstract class TestCacheLoaderBase {
 
     @Test
     public void testCanGetDriverSession() throws Exception {
-        MacheLoader cacheloader = buildCacheLoader(TestEntity.class);
-        MacheImpl cache = new MacheImpl<String, TestEntity>(cacheloader);
-        cache.put("test-2", new TestEntity("test-2"));
-        cache.get("test-2");
-        assertNotNull(cacheloader.getDriverSession());
-
-        cacheloader.close();
-        cache.close();
+        mache.put("test-2", new TestEntity("test-2"));
+        mache.get("test-2");
+        assertNotNull(mache.getCacheLoader().getDriverSession());
     }
 
     @Test
@@ -71,23 +89,13 @@ public abstract class TestCacheLoaderBase {
         assertEquals("test-2", test.pkString);
     }
 
-    @Test
+    @Test(expected = CacheLoader.InvalidCacheLoadException.class)
     public void testRemove() throws Exception {
-        CacheLoader.InvalidCacheLoadException exception = null;
         String key = "rem-test-2";
         mache.put(key, new TestEntity(key));
-        assertNotNull("Expected entry to be in cache prior to remocal", mache.get(key));
-
+        assertNotNull("Expected entry to be in cache prior to removal", mache.get(key));
         mache.remove(key);
-
-        try {
-            mache.get(key);
-        } catch (CacheLoader.InvalidCacheLoadException e) {
-            exception = e;
-        }
-
-        assertNotNull("Exception expected to have been thrown", exception);
-        assertEquals("CacheLoader returned null for key rem-test-2.", exception.getMessage());
+        mache.get(key);
     }
 
     @Test
@@ -95,22 +103,37 @@ public abstract class TestCacheLoaderBase {
         mache.put("test-2", new TestEntity("test-2"));
         mache.put("test-3", new TestEntity("test-3"));
         // replace the cache
-        mache = new MacheImpl<String, TestEntity>(buildCacheLoader(TestEntity.class));
+        mache = getMache(String.class, TestEntity.class);
 
         TestEntity test = mache.get("test-2");
         assertEquals("test-2", test.pkString);
     }
 
+    @Test
+    public void testPutComposite() throws Exception {
+
+        Mache<CompositeKey, TestEntityWithCompositeKey> compCache =
+                getMache(CompositeKey.class, TestEntityWithCompositeKey.class);
+
+        TestEntityWithCompositeKey value = new TestEntityWithCompositeKey("neil", "mac", "explorer");
+        compCache.put(value.compositeKey, value);
+
+        TestEntityWithCompositeKey testValue = compCache.get(value.compositeKey);
+        assertEquals("neil", testValue.compositeKey.personId);
+
+        compCache.close();
+    }
+
     @Table
     public static class TestEntity {
+        @PrimaryKey
+        String pkString = "yay";
         @Column
         private int firstInt = 1;
         @Column
         private double aDouble = 1.0;
         @Column(value = "mappedColumn")
         private String aString = "yay";
-        @PrimaryKey
-        String pkString = "yay";
 
         public TestEntity(String pkString) {
             this.pkString = pkString;
@@ -139,6 +162,13 @@ public abstract class TestCacheLoaderBase {
     @PrimaryKeyClass
     public static class CompositeKey implements Serializable {
 
+        @PrimaryKeyColumn(name = "person_id", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
+        private String personId;
+        @PrimaryKeyColumn(name = "wks_id", ordinal = 1, type = PrimaryKeyType.PARTITIONED)
+        private String workstationId;
+        @PrimaryKeyColumn(ordinal = 2, type = PrimaryKeyType.CLUSTERED, ordering = Ordering.ASCENDING)
+        private String application;
+
         public CompositeKey() {
         }
 
@@ -148,29 +178,5 @@ public abstract class TestCacheLoaderBase {
             this.workstationId = workstationId;
             this.application = application;
         }
-
-        @PrimaryKeyColumn(name = "person_id", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-        private String personId;
-
-        @PrimaryKeyColumn(name = "wks_id", ordinal = 1, type = PrimaryKeyType.PARTITIONED)
-        private String workstationId;
-
-        @PrimaryKeyColumn(ordinal = 2, type = PrimaryKeyType.CLUSTERED, ordering = Ordering.ASCENDING)
-        private String application;
-    }
-
-    @Test
-    public void testPutComposite() throws Exception {
-
-        MacheImpl<CompositeKey, TestEntityWithCompositeKey> compCache = new MacheImpl<CompositeKey, TestEntityWithCompositeKey>(
-                buildCacheLoader(TestEntityWithCompositeKey.class));
-
-        TestEntityWithCompositeKey value = new TestEntityWithCompositeKey("neil", "mac", "explorer");
-        compCache.put(value.compositeKey, value);
-
-        TestEntityWithCompositeKey testValue = compCache.get(value.compositeKey);
-        assertEquals("neil", testValue.compositeKey.personId);
-
-        compCache.close();
     }
 }
