@@ -13,5 +13,5 @@ public interface Example<T> {
      *
      * @return The example mache client.
      */
-    Mache<String, T> exampleCache();
+    Mache<String, T> exampleCache() throws Exception;
 }

@@ -19,7 +19,7 @@ import java.util.Arrays;
 public class PuttingCacheClient {
     private static final Logger LOG = LoggerFactory.getLogger(PuttingCacheClient.class);
 
-    public static void main(String... commandLine) {
+    public static void main(String... commandLine) throws Exception {
         final Args args = parseArgs(commandLine);
         final int count = args.count;
         switch (args.cacheType) {

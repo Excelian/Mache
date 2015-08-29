@@ -6,18 +6,13 @@ repositories {
 
 dependencies {
     compile project(':mache-core')
-    compile 'org.springframework.data:spring-data-cassandra:1.2.0.RELEASE'
-    compile 'org.springframework.data:spring-data-mongodb:1.7.0.RELEASE'
-    compile 'org.springframework.data:spring-data-couchbase:2.0.0.M1'
-    compile 'javax.jms:jms:1.1'
-    testCompile project(path: ':mache-core', configuration: 'tests')
-    testRuntime project(':mache-activemq')
-    testRuntime project(':mache-rabbit')
-    testRuntime project(':mache-mongo')
-    testRuntime project(':mache-cassandra')
-    testRuntime project(':mache-observable')
-    testRuntime project(':mache-core')
-    testRuntime project(':mache-couchbase')
+    compile project(':mache-activemq')
+    compile project(':mache-rabbit')
+    compile project(':mache-mongo')
+    compile project(':mache-cassandra')
+    compile project(':mache-observable')
+    compile project(':mache-core')
+    compile project(':mache-couchbase')
 }
 
 sourceSets {

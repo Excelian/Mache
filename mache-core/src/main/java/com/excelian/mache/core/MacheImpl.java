@@ -24,15 +24,17 @@ public class MacheImpl<K, V> implements Mache<K, V> {
     private final LoadingCache<K, V> cache;
     private volatile boolean created;
 
-    public MacheImpl(final MacheLoader<K, V, ?> cacheLoader, String... optionalSpec) {
+    public MacheImpl(final AbstractCacheLoader<K, V, ?> cacheLoader, String... optionalSpec) {
         this.cacheLoader = cacheLoader;
+        cacheLoader.create();
+
         if (optionalSpec != null && optionalSpec.length > 0) {
             this.spec = optionalSpec[0];
         }
 
         cache = CacheBuilder.from(spec)
             .recordStats()
-            .build((CacheLoader<K, V>) cacheLoader);
+            .build(cacheLoader);
 
         fwdCache = new ForwardingCache<K, V>() {
             @Override
@@ -66,21 +68,18 @@ public class MacheImpl<K, V> implements Mache<K, V> {
 
     @Override
     public V get(final K key) {
-        createBackingStoreMaybe();
         //the fwdrCache doesnt expose 'getOrLoad(K, Loader)'
         return cache.getUnchecked(key);
     }
 
     @Override
     public void put(K key, V value) {
-        createBackingStoreMaybe();
         fwdCache.invalidate(key);
         cacheLoader.put(key, value);
     }
 
     @Override
     public void remove(K key) {
-        createBackingStoreMaybe();
         cacheLoader.remove(key);
         fwdCache.invalidate(key);
     }
@@ -88,23 +87,11 @@ public class MacheImpl<K, V> implements Mache<K, V> {
     @Override
     public void invalidateAll() {
         fwdCache.invalidateAll();
-
     }
 
     @Override
     public void invalidate(K key) {
         fwdCache.invalidate(key);
-    }
-
-    private void createBackingStoreMaybe() {
-        if (!created) {
-            synchronized (this) {
-                if (!created) {
-                    cacheLoader.create();
-                    created = true;
-                }
-            }
-        }
     }
 
     @Override

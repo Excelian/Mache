@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 
 public class PortCheck {
-    public static boolean PortAccessible(String hostName, int port) {
+    public static boolean portAccessible(String hostName, int port) {
         SocketAddress sockaddr = new InetSocketAddress(hostName, port);
 
         Socket socket = new Socket();
@@ -17,12 +17,14 @@ public class PortCheck {
             socket.connect(sockaddr, 10000);
             online = true;
         } catch (IOException ex) {
+            // NOOP
         } finally {
             // As the close() operation can also throw an IOException
             // it must caught here
             try {
                 socket.close();
             } catch (IOException ex) {
+                // NOOP
             }
         }
 

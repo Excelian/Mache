@@ -17,7 +17,7 @@ public class GettingCacheClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(GettingCacheClient.class);
 
-    public static void main(String... commandLine) {
+    public static void main(String... commandLine) throws Exception {
         final Args args = parseArgs(commandLine);
         final int count = args.count;
         final Example example;
@@ -38,7 +38,7 @@ public class GettingCacheClient {
         doExample(count, example);
     }
 
-    private static <T> void doExample(int count, Example<T> example) {
+    private static <T> void doExample(int count, Example<T> example) throws Exception {
         final Mache<String, T> cache = example.exampleCache();
         LOG.info("Getting...");
         for (int i = 0; i < count; i++) {

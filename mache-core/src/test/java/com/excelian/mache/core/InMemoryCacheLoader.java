@@ -3,18 +3,18 @@ package com.excelian.mache.core;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class InMemoryCacheLoader<K, V> extends AbstractCacheLoader<K, V, String> {
+public class InMemoryCacheLoader<K, V, D> extends AbstractCacheLoader<K, V, Object> {
     private final String cacheName;
     private final Map<K, V> store = new ConcurrentHashMap<>();
 
-    public InMemoryCacheLoader(final String name) {
-        this.cacheName = name;
+    public InMemoryCacheLoader(final Class<V> valueType) {
+        this.cacheName = valueType.getSimpleName();
     }
 
 
     @Override
     public void create() {
-
+        // NOOP
     }
 
     @Override
@@ -29,7 +29,7 @@ public class InMemoryCacheLoader<K, V> extends AbstractCacheLoader<K, V, String>
 
     @Override
     public void close() {
-        throw new UnsupportedOperationException("Not implemented.");
+        // NOOP
     }
 
     @Override
