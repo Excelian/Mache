@@ -1,11 +1,8 @@
 package com.excelian.mache.events.integration;
 
-import com.google.gson.Gson;
-
 import com.excelian.mache.events.BaseCoordinationEntryEventProducer;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
-
-
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,28 +19,25 @@ public class ActiveMQEventProducer<K> extends BaseCoordinationEntryEventProducer
     Session session;
     MessageProducer producer;
 
-    protected ActiveMQEventProducer(Connection connection,
-                                    String topicName,
-                                    ActiveMqConfig config) throws JMSException {
+    protected ActiveMQEventProducer(Connection connection, String topicName, long timeToLiveInMillis, int deliveryMode,
+                                    int acknowledgementMode)
+            throws JMSException {
         super(topicName);
 
-        session = connection.createSession(false, config.getAutoAcknowledge());
+        session = connection.createSession(false, acknowledgementMode);
         Destination destination = session.createTopic(getTopicName());
 
         producer = session.createProducer(destination);
-        producer.setDeliveryMode(config.getDeliveryMode());
-
-        producer.setTimeToLive(config.getTimeToLiveInMillis());
+        producer.setDeliveryMode(deliveryMode);
+        producer.setTimeToLive(timeToLiveInMillis);
     }
 
     @Override
     public void send(final CoordinationEntryEvent<K> event) {
-
-        Gson gson = new Gson();
-        TextMessage message;
+        final Gson gson = new Gson();
         try {
             String payload = gson.toJson(event);
-            message = session.createTextMessage(payload);
+            TextMessage message = session.createTextMessage(payload);
             producer.send(message);
             LOG.debug("SEND: {}", payload);
         } catch (JMSException e) {

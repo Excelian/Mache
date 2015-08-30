@@ -2,14 +2,15 @@ package com.excelian.mache.integrations.eventing;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
-import com.excelian.mache.core.NoRunningRabbitMQForTests;
 import com.excelian.mache.events.MQFactory;
-import com.excelian.mache.events.integration.DefaultRabbitMqConfig;
 import com.excelian.mache.events.integration.RabbitMQFactory;
+import com.rabbitmq.client.ConnectionFactory;
 import org.junit.Rule;
 
 import javax.jms.JMSException;
 import java.io.IOException;
+
+import static com.excelian.mache.events.integration.RabbitMqConfig.RabbitMqConfigBuilder.builder;
 
 @IgnoreIf(condition = NoRunningRabbitMQForTests.class)
 public class RabbitMQEventingTest extends TestEventingBase {
@@ -19,6 +20,9 @@ public class RabbitMQEventingTest extends TestEventingBase {
 
     @Override
     protected MQFactory<String> buildMQFactory() throws JMSException, IOException {
-        return new RabbitMQFactory<>(new NoRunningRabbitMQForTests().getHost(), new DefaultRabbitMqConfig());
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost(new NoRunningRabbitMQForTests().getHost());
+        factory.setAutomaticRecoveryEnabled(true);
+        return new RabbitMQFactory<>(factory, builder().build());
     }
 }

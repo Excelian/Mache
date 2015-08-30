@@ -11,22 +11,26 @@ import com.excelian.mache.observable.utils.UUIDUtils;
 import java.io.IOException;
 import javax.jms.JMSException;
 
-/**
- * Created by jbowkett on 21/08/2015.
- */
 public abstract class AbstractMessagingProvisioner implements MessagingProvisioner {
 
+    protected final String topic;
+
+    protected AbstractMessagingProvisioner(String topic) {
+        this.topic = topic;
+    }
+
     @Override
-    public <K, V> Mache<K, V> wireInMessaging(Mache<K, V> toWireIn, String topic, String messagingLocation) throws Exception {
-        final MQFactory<K> mqFactory = getMqFactory(messagingLocation);
+    public <K, V> Mache<K, V> wireInMessaging(Mache<K, V> toWireIn) throws Exception {
+
+        final MQFactory<K> mqFactory = getMqFactory();
         final MQConfiguration mqConfiguration = () -> topic;
 
-        final MacheFactory<K, V, ?> macheFactory = new MacheFactory<>();
+        final MessageQueueObservableCacheFactory<K, V> cacheFactory =
+                new MessageQueueObservableCacheFactory<>(mqFactory, mqConfiguration, new UUIDUtils());
 
-        final MessageQueueObservableCacheFactory<K, V, ?> cacheFactory = new MessageQueueObservableCacheFactory<>(
-            mqFactory, mqConfiguration, macheFactory, new UUIDUtils());
         return cacheFactory.createCache(toWireIn);
     }
 
-    public abstract <K> MQFactory<K> getMqFactory(String messagingLocation) throws IOException, JMSException;
+    public abstract <K> MQFactory<K> getMqFactory() throws IOException, JMSException;
+
 }
