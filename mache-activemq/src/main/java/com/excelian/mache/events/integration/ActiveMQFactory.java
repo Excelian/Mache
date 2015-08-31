@@ -10,7 +10,7 @@ import javax.cache.CacheException;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 
-public class ActiveMQFactory implements MQFactory {
+public class ActiveMQFactory<K> implements MQFactory<K> {
     private final Connection connection;
     private final ActiveMqConfig activeMqConfig;
 
@@ -22,18 +22,18 @@ public class ActiveMQFactory implements MQFactory {
     }
 
     @Override
-    public BaseCoordinationEntryEventProducer getProducer(final MQConfiguration config) {
+    public BaseCoordinationEntryEventProducer<K> getProducer(final MQConfiguration config) {
         try {
-            return new ActiveMQEventProducer(connection, config.getTopicName(), activeMqConfig);
+            return new ActiveMQEventProducer<>(connection, config.getTopicName(), activeMqConfig);
         } catch (JMSException e) {
             throw new CacheException(e);
         }
     }
 
     @Override
-    public BaseCoordinationEntryEventConsumer getConsumer(final MQConfiguration config) {
+    public BaseCoordinationEntryEventConsumer<K> getConsumer(final MQConfiguration config) {
         try {
-            return new ActiveMQEventConsumer(connection, config.getTopicName(), activeMqConfig);
+            return new ActiveMQEventConsumer<>(connection, config.getTopicName(), activeMqConfig);
         } catch (JMSException e) {
             throw new CacheException(e);
         }

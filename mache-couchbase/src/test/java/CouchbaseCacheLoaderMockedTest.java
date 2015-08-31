@@ -2,12 +2,12 @@ import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.cluster.ClusterManager;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.couchbase.CouchbaseCacheLoader;
 import com.excelian.mache.couchbase.CouchbaseConfig;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
@@ -101,15 +101,17 @@ public class CouchbaseCacheLoaderMockedTest {
     }
 
     private void thenBucketCreated() {
-        verify(mockedManager).insertBucket(any(BucketSettings.class), eq(CouchbaseCacheLoader.TIMEOUT), eq(TimeUnit.SECONDS));
+        verify(mockedManager).insertBucket(
+                any(BucketSettings.class), eq(CouchbaseCacheLoader.TIMEOUT), eq(TimeUnit.SECONDS));
     }
 
     private void thenBucketDropped() {
-        verify(mockedManager).removeBucket(eq(config.getBucketName()), eq(CouchbaseCacheLoader.TIMEOUT), eq(TimeUnit.SECONDS));
+        verify(mockedManager).removeBucket(
+                eq(config.getBucketName()), eq(CouchbaseCacheLoader.TIMEOUT), eq(TimeUnit.SECONDS));
     }
 
     private void thenClusterManagerAndBucketCreated(CouchbaseCluster mockedCluster) {
-        verify(mockedCluster, times(2)).clusterManager(config.getAdminUser(), config.getAdminPassword());
+        verify(mockedCluster).clusterManager(config.getAdminUser(), config.getAdminPassword());
         verify(mockedCluster).openBucket("test", CouchbaseCacheLoader.TIMEOUT, TimeUnit.SECONDS);
     }
 

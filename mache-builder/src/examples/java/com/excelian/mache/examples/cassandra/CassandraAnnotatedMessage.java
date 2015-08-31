@@ -3,6 +3,9 @@ package com.excelian.mache.examples.cassandra;
 import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
 
+/**
+ * Example Spring Data Cassandra Annotated Object.
+ */
 @Table
 public class CassandraAnnotatedMessage {
 
@@ -22,10 +25,6 @@ public class CassandraAnnotatedMessage {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Message{");
-        sb.append("msg='").append(msg).append('\'');
-        sb.append(", primaryKey='").append(primaryKey).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "Message{" + "msg='" + msg + '\'' + ", primaryKey='" + primaryKey + '\'' + '}';
     }
 }

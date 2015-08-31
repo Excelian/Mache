@@ -33,11 +33,11 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 	MacheLoader<String, TestEntity, String> cacheLoader;
 	MQConfiguration mqConfiguration = () -> "testTopic";
 
-	MQFactory mqFactory1;
-	ObservableCacheFactory observableCacheFactory1;
+	MQFactory<String> mqFactory1;
+	ObservableCacheFactory<String, TestEntity, String> observableCacheFactory1;
 
-	MQFactory mqFactory2;
-	ObservableCacheFactory observableCacheFactory2;
+	MQFactory<String> mqFactory2;
+	ObservableCacheFactory<String, TestEntity, String> observableCacheFactory2;
 
 	Mache<String, TestEntity> unspiedCache1;
 	Mache<String, TestEntity> spiedCache1;
@@ -46,9 +46,9 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 	TestEntity testValue2 = new TestEntity("testValue2");
 
 	@Mock
-	MacheFactory spiedMacheFactory;
+	MacheFactory<String, TestEntity, String> spiedMacheFactory;
 
-	MacheFactory macheFactory;
+	MacheFactory<String, TestEntity, String> macheFactory;
 
 	private final UUIDUtils uuidUtils = new UUIDUtils();
 	private DefaultActiveMqConfig activeMqConfig;
@@ -59,19 +59,19 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 
 		cacheLoader = new InMemoryCacheLoader<>("loaderForTestEntity");
 
-		macheFactory = new MacheFactory();
+		macheFactory = new MacheFactory<>();
 
 		activeMqConfig = new DefaultActiveMqConfig();
 
-		mqFactory1 = new ActiveMQFactory(LOCAL_MQ, activeMqConfig);
-		observableCacheFactory1 = new MessageQueueObservableCacheFactory(mqFactory1, mqConfiguration, spiedMacheFactory, uuidUtils);
+		mqFactory1 = new ActiveMQFactory<>(LOCAL_MQ, activeMqConfig);
+		observableCacheFactory1 = new MessageQueueObservableCacheFactory<>(mqFactory1, mqConfiguration, spiedMacheFactory, uuidUtils);
 
 		unspiedCache1 = macheFactory.create(cacheLoader);
 		spiedCache1 = spy(unspiedCache1);
 		when(spiedMacheFactory.create(cacheLoader)).thenReturn(spiedCache1);
 
-		mqFactory2 = new ActiveMQFactory(LOCAL_MQ, activeMqConfig);
-		observableCacheFactory2 = new MessageQueueObservableCacheFactory(mqFactory2, mqConfiguration, macheFactory, uuidUtils);
+		mqFactory2 = new ActiveMQFactory<>(LOCAL_MQ, activeMqConfig);
+		observableCacheFactory2 = new MessageQueueObservableCacheFactory<>(mqFactory2, mqConfiguration, macheFactory, uuidUtils);
 	}
 
 	@After
@@ -109,10 +109,10 @@ public class MessageQueueObservableCacheFactoryIntegrationTest {
 	@Test
 	public void shouldProperlyPropagateValues() throws ExecutionException, InterruptedException, JMSException {
 		MacheLoader<String, TestEntity2, String> cacheLoader = new InMemoryCacheLoader<>("loaderForTestEntity2");
-		MQFactory mqFactory1 = new ActiveMQFactory(LOCAL_MQ, activeMqConfig);
-		ObservableCacheFactory observableCacheFactory1 = new MessageQueueObservableCacheFactory(mqFactory1, mqConfiguration, new MacheFactory(), new UUIDUtils());
-		MQFactory mqFactory2 = new ActiveMQFactory(LOCAL_MQ, activeMqConfig);
-		ObservableCacheFactory observableCacheFactory2 = new MessageQueueObservableCacheFactory(mqFactory2, mqConfiguration, new MacheFactory(), new UUIDUtils());
+		MQFactory<String> mqFactory1 = new ActiveMQFactory<>(LOCAL_MQ, activeMqConfig);
+		ObservableCacheFactory<String, TestEntity2, String> observableCacheFactory1 = new MessageQueueObservableCacheFactory<>(mqFactory1, mqConfiguration, new MacheFactory<>(), new UUIDUtils());
+		MQFactory<String> mqFactory2 = new ActiveMQFactory<>(LOCAL_MQ, activeMqConfig);
+		ObservableCacheFactory<String, TestEntity2, String> observableCacheFactory2 = new MessageQueueObservableCacheFactory<>(mqFactory2, mqConfiguration, new MacheFactory<>(), new UUIDUtils());
 
 		Mache<String, TestEntity2> cache1 = observableCacheFactory1.createCache(cacheLoader);
 		Mache<String, TestEntity2> cache2 = observableCacheFactory2.createCache(cacheLoader);

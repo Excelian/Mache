@@ -24,7 +24,7 @@ public class KafkaEventingTest extends TestEventingBase {
     @SuppressWarnings("rawtypes")
 	@Override
     protected MQFactory buildMQFactory() throws JMSException, IOException {
-        return new KafkaMQFactory(new NoRunningKafkaForTests().HostName(), new DefaultKafkaMqConfig());
+        return new KafkaMQFactory(new NoRunningKafkaForTests().getHost(), new DefaultKafkaMqConfig());
     }
 }
 

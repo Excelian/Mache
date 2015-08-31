@@ -18,15 +18,15 @@ public abstract class AbstractMessagingProvisioner implements MessagingProvision
 
     @Override
     public <K, V> Mache<K, V> wireInMessaging(Mache<K, V> toWireIn, String topic, String messagingLocation) throws Exception {
-        final MQFactory mqFactory = getMqFactory(messagingLocation);
+        final MQFactory<K> mqFactory = getMqFactory(messagingLocation);
         final MQConfiguration mqConfiguration = () -> topic;
 
-        final MacheFactory macheFactory = new MacheFactory();
+        final MacheFactory<K, V, ?> macheFactory = new MacheFactory<>();
 
-        final MessageQueueObservableCacheFactory cacheFactory = new MessageQueueObservableCacheFactory(
+        final MessageQueueObservableCacheFactory<K, V, ?> cacheFactory = new MessageQueueObservableCacheFactory<>(
             mqFactory, mqConfiguration, macheFactory, new UUIDUtils());
         return cacheFactory.createCache(toWireIn);
     }
 
-    public abstract MQFactory getMqFactory(String messagingLocation) throws IOException, JMSException;
+    public abstract <K> MQFactory<K> getMqFactory(String messagingLocation) throws IOException, JMSException;
 }

@@ -1,22 +1,24 @@
 package com.excelian.mache.events.integration;
 
-import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
 import com.google.gson.Gson;
+
+import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
+
+import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
+
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.JMSException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import javax.jms.JMSException;
 
-public class RabbitMQEventConsumer extends BaseCoordinationEntryEventConsumer {
+public class RabbitMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RabbitMQEventConsumer.class);
     private final Channel channel;
@@ -24,7 +26,10 @@ public class RabbitMQEventConsumer extends BaseCoordinationEntryEventConsumer {
     private final String queueName;
     String consumerTag = "";
 
-    public RabbitMQEventConsumer(final Channel channel, String producerTypeName, RabbitMqConfig rabbitMqConfig) throws JMSException, IOException {
+    public RabbitMQEventConsumer(final Channel channel,
+                                 String producerTypeName,
+                                 RabbitMqConfig rabbitMqConfig)
+        throws JMSException, IOException {
         super(producerTypeName);
         this.channel = channel;
         this.rabbitMqConfig = rabbitMqConfig;
@@ -59,10 +64,12 @@ public class RabbitMQEventConsumer extends BaseCoordinationEntryEventConsumer {
                     throws IOException {
                 long deliveryTag = envelope.getDeliveryTag();
 
-                LOG.info("[RabbitMQEventConsumer {}] Received Message: {}", Thread.currentThread().getId(), new String(body));
+                LOG.info("[RabbitMQEventConsumer {}] Received Message: {}",
+                    Thread.currentThread().getId(), new String(body));
 
                 Gson gson = new Gson();
-                final CoordinationEntryEvent<?> event = gson.fromJson(new String(body), CoordinationEntryEvent.class);
+                @SuppressWarnings("unchecked")
+                final CoordinationEntryEvent<K> event = gson.fromJson(new String(body), CoordinationEntryEvent.class);
                 routeEventToListeners(eventMap, event);
 
                 channel.basicAck(deliveryTag, false);

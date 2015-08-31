@@ -47,6 +47,16 @@ task pluginSupportJar(type: Zip) {
     exclude "mache*.*"
 }
 
+task pluginSupportJar2(type: Zip) {
+    /*
+    Builds the jar to be used for running testing console app
+    */
+    baseName = project.name + '-mache-console-test-mongo'
+    classifier = 'src'
+    from configurations.runtime.allArtifacts.files
+    from configurations.runtime
+}
+
 task pluginJar(type: Jar, dependsOn: compileJava) {
     /*
      Builds the jar to be copied to JMETER/lib/ext folder
@@ -93,6 +103,7 @@ task pluginJar(type: Jar, dependsOn: compileJava) {
 
 assemble.dependsOn pluginJar
 assemble.dependsOn pluginSupportJar
+assemble.dependsOn pluginSupportJar2
 
 compileJava {
     doLast {
@@ -100,6 +111,7 @@ compileJava {
         println "Building JMeter JARs..."
         pluginJar.execute()
         pluginSupportJar.execute()
+        pluginSupportJar2.execute()
     }
 }
 

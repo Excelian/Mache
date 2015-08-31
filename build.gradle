@@ -25,7 +25,8 @@ subprojects {
 
     checkstyle {
         toolVersion = 6.7
-        configFile = new File(rootDir, "/config/checkstyle/checkstyle.xml")
+        configFile = project(':').file('config/checkstyle/checkstyle.xml')
+        configProperties = [ "suppressionFile" : project(':').file('config/checkstyle/suppressions.xml')]
     }
 
     test {
