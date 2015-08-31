@@ -1,8 +1,7 @@
 package com.excelian.mache.jmeter.cassandra;
 
 import com.datastax.driver.core.Cluster;
-import com.excelian.mache.cassandra.CassandraCacheLoader;
-import com.excelian.mache.cassandra.DefaultCassandraConfig;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 import org.apache.jmeter.config.Arguments;
@@ -11,9 +10,12 @@ import org.apache.jmeter.samplers.SampleResult;
 
 import java.util.Map;
 
+import static com.excelian.mache.builder.MacheBuilder.mache;
+import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+
 public class WriteToCassandra extends MacheAbstractJavaSamplerClient {
 
-    private CassandraCacheLoader<String, CassandraTestEntity> db;
+    private Mache<String, CassandraTestEntity> mache;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -22,13 +24,20 @@ public class WriteToCassandra extends MacheAbstractJavaSamplerClient {
         String keySpace = mapParams.get("keyspace.name");
 
         try {
-            final DefaultCassandraConfig config = new DefaultCassandraConfig();
-            final Cluster cluster = CassandraCacheLoader.connect(
-                mapParams.get("server.ip.address"),
-                mapParams.get("cluster.name"),
-                9042, config);
-            db = new CassandraCacheLoader<>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace, config);
-            db.create();
+            mache = mache(String.class, CassandraTestEntity.class)
+                    .backedBy(cassandra()
+                        .withCluster(Cluster.builder()
+                            .addContactPoint(mapParams.get("server.ip.address"))
+                            .withClusterName(mapParams.get("cluster.name"))
+                            .withPort(9042)
+                            .build())
+                        .withKeyspace(keySpace)
+                        .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
+                        .build())
+                    .withNoMessaging()
+                    .macheUp();
+
+            mache.getCacheLoader().create();
         } catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);
         }
@@ -36,7 +45,7 @@ public class WriteToCassandra extends MacheAbstractJavaSamplerClient {
 
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        if (db != null) db.close();
+        if (mache != null) mache.close();
     }
 
     @Override
@@ -47,7 +56,7 @@ public class WriteToCassandra extends MacheAbstractJavaSamplerClient {
         result.sampleStart();
         try {
             CassandraTestEntity t1 = new CassandraTestEntity(mapParams.get("entity.key"), mapParams.get("entity.value"));
-            db.put(t1.pkString, t1);
+            mache.put(t1.pkString, t1);
             result.setResponseMessage("Created " + t1.pkString);
             success = true;
         } catch (Exception e) {

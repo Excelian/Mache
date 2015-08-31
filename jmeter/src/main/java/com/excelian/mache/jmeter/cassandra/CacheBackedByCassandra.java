@@ -1,20 +1,12 @@
 package com.excelian.mache.jmeter.cassandra;
 
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
-import com.excelian.mache.cassandra.CassandraCacheLoader;
-import com.excelian.mache.cassandra.CassandraConfig;
-import com.excelian.mache.cassandra.DefaultCassandraConfig;
 import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.MacheFactory;
-import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
-import com.excelian.mache.events.integration.ActiveMQFactory;
-import com.excelian.mache.events.integration.DefaultActiveMqConfig;
+import com.excelian.mache.events.integration.builder.ActiveMQMessagingProvisioner;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
-import com.excelian.mache.observable.MessageQueueObservableCacheFactory;
-import com.excelian.mache.observable.utils.UUIDUtils;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
@@ -22,8 +14,10 @@ import org.apache.jmeter.samplers.SampleResult;
 import java.io.IOException;
 import java.util.Map;
 
+import static com.excelian.mache.builder.MacheBuilder.mache;
+import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+
 public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
-    MQFactory<String> mqFactory;
     Mache<String, CassandraTestEntity> cache;
 
     @Override
@@ -36,18 +30,26 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
         MQConfiguration mqConfiguration = () -> "testTopic";
 
         try {
-            mqFactory = new ActiveMQFactory<>(mapParams.get("activemq.connection"), new DefaultActiveMqConfig());
+            cache = mache(String.class, CassandraTestEntity.class)
+                    .backedBy(cassandra()
+                            .withCluster(Cluster.builder()
+                                    .withClusterName(mapParams.get("cluster.name"))
+                                    .addContactPoint(mapParams.get("server.ip.address"))
+                                    .withPort(9042)
+                                    .build())
+                            .withKeyspace(keySpace)
+                            .build())
+                    .withMessaging(ActiveMQMessagingProvisioner.activemq()
+                            .withTopic("testTopic")
+                            .withConnectionFactory(new ActiveMQConnectionFactory(mapParams.get("activemq.connection")))
+                            .build())
+                    .macheUp();
 
-            final CassandraConfig config = new DefaultCassandraConfig();
-            Cluster cluster = CassandraCacheLoader.connect(mapParams.get("server.ip.address"), mapParams.get("cluster.name"), 9042, config);
-            CassandraCacheLoader<String, CassandraTestEntity> db = new CassandraCacheLoader<>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace, config);
-            db.create();//this is to force the connection to occur within our setup
-
-            MessageQueueObservableCacheFactory<String, CassandraTestEntity, Session> cacheFactory = new MessageQueueObservableCacheFactory<>(mqFactory, mqConfiguration, new MacheFactory(), new UUIDUtils());
-            cache = cacheFactory.createCache(db);
+            cache.getCacheLoader().create();//this is to force the connection to occur within our setup
 
             CassandraTestEntity entity = new CassandraTestEntity("dummy", "warmup");
             cache.put(entity.pkString, entity);
+
         } catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);
         }
@@ -57,13 +59,6 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
     public void teardownTest(JavaSamplerContext context) {
         if (cache != null) {
             cache.close();
-        }
-        if (mqFactory != null) {
-            try {
-                mqFactory.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 

@@ -1,4 +1,4 @@
-include 'mache-builder'
+include 'mache-example'
 include 'mache-core'
 include 'mache-cassandra'
 include 'mache-mongo'

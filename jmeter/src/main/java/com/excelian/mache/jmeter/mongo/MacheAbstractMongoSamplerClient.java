@@ -1,33 +1,26 @@
 package com.excelian.mache.jmeter.mongo;
 
-import com.excelian.mache.core.MacheFactory;
+import com.excelian.mache.builder.MacheBuilder;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.events.MQConfiguration;
-import com.excelian.mache.events.integration.ActiveMQFactory;
-import com.excelian.mache.events.integration.DefaultActiveMqConfig;
+import com.excelian.mache.events.integration.builder.ActiveMQMessagingProvisioner;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
-import com.excelian.mache.mongo.MongoDBCacheLoader;
-import com.excelian.mache.observable.MessageQueueObservableCacheFactory;
-import com.excelian.mache.observable.ObservableCacheFactory;
-import com.excelian.mache.observable.utils.UUIDUtils;
-import com.mongodb.Mongo;
+import com.excelian.mache.mongo.builder.MongoDBProvisioner;
 import com.mongodb.ServerAddress;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 
-import javax.jms.JMSException;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
+
+import static com.excelian.mache.builder.MacheBuilder.mache;
+import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 
 @SuppressWarnings("serial")
 public abstract class MacheAbstractMongoSamplerClient extends
-    MacheAbstractJavaSamplerClient {
+        MacheAbstractJavaSamplerClient {
 
-    protected ActiveMQFactory<String> mqFactory1 = null;
     protected Mache<String, MongoTestEntity> cache1 = null;
-
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -49,8 +42,9 @@ public abstract class MacheAbstractMongoSamplerClient extends
 
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        if (cache1 != null) cache1.close();
-        if (mqFactory1 != null) mqFactory1.close();
+        if (cache1 != null) {
+            cache1.close();
+        }
     }
 
     @Override
@@ -64,27 +58,19 @@ public abstract class MacheAbstractMongoSamplerClient extends
         return defaultParameters;
     }
 
-    protected MQConfiguration getMQConfiguration() {
-        return new MQConfiguration() {
-            @Override
-            public String getTopicName() {
-                return "testTopic";
-            }
-        };
-    }
-
     protected void createCache(Map<String, String> mapParams)
-            throws JMSException {
-        mqFactory1 = new ActiveMQFactory<>(mapParams.get("activemq.connection"), new DefaultActiveMqConfig());
-        ObservableCacheFactory<String, MongoTestEntity, Mongo> cacheFactory1 = new MessageQueueObservableCacheFactory<>(mqFactory1,
-            getMQConfiguration(), new MacheFactory<>(), new UUIDUtils());
-        cache1 = cacheFactory1
-                .createCache(new MongoDBCacheLoader<>(
-                        MongoTestEntity.class,
-                        new CopyOnWriteArrayList<>(
-                                Arrays.asList(new ServerAddress(mapParams
-                                        .get("mongo.server.ip.address"), 27017))),
-                        SchemaOptions.CREATEANDDROPSCHEMA, mapParams.get("keyspace.name")));
+            throws Exception {
+        cache1 = mache(String.class, MongoTestEntity.class)
+                .backedBy(mongodb()
+                        .withSeeds(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017))
+                        .withDatabase(mapParams.get("keyspace.name"))
+                        .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
+                        .build())
+                .withMessaging(ActiveMQMessagingProvisioner.activemq()
+                        .withTopic("testTopic")
+                        .withConnectionFactory(new ActiveMQConnectionFactory(mapParams.get("activemq.connection")))
+                        .build())
+                .macheUp();
     }
 
     protected MongoTestEntity initMongoEntity(Map<String, String> mapParams) {
