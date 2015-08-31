@@ -216,6 +216,7 @@ public abstract class TestEventingBase {
         theSpiedEventCollector = spy(eventCollector);
         theConsumer.registerEventListener(theSpiedEventCollector);
         theConsumer.beginSubscriptionThread();
+        drainQueues(eventCollector, 120);
     }
 
     private void given_anEventProducer() {

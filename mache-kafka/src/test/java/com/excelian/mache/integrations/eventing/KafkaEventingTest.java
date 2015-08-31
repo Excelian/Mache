@@ -17,9 +17,9 @@ public class KafkaEventingTest extends TestEventingBase {
     @Rule
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
-	@Override
+    @Override
     protected MQFactory<String> buildMQFactory() throws JMSException, IOException {
-        return new KafkaMQFactory<>(builder().setZkHost(new NoRunningKafkaForTests().getHost()).build());
+        return new KafkaMQFactory<>(builder().withZkHost(new NoRunningKafkaForTests().getHost()).build());
     }
 }
 

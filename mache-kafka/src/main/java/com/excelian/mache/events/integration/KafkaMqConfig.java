@@ -84,58 +84,59 @@ public class KafkaMqConfig {
             return new KafkaMqConfigBuilder();
         }
 
-        public KafkaMqConfigBuilder setAutoCommitInterval(String autoCommitInterval) {
+        public KafkaMqConfigBuilder withAutoCommitInterval(String autoCommitInterval) {
             this.autoCommitInterval = autoCommitInterval;
             return this;
         }
 
-        public KafkaMqConfigBuilder setKafkaSerializerClass(String kafkaSerializerClass) {
+        public KafkaMqConfigBuilder withKafkaSerializerClass(String kafkaSerializerClass) {
             this.kafkaSerializerClass = kafkaSerializerClass;
             return this;
         }
 
-        public KafkaMqConfigBuilder setOffsetReset(String offsetReset) {
+        public KafkaMqConfigBuilder withOffsetReset(String offsetReset) {
             this.offsetReset = offsetReset;
             return this;
         }
 
-        public KafkaMqConfigBuilder setRequiredAckCount(String requiredAckCount) {
+        public KafkaMqConfigBuilder withRequiredAckCount(String requiredAckCount) {
             this.requiredAckCount = requiredAckCount;
             return this;
         }
 
-        public KafkaMqConfigBuilder setShutdownTimeoutSecs(int shutdownTimeoutSecs) {
+        public KafkaMqConfigBuilder withShutdownTimeoutSecs(int shutdownTimeoutSecs) {
             this.shutdownTimeoutSecs = shutdownTimeoutSecs;
             return this;
         }
 
-        public KafkaMqConfigBuilder setZkHost(String zkHost) {
+        public KafkaMqConfigBuilder withZkHost(String zkHost) {
             this.zkHost = zkHost;
             return this;
         }
 
-        public KafkaMqConfigBuilder setZkConsumerPort(String zkConsumerPort) {
+        public KafkaMqConfigBuilder withZkConsumerPort(String zkConsumerPort) {
             this.zkConsumerPort = zkConsumerPort;
             return this;
         }
 
-        public KafkaMqConfigBuilder setZkProducerPort(String zkProducerPort) {
+        public KafkaMqConfigBuilder withZkProducerPort(String zkProducerPort) {
             this.zkProducerPort = zkProducerPort;
             return this;
         }
 
-        public KafkaMqConfigBuilder setZkSessionTimeout(String zkSessionTimeout) {
+        public KafkaMqConfigBuilder withZkSessionTimeout(String zkSessionTimeout) {
             this.zkSessionTimeout = zkSessionTimeout;
             return this;
         }
 
-        public KafkaMqConfigBuilder setZkSyncTime(String zkSyncTime) {
+        public KafkaMqConfigBuilder withZkSyncTime(String zkSyncTime) {
             this.zkSyncTime = zkSyncTime;
             return this;
         }
 
         public KafkaMqConfig build() {
-            return new KafkaMqConfig(autoCommitInterval, kafkaSerializerClass, offsetReset, requiredAckCount, shutdownTimeoutSecs, zkHost, zkConsumerPort, zkProducerPort, zkSessionTimeout, zkSyncTime);
+            return new KafkaMqConfig(autoCommitInterval, kafkaSerializerClass, offsetReset, requiredAckCount,
+                    shutdownTimeoutSecs, zkHost, zkConsumerPort, zkProducerPort, zkSessionTimeout, zkSyncTime);
         }
     }
 }

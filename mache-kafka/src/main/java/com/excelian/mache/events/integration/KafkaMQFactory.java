@@ -45,12 +45,12 @@ public class KafkaMQFactory<K> implements MQFactory<K> {
 
     @Override
     public BaseCoordinationEntryEventProducer<K> getProducer(MQConfiguration config) {
-        return new KafkaEventProducer<K>(createProducerConfig(), config.getTopicName());
+        return new KafkaEventProducer<>(createProducerConfig(), config.getTopicName());
     }
 
     @Override
     public BaseCoordinationEntryEventConsumer<K> getConsumer(MQConfiguration config) throws IOException, JMSException {
-        return new KafkaEventConsumer<K>(createConsumerConfig(), config.getTopicName(), this.kafkaMqConfig);
+        return new KafkaEventConsumer<>(createConsumerConfig(), config.getTopicName(), this.kafkaMqConfig);
     }
 
     @Override

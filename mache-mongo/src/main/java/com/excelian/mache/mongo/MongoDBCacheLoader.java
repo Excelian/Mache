@@ -72,7 +72,7 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, MongoCli
     public void remove(K key) {
         String idField = ops().getConverter().getMappingContext()
                 .getPersistentEntity(valueType).getIdProperty().getFieldName();
-        ops().remove(new Query(Criteria.where(idField).is(key)));
+        ops().remove(new Query(Criteria.where(idField).is(key)), valueType);
     }
 
     @Override
