@@ -18,12 +18,8 @@ public class RabbitMQFactory<K> implements MQFactory<K> {
     private final Connection connection;
     private final RabbitMqConfig rabbitMqConfig;
 
-    public RabbitMQFactory(String connectionString, RabbitMqConfig rabbitMqConfig) throws JMSException, IOException {
+    public RabbitMQFactory(ConnectionFactory factory, RabbitMqConfig rabbitMqConfig) throws JMSException, IOException {
         this.rabbitMqConfig = rabbitMqConfig;
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setAutomaticRecoveryEnabled(true);
-        factory.setNetworkRecoveryInterval(rabbitMqConfig.getNetworkRecoveryIntervalMilliSeconds());
-        factory.setHost(connectionString);
         connection = factory.newConnection();
         channel = connection.createChannel();
         channel.exchangeDeclare(rabbitMqConfig.getExchangeName(), "direct", true);

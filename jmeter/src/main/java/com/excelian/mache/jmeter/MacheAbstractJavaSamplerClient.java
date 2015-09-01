@@ -27,7 +27,7 @@ public abstract class MacheAbstractJavaSamplerClient extends AbstractJavaSampler
     }
 
     protected SampleResult setupResultForError(SampleResult result, Exception e) {
-        LOG.error("Error occured during jmeter run.", e);
+        LOG.error("Error occurred during jmeter run.", e);
 
         result.sampleEnd();
         result.setSuccessful(false);

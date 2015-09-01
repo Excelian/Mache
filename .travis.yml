@@ -6,7 +6,7 @@ branches:
     - master
     - development
     - jmeter-build-steps
-    - 11-add-couchbase-cache-loader-class-implementation
+    - create-provider-specific-builders
 
 services:
   - rabbitmq
@@ -26,3 +26,4 @@ notifications:
 cache:
   directories:
     - ~/.gradle
+    - ~/binaries

@@ -5,13 +5,14 @@ import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.cluster.ClusterManager;
-import com.couchbase.client.java.cluster.DefaultBucketSettings;
+import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.SchemaOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
 
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -26,20 +27,39 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
 
     private static final Logger LOG = LoggerFactory.getLogger(CouchbaseCacheLoader.class);
 
+    private Class<K> keyType;
+    private Class<V> valueType;
     private Cluster cluster;
     private ClusterManager manager;
-    private final CouchbaseConfig config;
     private CouchbaseTemplate template;
+    private BucketSettings bucketSettings;
+    private CouchbaseEnvironment couchbaseEnvironment;
+    private List<String> nodes;
+    private String adminUser;
+    private String adminPassword;
+    private SchemaOptions schemaOptions;
 
     /**
-     *
-     * @param config {@link CouchbaseConfig} representing the Couchbase server and bucket config.
+     * @param keyType The class type of the cache key.
+     * @param valueType The class type of the cache value.
+     * @param bucketSettings Bucket that will hold cached objects.
+     * @param couchbaseEnvironment Cluster environment properties.
+     * @param nodes List of nodes to connect to.
+     * @param adminUser Administration user for Couchbase cluster.
+     * @param adminPassword Password for Administration user for Couchbase cluster.
+     * @param schemaOptions Determine whether to create/drop bucket.
      */
-    public CouchbaseCacheLoader(CouchbaseConfig config) {
-        if (config == null) {
-            throw new IllegalArgumentException("Couchbase config must be provided.");
-        }
-        this.config = config;
+    public CouchbaseCacheLoader(Class<K> keyType, Class<V> valueType, BucketSettings bucketSettings,
+                                CouchbaseEnvironment couchbaseEnvironment, List<String> nodes, String adminUser,
+                                String adminPassword, SchemaOptions schemaOptions) {
+        this.keyType = keyType;
+        this.valueType = valueType;
+        this.bucketSettings = bucketSettings;
+        this.couchbaseEnvironment = couchbaseEnvironment;
+        this.nodes = nodes;
+        this.adminUser = adminUser;
+        this.adminPassword = adminPassword;
+        this.schemaOptions = schemaOptions;
     }
 
     @Override
@@ -47,11 +67,11 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
         if (cluster == null) {
             synchronized (this) {
                 if (cluster == null) {
-                    LOG.info("Attempting to connect to Couchbase cluster hosted at {}", config.getServerAddresses());
-                    cluster = CouchbaseCluster.create(config.getCouchbaseEnvironment(), config.getServerAddresses());
-                    manager = cluster.clusterManager(config.getAdminUser(), config.getAdminPassword());
+                    LOG.info("Attempting to connect to Couchbase cluster hosted at {}", nodes);
+                    cluster = CouchbaseCluster.create(couchbaseEnvironment, nodes);
+                    manager = cluster.clusterManager(adminUser, adminPassword);
                     dropBucketIfRequired();
-                    Bucket bucket = createBucket();
+                    Bucket bucket = createBucketIfRequired();
                     template = new CouchbaseTemplate(manager.info(), bucket);
                     LOG.info("Using Couchbase bucket: {}", bucket);
                 }
@@ -62,7 +82,7 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
     @Override
     public V load(K key) throws Exception {
         checkNotNull(key);
-        return template.findById(key.toString(), config.<V>getCacheType());
+        return template.findById(key.toString(), valueType);
     }
 
     @Override
@@ -81,7 +101,7 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
             synchronized (this) {
                 if (cluster != null) {
                     dropBucketIfRequired();
-                    LOG.info("Disconnecting from Couchbase cluster {}", config.getServerAddresses());
+                    LOG.info("Disconnecting from Couchbase cluster {}", nodes);
                     cluster.disconnect();
                     cluster = null;
                 }
@@ -96,31 +116,39 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
 
     @Override
     public String getName() {
-        return config.getCacheType().getSimpleName();
+        return getClass().getSimpleName();
     }
 
     private void dropBucketIfRequired() {
-        if (config.getSchemaOptions().shouldDropSchema() && manager.hasBucket(config.getBucketName())) {
-            LOG.debug("Removing bucket {}", config.getBucketName());
-            manager.removeBucket(config.getBucketName());
+        if (schemaOptions.shouldDropSchema() && manager.hasBucket(bucketSettings.name())) {
+            LOG.info("Removing bucket {}", bucketSettings.name());
+            manager.removeBucket(bucketSettings.name());
         }
     }
 
-    private Bucket createBucket() {
-        if (config.getSchemaOptions().shouldCreateSchema() && !manager.hasBucket(config.getBucketName())) {
-            LOG.debug("Creating bucket {}", config.getBucketName());
-            BucketSettings settings = DefaultBucketSettings.builder()
-                    .name(config.getBucketName())
-                    .password(config.getBucketPassword())
-                    .enableFlush(config.isFlushEnabled())
-                    .quota(config.getBucketSize())
-                    .replicas(config.getNumReplicas())
-                    .build();
-
-            manager.insertBucket(settings);
+    private Bucket createBucketIfRequired() {
+        if (schemaOptions.shouldCreateSchema() && !manager.hasBucket(bucketSettings.name())) {
+            LOG.info("Creating bucket {}", bucketSettings.name());
+            manager.insertBucket(bucketSettings);
         }
+        return cluster.openBucket(bucketSettings.name());
+    }
 
-        return cluster.openBucket(config.getBucketName());
+    @Override
+    public String toString() {
+        return "CouchbaseCacheLoader{"
+                + "cluster=" + cluster
+                + ", manager=" + manager
+                + ", template=" + template
+                + ", bucketSettings=" + bucketSettings
+                + ", couchbaseEnvironment=" + couchbaseEnvironment
+                + ", nodes=" + nodes
+                + ", adminUser='" + adminUser + '\''
+                + ", adminPassword='" + adminPassword + '\''
+                + ", schemaOptions=" + schemaOptions
+                + ", keyType=" + keyType
+                + ", valueType=" + valueType
+                + '}';
     }
 }
 

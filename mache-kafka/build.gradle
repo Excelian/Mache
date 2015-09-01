@@ -5,6 +5,7 @@ dependencies {
     exclude module: 'slf4j-log4j12'
     exclude module: 'log4j'
   }
+  compile 'org.slf4j:log4j-over-slf4j:1.7.12'
   testCompile project(path: ':mache-observable', configuration: 'tests')
   testCompile project(path: ':mache-core', configuration: 'tests')
 }

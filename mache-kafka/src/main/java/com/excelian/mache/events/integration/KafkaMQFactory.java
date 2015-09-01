@@ -10,49 +10,47 @@ import java.util.Properties;
 import javax.jms.JMSException;
 
 public class KafkaMQFactory<K> implements MQFactory<K> {
-    private final String connectionString;
-    private final KafkaMqConfig config;
+    private final KafkaMqConfig kafkaMqConfig;
 
-    public KafkaMQFactory(String connectionString, KafkaMqConfig kafkaMqConfig) throws JMSException, IOException {
-        this.connectionString = connectionString;
-        this.config = kafkaMqConfig;
+    public KafkaMQFactory(KafkaMqConfig kafkaMqConfig) throws JMSException, IOException {
+        this.kafkaMqConfig = kafkaMqConfig;
     }
 
-    Properties createProducerConfig(String zooKeeper) {
-        String zkPort = config.getZookeeperProducerPort();
-        String zkConnection = config.getZookeeperConnectionString(zooKeeper, zkPort);
+    Properties createProducerConfig() {
+        String zkPort = kafkaMqConfig.getZookeeperProducerPort();
+        String zkConnection = kafkaMqConfig.getZookeeperConnectionString(zkPort);
 
-        Properties producerProperies = new Properties();
-        producerProperies.put("metadata.broker.list", zkConnection);
-        producerProperies.put("serializer.class", config.getSerializerClassName());
-        producerProperies.put("request.required.acks", config.getRequiredAcks());
+        Properties producerProperties = new Properties();
+        producerProperties.put("metadata.broker.list", zkConnection);
+        producerProperties.put("serializer.class", kafkaMqConfig.getSerializerClassName());
+        producerProperties.put("request.required.acks", kafkaMqConfig.getRequiredAcks());
 
-        return producerProperies;
+        return producerProperties;
     }
 
-    Properties createConsumerConfig(String zooKeeper) {
-        String zkPort = config.getZookeeperConsumerPort();
-        String zkConnection = config.getZookeeperConnectionString(zooKeeper, zkPort);
+    Properties createConsumerConfig() {
+        String zkPort = kafkaMqConfig.getZookeeperConsumerPort();
+        String zkConnection = kafkaMqConfig.getZookeeperConnectionString(zkPort);
 
         Properties consumerProperties = new Properties();
         consumerProperties.put("metadata.broker.list", zkConnection);
         consumerProperties.put("zookeeper.connect", zkConnection);
-        consumerProperties.put("zookeeper.session.timeout.ms", config.getZookeeperSessionTimeoutMilliseconds());
-        consumerProperties.put("zookeeper.sync.time.ms", config.getZookeeperSynchronisationTimeMilliseconds());
-        consumerProperties.put("auto.commit.interval.ms", config.getAutoCommitIntervalMilliseconds());
-        consumerProperties.put("auto.offset.reset", config.getOffsetReset());//seeks to end
+        consumerProperties.put("zookeeper.session.timeout.ms", kafkaMqConfig.getZookeeperSessionTimeoutMilliseconds());
+        consumerProperties.put("zookeeper.sync.time.ms", kafkaMqConfig.getZookeeperSynchronisationTimeMilliseconds());
+        consumerProperties.put("auto.commit.interval.ms", kafkaMqConfig.getAutoCommitIntervalMilliseconds());
+        consumerProperties.put("auto.offset.reset", kafkaMqConfig.getOffsetReset());//seeks to end
 
         return consumerProperties;
     }
 
     @Override
     public BaseCoordinationEntryEventProducer<K> getProducer(MQConfiguration config) {
-        return new KafkaEventProducer<K>(createProducerConfig(connectionString), config.getTopicName());
+        return new KafkaEventProducer<>(createProducerConfig(), config.getTopicName());
     }
 
     @Override
     public BaseCoordinationEntryEventConsumer<K> getConsumer(MQConfiguration config) throws IOException, JMSException {
-        return new KafkaEventConsumer<K>(createConsumerConfig(connectionString), config.getTopicName(), this.config);
+        return new KafkaEventConsumer<>(createConsumerConfig(), config.getTopicName(), this.kafkaMqConfig);
     }
 
     @Override

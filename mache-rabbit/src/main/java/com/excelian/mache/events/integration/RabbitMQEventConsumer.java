@@ -47,8 +47,8 @@ public class RabbitMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
     private Map<String, Object> getEvictQueueArguments() {
         Map<String, Object> queueArgs = new HashMap<>();
 
-        queueArgs.put("x-message-ttl", rabbitMqConfig.getMessageTTLMilliSeconds());
-        queueArgs.put("x-expires", rabbitMqConfig.getMessageExpiryMilliSeconds());
+        queueArgs.put("x-message-ttl", rabbitMqConfig.getMessageTtl());
+        queueArgs.put("x-expires", rabbitMqConfig.getMessageExpiry());
         queueArgs.put("x-max-length", rabbitMqConfig.getMaxLength());
         return queueArgs;
     }

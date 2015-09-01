@@ -1,0 +1,39 @@
+repositories {
+    maven {
+        url 'http://files.couchbase.com/maven2'
+    }
+}
+
+dependencies {
+    compile project(':mache-core')
+    compile project(':mache-activemq')
+    compile project(':mache-rabbit')
+    compile project(':mache-mongo')
+    compile project(':mache-cassandra')
+    compile project(':mache-observable')
+    compile project(':mache-core')
+    compile project(':mache-couchbase')
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs= ['src/main/java', 'src/examples/java']
+        }
+    }
+}
+
+test {
+    systemProperties 'property': 'value'
+}
+
+task getClient(dependsOn: 'classes', type: JavaExec) {
+    main = 'com.excelian.mache.examples.GettingCacheClient'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task putClient(dependsOn: 'classes', type: JavaExec) {
+    main = 'com.excelian.mache.examples.PuttingCacheClient'
+    classpath = sourceSets.main.runtimeClasspath
+}
+

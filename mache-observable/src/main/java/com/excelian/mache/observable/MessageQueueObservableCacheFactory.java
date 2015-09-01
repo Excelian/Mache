@@ -1,8 +1,6 @@
 package com.excelian.mache.observable;
 
 import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.MacheFactory;
-import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
@@ -12,33 +10,32 @@ import com.excelian.mache.observable.utils.UUIDUtils;
 
 import javax.cache.event.CacheEntryListenerException;
 
-//TODO create artifact to put this class into - it probably will be final artifact depending on anything else
-public class MessageQueueObservableCacheFactory<K, V, D> implements ObservableCacheFactory<K, V, D> {
+/**
+ * Factory to create a {@link ObservableMap} around a {@link Mache} object.
+ * @param <K> the cache key type.
+ * @param <V> the cache value type.
+ */
+public class MessageQueueObservableCacheFactory<K, V> implements ObservableCacheFactory<K, V> {
     private final MQFactory<K> communicationFactory;
     private final MQConfiguration configuration;
-    private final MacheFactory<K, V, D> macheFactory;
     private final UUIDUtils uuidUtils;
 
+    /**
+     * @param communicationFactory The {@link MQFactory} for the underlying messaging framework.
+     * @param configuration The {@link MQConfiguration} for the messaging queue.
+     * @param uuidUtils A UUID Generator.
+     */
     public MessageQueueObservableCacheFactory(final MQFactory<K> communicationFactory,
                                               final MQConfiguration configuration,
-                                              final MacheFactory<K, V, D> macheFactory,
                                               final UUIDUtils uuidUtils) {
         this.communicationFactory = communicationFactory;
         this.configuration = configuration;
-        this.macheFactory = macheFactory;
         this.uuidUtils = uuidUtils;
     }
 
     @Override
-    public Mache<K, V> createCache(final MacheLoader<K, V, D> cacheLoader) {
-        return createCache(macheFactory.create(cacheLoader));
-    }
-
-
-    // TODO introduce cacheLoaderFactory after moved to proper artifact
-    @Override
     public Mache<K, V> createCache(final Mache<K, V> underlyingCache) {
-        final ObservableMap<K, V> observable = new ObservableMap<>(underlyingCache, uuidUtils);
+        final ObservableMap<K, V> observable = new ObservableMap<>(communicationFactory, underlyingCache, uuidUtils);
 
         observable.registerListener(communicationFactory.getProducer(configuration));
 
@@ -71,8 +68,8 @@ public class MessageQueueObservableCacheFactory<K, V, D> implements ObservableCa
 
                 public void handle(Iterable<CoordinationEntryEvent<K>> events) {
                     for (final CoordinationEntryEvent<K> e : events) {
-                        if (e.getEntityName().equals(underlyingCache.getName()) &&
-                            !e.getCacheId().equals(underlyingCache.getId())) {
+                        if (e.getEntityName().equals(underlyingCache.getName())
+                                && !e.getCacheId().equals(underlyingCache.getId())) {
                             K key = e.getKey();
                             underlyingCache.invalidate(key);//if we called remove it would go to the DB too.
                         }
