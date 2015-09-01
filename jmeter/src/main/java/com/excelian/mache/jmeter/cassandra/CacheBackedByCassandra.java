@@ -1,6 +1,7 @@
 package com.excelian.mache.jmeter.cassandra;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Session;
 import com.excelian.mache.cassandra.CassandraCacheLoader;
 import com.excelian.mache.cassandra.CassandraConfig;
 import com.excelian.mache.cassandra.DefaultCassandraConfig;
@@ -22,7 +23,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
-    MQFactory mqFactory;
+    MQFactory<String> mqFactory;
     Mache<String, CassandraTestEntity> cache;
 
     @Override
@@ -35,14 +36,14 @@ public class CacheBackedByCassandra extends MacheAbstractJavaSamplerClient {
         MQConfiguration mqConfiguration = () -> "testTopic";
 
         try {
-            mqFactory = new ActiveMQFactory(mapParams.get("activemq.connection"), new DefaultActiveMqConfig());
+            mqFactory = new ActiveMQFactory<>(mapParams.get("activemq.connection"), new DefaultActiveMqConfig());
 
             final CassandraConfig config = new DefaultCassandraConfig();
             Cluster cluster = CassandraCacheLoader.connect(mapParams.get("server.ip.address"), mapParams.get("cluster.name"), 9042, config);
             CassandraCacheLoader<String, CassandraTestEntity> db = new CassandraCacheLoader<>(CassandraTestEntity.class, cluster, SchemaOptions.CREATESCHEMAIFNEEDED, keySpace, config);
             db.create();//this is to force the connection to occur within our setup
 
-            MessageQueueObservableCacheFactory cacheFactory = new MessageQueueObservableCacheFactory(mqFactory, mqConfiguration, new MacheFactory(), new UUIDUtils());
+            MessageQueueObservableCacheFactory<String, CassandraTestEntity, Session> cacheFactory = new MessageQueueObservableCacheFactory<>(mqFactory, mqConfiguration, new MacheFactory(), new UUIDUtils());
             cache = cacheFactory.createCache(db);
 
             CassandraTestEntity entity = new CassandraTestEntity("dummy", "warmup");

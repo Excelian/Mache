@@ -1,8 +1,11 @@
 package com.excelian.mache.events.integration;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+import com.google.gson.Gson;
+
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
-import com.google.gson.Gson;
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.ConsumerIterator;
 import kafka.consumer.KafkaStream;
@@ -11,8 +14,8 @@ import kafka.message.MessageAndMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
 import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
+public class KafkaEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K> {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaEventConsumer.class);
     private final KafkaMqConfig config;
@@ -53,7 +56,8 @@ public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
 
         Map<String, Integer> topicCountMap = new HashMap<>();
         topicCountMap.put(TOPIC, 1);
-        Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCountMap);
+        Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap =
+            consumer.createMessageStreams(topicCountMap);
         final List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(TOPIC);
         final KafkaStream<byte[], byte[]> stream = streams.get(0);
 
@@ -62,7 +66,8 @@ public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
         task = executor.submit(new Runnable() {
             @Override
             public void run() {
-                LOG.info("[KafkaEventConsumer{}] Signed up for topic : {} stream - {}", Thread.currentThread().getId(), TOPIC, stream);
+                LOG.info("[KafkaEventConsumer{}] Signed up for topic : {} stream - {}",
+                    Thread.currentThread().getId(), TOPIC, stream);
 
                 ConsumerIterator<byte[], byte[]> iterator = stream.iterator();
                 taskStarted = true;
@@ -71,11 +76,13 @@ public class KafkaEventConsumer extends BaseCoordinationEntryEventConsumer {
 
                     if (next.message() != null) {
                         String message = new String(next.message());
-                        LOG.info("[KafkaEventConsumer{}] Received Message: {}", Thread.currentThread().getId(), message);
+                        LOG.info("[KafkaEventConsumer{}] Received Message: {}",
+                            Thread.currentThread().getId(), message);
 
                         Gson gson = new Gson();
-                        final CoordinationEntryEvent<?> event = gson.fromJson(message, CoordinationEntryEvent.class);
-                        routeEventToListeners(eventMap, event);
+                        @SuppressWarnings("unchecked")
+                        final CoordinationEntryEvent<K> event = gson.fromJson(message, CoordinationEntryEvent.class);
+                        routeEventToListeners(event);
                     }
                 }
             }

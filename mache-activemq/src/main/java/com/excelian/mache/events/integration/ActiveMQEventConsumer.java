@@ -1,9 +1,10 @@
 package com.excelian.mache.events.integration;
 
+import com.google.gson.Gson;
+
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,18 +19,18 @@ import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-public class ActiveMQEventConsumer extends BaseCoordinationEntryEventConsumer {
+public class ActiveMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K> {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQEventConsumer.class);
-    private final ActiveMqConfig config;
     private Session session;
     private MessageConsumer consumer;
 
     ExecutorService executor = Executors.newSingleThreadExecutor();
     private Future<?> task;
 
-    public ActiveMQEventConsumer(final Connection connection, final String producerTopicName, ActiveMqConfig config) throws JMSException {
+    public ActiveMQEventConsumer(final Connection connection,
+                                 final String producerTopicName,
+                                 ActiveMqConfig config) throws JMSException {
         super(producerTopicName);
-        this.config = config;
         session = connection.createSession(false, config.getAutoAcknowledge());
         Destination destination = session.createTopic(getTopicName());
         this.consumer = session.createConsumer(destination);
@@ -49,10 +50,11 @@ public class ActiveMQEventConsumer extends BaseCoordinationEntryEventConsumer {
                             LOG.info("[ActiveMQEventConsumer {}] Received Message: {}",
                                     Thread.currentThread().getId(), message.getText());
 
-                            final CoordinationEntryEvent<?> event = new Gson().fromJson(message.getText(),
-                                    CoordinationEntryEvent.class);
+                            @SuppressWarnings("unchecked")
+                            final CoordinationEntryEvent<K> event =
+                                new Gson().fromJson(message.getText(), CoordinationEntryEvent.class);
 
-                            routeEventToListeners(eventMap, event);
+                            routeEventToListeners(event);
                         }
                     } catch (JMSException e) {
                         LOG.error("[ActiveMQEventConsumer {}] eventConsumer - could not 'take' event.\\n{}",

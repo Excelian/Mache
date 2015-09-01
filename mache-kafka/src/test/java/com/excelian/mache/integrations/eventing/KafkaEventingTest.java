@@ -21,10 +21,9 @@ public class KafkaEventingTest extends TestEventingBase {
     @Rule
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
-    @SuppressWarnings("rawtypes")
 	@Override
-    protected MQFactory buildMQFactory() throws JMSException, IOException {
-        return new KafkaMQFactory(new NoRunningKafkaForTests().HostName(), new DefaultKafkaMqConfig());
+    protected MQFactory<String> buildMQFactory() throws JMSException, IOException {
+        return new KafkaMQFactory<>(new NoRunningKafkaForTests().getHost(), new DefaultKafkaMqConfig());
     }
 }
 
