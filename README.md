@@ -97,20 +97,21 @@ public static class TestEntity {
   is not reachable so you will still have a passing build when you clone the 
   project.
 
-## Interesting links
-[https://github.com/infinispan/infinispan/wiki/Near-Caching]
+
+# Get Involved!
+
+mailto:mache@excelian.com
+
+## Team board
+https://trello.com/b/DYSHTr8c/excelian-mache
+
+## Further Reading
+https://github.com/infinispan/infinispan/wiki/Near-Caching
  
 ## Acknowledgements:
 * Google Guava Cache for flexible caching implementation 
    https://code.google.com/p/guava-libraries/wiki/CachesExplained
 * Spring Data wrappers to map POJO's to each data platform 
    http://projects.spring.io/spring-data/
-* [com.codeaffine] for Junit conditional ignore
-
-# Get Involved!
-
-[mailto:mache@excelian.com]
-
-## Team board
-[https://trello.com/b/DYSHTr8c/excelian-mache]
-
+* http://www.codeaffine.com/2013/11/18/a-junit-rule-to-conditionally-ignore-tests/
+ for Junit conditional ignore
