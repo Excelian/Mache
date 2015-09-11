@@ -20,6 +20,7 @@ public class MongoWriteToDB extends MacheAbstractMongoSamplerClient {
 
     private static final long serialVersionUID = 3550175542777320608L;
     private MongoDBCacheLoader<String, MongoTestEntity> db;
+    private ShuffledSequence shuffledSequence = new ShuffledSequence();
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -50,14 +51,14 @@ public class MongoWriteToDB extends MacheAbstractMongoSamplerClient {
     public SampleResult runTest(JavaSamplerContext context) {
         final SampleResult result = new SampleResult();
         result.sampleStart();
-        writeOneThousandDocumentsWithNewData();
+        writeOneThousandDocumentsToDbWithNewData();
         result.sampleEnd();
         result.setSuccessful(true);
         return result;
     }
 
-    private void writeOneThousandDocumentsWithNewData() {
-        for (int i = 0; i < 1000; i++) {
+    private void writeOneThousandDocumentsToDbWithNewData() {
+        for (int i : shuffledSequence.upTo(1000)) {
             final String key = "document_" + i;
             final String value = key + "_" + System.currentTimeMillis();
             db.put(key, new MongoTestEntity(key, value));

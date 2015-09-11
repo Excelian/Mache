@@ -17,6 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class MongoReadFromDB extends MacheAbstractMongoSamplerClient {
 
+    private ShuffledSequence shuffledSequence = new ShuffledSequence();
 
     private static final long serialVersionUID = 3550175542777320608L;
     private MongoDBCacheLoader<String, MongoTestEntity> db;
@@ -50,14 +51,14 @@ public class MongoReadFromDB extends MacheAbstractMongoSamplerClient {
     public SampleResult runTest(JavaSamplerContext context) {
         final SampleResult result = new SampleResult();
         result.sampleStart();
-        readOneThousandDocuments();
+        readOneThousandDocumentsFromDb();
         result.sampleEnd();
         result.setSuccessful(true);
         return result;
     }
 
-    private void readOneThousandDocuments() {
-        for (int i = 0; i < 1000; i++) {
+    private void readOneThousandDocumentsFromDb() {
+        for (int i : shuffledSequence.upTo(1000)) {
             final String key = "document_" + i;
             db.load(key);
         }
