@@ -21,6 +21,7 @@ public class MongoWriteToCache extends MacheAbstractMongoSamplerClient {
         writeOneThousandDocumentsIntoCacheWithNewData();
         result.sampleEnd();
         result.setSuccessful(true);
+        result.setResponseOK();
         return result;
     }
 
