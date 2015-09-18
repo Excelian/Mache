@@ -2,19 +2,24 @@
 
 # Mache
 A NearSide NoSQL Cache with eventing and other features; built from a 'mash'-up 
-of open source technologies for multiple pluggable NoSQL backends.
+of open source technologies for multiple pluggable NoSQL backends and multiple 
+pluggable messaging platforms.
 
 ## Features:
-- Nearside caching for common NoSQL platforms using Google's Guava Cache. 
+- Nearside caching for common NoSQL platforms using Google's Guava Cache 
 - ORM Modelling for POJO's using Spring data
 - Event listener support 
-- Eventing and invalidation between various client-side caches (Kafka, Rabbit, 
-  ActiveMQ)
+- Eventing and invalidation between various client-side caches 
 
 ## Current Storage Layer Support
 - Cassandra 
 - Mongodb 
 - Couchbase
+
+## Message Queue Support
+- Kafka
+- Rabbit
+- ActiveMQ
 
 ## Roadmap
 - Continuous query caching; leveraging cache-events and implicit query support
@@ -91,7 +96,6 @@ public static class TestEntity {
 
 ## Building the code
 * The code is built using JDK 1.8 using Gradle 2+.
-* To run the unit tests, Rabbit MQ will need to be running
 * There are integration tests that exercise the various supported Big Data 
   stores, these are disabled if Excelian's integration test environment `BluePrint`
   is not reachable so you will still have a passing build when you clone the 
