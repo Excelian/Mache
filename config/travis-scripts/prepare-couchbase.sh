@@ -1,7 +1,17 @@
 #!/bin/bash
 
-wget http://packages.couchbase.com/releases/3.1.0/couchbase-server-enterprise_3.1.0-ubuntu12.04_amd64.deb
-dpkg-deb -x couchbase-server-enterprise_3.1.0-ubuntu12.04_amd64.deb $HOME
+CB_BINARY_URL="http://packages.couchbase.com/releases/3.1.0/couchbase-server-enterprise_3.1.0-ubuntu12.04_amd64.deb"
+
+if [ ! -d ${HOME}/binaries ] ; then
+  mkdir ~/binaries
+fi
+
+if [ ! -e $HOME/binaries/couchbase.deb ] ; then
+  wget ${CB_BINARY_URL} -O ${HOME}/binaries/couchbase.deb
+fi
+
+dpkg-deb -x $HOME/binaries/couchbase.deb $HOME
+
 cd $HOME/opt/couchbase
 ./bin/install/reloc.sh `pwd`
 ./bin/couchbase-server -- -noinput -detached

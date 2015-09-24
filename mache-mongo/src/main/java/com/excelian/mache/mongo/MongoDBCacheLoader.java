@@ -2,90 +2,82 @@ package com.excelian.mache.mongo;
 
 import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.SchemaOptions;
-import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
 
-public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
+public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, MongoClient> {
     private static final Logger LOG = LoggerFactory.getLogger(MongoDBCacheLoader.class);
-
-    private Mongo mongoClient;
-    private List<ServerAddress> hosts;
+    private final List<MongoCredential> credentials;
+    private final MongoClientOptions clientOptions;
+    private MongoClient mongoClient;
+    private Class<K> keyType;
+    private Class<V> valueType;
+    private List<ServerAddress> seeds;
     private SchemaOptions schemaOptions;
-    private String keySpace;
+    private CollectionOptions collectionOptions;
+    private String database;
 
-    private boolean isTableCreated = false;
-
-    private Class<V> clazz;
-
-    public MongoDBCacheLoader(Class<V> clazz, List<ServerAddress> hosts, SchemaOptions schemaOptions, String keySpace) {
-        this.hosts = hosts;
+    public MongoDBCacheLoader(Class<K> keyType, Class<V> valueType, List<ServerAddress> seeds,
+                              List<MongoCredential> credentials, MongoClientOptions clientOptions,
+                              String database, SchemaOptions schemaOptions, CollectionOptions collectionOptions) {
+        this.keyType = keyType;
+        this.valueType = valueType;
+        this.seeds = seeds;
+        this.credentials = credentials;
+        this.clientOptions = clientOptions;
+        this.database = database;
         this.schemaOptions = schemaOptions;
-        this.keySpace = keySpace;
-        this.keySpace = keySpace.replace("-", "_").replace(" ", "_").replace(":", "_");
-        this.clazz = clazz;
+        this.collectionOptions = collectionOptions;
+        this.database = database.replace("-", "_").replace(" ", "_").replace(":", "_");
     }
 
     @Override
     public String getName() {
-        return clazz.getSimpleName();
+        return valueType.getSimpleName();
     }
 
+    @Override
     public void create() {
-        if (schemaOptions.shouldCreateSchema() && mongoClient == null) {
+        if (mongoClient == null) {
             synchronized (this) {
                 if (mongoClient == null) {
-                    try {
-                        this.mongoClient = connect(hosts);
+                    mongoClient = connect();
 
-                        if (schemaOptions.shouldCreateSchema()) {
-                            createKeySpace();
-                        }
-                        createTable();
-                    } catch (Throwable t) {
-                        LOG.error("Failed to create: {}", t);
-
+                    if (!ops().collectionExists(valueType)) {
+                        ops().createCollection(valueType, collectionOptions);
                     }
                 }
             }
-        } else {
-            this.mongoClient = connect(hosts);
         }
     }
 
-    private void createKeySpace() {
-        // implicit in connect?
-    }
-
-    private void createTable() {
-        if (!isTableCreated) {
-            isTableCreated = true;
-            if (!ops().collectionExists(clazz)) {
-                ops().createCollection(clazz);
-            }
-        }
-    }
-
+    @Override
     public void put(K key, V value) {
         LOG.trace("Saving to mongo key={}, newValue={}", key, value);
         ops().save(value);
     }
 
+    @Override
     public void remove(K key) {
-        // unfortunately cant delete by id
-        V byId = ops().findById(key, clazz);
-        ops().remove(byId);
+        String idField = ops().getConverter().getMappingContext()
+                .getPersistentEntity(valueType).getIdProperty().getFieldName();
+        ops().remove(new Query(Criteria.where(idField).is(key)), valueType);
     }
 
     @Override
     public V load(K key) {
-        V value = ops().findById(key, clazz);
+        V value = ops().findById(key, valueType);
         LOG.trace("Loading from mongo by key {} - result {}", key, value);
         return value;
     }
@@ -93,17 +85,21 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
     @Override
     public void close() {
         if (mongoClient != null) {
-            if (schemaOptions.shouldDropSchema()) {
-                mongoClient.dropDatabase(keySpace);
-                LOG.info("Dropped database {}", keySpace);
+            synchronized (this) {
+                if (mongoClient != null) {
+                    if (schemaOptions.shouldDropSchema()) {
+                        mongoClient.dropDatabase(database);
+                        LOG.info("Dropped database {}", database);
+                    }
+                    mongoClient.close();
+                    mongoClient = null;
+                }
             }
-            mongoClient.close();
-            mongoClient = null;
         }
     }
 
     @Override
-    public Mongo getDriverSession() {
+    public MongoClient getDriverSession() {
         if (mongoClient == null) {
             throw new IllegalStateException("Session has not been created - read/write to cache first");
         }
@@ -111,10 +107,25 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, Mongo> {
     }
 
     private MongoOperations ops() {
-        return new MongoTemplate(mongoClient, keySpace);
+        return new MongoTemplate(mongoClient, database);
     }
 
-    private Mongo connect(List<ServerAddress> hosts) {
-        return new MongoClient(hosts);
+    private MongoClient connect() {
+        return new MongoClient(seeds, credentials, clientOptions);
+    }
+
+    @Override
+    public String toString() {
+        return "MongoDBCacheLoader{"
+                + "credentials=" + credentials
+                + ", clientOptions=" + clientOptions
+                + ", mongoClient=" + mongoClient
+                + ", keyType=" + keyType
+                + ", valueType=" + valueType
+                + ", seeds=" + seeds
+                + ", schemaOptions=" + schemaOptions
+                + ", collectionOptions=" + collectionOptions
+                + ", database='" + database + '\''
+                + '}';
     }
 }

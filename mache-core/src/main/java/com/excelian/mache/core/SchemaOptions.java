@@ -5,9 +5,9 @@ package com.excelian.mache.core;
  * datastore on startup and shutdown.
  */
 public enum SchemaOptions {
-    CREATESCHEMAIFNEEDED(true, false),
-    USEEXISTINGSCHEMA(false, false),
-    CREATEANDDROPSCHEMA(true, true);
+    CREATE_SCHEMA_IF_NEEDED(true, false),
+    USE_EXISTING_SCHEMA(false, false),
+    CREATE_AND_DROP_SCHEMA(true, true);
 
     private boolean createSchema;
     private boolean dropSchema;

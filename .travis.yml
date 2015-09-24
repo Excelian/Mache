@@ -6,7 +6,7 @@ branches:
     - master
     - development
     - jmeter-build-steps
-    - 11-add-couchbase-cache-loader-class-implementation
+    - create-provider-specific-builders
 
 services:
   - rabbitmq
@@ -21,3 +21,9 @@ install:
 
 notifications:
   slack: excelian-bigdata:zR1fW9d5eW5C3i0oLrHmoCf5
+
+# cache maven repository to speed up build
+cache:
+  directories:
+    - ~/.gradle
+    - ~/binaries

@@ -1,19 +1,21 @@
 package com.excelian.mache.jmeter.cassandra;
 
 import com.datastax.driver.core.Cluster;
-import com.excelian.mache.cassandra.DefaultCassandraConfig;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
-import com.excelian.mache.cassandra.CassandraCacheLoader;
 
 import java.util.Map;
 
+import static com.excelian.mache.builder.MacheBuilder.mache;
+import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+
 public class ReadFromCassandra extends MacheAbstractJavaSamplerClient {
 
-    private CassandraCacheLoader<String, CassandraTestEntity> db;
+    private Mache<String, CassandraTestEntity> mache;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -23,14 +25,20 @@ public class ReadFromCassandra extends MacheAbstractJavaSamplerClient {
         String keySpace = mapParams.get("keyspace.name");
 
         try {
-            final DefaultCassandraConfig config = new DefaultCassandraConfig();
-            Cluster cluster = CassandraCacheLoader.connect(
-                mapParams.get("server.ip.address"),
-                mapParams.get("cluster.name"),
-                9042, config);
-            db = new CassandraCacheLoader<>(CassandraTestEntity.class, cluster,
-                SchemaOptions.CREATESCHEMAIFNEEDED, keySpace, config);
-            db.create();//ensure we are connected and schema exists
+            mache = mache(String.class, CassandraTestEntity.class)
+                    .backedBy(cassandra()
+                        .withCluster(Cluster.builder()
+                            .addContactPoint(mapParams.get("server.ip.address"))
+                            .withClusterName(mapParams.get("cluster.name"))
+                            .withPort(9042)
+                            .build())
+                        .withKeyspace(keySpace)
+                        .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
+                        .build())
+                    .withNoMessaging()
+                    .macheUp();
+
+            mache.getCacheLoader().create();//ensure we are connected and schema exists
         } catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);
         }
@@ -38,7 +46,9 @@ public class ReadFromCassandra extends MacheAbstractJavaSamplerClient {
 
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        if (db != null) db.close();
+        if (mache != null) {
+            mache.close();
+        }
     }
 
     @Override
@@ -46,27 +56,24 @@ public class ReadFromCassandra extends MacheAbstractJavaSamplerClient {
 
         Map<String, String> mapParams = extractParameters(context);
         SampleResult result = new SampleResult();
-        boolean success = false;
-
         result.sampleStart();
 
         try {
             String keyValue = mapParams.get("entity.key");
-            CassandraTestEntity entity = db.load(keyValue);
+            CassandraTestEntity entity = mache.get(keyValue);
 
             if (entity == null) {
                 throw new Exception("No data found in db for key value of " + keyValue);
             }
 
             result.setResponseMessage("Read " + entity.pkString + " from database");
-            success = true;
         } catch (Exception e) {
             setupResultForError(result, e);
             return result;
         }
 
         result.sampleEnd();
-        result.setSuccessful(success);
+        result.setSuccessful(true);
         return result;
     }
 

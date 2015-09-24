@@ -7,42 +7,39 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class CacheEventCollector<K> implements RemoteCacheEntryCreatedListener, RemoteCacheEntryUpdatedListener, RemoteCacheEntryRemovedListener, RemoteCacheEntryInvalidateListener {
+public class CacheEventCollector<K> implements RemoteCacheEntryCreatedListener<K>,
+    RemoteCacheEntryUpdatedListener<K>,
+    RemoteCacheEntryRemovedListener<K>,
+    RemoteCacheEntryInvalidateListener<K> {
 
-    BlockingQueue<CoordinationEntryEvent<K>> queue = new ArrayBlockingQueue<CoordinationEntryEvent<K>>(1);
-
-    public CoordinationEntryEvent<K> pollWithTimeout() throws InterruptedException {
-        return queue.poll(5, TimeUnit.SECONDS);
-    }
+    private final BlockingQueue<CoordinationEntryEvent<K>> queue = new ArrayBlockingQueue<>(1);
 
     public CoordinationEntryEvent<K> pollWithTimeout(long msecs) throws InterruptedException {
         return queue.poll(msecs, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public void onCreated(Iterable iterable) throws CacheEntryListenerException {
-        for (CoordinationEntryEvent<K> evt : (Iterable<CoordinationEntryEvent<K>>) iterable) {
-            queue.add(evt);
-        }
+    public void onCreated(Iterable<CoordinationEntryEvent<K>> events) throws CacheEntryListenerException {
+        addAllToQueue(events);
     }
 
     @Override
-    public void onInvalidate(Iterable iterable) throws CacheEntryListenerException {
-        for (CoordinationEntryEvent<K> evt : (Iterable<CoordinationEntryEvent<K>>) iterable) {
-            queue.add(evt);
-        }
+    public void onInvalidate(Iterable<CoordinationEntryEvent<K>> events) throws CacheEntryListenerException {
+        addAllToQueue(events);
     }
 
     @Override
-    public void onRemoved(Iterable iterable) throws CacheEntryListenerException {
-        for (CoordinationEntryEvent<K> evt : (Iterable<CoordinationEntryEvent<K>>) iterable) {
-            queue.add(evt);
-        }
+    public void onRemoved(Iterable<CoordinationEntryEvent<K>> events) throws CacheEntryListenerException {
+        addAllToQueue(events);
     }
 
     @Override
-    public void onUpdated(Iterable iterable) throws CacheEntryListenerException {
-        for (CoordinationEntryEvent<K> evt : (Iterable<CoordinationEntryEvent<K>>) iterable) {
+    public void onUpdated(Iterable<CoordinationEntryEvent<K>> events) throws CacheEntryListenerException {
+        addAllToQueue(events);
+    }
+
+    private void addAllToQueue(Iterable<CoordinationEntryEvent<K>> events) {
+        for (CoordinationEntryEvent<K> evt : events) {
             queue.add(evt);
         }
     }

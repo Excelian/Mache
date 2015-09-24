@@ -1,5 +1,6 @@
 package com.excelian.mache.events.integration;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
@@ -8,6 +9,7 @@ import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Type;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -21,55 +23,55 @@ import javax.jms.TextMessage;
 
 public class ActiveMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K> {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQEventConsumer.class);
+    ExecutorService executor = Executors.newSingleThreadExecutor();
     private Session session;
     private MessageConsumer consumer;
-
-    ExecutorService executor = Executors.newSingleThreadExecutor();
     private Future<?> task;
+    private volatile boolean notStopped = true;
 
     public ActiveMQEventConsumer(final Connection connection,
                                  final String producerTopicName,
-                                 ActiveMqConfig config) throws JMSException {
+                                 int acknowledgementMode) throws JMSException {
         super(producerTopicName);
-        session = connection.createSession(false, config.getAutoAcknowledge());
+        session = connection.createSession(false, acknowledgementMode);
         Destination destination = session.createTopic(getTopicName());
         this.consumer = session.createConsumer(destination);
     }
 
     @Override
     public void beginSubscriptionThread() throws InterruptedException, JMSException {
+        final Type genericType = new TypeToken<CoordinationEntryEvent<K>>() {}.getType();
+        final Gson gson = new Gson();
 
-        task = executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
+        task = executor.submit(() -> {
+                while (notStopped) {
                     try {
-                        TextMessage message = (TextMessage) consumer.receive();
+                        TextMessage message = (TextMessage) consumer.receive(1);
 
                         if (message != null) {
-                            LOG.info("[ActiveMQEventConsumer {}] Received Message: {}",
-                                    Thread.currentThread().getId(), message.getText());
 
-                            @SuppressWarnings("unchecked")
-                            final CoordinationEntryEvent<K> event =
-                                new Gson().fromJson(message.getText(), CoordinationEntryEvent.class);
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug("[ActiveMQEventConsumer {}] Received Message: {}",
+                                        Thread.currentThread().getId(), message.getText());
+                            }
 
-                            routeEventToListeners(eventMap, event);
+                            final CoordinationEntryEvent<K> event = gson.fromJson(message.getText(), genericType);
+
+                            routeEventToListeners(event);
                         }
                     } catch (JMSException e) {
                         LOG.error("[ActiveMQEventConsumer {}] eventConsumer - could not 'take' event.\\n{}",
                                 Thread.currentThread().getId(), e);
-                        break;
+                        throw new RuntimeException(e);
                     }
                 }
-            }
-        });
+            });
     }
 
     @Override
     public void close() {
         LOG.info("[ActiveMQEventConsumer] Closing");
-
+        notStopped = false;
         try {
             if (task != null) {
                 task.cancel(true);

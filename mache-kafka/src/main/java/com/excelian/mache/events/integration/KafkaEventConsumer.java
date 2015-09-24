@@ -1,11 +1,8 @@
 package com.excelian.mache.events.integration;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import com.google.gson.Gson;
-
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
+import com.google.gson.Gson;
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.ConsumerIterator;
 import kafka.consumer.KafkaStream;
@@ -15,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +19,8 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class KafkaEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K> {
 
@@ -82,7 +80,7 @@ public class KafkaEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K>
                         Gson gson = new Gson();
                         @SuppressWarnings("unchecked")
                         final CoordinationEntryEvent<K> event = gson.fromJson(message, CoordinationEntryEvent.class);
-                        routeEventToListeners(eventMap, event);
+                        routeEventToListeners(event);
                     }
                 }
             }

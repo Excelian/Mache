@@ -1,8 +1,8 @@
 package com.excelian.mache.mongo;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
-import com.excelian.mache.core.MacheImpl;
-import com.excelian.mache.core.NoRunningMongoDbForTests;
+import com.excelian.mache.builder.MacheBuilder;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.google.common.cache.CacheLoader;
 import com.mongodb.Mongo;
@@ -16,11 +16,10 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import static com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
+import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -32,13 +31,22 @@ public class MongoCacheIntegrationTest {
 
 
     private String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
-    private MacheImpl<String, TestEntity> mache;
+    private Mache<String, TestEntity> mache;
 
     @Before
     public void setUp() throws Exception {
-        List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(new NoRunningMongoDbForTests().getHost(), 27017));
-        mache = new MacheImpl<String, TestEntity>(
-                new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
+        mache = getMache();
+    }
+
+    private Mache<String, TestEntity> getMache() throws Exception {
+        return MacheBuilder.mache(String.class, TestEntity.class)
+                .backedBy(mongodb()
+                        .withSeeds(new ServerAddress(new NoRunningMongoDbForTests().getHost(), 27017))
+                        .withDatabase(keySpace)
+                        .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
+                        .build())
+                .withNoMessaging()
+                .macheUp();
     }
 
     @After
@@ -65,7 +73,7 @@ public class MongoCacheIntegrationTest {
     @Test
     public void canPutTheSameItemAgainTest() throws Exception {
         mache.put("test-1", new TestEntity("test-1"));
-        mache.put("test-1", new TestEntity("test-1"));//TODO: This should be passing
+        mache.put("test-1", new TestEntity("test-1"));
         TestEntity test = mache.get("test-1");
         assertEquals("test-1", test.pkString);
     }
@@ -77,28 +85,17 @@ public class MongoCacheIntegrationTest {
         assertEquals("test-2", test.pkString);
     }
 
-    @Test
+    @Test(expected = CacheLoader.InvalidCacheLoadException.class)
     public void testRemove() throws Exception {
-        CacheLoader.InvalidCacheLoadException exception = null;
         String key = "rem-test-2";
         mache.put(key, new TestEntity(key));
         mache.remove(key);
-
-        try {
-            mache.get(key);
-        } catch (CacheLoader.InvalidCacheLoadException e) {
-            exception = e;
-        }
-
-        assertNotNull("Exception expected to have been thrown", exception);
-        assertEquals("CacheLoader returned null for key rem-test-2.", exception.getMessage());
+        mache.get(key);
     }
 
     @Test
     public void testInvalidate() throws Exception {
-        List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(new NoRunningMongoDbForTests().getHost(), 27017));
-        final MacheImpl<String, TestEntity> mache = new MacheImpl<>(
-                new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
+        final Mache<String, TestEntity> mache = getMache();
 
         final String key = "test-1";
         final String expectedDescription = "test1-description";
@@ -117,13 +114,9 @@ public class MongoCacheIntegrationTest {
 
     @Test
     public void testReadThrough() throws Exception {
-        List<ServerAddress> serverAddresses = Arrays.asList(new ServerAddress(new NoRunningMongoDbForTests().getHost(), 27017));
         this.mache.put("test-2", new TestEntity("test-2"));
         this.mache.put("test-3", new TestEntity("test-3"));
-        // replace the cache
-        Thread.sleep(1000);
-        MacheImpl<String, TestEntity> mache = new MacheImpl<String, TestEntity>(
-                new MongoDBCacheLoader<String, TestEntity>(TestEntity.class, serverAddresses, SchemaOptions.CREATEANDDROPSCHEMA, keySpace));
+        Mache<String, TestEntity> mache = getMache();
 
         TestEntity test = mache.get("test-2");
         assertEquals("test-2", test.pkString);

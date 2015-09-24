@@ -47,8 +47,8 @@ public class RabbitMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
     private Map<String, Object> getEvictQueueArguments() {
         Map<String, Object> queueArgs = new HashMap<>();
 
-        queueArgs.put("x-message-ttl", rabbitMqConfig.getMessageTTLMilliSeconds());
-        queueArgs.put("x-expires", rabbitMqConfig.getMessageExpiryMilliSeconds());
+        queueArgs.put("x-message-ttl", rabbitMqConfig.getMessageTtl());
+        queueArgs.put("x-expires", rabbitMqConfig.getMessageExpiry());
         queueArgs.put("x-max-length", rabbitMqConfig.getMaxLength());
         return queueArgs;
     }
@@ -70,7 +70,7 @@ public class RabbitMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
                 Gson gson = new Gson();
                 @SuppressWarnings("unchecked")
                 final CoordinationEntryEvent<K> event = gson.fromJson(new String(body), CoordinationEntryEvent.class);
-                routeEventToListeners(eventMap, event);
+                routeEventToListeners(event);
 
                 channel.basicAck(deliveryTag, false);
             }

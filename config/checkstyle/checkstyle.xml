@@ -49,7 +49,10 @@
         <property name="file" value="${suppressionFile}"/>
     </module>
 
+    <module name="SuppressWarningsFilter" />
+
     <module name="TreeWalker">
+        <module name="SuppressWarningsHolder" />
         <property name="tabWidth" value="4"/>
         <module name="OuterTypeFilename"/>
         <module name="IllegalTokenText">
@@ -215,7 +218,7 @@
             <property name="allowMissingPropertyJavadoc" value="true" />
             <property name="allowedAnnotations" value="Override, Test"/>
             <property name="allowThrowsTagsForSubclasses" value="true"/>
-            <property name="ignoreMethodNamesRegex" value="^main$"/>
+            <property name="ignoreMethodNamesRegex" value="(^main$|^with.*)"/>
         </module>
         <module name="MethodName">
             <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
