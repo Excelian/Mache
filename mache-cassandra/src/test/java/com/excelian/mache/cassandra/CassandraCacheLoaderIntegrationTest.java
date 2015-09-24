@@ -5,10 +5,7 @@ import com.datastax.driver.core.Cluster;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.google.common.cache.CacheLoader;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.cassandra.core.Ordering;
 import org.springframework.cassandra.core.PrimaryKeyType;
 import org.springframework.data.cassandra.mapping.Column;
@@ -31,15 +28,20 @@ public class CassandraCacheLoaderIntegrationTest {
     @Rule
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
-    protected String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
-    private Mache<String, TestEntity> mache;
+    protected static String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
+    private static Mache<String, TestEntity> mache;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         mache = getMache(String.class, TestEntity.class);
     }
 
-    private <K, V> Mache<K, V> getMache(Class<K> keyType, Class<V> valueType) throws Exception {
+    @AfterClass
+    public static void tearDown() throws Exception {
+        mache.close();
+    }
+
+    private static <K, V> Mache<K, V> getMache(Class<K> keyType, Class<V> valueType) throws Exception {
         return mache(keyType, valueType)
                 .backedBy(cassandra()
                         .withCluster(Cluster.builder()
@@ -54,10 +56,7 @@ public class CassandraCacheLoaderIntegrationTest {
                 .macheUp();
     }
 
-    @After
-    public void tearDown() throws Exception {
-        mache.close();
-    }
+
 
     @Test
     public void testCanGetDriverSession() throws Exception {
@@ -170,6 +169,21 @@ public class CassandraCacheLoaderIntegrationTest {
         private String application;
 
         public CompositeKey() {
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return (personId + "-"+workstationId+"-"+application).hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            CompositeKey o = (CompositeKey) obj;
+            return (o.personId.equals(this.personId)
+            && o.application.equals(this.application)
+            && workstationId.equals(this.workstationId));
         }
 
         public CompositeKey(String personId, String workstationId, String application) {
