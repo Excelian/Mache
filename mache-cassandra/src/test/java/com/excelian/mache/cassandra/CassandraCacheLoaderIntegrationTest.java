@@ -171,6 +171,21 @@ public class CassandraCacheLoaderIntegrationTest {
         public CompositeKey() {
         }
 
+        @Override
+        public int hashCode()
+        {
+            return (personId + "-"+workstationId+"-"+application).hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            CompositeKey o = (CompositeKey) obj;
+            return (o.personId.equals(this.personId)
+            && o.application.equals(this.application)
+            && workstationId.equals(this.workstationId));
+        }
+
         public CompositeKey(String personId, String workstationId, String application) {
 
             this.personId = personId;
