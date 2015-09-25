@@ -73,12 +73,12 @@ public class KafkaMqConfig {
         private String kafkaSerializerClass = "kafka.serializer.StringEncoder";
         private String offsetReset = "largest";
         private String requiredAckCount = "1";
-        private int shutdownTimeoutSecs = 5;
+        private int shutdownTimeoutSecs = 500;
         private String zkHost = "localhost";
         private String zkConsumerPort = "2181";
         private String zkProducerPort = "9092";
-        private String zkSessionTimeout = "8000";
-        private String zkSyncTime = "100";
+        private String zkSessionTimeout = "1000000";
+        private String zkSyncTime = "20000";
 
         public static KafkaMqConfigBuilder builder() {
             return new KafkaMqConfigBuilder();

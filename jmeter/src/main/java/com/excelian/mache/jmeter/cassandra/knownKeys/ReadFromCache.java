@@ -42,7 +42,7 @@ public class ReadFromCache extends MacheAbstractCassandraKafkaSamplerClient {
 		final String docNumber = params.get("entity.keyNo");
 		final String key = "document_" + docNumber;
 
-		getLogger().info("Loading " + key + " cache is " + cache1);
+		//getLogger().info("Loading " + key + " cache is " + cache1);
 
 		cache1.get(key);
 	}
