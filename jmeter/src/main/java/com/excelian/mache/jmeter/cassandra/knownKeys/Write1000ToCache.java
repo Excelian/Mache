@@ -1,14 +1,13 @@
 package com.excelian.mache.jmeter.cassandra.knownKeys;
 
-import com.excelian.mache.jmeter.mongo.MacheAbstractMongoSamplerClient;
-import com.excelian.mache.jmeter.mongo.MongoTestEntity;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-/**
- * Created by jbowkett on 11/09/2015.
- */
-public class MongoWriteToCache extends MacheAbstractMongoSamplerClient {
+import com.excelian.mache.jmeter.mongo.MacheAbstractMongoSamplerClient;
+import com.excelian.mache.jmeter.mongo.MongoTestEntity;
+import com.excelian.mache.jmeter.mongo.knownKeys.ShuffledSequence;
+
+public class Write1000ToCache extends MacheAbstractMongoSamplerClient {
 
     private ShuffledSequence shuffledSequence = new ShuffledSequence();
 

@@ -1,38 +1,38 @@
 package com.excelian.mache.jmeter.cassandra.knownKeys;
 
-import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.jmeter.mongo.MacheAbstractMongoSamplerClient;
-import com.excelian.mache.jmeter.mongo.MongoTestEntity;
-import com.excelian.mache.mongo.MongoDBCacheLoader;
-import com.mongodb.ServerAddress;
+import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+
+import java.util.Map;
+
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
+import com.datastax.driver.core.Cluster;
+import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.jmeter.cassandra.AbstractCassandraSamplerClient;
+import com.excelian.mache.jmeter.cassandra.CassandraTestEntity;
+import com.excelian.mache.jmeter.mongo.knownKeys.ShuffledSequence;
 
-/**
- * Created by jbowkett on 11/09/2015.
- */
-public class MongoWriteToDB extends MacheAbstractMongoSamplerClient {
+public class Write1000ToDB extends AbstractCassandraSamplerClient {
 
 
     private static final long serialVersionUID = 3550175542777320608L;
-    private MongoDBCacheLoader<String, MongoTestEntity> db;
+    private AbstractCacheLoader<String, CassandraTestEntity, ?> db;
     private ShuffledSequence shuffledSequence = new ShuffledSequence();
 
     @Override
     public void setupTest(JavaSamplerContext context) {
-        getLogger().info("ReadFromMongoDB.setupTest");
+        getLogger().info(getClass().getName() + ".setupTest");
 
         final Map<String, String> mapParams = extractParameters(context);
 
         try {
-            db = new MongoDBCacheLoader<>(MongoTestEntity.class, new CopyOnWriteArrayList<>(
-                Arrays.asList(new ServerAddress(mapParams
-                    .get("mongo.server.ip.address"), 27017))),
-                SchemaOptions.CREATEANDDROPSCHEMA, mapParams.get("keyspace.name"));
+            db = cassandra()
+    				.withCluster(Cluster.builder().withClusterName("BluePrint")
+    						.addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042).build())
+    				.withKeyspace(mapParams.get("keyspace.name")).withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
+    				.build().getCacheLoader(String.class, CassandraTestEntity.class);
             db.create();//ensure we are connected and schema exists
         } catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);
@@ -61,7 +61,7 @@ public class MongoWriteToDB extends MacheAbstractMongoSamplerClient {
         for (int i : shuffledSequence.upTo(1000)) {
             final String key = "document_" + i;
             final String value = key + "_" + System.currentTimeMillis();
-            db.put(key, new MongoTestEntity(key, value));
+            db.put(key, new CassandraTestEntity(key, value));
         }
     }
 }

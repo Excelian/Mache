@@ -1,19 +1,19 @@
 package com.excelian.mache.couchbase.builder;
 
-import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.cluster.BucketSettings;
-import com.couchbase.client.java.env.CouchbaseEnvironment;
-import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
-import com.excelian.mache.builder.storage.StorageProvisioner;
-import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.MacheFactory;
-import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.couchbase.CouchbaseCacheLoader;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.couchbase.client.java.cluster.BucketSettings;
+import com.couchbase.client.java.env.CouchbaseEnvironment;
+import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
+import com.excelian.mache.builder.storage.StorageProvisioner;
+import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.Mache;
+import com.excelian.mache.core.MacheFactory;
+import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.couchbase.CouchbaseCacheLoader;
 
 /**
  * {@link StorageProvisioner} implementation for Couchbase.
@@ -40,8 +40,13 @@ public class CouchbaseProvisioner implements StorageProvisioner {
 
     @Override
     public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType) {
-        return new MacheFactory().create(new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings,
-                couchbaseEnvironment, nodes, adminUser, adminPassword, schemaOptions));
+        return new MacheFactory().create(getCacheLoader(keyType, valueType));
+    }
+    
+    @Override
+    public <K, V> AbstractCacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+    	return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings,
+                couchbaseEnvironment, nodes, adminUser, adminPassword, schemaOptions);
     }
 
     /**
@@ -98,7 +103,6 @@ public class CouchbaseProvisioner implements StorageProvisioner {
             return new CouchbaseProvisioner(couchbaseEnvironment, bucketSettings, nodes, adminUser, adminPassword,
                     schemaOptions);
         }
-
     }
 
 }

@@ -14,14 +14,17 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
+import javax.jms.Session;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
 
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.integration.ActiveMQFactory;
-import com.excelian.mache.events.integration.DefaultActiveMqConfig;
 import com.excelian.mache.mongo.MongoDBCacheLoader;
 import com.excelian.mache.observable.MessageQueueObservableCacheFactory;
 import com.excelian.mache.observable.ObservableCacheFactory;
@@ -137,7 +140,7 @@ public class MongoConsoleMultiThreadedTester {
 		protected final String mongoKeyspace;
 
 		private final ActiveMQFactory<String> mqFactory1;
-		protected final Mache<String, MongoTestEntity> cache1;
+		//protected final Mache<String, MongoTestEntity> cache1;
 
 		protected MongoBaseCallable(final String mongoIP, final int mongoPort,
 				final String activeMq, final String mongoKeyspace)
@@ -146,9 +149,12 @@ public class MongoConsoleMultiThreadedTester {
 			this.mongoPort = mongoPort;
 			this.activeMq = activeMq;
 			this.mongoKeyspace = mongoKeyspace;
+			
+			
 
-			mqFactory1 = new ActiveMQFactory<String>(activeMq,
-					new DefaultActiveMqConfig());
+			mqFactory1 = new ActiveMQFactory<>(new ActiveMQConnectionFactory(activeMq), TimeUnit.MINUTES.toMillis(1),
+	                DeliveryMode.NON_PERSISTENT, Session.AUTO_ACKNOWLEDGE);
+			/*
 			ObservableCacheFactory<String, MongoTestEntity, Mongo> cacheFactory1 = new MessageQueueObservableCacheFactory<String, MongoTestEntity, Mongo>(
 					mqFactory1, getMQConfiguration(),
 					new MacheFactory<String, MongoTestEntity, Mongo>(),
@@ -157,6 +163,7 @@ public class MongoConsoleMultiThreadedTester {
 					MongoTestEntity.class, new CopyOnWriteArrayList<>(Arrays
 							.asList(new ServerAddress(mongoIP, mongoPort))),
 					SchemaOptions.CREATEANDDROPSCHEMA, mongoKeyspace));
+					*/
 		}
 
 		private MQConfiguration getMQConfiguration() {
@@ -170,7 +177,7 @@ public class MongoConsoleMultiThreadedTester {
 		
 
 	    public void teardown() {
-	        if (cache1 != null) cache1.close();
+	        //if (cache1 != null) cache1.close();
 	        if (mqFactory1 != null) mqFactory1.close();
 	    }
 	}
@@ -206,7 +213,7 @@ public class MongoConsoleMultiThreadedTester {
 					String nValue = generateValue();
 					MongoTestEntity tE = new MongoTestEntity(this.entityKey,
 							nValue);
-					cache1.put(this.entityKey, tE);
+					//cache1.put(this.entityKey, tE);
 					lastWrittenValue.set(nValue);
 					result.runsCount++;
 					result.okCount++;
@@ -255,7 +262,7 @@ public class MongoConsoleMultiThreadedTester {
 					long started = System.currentTimeMillis();
 					String nValue = null;
 					do {
-						nValue = cache1.get(this.entityKey).description;
+						//nValue = cache1.get(this.entityKey).description;
 						if (WriterCallable.getLastWrittenValue().equals(nValue)) {
 							break;
 						}

@@ -1,32 +1,49 @@
 package com.excelian.mache.jmeter.cassandra.knownKeys;
 
+import java.util.Map;
+
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-import com.excelian.mache.jmeter.mongo.MacheAbstractMongoSamplerClient;
-import com.excelian.mache.jmeter.mongo.knownKeys.ShuffledSequence;
+import com.excelian.mache.jmeter.cassandra.MacheAbstractCassandraKafkaSamplerClient;
 
-public class ReadFromCache extends MacheAbstractMongoSamplerClient {
+public class ReadFromCache extends MacheAbstractCassandraKafkaSamplerClient {
+	private static final long serialVersionUID = -8612414345680365704L;
 
-    private ShuffledSequence shuffledSequence = new ShuffledSequence();
+	@Override
+	public void setupTest(JavaSamplerContext context) {
+		super.setupTest(context);
+	}
 
-    private static final long serialVersionUID = 3550175542777320608L;
+	@Override
+	public void teardownTest(JavaSamplerContext context) {
+		super.teardownTest(context);
+	}
 
-    @Override
-    public SampleResult runTest(JavaSamplerContext context) {
-        final SampleResult result = new SampleResult();
-        result.sampleStart();
-        readOneThousandDocumentsFromCache();
-        result.sampleEnd();
-        result.setSuccessful(true);
-        return result;
-    }
+	@Override
+	public SampleResult runTest(JavaSamplerContext context) {
+		final SampleResult result = new SampleResult();
+		result.sampleStart();
 
-    private void readOneThousandDocumentsFromCache() {
-        for (int i : shuffledSequence.upTo(1000)) {
-            final String key = "document_" + i;
-            cache1.get(key);
-        }
-    }
+		try {
+			readFromCache(extractParameters(context));
+			result.sampleEnd();
+			result.setSuccessful(true);
+		} catch (Exception e) {
+			result.sampleEnd();
+			result.setSuccessful(false);
+			getLogger().error("Error connecting to cache", e);
+		}
+
+		return result;
+	}
+
+	private void readFromCache(final Map<String, String> params) {
+		final String docNumber = params.get("entity.keyNo");
+		final String key = "document_" + docNumber;
+
+		getLogger().info("Loading " + key + " cache is " + cache1);
+
+		cache1.get(key);
+	}
 }
-
