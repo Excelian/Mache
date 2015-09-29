@@ -55,6 +55,8 @@ public class ReadFromDB extends AbstractCassandraSamplerClient {
 		} catch (Exception e) {
 			result.sampleEnd();
 			result.setSuccessful(false);
+			getLogger().error("Error running test", e);
+			result.setResponseMessage(e.toString());
 		}
 		return result;
 	}

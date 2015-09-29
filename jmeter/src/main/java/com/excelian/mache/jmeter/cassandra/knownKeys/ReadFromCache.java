@@ -32,18 +32,17 @@ public class ReadFromCache extends MacheAbstractCassandraKafkaSamplerClient {
 		} catch (Exception e) {
 			result.sampleEnd();
 			result.setSuccessful(false);
-			getLogger().error("Error connecting to cache", e);
+			getLogger().error("Error running test", e);
+			result.setResponseMessage(e.toString());
 		}
 
 		return result;
 	}
 
-	private void readFromCache(final Map<String, String> params) {
+	protected void readFromCache(final Map<String, String> params) throws Exception {
 		final String docNumber = params.get("entity.keyNo");
 		final String key = "document_" + docNumber;
-
 		//getLogger().info("Loading " + key + " cache is " + cache1);
-
 		cache1.get(key);
 	}
 }

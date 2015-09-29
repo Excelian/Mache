@@ -45,7 +45,7 @@ public abstract class MacheAbstractCassandraKafkaSamplerClient extends AbstractC
 	public Arguments getDefaultParameters() {
 		Arguments defaultParameters = super.getDefaultParameters();
 
-		defaultParameters.addArgument("kafka.connection", "192.168.3.4:9092");
+		defaultParameters.addArgument("kafka.connection", "192.168.3.4");
 		defaultParameters.addArgument("kafka.topic", "Kafka_JmeterCassandraTest");
 		return defaultParameters;
 	}

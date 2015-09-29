@@ -21,7 +21,7 @@ public abstract class AbstractCassandraSamplerClient extends MacheAbstractJavaSa
 	@Override
 	public Arguments getDefaultParameters() {
 		Arguments defaultParameters = new Arguments();
-		defaultParameters.addArgument("cassandra.server.ip.address", "192.168.2.18");
+		defaultParameters.addArgument("cassandra.server.ip.address", "192.168.1.18");
 		defaultParameters.addArgument("keyspace.name", "JMeterReadThrough");
 		defaultParameters.addArgument("entity.keyNo", "${randomKeyNumber}");
 		return defaultParameters;
