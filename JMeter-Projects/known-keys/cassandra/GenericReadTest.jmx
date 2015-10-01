@@ -59,6 +59,11 @@
                   <stringProp name="Argument.value">${keyNumber}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
+                <elementProp name="entity.value" elementType="Argument">
+                  <stringProp name="Argument.name">entity.value</stringProp>
+                  <stringProp name="Argument.value">CURRENTTIME</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
               </collectionProp>
             </elementProp>
             <stringProp name="classname">com.excelian.mache.jmeter.cassandra.knownKeys.WriteToDB</stringProp>
@@ -101,13 +106,13 @@
       </hashTree>
       <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="jp@gc - Stepping Thread Group" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
-        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.num_threads">200</stringProp>
         <stringProp name="Threads initial delay">5</stringProp>
         <stringProp name="Start users count">1</stringProp>
         <stringProp name="Start users count burst">1</stringProp>
         <stringProp name="Start users period">5</stringProp>
-        <stringProp name="Stop users count">10</stringProp>
-        <stringProp name="Stop users period">3</stringProp>
+        <stringProp name="Stop users count">1</stringProp>
+        <stringProp name="Stop users period">5</stringProp>
         <stringProp name="flighttime">10</stringProp>
         <stringProp name="rampUp">2</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -116,7 +121,7 @@
         </elementProp>
       </kg.apc.jmeter.threads.SteppingThreadGroup>
       <hashTree>
-        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Reader From Db" enabled="false">
+        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Reader From Db" enabled="true">
           <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="cassandra.server.ip.address" elementType="Argument">
@@ -139,7 +144,7 @@
           <stringProp name="classname">com.excelian.mache.jmeter.cassandra.knownKeys.ReadFromDB</stringProp>
         </JavaSampler>
         <hashTree/>
-        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Reader From Cache" enabled="true">
+        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Reader From Cache" enabled="false">
           <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="cassandra.server.ip.address" elementType="Argument">
