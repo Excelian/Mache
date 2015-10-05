@@ -64,7 +64,7 @@ public class WriteToDB extends AbstractCassandraSamplerClient {
 	}
 
 	private void writeDocumentToDbWithNewData(final Map<String, String> params) {
-				
+
 		final String docNumber = params.get("entity.keyNo");
 		final String entityValue = params.get("entity.value");
 		final String key = "document_" + docNumber;
