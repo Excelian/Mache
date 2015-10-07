@@ -68,7 +68,7 @@ public class WriteToDB extends AbstractCassandraSamplerClient {
 		final String docNumber = params.get("entity.keyNo");
 		final String entityValue = params.get("entity.value");
 		final String key = "document_" + docNumber;
-		final String value = (entityValue=="CURRENTTIME") ? key + "_" + System.currentTimeMillis() : entityValue;
+		final String value = (entityValue.equals("CURRENTTIME")) ? key + "_" + System.currentTimeMillis() : entityValue;
 		
 		getLogger().info("Writing to db key=" + key);
 		db.put(key, new CassandraTestEntity(key, value));
