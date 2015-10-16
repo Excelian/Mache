@@ -1,7 +1,6 @@
 package com.excelian.mache.cassandra.builder;
 
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
 import com.excelian.mache.builder.storage.StorageProvisioner;
 import com.excelian.mache.cassandra.CassandraCacheLoader;
 import com.excelian.mache.core.Mache;
@@ -30,10 +29,14 @@ public class CassandraProvisioner implements StorageProvisioner {
 
     @Override
     public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType) {
-        final CassandraCacheLoader<K, V> cacheLoader =  new CassandraCacheLoader<>(keyType, valueType, cluster,
-                schemaOptions, keySpace, replicationClass, replicationFactor);
         final MacheFactory macheFactory = new MacheFactory();
-        return macheFactory.create(cacheLoader);
+        return macheFactory.create(getCacheLoader(keyType, valueType));
+    }
+    
+    @Override
+    public <K, V> CassandraCacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+    	return new CassandraCacheLoader<>(keyType, valueType, cluster,
+                schemaOptions, keySpace, replicationClass, replicationFactor);
     }
 
     /**

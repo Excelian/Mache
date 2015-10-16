@@ -6,15 +6,22 @@ import org.springframework.data.cassandra.mapping.Table;
 
 @Table
 public class CassandraTestEntity {
-
-    @Column(value = "mappedColumn")
-    public String description = "description for item";
-
     @PrimaryKey
-    String pkString = "@Key1@";
+    public String pkString = "yay";
+    
+    @Column
+    public int firstInt = 1;
+    
+    @Column
+    public double aDouble = 1.0;
+    
+    @Column(value = "mappedColumn")
+    public String aString = "yay";
+    
+    public CassandraTestEntity() {}
 
-    public CassandraTestEntity(String pkString, String description) {
+    public CassandraTestEntity(final String pkString, final String value) {
         this.pkString = pkString;
-        this.description = description;
+        this.aString = value;
     }
 }
