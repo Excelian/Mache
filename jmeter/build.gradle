@@ -1,6 +1,13 @@
 repositories {
     jcenter()
+    maven {
+        url 'http://repo.spring.io/milestone'
+    }
+    maven {
+        url 'http://files.couchbase.com/maven2'
+    }
 }
+
 
 task pluginSupportJar(type: Zip) {
     /*
@@ -63,6 +70,7 @@ task pluginJar(type: Jar, dependsOn: compileJava) {
     */
     println "Mongo:" + project(':mache-mongo').sourceSets.main.output.classesDir
     println "Cassandra:" + project(':mache-cassandra').sourceSets.main.output.classesDir
+    println "Couch:" + project(':mache-couchbase').sourceSets.main.output.classesDir
     println "RabbitMQ:" + project(':mache-rabbit').sourceSets.main.output.classesDir
 
 
@@ -95,6 +103,9 @@ task pluginJar(type: Jar, dependsOn: compileJava) {
     from project(':mache-mongo').sourceSets.main.output.classesDir
     include '**/*.class'
 
+    from project(':mache-couchbase').sourceSets.main.output.classesDir
+    include '**/*.class'
+
     from "../mache-mongo/build/classes/main" include '**/*.class'
 
     from project(':mache-cassandra').sourceSets.main.output.classesDir
@@ -121,6 +132,7 @@ dependencies {
     compile project(':mache-rabbit')
     compile project(':mache-kafka')
 
+    compile project(':mache-couchbase')
     compile project(':mache-mongo')
     compile project(':mache-observable')
     compile project(':mache-core')
