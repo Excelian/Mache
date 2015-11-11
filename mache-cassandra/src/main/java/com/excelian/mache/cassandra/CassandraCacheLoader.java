@@ -7,6 +7,9 @@ import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cassandra.core.ConsistencyLevel;
+import org.springframework.cassandra.core.RetryPolicy;
+import org.springframework.cassandra.core.WriteOptions;
 import org.springframework.data.cassandra.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.core.CassandraAdminTemplate;
 import org.springframework.data.cassandra.core.CassandraOperations;
@@ -86,7 +89,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
     }
 
     public void put(K key, V value) {
-        ops().insert(value);
+        ops().insert(value, new WriteOptions(ConsistencyLevel.LOCAL_QUOROM, RetryPolicy.DEFAULT));
     }
 
     public void remove(K key) {

@@ -5,6 +5,11 @@ import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandr
 
 import java.util.Map;
 
+import com.datastax.driver.core.ConsistencyLevel;
+import com.datastax.driver.core.QueryOptions;
+import com.datastax.driver.core.policies.DCAwareRoundRobinPolicy;
+import com.datastax.driver.core.policies.DefaultRetryPolicy;
+import com.datastax.driver.core.policies.TokenAwarePolicy;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 
@@ -53,13 +58,16 @@ public abstract class MacheAbstractCassandraKafkaSamplerClient extends AbstractC
 	protected void createCache(Map<String, String> mapParams) throws Exception {
 		final KafkaMessagingProvisioner kafkaProvisioner = KafkaMessagingProvisioner.kafka()
 				.withKafkaMqConfig(KafkaMqConfig.KafkaMqConfigBuilder.builder()
-						.withZkHost(mapParams.get("kafka.connection")).build())
+				.withZkHost(mapParams.get("kafka.connection")).build())
 				.withTopic(mapParams.get("kafka.topic"));
 
 		cache1 = mache(String.class, CassandraTestEntity.class).backedBy(cassandra()
 				.withCluster(Cluster.builder().withClusterName("BluePrint")
+						.withQueryOptions(new QueryOptions().setConsistencyLevel(ConsistencyLevel.LOCAL_QUORUM))
+						.withRetryPolicy(DefaultRetryPolicy.INSTANCE)
+						.withLoadBalancingPolicy(new TokenAwarePolicy(new DCAwareRoundRobinPolicy()))
 						.addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042).build())
-				.withKeyspace(mapParams.get("keyspace.name")).withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+						.withKeyspace(mapParams.get("keyspace.name")).withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
 				.build()).withMessaging(kafkaProvisioner).macheUp();
 	}
 }
