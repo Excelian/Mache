@@ -1,0 +1,5 @@
+dependencies {
+  compile project(':mache-core')
+//    testCompile project(path: ':mache-core', configuration: 'tests')
+}
+
