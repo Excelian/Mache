@@ -1,4 +1,4 @@
-package com.excelian.mache.overflow;
+package com.excelian.mache.core;
 
 import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.MacheLoader;
