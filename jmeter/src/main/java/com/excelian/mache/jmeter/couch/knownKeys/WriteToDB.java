@@ -10,6 +10,7 @@ import org.apache.jmeter.samplers.SampleResult;
 
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
+
 import java.util.Map;
 
 public class WriteToDB extends AbstractCouchSamplerClient {

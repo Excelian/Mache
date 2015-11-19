@@ -8,6 +8,7 @@ import org.apache.jmeter.samplers.SampleResult;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import java.util.Map;
 
+
 public class ReadFromCacheUntilItMatchesValue extends ReadFromCache {
     private static final long serialVersionUID = -8612323545680365704L;
 
@@ -40,9 +41,8 @@ public class ReadFromCacheUntilItMatchesValue extends ReadFromCache {
                 //	getLogger().info("# Read k="+key+" v="+expectedValue);
                 break;
             }
-            if ((System.currentTimeMillis() - time) > MINUTES.toMillis(2))
-            //We don't use a future as we want to stay in same thread.
-            {
+            if ((System.currentTimeMillis() - time) > MINUTES.toMillis(2)) {
+                //We don't use a future as we want to stay in same thread.
                 throw new Exception("It took too long to observe cache value change k=" + key + " v=" + expectedValue);
             }
         } while (true);

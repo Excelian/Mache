@@ -6,6 +6,7 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
+
 import java.util.Map;
 
 public class ReadFromCacheUntilItMatchesValue extends ReadFromCache {
@@ -37,7 +38,7 @@ public class ReadFromCacheUntilItMatchesValue extends ReadFromCache {
         do {
             MongoTestEntity result = cache1.get(key);
             if (result.description.equals(expectedValue)) {
-                //	getLogger().info("# Read k="+key+" v="+expectedValue);
+                // getLogger().info("# Read k="+key+" v="+expectedValue);
                 break;
             }
             if ((System.currentTimeMillis() - time) > MINUTES.toMillis(2))

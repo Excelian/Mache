@@ -7,10 +7,11 @@ import com.excelian.mache.events.integration.builder.KafkaMessagingProvisioner;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 
+import java.util.Map;
+
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
-import java.util.Map;
 
 @SuppressWarnings("serial")
 public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouchSamplerClient {
@@ -35,8 +36,9 @@ public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouch
 
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        if (cache1 != null)
+        if (cache1 != null) {
             cache1.close();
+        }
     }
 
     @Override
