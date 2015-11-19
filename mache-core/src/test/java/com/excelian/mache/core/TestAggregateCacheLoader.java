@@ -1,12 +1,11 @@
 package com.excelian.mache.core;
 
-
 import org.junit.Test;
 
-import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jbowkett on 18/11/2015.
@@ -27,8 +26,8 @@ public class TestAggregateCacheLoader {
 
     @Test
     public void testItDelegatesCreateToAllWrappedCacheLoaders() {
-        final AbstractCacheLoader theMockCacheLoader = given_a_mockCacheLoader();
-        final AbstractCacheLoader anotherMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> theMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> anotherMockCacheLoader = given_a_mockCacheLoader();
         given_anAggregateCacheLoaderWrapping(theMockCacheLoader, anotherMockCacheLoader);
         when_createIsCalledOnTheAggregate();
         then_createIsCalledOn(theMockCacheLoader, anotherMockCacheLoader);
@@ -36,7 +35,7 @@ public class TestAggregateCacheLoader {
 
     @Test
     public void testItDelegatesPutToAWrappedCacheLoader() {
-        final AbstractCacheLoader theMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> theMockCacheLoader = given_a_mockCacheLoader();
         given_anAggregateCacheLoaderWrapping(theMockCacheLoader);
         when_putIsCalledOnTheAggregateWith("key", "value");
         then_putIsCalledOnWith("key", "value", theMockCacheLoader);
@@ -44,8 +43,8 @@ public class TestAggregateCacheLoader {
 
     @Test
     public void testItDelegatesPutToAllWrappedCacheLoader() {
-        final AbstractCacheLoader theMockCacheLoader = given_a_mockCacheLoader();
-        final AbstractCacheLoader anotherMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> theMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> anotherMockCacheLoader = given_a_mockCacheLoader();
         given_anAggregateCacheLoaderWrapping(theMockCacheLoader, anotherMockCacheLoader);
         when_putIsCalledOnTheAggregateWith("key", "value");
         then_putIsCalledOnWith("key", "value", theMockCacheLoader, anotherMockCacheLoader);
@@ -53,7 +52,7 @@ public class TestAggregateCacheLoader {
 
     @Test
     public void testItDelegatesRemoveToAWrappedCacheLoader() {
-        final AbstractCacheLoader theMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> theMockCacheLoader = given_a_mockCacheLoader();
         given_anAggregateCacheLoaderWrapping(theMockCacheLoader);
         when_removeIsCalledOnTheAggregateWith("key");
         then_removeIsCalledOnWith("key", theMockCacheLoader);
@@ -61,8 +60,8 @@ public class TestAggregateCacheLoader {
 
     @Test
     public void testItDelegatesRemoveToAllWrappedCacheLoader() {
-        final AbstractCacheLoader theMockCacheLoader = given_a_mockCacheLoader();
-        final AbstractCacheLoader anotherMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> theMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> anotherMockCacheLoader = given_a_mockCacheLoader();
         given_anAggregateCacheLoaderWrapping(theMockCacheLoader, anotherMockCacheLoader);
         when_removeIsCalledOnTheAggregateWith("key");
         then_removeIsCalledOnWith("key", theMockCacheLoader, anotherMockCacheLoader);
@@ -70,7 +69,8 @@ public class TestAggregateCacheLoader {
 
     @Test
     public void testItReturnsTheFirstNonNullValueForFromTheDelegatesWhenLoadIscalled() throws Exception {
-        final AbstractCacheLoader theMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> theMockCacheLoader = given_a_mockCacheLoader();
+        //mocks and mockito generics don't find the generic-typed method, therefore no generic type dec here
         final AbstractCacheLoader anotherMockCacheLoader = given_a_mockCacheLoader();
         final String expected = "EXPECTED VALUE!";
         when(anotherMockCacheLoader.load("key")).thenReturn(expected);
@@ -81,8 +81,8 @@ public class TestAggregateCacheLoader {
 
     @Test
     public void testItDelegatesCloseToAWrappedCacheLoader() throws Exception {
-        final AbstractCacheLoader theMockCacheLoader = given_a_mockCacheLoader();
-        final AbstractCacheLoader anotherMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> theMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> anotherMockCacheLoader = given_a_mockCacheLoader();
         given_anAggregateCacheLoaderWrapping(theMockCacheLoader, anotherMockCacheLoader);
         when_closeIsCalledOnTheAggregate();
         then_closeIsCalledOn(theMockCacheLoader, anotherMockCacheLoader);
@@ -90,8 +90,8 @@ public class TestAggregateCacheLoader {
 
     @Test
     public void testItDelegatesCloseToAllWrappedCacheLoader() throws Exception {
-        final AbstractCacheLoader theMockCacheLoader = given_a_mockCacheLoader();
-        final AbstractCacheLoader anotherMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> theMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> anotherMockCacheLoader = given_a_mockCacheLoader();
         given_anAggregateCacheLoaderWrapping(theMockCacheLoader, anotherMockCacheLoader);
         when_closeIsCalledOnTheAggregate();
         then_closeIsCalledOn(theMockCacheLoader, anotherMockCacheLoader);
@@ -99,8 +99,8 @@ public class TestAggregateCacheLoader {
 
     @Test
     public void testItDelegatesGetNameToAllWrappedCacheLoaders() {
-        final AbstractCacheLoader theMockCacheLoader = given_a_mockCacheLoaderNamed("Mongo");
-        final AbstractCacheLoader anotherMockCacheLoader = given_a_mockCacheLoaderNamed("Cassandra");
+        final AbstractCacheLoader<String, String, ?> theMockCacheLoader = given_a_mockCacheLoaderNamed("Mongo");
+        final AbstractCacheLoader<String, String, ?> anotherMockCacheLoader = given_a_mockCacheLoaderNamed("Cassandra");
         given_anAggregateCacheLoaderWrapping(theMockCacheLoader, anotherMockCacheLoader);
         when_getNameIsCalledOnTheAggregate();
         then_theNameIs("AggregateCacheLoader[Mongo,Cassandra]");
@@ -108,7 +108,7 @@ public class TestAggregateCacheLoader {
 
     @Test
     public void testItDoesNotDelegateGetDriverSessionToAWrappedCacheLoader() {
-        final AbstractCacheLoader theMockCacheLoader = given_a_mockCacheLoader();
+        final AbstractCacheLoader<String, String, ?> theMockCacheLoader = given_a_mockCacheLoader();
         given_anAggregateCacheLoaderWrapping(theMockCacheLoader);
         when_getDriverSessionIsCalledOnTheAggregate();
         then_getDriverSessionIsNotCalledOn(theMockCacheLoader);
@@ -134,48 +134,12 @@ public class TestAggregateCacheLoader {
         this.aggregateCacheLoader.getDriverSession();
     }
 
-
     private void when_loadIsCalledOnTheAggregateWith(String key) throws Exception {
         actualValueLoaded = this.aggregateCacheLoader.load(key);
     }
 
     private void when_closeIsCalledOnTheAggregate() throws Exception {
         this.aggregateCacheLoader.close();
-    }
-
-    @SuppressWarnings("Unchecked")
-    private void then_putIsCalledOnWith(String key, String value, AbstractCacheLoader... cacheLoaders) {
-        Arrays.stream(cacheLoaders).forEach(
-            cacheLoader -> verify(cacheLoader).put(key, value)
-        );
-    }
-
-    @SuppressWarnings("Unchecked")
-    private void then_loadIsCalledOnWith(String key, AbstractCacheLoader... cacheLoaders) {
-        Arrays.stream(cacheLoaders).forEach(
-            cacheLoader -> {
-                try {
-                    verify(cacheLoader).load(key);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    fail("Exception : " + e.getMessage());
-                }
-            }
-        );
-    }
-
-    @SuppressWarnings("Unchecked")
-    private void then_closeIsCalledOn(AbstractCacheLoader... cacheLoaders) {
-        Arrays.stream(cacheLoaders).forEach(
-            cacheLoader -> verify(cacheLoader).close()
-        );
-    }
-
-    @SuppressWarnings("Unchecked")
-    private void then_removeIsCalledOnWith(String key, AbstractCacheLoader... cacheLoaders) {
-        Arrays.stream(cacheLoaders).forEach(
-            cacheLoader -> verify(cacheLoader).remove(key)
-        );
     }
 
     private void when_putIsCalledOnTheAggregateWith(String key, String value) {
@@ -186,19 +150,71 @@ public class TestAggregateCacheLoader {
         this.aggregateCacheLoader.remove(key);
     }
 
-
     private void when_createIsCalledOnTheAggregate() {
         this.aggregateCacheLoader.create();
     }
 
-    private void then_createIsCalledOn(AbstractCacheLoader... cacheLoaders) {
-        Arrays.stream(cacheLoaders).forEach(cacheLoader -> {
-            verify(cacheLoader).create();
-        });
-
+    private void then_createIsCalledOn(AbstractCacheLoader<String, String, ?> cacheLoader) {
+        verify(cacheLoader).create();
     }
 
-    private void given_anAggregateCacheLoaderWrapping(AbstractCacheLoader... cacheLoaders) {
+    private void then_createIsCalledOn(AbstractCacheLoader<String, String, ?> cacheLoader_1,
+                                       AbstractCacheLoader<String, String, ?> cacheLoader_2
+    ) {
+        then_createIsCalledOn(cacheLoader_1);
+        then_createIsCalledOn(cacheLoader_2);
+    }
+
+    private void then_closeIsCalledOn(AbstractCacheLoader<String, String, ?> cacheLoader) {
+        verify(cacheLoader).close();
+    }
+
+    private void then_closeIsCalledOn(AbstractCacheLoader<String, String, ?> cacheLoader_1,
+                                      AbstractCacheLoader<String, String, ?> cacheLoader_2
+    ) {
+        then_closeIsCalledOn(cacheLoader_1);
+        then_closeIsCalledOn(cacheLoader_2);
+    }
+
+    private void then_removeIsCalledOnWith(String key, AbstractCacheLoader<String, String, ?> cacheLoader) {
+        verify(cacheLoader).remove(key);
+    }
+
+    private void then_removeIsCalledOnWith(String key,
+                                           AbstractCacheLoader<String, String, ?> cacheLoader_1,
+                                           AbstractCacheLoader<String, String, ?> cacheLoader_2
+    ) {
+        then_removeIsCalledOnWith(key, cacheLoader_1);
+        then_removeIsCalledOnWith(key, cacheLoader_2);
+    }
+
+    private void then_putIsCalledOnWith(String key, String value, AbstractCacheLoader<String, String, ?> cacheLoader) {
+        verify(cacheLoader).put(key, value);
+    }
+
+    private void then_putIsCalledOnWith(String key, String value,
+                                        AbstractCacheLoader<String, String, ?> cacheLoader_1,
+                                        AbstractCacheLoader<String, String, ?> cacheLoader_2
+    ) {
+        then_putIsCalledOnWith(key, value, cacheLoader_1);
+        then_putIsCalledOnWith(key, value, cacheLoader_2);
+    }
+
+    private void given_anAggregateCacheLoaderWrapping(AbstractCacheLoader<String, String, ?> cacheLoader) {
+        final List<AbstractCacheLoader<String, String, ?>> cacheLoaders = toList(cacheLoader);
+        this.aggregateCacheLoader = new AggregateCacheLoader<>(cacheLoaders);
+    }
+
+    private List<AbstractCacheLoader<String, String, ?>> toList(AbstractCacheLoader<String, String, ?> cacheLoader) {
+        final List<AbstractCacheLoader<String, String, ?>> cacheLoaders = new ArrayList<>();
+        cacheLoaders.add(cacheLoader);
+        return cacheLoaders;
+    }
+
+    private void given_anAggregateCacheLoaderWrapping(AbstractCacheLoader<String, String, ?> cacheLoader,
+                                                      AbstractCacheLoader<String, String, ?> cacheLoader2) {
+        final List<AbstractCacheLoader<String, String, ?>> cacheLoaders = toList(cacheLoader);
+        cacheLoaders.add(cacheLoader2);
         this.aggregateCacheLoader = new AggregateCacheLoader<>(cacheLoaders);
     }
 
@@ -207,9 +223,8 @@ public class TestAggregateCacheLoader {
         return (AbstractCacheLoader<String, String, ?>) mock(AbstractCacheLoader.class);
     }
 
-    @SuppressWarnings("Unchecked")
     private AbstractCacheLoader<String, String, ?> given_a_mockCacheLoaderNamed(String name) {
-        final AbstractCacheLoader<String, String, ?> mock = (AbstractCacheLoader<String, String, ?>) mock(AbstractCacheLoader.class);
+        final AbstractCacheLoader<String, String, ?> mock = given_a_mockCacheLoader();
         when(mock.getName()).thenReturn(name);
         return mock;
     }

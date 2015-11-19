@@ -12,11 +12,9 @@ import java.util.stream.Collectors;
 public class AggregateCacheLoader<K, V> extends AbstractCacheLoader<K, V, String> {
     private final List<AbstractCacheLoader<K, V, ?>> cacheLoaders;
 
-    @SuppressWarnings("varargs")
-    public AggregateCacheLoader(AbstractCacheLoader<K, V, ?>... cacheLoaders) {
+    public AggregateCacheLoader(List<AbstractCacheLoader<K, V, ?>> cacheLoaders) {
         this.cacheLoaders = new ArrayList<>();
-        Arrays.stream(cacheLoaders)
-            .forEach(this.cacheLoaders::add);
+        this.cacheLoaders.addAll(cacheLoaders);
     }
 
     @Override
