@@ -1,8 +1,6 @@
 package com.excelian.mache.core;
 
 
-import com.excelian.mache.core.AbstractCacheLoader;
-import com.excelian.mache.core.AggregateCacheLoader;
 import org.junit.Test;
 
 import static junit.framework.TestCase.fail;
