@@ -31,13 +31,13 @@ public class CassandraCacheLoaderIntegrationTest {
     protected static String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
     private static Mache<String, TestEntity> mache;
 
-    @BeforeClass
-    public static void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         mache = getMache(String.class, TestEntity.class);
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         mache.close();
     }
 
