@@ -6,7 +6,9 @@ import org.junit.Test;
 import static com.excelian.mache.aggregate.builder.AggregateProvisioner.multipleStores;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.file.builder.FileProvisioner.file;
+
 import static org.junit.Assert.assertNotNull;
+
 import java.io.Serializable;
 import java.util.Objects;
 

@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -159,22 +160,22 @@ public class TestAggregateCacheLoader {
         verify(cacheLoader).create();
     }
 
-    private void then_createIsCalledOn(AbstractCacheLoader<String, String, ?> cacheLoader_1,
-                                       AbstractCacheLoader<String, String, ?> cacheLoader_2
+    private void then_createIsCalledOn(AbstractCacheLoader<String, String, ?> cacheLoaderOne,
+                                       AbstractCacheLoader<String, String, ?> cacheLoaderTwo
     ) {
-        then_createIsCalledOn(cacheLoader_1);
-        then_createIsCalledOn(cacheLoader_2);
+        then_createIsCalledOn(cacheLoaderOne);
+        then_createIsCalledOn(cacheLoaderTwo);
     }
 
     private void then_closeIsCalledOn(AbstractCacheLoader<String, String, ?> cacheLoader) {
         verify(cacheLoader).close();
     }
 
-    private void then_closeIsCalledOn(AbstractCacheLoader<String, String, ?> cacheLoader_1,
-                                      AbstractCacheLoader<String, String, ?> cacheLoader_2
+    private void then_closeIsCalledOn(AbstractCacheLoader<String, String, ?> cacheLoaderOne,
+                                      AbstractCacheLoader<String, String, ?> cacheLoaderTwo
     ) {
-        then_closeIsCalledOn(cacheLoader_1);
-        then_closeIsCalledOn(cacheLoader_2);
+        then_closeIsCalledOn(cacheLoaderOne);
+        then_closeIsCalledOn(cacheLoaderTwo);
     }
 
     private void then_removeIsCalledOnWith(String key, AbstractCacheLoader<String, String, ?> cacheLoader) {
@@ -182,11 +183,11 @@ public class TestAggregateCacheLoader {
     }
 
     private void then_removeIsCalledOnWith(String key,
-                                           AbstractCacheLoader<String, String, ?> cacheLoader_1,
-                                           AbstractCacheLoader<String, String, ?> cacheLoader_2
+                                           AbstractCacheLoader<String, String, ?> cacheLoaderOne,
+                                           AbstractCacheLoader<String, String, ?> cacheLoaderTwo
     ) {
-        then_removeIsCalledOnWith(key, cacheLoader_1);
-        then_removeIsCalledOnWith(key, cacheLoader_2);
+        then_removeIsCalledOnWith(key, cacheLoaderOne);
+        then_removeIsCalledOnWith(key, cacheLoaderTwo);
     }
 
     private void then_putIsCalledOnWith(String key, String value, AbstractCacheLoader<String, String, ?> cacheLoader) {
@@ -194,11 +195,11 @@ public class TestAggregateCacheLoader {
     }
 
     private void then_putIsCalledOnWith(String key, String value,
-                                        AbstractCacheLoader<String, String, ?> cacheLoader_1,
-                                        AbstractCacheLoader<String, String, ?> cacheLoader_2
+                                        AbstractCacheLoader<String, String, ?> cacheLoaderOne,
+                                        AbstractCacheLoader<String, String, ?> cacheLoaderTwo
     ) {
-        then_putIsCalledOnWith(key, value, cacheLoader_1);
-        then_putIsCalledOnWith(key, value, cacheLoader_2);
+        then_putIsCalledOnWith(key, value, cacheLoaderOne);
+        then_putIsCalledOnWith(key, value, cacheLoaderTwo);
     }
 
     private void given_anAggregateCacheLoaderWrapping(AbstractCacheLoader<String, String, ?> cacheLoader) {

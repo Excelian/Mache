@@ -1,15 +1,18 @@
 package com.excelian.mache.file;
 
 import com.excelian.mache.core.Mache;
-import com.excelian.mache.file.builder.FileProvisioner;
 import com.google.common.cache.CacheLoader;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.file.builder.FileProvisioner.file;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.Serializable;
 import java.util.Objects;
 

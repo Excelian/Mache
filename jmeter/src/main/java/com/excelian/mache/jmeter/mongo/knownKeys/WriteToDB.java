@@ -10,6 +10,7 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
+
 import java.util.Map;
 
 public class WriteToDB extends AbstractMongoSamplerClient {
