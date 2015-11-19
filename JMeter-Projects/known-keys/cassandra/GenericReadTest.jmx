@@ -6,7 +6,18 @@
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="Zmienne zdefiniowane przez użytkownika" enabled="true">
-        <collectionProp name="Arguments.arguments"/>
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="cassandra.ip" elementType="Argument">
+            <stringProp name="Argument.name">cassandra.ip</stringProp>
+            <stringProp name="Argument.value">172.31.31.79</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="kafka.ip" elementType="Argument">
+            <stringProp name="Argument.name">kafka.ip</stringProp>
+            <stringProp name="Argument.value">172.31.29.173</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
       <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
@@ -46,7 +57,7 @@
               <collectionProp name="Arguments.arguments">
                 <elementProp name="cassandra.server.ip.address" elementType="Argument">
                   <stringProp name="Argument.name">cassandra.server.ip.address</stringProp>
-                  <stringProp name="Argument.value">192.168.1.18</stringProp>
+                  <stringProp name="Argument.value">${cassandra.ip}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
                 <elementProp name="keyspace.name" elementType="Argument">
@@ -126,7 +137,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="cassandra.server.ip.address" elementType="Argument">
                 <stringProp name="Argument.name">cassandra.server.ip.address</stringProp>
-                <stringProp name="Argument.value">192.168.1.18</stringProp>
+                <stringProp name="Argument.value">${cassandra.ip}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="keyspace.name" elementType="Argument">

@@ -4,7 +4,7 @@ import com.excelian.mache.core.TestEnvironmentPortCheckIgnoreCondition;
 
 public class NoRunningCassandraDbForTests extends TestEnvironmentPortCheckIgnoreCondition {
     public NoRunningCassandraDbForTests() {
-        super(9042, "192.168.2.18");
+        super(9042, "192.168.2.9");
     }
 }
 
