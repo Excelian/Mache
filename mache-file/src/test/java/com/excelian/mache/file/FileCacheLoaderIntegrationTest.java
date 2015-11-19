@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
+import static com.excelian.mache.file.builder.FileProvisioner.file;
 import static org.junit.Assert.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -20,7 +21,7 @@ public class FileCacheLoaderIntegrationTest {
     @Before
     public void setup() throws Exception {
         cache = mache(String.class, TestEntity.class)
-            .backedBy(FileProvisioner.file())
+            .backedBy(file())
             .withNoMessaging()
             .macheUp();
     }
