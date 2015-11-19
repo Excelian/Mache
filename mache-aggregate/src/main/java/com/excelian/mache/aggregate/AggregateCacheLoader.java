@@ -1,5 +1,8 @@
-package com.excelian.mache.core;
+package com.excelian.mache.aggregate;
 
+
+import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 
 import java.util.ArrayList;
 import java.util.Arrays;

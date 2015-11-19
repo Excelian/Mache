@@ -6,8 +6,8 @@ import com.excelian.mache.core.Mache;
 public class MacheBuilder<K, V> {
 
     public static <K, V> FluentMacheBuilder<K, V> mache(Class<K> keyType, Class<V> valueType) {
-        return storageProvisioner -> messagingProvisioner ->
-                new MacheBuilder<>(keyType, valueType, storageProvisioner, messagingProvisioner);
+        return storageProvisioners -> messagingProvisioner ->
+            new MacheBuilder<>(keyType, valueType, storageProvisioners, messagingProvisioner);
     }
 
     public interface FluentMacheBuilder<K, V> {
@@ -36,7 +36,7 @@ public class MacheBuilder<K, V> {
     }
 
     public Mache<K, V> macheUp() throws Exception {
-        Mache<K, V> cache = storageProvisioner.getCache(keyType, valueType);
+        final Mache<K, V> cache = storageProvisioner.getCache(keyType, valueType);
         return messagingProvisioner.wireInMessaging(cache);
     }
 }

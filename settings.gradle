@@ -1,12 +1,18 @@
-include 'mache-example'
-include 'mache-core'
-include 'mache-cassandra'
-include 'mache-mongo'
-include 'mache-observable'
+//core + utils
 include 'jmeter'
+include 'mache-core'
+include 'mache-example'
+include 'mache-aggregate'
+
+//persistence
+include 'mache-cassandra'
 include 'mache-couchbase'
-include 'mache-kafka'
-include 'mache-activemq'
-include 'mache-rabbit'
 include 'mache-file'
+include 'mache-mongo'
+
+//messaging
+include 'mache-activemq'
+include 'mache-kafka'
+include 'mache-observable'
+include 'mache-rabbit'
 

@@ -1,5 +1,6 @@
-package com.excelian.mache.core;
+package com.excelian.mache.aggregate;
 
+import com.excelian.mache.core.AbstractCacheLoader;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
