@@ -4,15 +4,24 @@ import com.excelian.mache.core.AbstractCacheLoader;
 import net.openhft.chronicle.map.ChronicleMap;
 import net.openhft.chronicle.map.ChronicleMapBuilder;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * Created by jbowkett on 19/11/2015.
  */
 public class FileCacheLoader<K, V> extends AbstractCacheLoader<K, V, String> {
 
-    private final ChronicleMap<K, V> chronicleMap;
+    private ChronicleMap<K, V> chronicleMap;
 
-    public FileCacheLoader(Class<K> keyType, Class<V> valueType) {
-        chronicleMap = ChronicleMapBuilder.of(keyType, valueType).create();
+    public FileCacheLoader(Class<K> keyType, Class<V> valueType, File file) {
+        try {
+            chronicleMap = ChronicleMapBuilder.of(keyType, valueType)
+                .createPersistedTo(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Cannot open file for writing:", e);
+        }
     }
 
     /**

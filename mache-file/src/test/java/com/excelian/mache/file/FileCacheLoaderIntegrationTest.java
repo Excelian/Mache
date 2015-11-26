@@ -1,6 +1,7 @@
 package com.excelian.mache.file;
 
 import com.excelian.mache.core.Mache;
+import com.excelian.mache.file.builder.FileProvisioner;
 import com.google.common.cache.CacheLoader;
 
 import org.junit.After;
@@ -10,9 +11,9 @@ import org.junit.Test;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.file.builder.FileProvisioner.file;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -20,11 +21,14 @@ public class FileCacheLoaderIntegrationTest {
     private static final double DELTA = 0.000001;
 
     private Mache<String, TestEntity> cache;
+    private String cacheFilePath;
 
     @Before
     public void setup() throws Exception {
+        cacheFilePath = "/tmp/mache-cache-file.txt";
         cache = mache(String.class, TestEntity.class)
-            .backedBy(file())
+            .backedBy(file()
+                .storedAt(cacheFilePath))
             .withNoMessaging()
             .macheUp();
     }
@@ -32,6 +36,30 @@ public class FileCacheLoaderIntegrationTest {
     @After
     public void tearDown() {
         cache.close();
+        final File cacheFile = new File(this.cacheFilePath);
+        if (cacheFile.exists()) {
+            assertTrue(cacheFile.delete());
+        }
+    }
+
+    @Test
+    public void ensureFileIsWrittenTo() {
+        cache.put("test1", new TestEntity("test1", "FXRATE", 0.91));
+        cache.put("test1", new TestEntity("test2", "FXRATE", 0.905));
+        cache.put("test1", new TestEntity("test3", "FXRATE", 0.92));
+        final File theCacheFile = new File(cacheFilePath);
+        assertTrue("Cache file empty", theCacheFile.length() > 0);
+    }
+
+    public void ensureATempFileIsWrittenWhenNoFileIsSpecifiedInTheBuilder() throws Exception {
+        final FileProvisioner file = file();
+        final File location = file.getLocation();
+        cacheFilePath = location.getAbsolutePath();
+        cache = mache(String.class, TestEntity.class)
+            .backedBy(file)
+            .withNoMessaging()
+            .macheUp();
+        ensureFileIsWrittenTo();
     }
 
     @Test
@@ -56,10 +84,9 @@ public class FileCacheLoaderIntegrationTest {
         assertEquals(0.93, cache.get("test3").value, DELTA);
     }
 
-
     @Test
     @SuppressWarnings("unchecked")
-    public void ensureGetDriverAlwaysReturnsValue() {
+    public void ensureGetDriverSessionAlwaysReturnsValue() {
         FileCacheLoader<String, Object> loader = (FileCacheLoader) cache.getCacheLoader();
         loader.create();
         final String driverSession = loader.getDriverSession();
