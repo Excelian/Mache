@@ -24,9 +24,9 @@ public class JMeterJarTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(JMeterJarTest.class);
 
-    public static final String MAIN_PLUGIN_JAR_PATH = "./build/libs/jmeter-mache-plugin-0.6.jar";
+    public static final String MAIN_PLUGIN_JAR_PATH = "./build/libs/jmeter-mache-plugin-0.6.1.jar";
     public static final String SUPPORT_JAR_PATH =
-        "./build/distributions/jmeter-mache-plugin-support-all-0.6-src.zip";
+        "./build/distributions/jmeter-mache-plugin-support-all-0.6.1-src.zip";
 
     @Test
     public void jmeterMachePluginDirectoryExists() {

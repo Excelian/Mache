@@ -3,9 +3,12 @@ subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'checkstyle'
+    apply plugin: 'maven-publish'
+
+    group = 'com.excelian.mache'
 
     sourceCompatibility = 1.8
-    version = '0.6'
+    version = '0.6.1'
 
     repositories {
         maven { url 'https://repository.jboss.org/nexus/content/groups/public' }
@@ -40,6 +43,19 @@ subprojects {
             events  "passed", "skipped", "failed", "standardOut", "standardError"
             exceptionFormat = 'full'
             showStackTraces = true
+        }
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+            }
+        }
+        repositories {
+            maven {
+                url "../releases/$version"
+            }
         }
     }
 }

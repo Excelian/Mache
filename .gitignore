@@ -10,3 +10,4 @@ gradlew.bat
 out/
 *.class
 .idea/
+releases/
