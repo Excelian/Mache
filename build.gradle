@@ -5,7 +5,7 @@ subprojects {
     apply plugin: 'checkstyle'
 
     sourceCompatibility = 1.8
-    version = '0.1-SNAPSHOT'
+    version = '0.6'
 
     repositories {
         maven { url 'https://repository.jboss.org/nexus/content/groups/public' }
