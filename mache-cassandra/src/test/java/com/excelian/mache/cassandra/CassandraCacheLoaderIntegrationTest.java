@@ -19,6 +19,7 @@ import java.util.Date;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -43,7 +44,8 @@ public class CassandraCacheLoaderIntegrationTest {
 
     private static <K, V> Mache<K, V> getMache(Class<K> keyType, Class<V> valueType) throws Exception {
         return mache(keyType, valueType)
-                .backedBy(cassandra()
+                .cachedBy(guava())
+                .storedIn(cassandra()
                         .withCluster(Cluster.builder()
                                 .withClusterName("BluePrint")
                                 .addContactPoint(new NoRunningCassandraDbForTests().getHost())

@@ -1,19 +1,17 @@
 package com.excelian.mache.couchbase.builder;
 
+import com.couchbase.client.java.cluster.BucketSettings;
+import com.couchbase.client.java.env.CouchbaseEnvironment;
+import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
+import com.excelian.mache.builder.StorageProvisioner;
+import com.excelian.mache.core.MacheLoader;
+import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.couchbase.CouchbaseCacheLoader;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.couchbase.client.java.cluster.BucketSettings;
-import com.couchbase.client.java.env.CouchbaseEnvironment;
-import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
-import com.excelian.mache.builder.storage.StorageProvisioner;
-import com.excelian.mache.core.AbstractCacheLoader;
-import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.MacheFactory;
-import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.couchbase.CouchbaseCacheLoader;
 
 /**
  * {@link StorageProvisioner} implementation for Couchbase.
@@ -39,12 +37,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
     }
 
     @Override
-    public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType) {
-        return new MacheFactory().create(getCacheLoader(keyType, valueType));
-    }
-    
-    @Override
-    public <K, V> AbstractCacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+    public <K, V> MacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
     	return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings,
                 couchbaseEnvironment, nodes, adminUser, adminPassword, schemaOptions);
     }
@@ -68,7 +61,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
      */
     public static class CouchbaseProvisionerBuilder {
         private BucketSettings bucketSettings;
-        private CouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
+        private CouchbaseEnvironment couchbaseEnvironment = null;
         private List<String> nodes = Collections.singletonList("localhost");
         private String adminUser = "Administrator";
         private String adminPassword = "password";
@@ -100,6 +93,9 @@ public class CouchbaseProvisioner implements StorageProvisioner {
         }
 
         public CouchbaseProvisioner create() {
+            if (couchbaseEnvironment == null) {
+                couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
+            }
             return new CouchbaseProvisioner(couchbaseEnvironment, bucketSettings, nodes, adminUser, adminPassword,
                     schemaOptions);
         }

@@ -110,9 +110,11 @@ public class CouchbaseCacheLoaderMockedTest {
         verify(mockedCluster).openBucket("test");
     }
 
+    private static final CouchbaseEnvironment COUCHBASE_ENVIRONMENT = DefaultCouchbaseEnvironment.create();
+
     private void givenCacheLoaderWith(SchemaOptions schemaOptions) {
         BucketSettings bucket = DefaultBucketSettings.builder().name("test").build();
-        loader = new CouchbaseCacheLoader<>(String.class, Object.class, bucket, DefaultCouchbaseEnvironment.create(),
+        loader = new CouchbaseCacheLoader<>(String.class, Object.class, bucket, COUCHBASE_ENVIRONMENT,
                 Collections.singletonList("localhost"), "Admin", "Pass", schemaOptions);
     }
 

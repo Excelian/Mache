@@ -4,19 +4,19 @@ import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandr
 
 import java.util.Map;
 
+import com.excelian.mache.core.MacheLoader;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
 import com.datastax.driver.core.Cluster;
-import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.cassandra.AbstractCassandraSamplerClient;
 import com.excelian.mache.jmeter.cassandra.CassandraTestEntity;
 
 public class WriteToDB extends AbstractCassandraSamplerClient {
 	private static final long serialVersionUID = 4662847886347883622L;
-	private AbstractCacheLoader<String, CassandraTestEntity, ?> db;
+	private MacheLoader<String, CassandraTestEntity, ?> db;
 
 	@Override
 	public void setupTest(JavaSamplerContext context) {

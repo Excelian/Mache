@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
+import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 
 /**
@@ -22,7 +23,8 @@ public class MongoExample implements Example<MongoAnnotatedMessage> {
     public Mache<String, MongoAnnotatedMessage> exampleCache() throws Exception {
         final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
         return mache(String.class, MongoAnnotatedMessage.class)
-                .backedBy(mongodb()
+                .cachedBy(guava())
+                .storedIn(mongodb()
                         .withSeeds(new ServerAddress("10.28.1.140", 9042))
                         .withDatabase(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)

@@ -6,4 +6,5 @@
 
 <suppressions>
     <suppress checks="Javadoc" files=".*[\\/]src[\\/]test[\\/]"/>
+    <suppress checks="." files="com[\\/]excelian[\\/]mache[\\/]chroniclemap[\\/]solr[\\/]"/>
 </suppressions>

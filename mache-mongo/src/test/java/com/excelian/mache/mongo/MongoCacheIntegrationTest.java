@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.Date;
 
 import static com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
+import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,7 +41,8 @@ public class MongoCacheIntegrationTest {
 
     private Mache<String, TestEntity> getMache() throws Exception {
         return MacheBuilder.mache(String.class, TestEntity.class)
-                .backedBy(mongodb()
+                .cachedBy(guava())
+                .storedIn(mongodb()
                         .withSeeds(new ServerAddress(new NoRunningMongoDbForTests().getHost(), 27017))
                         .withDatabase(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)

@@ -2,14 +2,13 @@ package com.excelian.mache.observable.builder;
 
 import com.excelian.mache.builder.MessagingProvisioner;
 import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.observable.MessageQueueObservableCacheFactory;
 import com.excelian.mache.observable.utils.UUIDUtils;
 
-import java.io.IOException;
 import javax.jms.JMSException;
+import java.io.IOException;
 
 public abstract class AbstractMessagingProvisioner implements MessagingProvisioner {
 

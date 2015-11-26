@@ -6,7 +6,7 @@ import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.cluster.ClusterManager;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
-import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +23,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @param <K> Cache key type.
  * @param <V> Cache value type.
  */
-public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluster> {
+public class CouchbaseCacheLoader<K, V> implements MacheLoader<K, V, Cluster> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CouchbaseCacheLoader.class);
 
     private Class<K> keyType;
     private Class<V> valueType;
-    private Cluster cluster;
+    private volatile Cluster cluster;
     private ClusterManager manager;
     private CouchbaseTemplate template;
     private BucketSettings bucketSettings;

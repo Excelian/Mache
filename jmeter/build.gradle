@@ -136,7 +136,7 @@ dependencies {
     compile project(':mache-mongo')
     compile project(':mache-observable')
     compile project(':mache-core')
-
+    compile project(':mache-guava')
     compile project(':mache-cassandra')
 
     compile 'org.apache.jmeter:ApacheJMeter_java:2.11' // 2.11 and jcenter compiles ok

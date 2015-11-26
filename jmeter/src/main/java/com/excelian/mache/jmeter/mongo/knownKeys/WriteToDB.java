@@ -1,6 +1,6 @@
 package com.excelian.mache.jmeter.mongo.knownKeys;
 
-import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.mongo.AbstractMongoSamplerClient;
 import com.excelian.mache.jmeter.mongo.MongoTestEntity;
@@ -9,12 +9,13 @@ import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 import java.util.Map;
+
+import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 
 public class WriteToDB extends AbstractMongoSamplerClient {
     private static final long serialVersionUID = 4662847886347883622L;
-    private AbstractCacheLoader<String, MongoTestEntity, ?> db;
+    private MacheLoader<String, MongoTestEntity, ?> db;
 
     @Override
     public void setupTest(JavaSamplerContext context) {

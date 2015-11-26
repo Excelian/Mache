@@ -2,6 +2,7 @@ package com.excelian.mache.jmeter.cassandra;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public abstract class MacheAbstractCassandraKafkaSamplerClient extends AbstractC
 				.withZkHost(mapParams.get("kafka.connection")).build())
 				.withTopic(mapParams.get("kafka.topic"));
 
-		cache1 = mache(String.class, CassandraTestEntity.class).backedBy(cassandra()
+		cache1 = mache(String.class, CassandraTestEntity.class).cachedBy(guava()).storedIn(cassandra()
 				.withCluster(Cluster.builder().withClusterName("BluePrint")
 						.withQueryOptions(new QueryOptions().setConsistencyLevel(ConsistencyLevel.LOCAL_QUORUM))
 						.withRetryPolicy(DefaultRetryPolicy.INSTANCE)

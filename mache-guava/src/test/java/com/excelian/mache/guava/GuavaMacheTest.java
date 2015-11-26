@@ -1,6 +1,7 @@
-package com.excelian.mache.core;
+package com.excelian.mache.guava;
 
-import com.google.common.cache.RemovalNotification;
+import com.excelian.mache.core.Mache;
+import com.excelian.mache.core.MacheLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,24 +10,12 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class MacheImplTest {
+public class GuavaMacheTest {
 
-    private AbstractCacheLoader<String, String, String> fixture;
-    private int created;
     private int read;
     private int removed;
-    private RemovalNotification receivedNotification;
     private int put;
-    private MacheImpl<String, String> mache;
-
-    @Test
-    public void canCreate() throws ExecutionException {
-
-        String test = mache.get("TEST1");
-        test = mache.get("TEST2");
-        assertEquals(1, created);
-    }
-
+    private Mache<String, String> mache;
 
     @Test
     public void canReadThrough() throws ExecutionException {
@@ -37,7 +26,6 @@ public class MacheImplTest {
 
     @Test
     public void readsThroughOnceThenOnlyReadsFromCacheForSameKey() throws Exception {
-
         assertNotNull(mache.get("TEST"));
         assertNotNull(mache.get("TEST"));
         assertNotNull(mache.get("TEST"));
@@ -86,7 +74,7 @@ public class MacheImplTest {
     @Before
     public void setUp() throws Exception {
 
-        fixture = new AbstractCacheLoader<String, String, String>() {
+        MacheLoader<String, String, String> fixture = new MacheLoader<String, String, String>() {
             public String load(String key) throws Exception {
                 read++;
                 return "FIXTURE:loaded_" + key;
@@ -97,7 +85,6 @@ public class MacheImplTest {
 
             @Override
             public void create() {
-                created++;
             }
 
             public void put(String s, String s2) {
@@ -119,6 +106,7 @@ public class MacheImplTest {
             public void invalidateAll() {
             }
         };
-        mache = new MacheImpl<String, String>(fixture);
+
+        mache = GuavaMacheProvisioner.<String, String>guava().create(String.class, String.class, fixture);
     }
 }
