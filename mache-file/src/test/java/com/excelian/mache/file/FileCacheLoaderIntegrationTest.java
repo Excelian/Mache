@@ -51,17 +51,6 @@ public class FileCacheLoaderIntegrationTest {
         assertTrue("Cache file empty", theCacheFile.length() > 0);
     }
 
-    public void ensureATempFileIsWrittenWhenNoFileIsSpecifiedInTheBuilder() throws Exception {
-        final FileProvisioner file = file();
-        final File location = file.getLocation();
-        cacheFilePath = location.getAbsolutePath();
-        cache = mache(String.class, TestEntity.class)
-            .backedBy(file)
-            .withNoMessaging()
-            .macheUp();
-        ensureFileIsWrittenTo();
-    }
-
     @Test
     public void canPutAndGetValue() throws Throwable {
         cache.put("test1", new TestEntity("test1", "FXRATE", 0.91));
