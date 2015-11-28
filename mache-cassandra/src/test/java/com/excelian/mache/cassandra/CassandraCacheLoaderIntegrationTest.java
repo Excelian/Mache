@@ -5,22 +5,21 @@ import com.datastax.driver.core.Cluster;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.google.common.cache.CacheLoader;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.springframework.cassandra.core.Ordering;
 import org.springframework.cassandra.core.PrimaryKeyType;
-import org.springframework.data.cassandra.mapping.Column;
-import org.springframework.data.cassandra.mapping.PrimaryKey;
-import org.springframework.data.cassandra.mapping.PrimaryKeyClass;
-import org.springframework.data.cassandra.mapping.PrimaryKeyColumn;
-import org.springframework.data.cassandra.mapping.Table;
-
-import java.io.Serializable;
-import java.util.Date;
+import org.springframework.data.cassandra.mapping.*;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.io.Serializable;
+import java.util.Date;
 
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCassandraDbForTests.class)
 public class CassandraCacheLoaderIntegrationTest {
@@ -43,19 +42,18 @@ public class CassandraCacheLoaderIntegrationTest {
 
     private static <K, V> Mache<K, V> getMache(Class<K> keyType, Class<V> valueType) throws Exception {
         return mache(keyType, valueType)
-                .backedBy(cassandra()
-                        .withCluster(Cluster.builder()
-                                .withClusterName("BluePrint")
-                                .addContactPoint(new NoRunningCassandraDbForTests().getHost())
-                                .withPort(9042)
-                                .build())
-                        .withKeyspace(keySpace)
-                        .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
-                        .build())
-                .withNoMessaging()
-                .macheUp();
+            .backedBy(cassandra()
+                .withCluster(Cluster.builder()
+                    .withClusterName("BluePrint")
+                    .addContactPoint(new NoRunningCassandraDbForTests().getHost())
+                    .withPort(9042)
+                    .build())
+                .withKeyspace(keySpace)
+                .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
+                .build())
+            .withNoMessaging()
+            .macheUp();
     }
-
 
 
     @Test
@@ -112,7 +110,7 @@ public class CassandraCacheLoaderIntegrationTest {
     public void testPutComposite() throws Exception {
 
         Mache<CompositeKey, TestEntityWithCompositeKey> compCache =
-                getMache(CompositeKey.class, TestEntityWithCompositeKey.class);
+            getMache(CompositeKey.class, TestEntityWithCompositeKey.class);
 
         TestEntityWithCompositeKey value = new TestEntityWithCompositeKey("neil", "mac", "explorer");
         compCache.put(value.compositeKey, value);
@@ -172,18 +170,16 @@ public class CassandraCacheLoaderIntegrationTest {
         }
 
         @Override
-        public int hashCode()
-        {
-            return (personId + "-"+workstationId+"-"+application).hashCode();
+        public int hashCode() {
+            return (personId + "-" + workstationId + "-" + application).hashCode();
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
+        public boolean equals(Object obj) {
             CompositeKey o = (CompositeKey) obj;
             return (o.personId.equals(this.personId)
-            && o.application.equals(this.application)
-            && workstationId.equals(this.workstationId));
+                && o.application.equals(this.application)
+                && workstationId.equals(this.workstationId));
         }
 
         public CompositeKey(String personId, String workstationId, String application) {

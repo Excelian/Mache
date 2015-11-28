@@ -11,6 +11,7 @@ import org.apache.jmeter.samplers.SampleResult;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
+
 import java.util.Map;
 
 public class ReadFromDB extends AbstractMongoSamplerClient {

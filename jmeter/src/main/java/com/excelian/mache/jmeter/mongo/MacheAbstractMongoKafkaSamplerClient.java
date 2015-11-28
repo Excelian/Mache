@@ -10,6 +10,7 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
+
 import java.util.Map;
 
 @SuppressWarnings("serial")
@@ -35,8 +36,9 @@ public abstract class MacheAbstractMongoKafkaSamplerClient extends AbstractMongo
 
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        if (cache1 != null)
+        if (cache1 != null) {
             cache1.close();
+        }
     }
 
     @Override
@@ -63,7 +65,5 @@ public abstract class MacheAbstractMongoKafkaSamplerClient extends AbstractMongo
                 .build())
             .withMessaging(kafkaProvisioner)
             .macheUp();
-
-
     }
 }

@@ -1,0 +1,13 @@
+repositories {
+  maven {
+    url "https://oss.sonatype.org/content/repositories/snapshots"
+  }
+  mavenCentral()
+}
+
+
+dependencies {
+  compile project(':mache-core')
+  compile 'net.openhft:chronicle-map:2.3.9'
+}
+

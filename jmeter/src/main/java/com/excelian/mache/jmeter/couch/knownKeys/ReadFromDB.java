@@ -8,12 +8,11 @@ import com.excelian.mache.jmeter.couch.CouchTestEntity;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
+import java.util.Map;
+
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
-
-
-import java.util.Map;
 
 public class ReadFromDB extends AbstractCouchSamplerClient {
     private static final long serialVersionUID = 251140199032740124L;
