@@ -9,5 +9,6 @@ include 'mache-kafka'
 include 'mache-activemq'
 include 'mache-rabbit'
 include 'mache-guava'
-include 'mache-caffiene'
+include 'mache-caffeine'
+include 'mache-chroniclemap'
 
