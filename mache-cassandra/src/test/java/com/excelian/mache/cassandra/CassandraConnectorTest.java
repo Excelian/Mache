@@ -20,7 +20,7 @@ public class CassandraConnectorTest {
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     @Test
-    @IgnoreIf(condition = NoRunningCassandraDbForTests.class)
+    @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCassandraDbForTests.class)
     public void connectsToTheCassandraCluster() throws Exception {
         Cluster cluster = Cluster.builder()
                 .addContactPoint(new NoRunningCassandraDbForTests().getHost())
