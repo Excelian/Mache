@@ -6,7 +6,18 @@
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="Zmienne zdefiniowane przez użytkownika" enabled="true">
-        <collectionProp name="Arguments.arguments"/>
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="cassandra.ip" elementType="Argument">
+            <stringProp name="Argument.name">cassandra.ip</stringProp>
+            <stringProp name="Argument.value">172.31.31.79</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="kafka.ip" elementType="Argument">
+            <stringProp name="Argument.name">kafka.ip</stringProp>
+            <stringProp name="Argument.value">172.31.29.173</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
       <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
@@ -93,7 +104,6 @@
         <stringProp name="end_offset"></stringProp>
         <boolProp name="include_checkbox_state">false</boolProp>
         <boolProp name="exclude_checkbox_state">false</boolProp>
-        <boolProp name="ResultCollector.success_only_logging">true</boolProp>
       </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
       <hashTree/>
       <ResultCollector guiclass="TableVisualizer" testclass="ResultCollector" testname="View Results in Table" enabled="false">
@@ -130,18 +140,19 @@
       </ResultCollector>
       <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group - Generate Increasing Load" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">150</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">500</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">300</stringProp>
         <longProp name="ThreadGroup.start_time">1443537321000</longProp>
         <longProp name="ThreadGroup.end_time">1443537321000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <kg.apc.jmeter.timers.VariableThroughputTimer guiclass="kg.apc.jmeter.timers.VariableThroughputTimerGui" testclass="kg.apc.jmeter.timers.VariableThroughputTimer" testname="jp@gc - Throughput Shaping Timer" enabled="true">
@@ -173,7 +184,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="cassandra.server.ip.address" elementType="Argument">
                 <stringProp name="Argument.name">cassandra.server.ip.address</stringProp>
-                <stringProp name="Argument.value">192.168.1.18</stringProp>
+                <stringProp name="Argument.value">${cassandra.ip}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="keyspace.name" elementType="Argument">
@@ -188,7 +199,7 @@
               </elementProp>
               <elementProp name="kafka.connection" elementType="Argument">
                 <stringProp name="Argument.name">kafka.connection</stringProp>
-                <stringProp name="Argument.value">192.168.3.4</stringProp>
+                <stringProp name="Argument.value">${kafka.ip}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="kafka.topic" elementType="Argument">
@@ -236,7 +247,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="cassandra.server.ip.address" elementType="Argument">
                 <stringProp name="Argument.name">cassandra.server.ip.address</stringProp>
-                <stringProp name="Argument.value">192.168.1.18</stringProp>
+                <stringProp name="Argument.value">${cassandra.ip}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="keyspace.name" elementType="Argument">
@@ -251,7 +262,7 @@
               </elementProp>
               <elementProp name="kafka.connection" elementType="Argument">
                 <stringProp name="Argument.name">kafka.connection</stringProp>
-                <stringProp name="Argument.value">192.168.3.4</stringProp>
+                <stringProp name="Argument.value">${kafka.ip}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="kafka.topic" elementType="Argument">
@@ -268,13 +279,18 @@
           </elementProp>
           <stringProp name="classname">com.excelian.mache.jmeter.cassandra.knownKeys.WriteToCache</stringProp>
         </JavaSampler>
-        <hashTree/>
+        <hashTree>
+          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+            <stringProp name="ConstantTimer.delay">3</stringProp>
+          </ConstantTimer>
+          <hashTree/>
+        </hashTree>
         <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Read From Cache And Wait For New Value" enabled="true">
           <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="cassandra.server.ip.address" elementType="Argument">
                 <stringProp name="Argument.name">cassandra.server.ip.address</stringProp>
-                <stringProp name="Argument.value">192.168.1.18</stringProp>
+                <stringProp name="Argument.value">${cassandra.ip}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="keyspace.name" elementType="Argument">
@@ -289,7 +305,7 @@
               </elementProp>
               <elementProp name="kafka.connection" elementType="Argument">
                 <stringProp name="Argument.name">kafka.connection</stringProp>
-                <stringProp name="Argument.value">192.168.3.4</stringProp>
+                <stringProp name="Argument.value">${kafka.ip}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="kafka.topic" elementType="Argument">
