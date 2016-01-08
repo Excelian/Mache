@@ -2,7 +2,8 @@ package com.excelian.mache.cassandra.builder;
 
 import com.datastax.driver.core.Cluster;
 import com.excelian.mache.builder.storage.StorageProvisioner;
-import com.excelian.mache.cassandra.CassandraCacheLoader;
+import com.excelian.mache.cassandra.CassandraJsonCacheLoader;
+import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheFactory;
 import com.excelian.mache.core.SchemaOptions;
@@ -34,9 +35,12 @@ public class CassandraProvisioner implements StorageProvisioner {
     }
     
     @Override
-    public <K, V> CassandraCacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-    	return new CassandraCacheLoader<>(keyType, valueType, cluster,
-                schemaOptions, keySpace, replicationClass, replicationFactor);
+    public <K, V> AbstractCacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+        //    	return new CassandraCacheLoader<>(keyType, valueType, cluster,
+//                schemaOptions, keySpace, replicationClass, replicationFactor);
+
+        CassandraJsonCacheLoader<String, String> loader = new CassandraJsonCacheLoader<String, String>(cluster, schemaOptions, keySpace, replicationClass, replicationFactor);
+        return (AbstractCacheLoader<K, V, ?>) loader;
     }
 
     /**
