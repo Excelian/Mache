@@ -22,7 +22,6 @@ import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandr
 public class WriteToDB extends AbstractCassandraSamplerClient {
     private static final long serialVersionUID = 4662847886347883622L;
     private MacheLoader<String, CassandraTestEntity> db;
-    private ConnectionContext<Cluster> connectionContext;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -50,14 +49,6 @@ public class WriteToDB extends AbstractCassandraSamplerClient {
     public void teardownTest(JavaSamplerContext context) {
         if (db != null) {
             db.close();
-        }
-
-        if (connectionContext != null) {
-            try {
-                connectionContext.close();
-            } catch (Exception e) {
-                getLogger().error("Error closing cassandra context", e);
-            }
         }
     }
 

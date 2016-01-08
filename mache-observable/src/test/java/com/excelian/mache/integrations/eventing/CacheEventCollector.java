@@ -1,6 +1,10 @@
 package com.excelian.mache.integrations.eventing;
 
-import com.excelian.mache.observable.coordination.*;
+import com.excelian.mache.observable.coordination.RemoteCacheEntryCreatedListener;
+import com.excelian.mache.observable.coordination.RemoteCacheEntryInvalidateListener;
+import com.excelian.mache.observable.coordination.RemoteCacheEntryRemovedListener;
+import com.excelian.mache.observable.coordination.RemoteCacheEntryUpdatedListener;
+import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 
 import javax.cache.event.CacheEntryListenerException;
 import java.util.concurrent.ArrayBlockingQueue;

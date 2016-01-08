@@ -9,8 +9,7 @@ branches:
     - create-provider-specific-builders
     - jmeter-multithreaded-tests
     - 53-alternative-cache-implementations
-    - couchprovcleanup
-    - internalise-connection-context
+    - 58-values-stored-as-json
 
 services:
   - rabbitmq
