@@ -29,34 +29,37 @@ public class CassandraCacheLoaderIntegrationTest {
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     protected static String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
-    private static Mache<String, TestEntity> mache;
+    private Mache<String, TestEntity> mache;
+    private Cluster cluster;
 
     @Before
     public void setUp() throws Exception {
-        mache = getMache(String.class, TestEntity.class);
+        cluster = Cluster.builder()
+                .withClusterName("BluePrint")
+                .addContactPoint(new NoRunningCassandraDbForTests().getHost())
+                .withPort(9042)
+                .build();
+
+        mache = getMache(String.class, TestEntity.class, cluster);
     }
 
     @After
     public void tearDown() throws Exception {
         mache.close();
+        cluster.close();
     }
 
-    private static <K, V> Mache<K, V> getMache(Class<K> keyType, Class<V> valueType) throws Exception {
+    private static <K, V> Mache<K, V> getMache(Class<K> keyType, Class<V> valueType, Cluster cluster) throws Exception {
+
         return mache(keyType, valueType)
                 .backedBy(cassandra()
-                        .withCluster(Cluster.builder()
-                                .withClusterName("BluePrint")
-                                .addContactPoint(new NoRunningCassandraDbForTests().getHost())
-                                .withPort(9042)
-                                .build())
+                        .withCluster(cluster)
                         .withKeyspace(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                         .build())
                 .withNoMessaging()
                 .macheUp();
     }
-
-
 
     @Test
     public void testCanGetDriverSession() throws Exception {
@@ -102,7 +105,7 @@ public class CassandraCacheLoaderIntegrationTest {
         mache.put("test-2", new TestEntity("test-2"));
         mache.put("test-3", new TestEntity("test-3"));
         // replace the cache
-        mache = getMache(String.class, TestEntity.class);
+        mache = getMache(String.class, TestEntity.class, cluster);
 
         TestEntity test = mache.get("test-2");
         assertEquals("test-2", test.pkString);
@@ -111,16 +114,16 @@ public class CassandraCacheLoaderIntegrationTest {
     @Test
     public void testPutComposite() throws Exception {
 
-        Mache<CompositeKey, TestEntityWithCompositeKey> compCache =
-                getMache(CompositeKey.class, TestEntityWithCompositeKey.class);
+        try(Mache<CompositeKey, TestEntityWithCompositeKey> compCache =
+                getMache(CompositeKey.class, TestEntityWithCompositeKey.class, cluster))
+        {
 
-        TestEntityWithCompositeKey value = new TestEntityWithCompositeKey("neil", "mac", "explorer");
-        compCache.put(value.compositeKey, value);
+            TestEntityWithCompositeKey value = new TestEntityWithCompositeKey("neil", "mac", "explorer");
+            compCache.put(value.compositeKey, value);
 
-        TestEntityWithCompositeKey testValue = compCache.get(value.compositeKey);
-        assertEquals("neil", testValue.compositeKey.personId);
-
-        compCache.close();
+            TestEntityWithCompositeKey testValue = compCache.get(value.compositeKey);
+            assertEquals("neil", testValue.compositeKey.personId);
+        }
     }
 
     @Table
