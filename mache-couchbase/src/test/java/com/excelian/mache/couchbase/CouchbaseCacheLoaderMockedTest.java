@@ -41,9 +41,12 @@ public class CouchbaseCacheLoaderMockedTest {
     public void mockCouchbaseCluster() {
         PowerMockito.mockStatic(CouchbaseCluster.class);
         mockedCluster = mock(CouchbaseCluster.class);
-        when(CouchbaseCluster.create(any(CouchbaseEnvironment.class),
-                anyListOf(String.class))).thenReturn(mockedCluster);
+
+        when(CouchbaseCluster.create(any(CouchbaseEnvironment.class),  anyString()))
+                .thenReturn(mockedCluster);
+
         mockedManager = mock(ClusterManager.class);
+
         when(mockedCluster.clusterManager(anyString(), anyString())).thenReturn(mockedManager);
     }
 

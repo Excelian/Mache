@@ -123,6 +123,10 @@ public class CouchbaseProvisioner implements StorageProvisioner {
         }
 
         public CouchbaseProvisioner build() {
+            if(cluster==null)
+            {
+                throw new NullPointerException("Cannot build without a cluster defined");
+            }
             return new CouchbaseProvisioner(cluster, bucketSettings, adminUser, adminPassword, schemaOptions);
         }
 

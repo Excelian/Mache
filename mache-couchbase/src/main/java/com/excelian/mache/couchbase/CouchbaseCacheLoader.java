@@ -55,10 +55,14 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
         this.valueType = valueType;
         this.bucketSettings = bucketSettings;
         this.cluster = cluster;
-
         this.adminUser = adminUser;
         this.adminPassword = adminPassword;
         this.schemaOptions = schemaOptions;
+
+        if(cluster==null)
+        {
+            throw new NullPointerException("Cluster cannot be null");
+        }
     }
 
     @Override
