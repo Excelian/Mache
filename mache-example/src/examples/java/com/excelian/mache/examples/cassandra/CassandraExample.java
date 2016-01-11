@@ -21,12 +21,14 @@ public class CassandraExample implements Example<CassandraAnnotatedMessage> {
     @Override
     public Mache<String, CassandraAnnotatedMessage> exampleCache() throws Exception {
         final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
+        final Cluster cluster = Cluster.builder()
+                .addContactPoint("10.28.1.140")
+                .withPort(9042)
+                .withClusterName("BluePrint").build();
+
         return mache(String.class, CassandraAnnotatedMessage.class)
                 .backedBy(cassandra()
-                        .withCluster(Cluster.builder()
-                                        .addContactPoint("10.28.1.140")
-                                        .withPort(9042)
-                                        .withClusterName("BluePrint").build())
+                        .withCluster(cluster)
                         .withKeyspace(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA).build())
                 .withNoMessaging()

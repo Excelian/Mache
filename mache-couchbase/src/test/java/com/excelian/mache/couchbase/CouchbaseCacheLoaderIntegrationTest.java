@@ -2,6 +2,7 @@ package com.excelian.mache.couchbase;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.NoMessagingProvisioner;
 import com.excelian.mache.core.Mache;
@@ -33,19 +34,22 @@ public class CouchbaseCacheLoaderIntegrationTest {
     private static final String PASSWORD = "password";
     private static final double DELTA = 0.000001;
     private static final String COUCHBASE_HOST = new NoRunningCouchbaseDbForTests().getHost();
+    private static final DefaultCouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
 
     private Mache<String, TestEntity> cache;
+    private Cluster cluster;
 
     @Before
     public void setup() throws Exception {
+
+        cluster = CouchbaseCluster.create(couchbaseEnvironment, COUCHBASE_HOST);
+
         cache = mache(String.class, TestEntity.class)
                 .backedBy(couchbase()
+                        .withCluster(cluster)
                         .withBucketSettings(builder().name(BUCKET).quota(150).build())
-                        .withCouchbaseEnvironment(DefaultCouchbaseEnvironment.builder()
-                                .connectTimeout(SECONDS.toMillis(100)).build())
                         .withAdminDetails(ADMIN_USER, PASSWORD)
-                        .withNodes(COUCHBASE_HOST)
-                        .withSchemaOptions(CREATE_AND_DROP_SCHEMA).create())
+                        .withSchemaOptions(CREATE_AND_DROP_SCHEMA).build())
                 .withMessaging(new NoMessagingProvisioner())
                 .macheUp();
     }
@@ -53,6 +57,7 @@ public class CouchbaseCacheLoaderIntegrationTest {
     @After
     public void tearDown() {
         cache.close();
+        cluster.disconnect();
     }
 
     @Test
