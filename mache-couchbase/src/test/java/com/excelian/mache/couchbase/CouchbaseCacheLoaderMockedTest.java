@@ -1,11 +1,13 @@
 package com.excelian.mache.couchbase;
 
+import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.cluster.ClusterManager;
 import com.couchbase.client.java.cluster.DefaultBucketSettings;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
+import com.excelian.mache.builder.NoMessagingProvisioner;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.couchbase.CouchbaseCacheLoader;
 import org.junit.Before;
@@ -20,6 +22,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Collections;
 
+import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
+import static com.excelian.mache.builder.MacheBuilder.mache;
+import static com.excelian.mache.core.SchemaOptions.CREATE_AND_DROP_SCHEMA;
+import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
 import static org.mockito.Mockito.*;
 
 @PrepareForTest(CouchbaseCluster.class)
@@ -112,8 +118,10 @@ public class CouchbaseCacheLoaderMockedTest {
 
     private void givenCacheLoaderWith(SchemaOptions schemaOptions) {
         BucketSettings bucket = DefaultBucketSettings.builder().name("test").build();
-        loader = new CouchbaseCacheLoader<>(String.class, Object.class, bucket, DefaultCouchbaseEnvironment.create(),
-                Collections.singletonList("localhost"), "Admin", "Pass", schemaOptions);
+
+        //TODO: need to disconnect() cluster
+        Cluster cluster = CouchbaseCluster.create(DefaultCouchbaseEnvironment.create(), "localhost");
+        loader = new CouchbaseCacheLoader<>(String.class, Object.class, bucket,cluster, "Admin", "Pass", schemaOptions);
     }
 
 

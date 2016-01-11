@@ -1,5 +1,8 @@
 package com.excelian.mache.jmeter.couch;
 
+import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.CouchbaseCluster;
+import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.integration.KafkaMqConfig;
@@ -58,15 +61,16 @@ public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouch
         final String keySpace = mapParams.get("keyspace.name");
         final String couchServer = mapParams.get("couch.server.ip.address");
 
+        final  Cluster cluster = CouchbaseCluster.create(DefaultCouchbaseEnvironment.create(), couchServer);
+
         final Mache<String, CouchTestEntity> mache = mache(String.class, CouchTestEntity.class)
             .backedBy(couchbase()
-                .withBucketSettings(builder().name(keySpace).quota(150).build())
-                .withNodes(couchServer)
-                .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                .create())
+                    .withCluster(cluster)
+                    .withBucketSettings(builder().name(keySpace).quota(150).build())
+                    .withDefaultAdminDetails()
+                    .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                    .build())
             .withMessaging(kafkaProvisioner)
             .macheUp();
-
-
     }
 }
