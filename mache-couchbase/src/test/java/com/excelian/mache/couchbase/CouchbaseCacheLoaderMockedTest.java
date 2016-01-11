@@ -123,7 +123,6 @@ public class CouchbaseCacheLoaderMockedTest {
     private void givenCacheLoaderWith(SchemaOptions schemaOptions) {
         BucketSettings bucket = DefaultBucketSettings.builder().name("test").build();
 
-        //TODO: need to disconnect() cluster
         Cluster cluster = CouchbaseCluster.create(couchbaseEnvironment, "localhost");
         loader = new CouchbaseCacheLoader<>(String.class, Object.class, bucket,cluster, "Admin", "Pass", schemaOptions);
     }
