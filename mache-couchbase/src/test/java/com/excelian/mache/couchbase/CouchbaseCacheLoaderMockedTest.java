@@ -36,6 +36,7 @@ public class CouchbaseCacheLoaderMockedTest {
     CouchbaseCacheLoader loader;
     CouchbaseCluster mockedCluster;
     ClusterManager mockedManager;
+    private static final DefaultCouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
 
     @Before
     public void mockCouchbaseCluster() {
@@ -123,7 +124,7 @@ public class CouchbaseCacheLoaderMockedTest {
         BucketSettings bucket = DefaultBucketSettings.builder().name("test").build();
 
         //TODO: need to disconnect() cluster
-        Cluster cluster = CouchbaseCluster.create(DefaultCouchbaseEnvironment.create(), "localhost");
+        Cluster cluster = CouchbaseCluster.create(couchbaseEnvironment, "localhost");
         loader = new CouchbaseCacheLoader<>(String.class, Object.class, bucket,cluster, "Admin", "Pass", schemaOptions);
     }
 

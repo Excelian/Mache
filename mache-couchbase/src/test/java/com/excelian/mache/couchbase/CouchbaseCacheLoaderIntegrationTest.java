@@ -34,13 +34,15 @@ public class CouchbaseCacheLoaderIntegrationTest {
     private static final String PASSWORD = "password";
     private static final double DELTA = 0.000001;
     private static final String COUCHBASE_HOST = new NoRunningCouchbaseDbForTests().getHost();
+    private static final DefaultCouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
 
     private Mache<String, TestEntity> cache;
     private Cluster cluster;
 
     @Before
     public void setup() throws Exception {
-        cluster = CouchbaseCluster.create(DefaultCouchbaseEnvironment.create(), COUCHBASE_HOST);
+
+        cluster = CouchbaseCluster.create(couchbaseEnvironment, COUCHBASE_HOST);
 
         cache = mache(String.class, TestEntity.class)
                 .backedBy(couchbase()
