@@ -1,7 +1,7 @@
 package com.excelian.mache.chroniclemap;
 
 import com.excelian.mache.chroniclemap.chroniclemap.ChronicleMapMacheProvisioner;
-import com.excelian.mache.core.InMemoryCacheLoader;
+import com.excelian.mache.core.HashMapCacheLoader;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
 import org.junit.After;
@@ -23,7 +23,7 @@ public class ChronicleMapMacheTest {
 
     @Before
     public void setUp() throws Exception {
-        loader = Mockito.spy(new InMemoryCacheLoader<>(String.class));
+        loader = Mockito.spy(new HashMapCacheLoader<>(String.class));
 
         mache = ChronicleMapMacheProvisioner.<String, String>chronicleMap()
                 .create(String.class, String.class, loader);

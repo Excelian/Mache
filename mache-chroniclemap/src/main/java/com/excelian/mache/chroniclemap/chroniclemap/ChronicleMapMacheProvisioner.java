@@ -11,6 +11,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ *
+ * Provisions a {@link ChronicleMapMache} backed by the off heap store ChronicleMap.
+ *
+ * @param <K> key type of the cache to be provisioned.
+ * @param <V> value type of the cache to be provisioned.
+ */
 public class ChronicleMapMacheProvisioner<K, V> implements CacheProvisioner<K, V> {
 
     private final int upperWaterMark;
@@ -65,6 +72,8 @@ public class ChronicleMapMacheProvisioner<K, V> implements CacheProvisioner<K, V
                 throw new IllegalArgumentException("Failed to create persisted Chronicle Map.", e);
             }
         }
+
+        // TODO prevent poor entry size/watermark selection.
 
         ConcurrentLRUCache<K, V> cache = new ConcurrentLRUCache<>(upperWaterMark, lowerWaterMark,
                 acceptableWatermark, runCleanupThread, runNewThreadForCleanup, evictionListener, map);

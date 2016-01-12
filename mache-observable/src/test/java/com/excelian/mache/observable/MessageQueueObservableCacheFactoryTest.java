@@ -1,7 +1,7 @@
 package com.excelian.mache.observable;
 
 import com.excelian.mache.builder.CacheProvisioner;
-import com.excelian.mache.core.InMemoryCacheLoader;
+import com.excelian.mache.core.HashMapCacheLoader;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.TestEntity;
@@ -10,7 +10,6 @@ import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
 import com.excelian.mache.events.BaseCoordinationEntryEventProducer;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
-import com.excelian.mache.guava.GuavaMacheProvisioner;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.excelian.mache.observable.utils.UUIDUtils;
 import com.google.common.reflect.TypeToken;
@@ -56,8 +55,8 @@ public class MessageQueueObservableCacheFactoryTest {
 
     @Before
     public void beforeTest() throws Throwable {
-        cacheLoader1 = new InMemoryCacheLoader<>(TestEntity.class);
-        cacheLoader2 = new InMemoryCacheLoader<>(TestEntity.class);
+        cacheLoader1 = new HashMapCacheLoader<>(TestEntity.class);
+        cacheLoader2 = new HashMapCacheLoader<>(TestEntity.class);
 
         BaseCoordinationEntryEventConsumer<String> inMemoryConsumer1 = getInMemoryConsumer();
         BaseCoordinationEntryEventConsumer<String> inMemoryConsumer2 = getInMemoryConsumer();
@@ -106,7 +105,7 @@ public class MessageQueueObservableCacheFactoryTest {
     @Test
     public void shouldProperlyPropagateValues() throws ExecutionException, InterruptedException, JMSException {
         MacheLoader<String, TestEntity2, Object> cacheLoader =
-                new InMemoryCacheLoader<>(TestEntity2.class);
+                new HashMapCacheLoader<>(TestEntity2.class);
         ObservableCacheFactory<String, TestEntity2> observableCacheFactory1 =
                 new MessageQueueObservableCacheFactory<>(mqFactory1, mqConfiguration, new UUIDUtils());
         ObservableCacheFactory<String, TestEntity2> observableCacheFactory2 =

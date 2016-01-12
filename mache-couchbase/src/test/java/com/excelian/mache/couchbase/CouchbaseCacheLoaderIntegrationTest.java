@@ -22,7 +22,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.openhft.chronicle.map.ChronicleMapBuilder.of;
 import static org.junit.Assert.*;
 
-//@ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCouchbaseDbForTests.class)
+@ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCouchbaseDbForTests.class)
 public class CouchbaseCacheLoaderIntegrationTest {
 
     @Rule
@@ -32,7 +32,7 @@ public class CouchbaseCacheLoaderIntegrationTest {
     private static final String ADMIN_USER = "Administrator";
     private static final String PASSWORD = "password";
     private static final double DELTA = 0.000001;
-    private static final String COUCHBASE_HOST = "192.168.1.64";//new NoRunningCouchbaseDbForTests().getHost();
+    private static final String COUCHBASE_HOST = new NoRunningCouchbaseDbForTests().getHost();
     private static final CouchbaseEnvironment COUCHBASE_ENVIRONMENT = DefaultCouchbaseEnvironment.builder()
             .connectTimeout(SECONDS.toMillis(100)).build();
 

@@ -3,11 +3,11 @@ package com.excelian.mache.core;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class InMemoryCacheLoader<K, V, D> implements MacheLoader<K, V, Object> {
+public class HashMapCacheLoader<K, V, D> implements MacheLoader<K, V, Object> {
     private final String cacheName;
     private final Map<K, V> store = new ConcurrentHashMap<>();
 
-    public InMemoryCacheLoader(final Class<V> valueType) {
+    public HashMapCacheLoader(final Class<V> valueType) {
         this.cacheName = valueType.getSimpleName();
     }
 
