@@ -23,6 +23,8 @@ import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import static com.excelian.mache.guava.builder.GuavaProvisioner.guava;
+
 @IgnoreIf(condition = NoRunningMongoDbForTests.class)
 public class MongoCacheIntegrationTest {
 
@@ -40,6 +42,7 @@ public class MongoCacheIntegrationTest {
 
     private Mache<String, TestEntity> getMache() throws Exception {
         return MacheBuilder.mache(String.class, TestEntity.class)
+                .cachedBy(guava())
                 .backedBy(mongodb()
                         .withSeeds(new ServerAddress(new NoRunningMongoDbForTests().getHost(), 27017))
                         .withDatabase(keySpace)

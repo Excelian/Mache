@@ -9,3 +9,4 @@ include 'mache-kafka'
 include 'mache-activemq'
 include 'mache-rabbit'
 
+include 'mache-guava'

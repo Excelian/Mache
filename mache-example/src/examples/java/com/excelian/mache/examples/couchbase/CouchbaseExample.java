@@ -10,7 +10,7 @@ import java.util.Date;
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
-
+import static com.excelian.mache.guava.builder.GuavaProvisioner.guava;
 /**
  * A factory for a Couchbase backed {@link Example}.
  */
@@ -22,6 +22,7 @@ public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage> {
     public Mache<String, CouchbaseAnnotatedMessage> exampleCache() throws Exception {
         final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
         return mache(String.class, CouchbaseAnnotatedMessage.class)
+                .cachedBy(guava())
                 .backedBy(couchbase()
                         .withBucketSettings(builder().name(keySpace).quota(150).build())
                         .withNodes("10.28.1.140")

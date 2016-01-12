@@ -10,6 +10,7 @@ import java.util.Date;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+import static com.excelian.mache.guava.builder.GuavaProvisioner.guava;
 
 /**
  * A factory for a Cassandra backed {@link Example}.
@@ -22,6 +23,7 @@ public class CassandraExample implements Example<CassandraAnnotatedMessage> {
     public Mache<String, CassandraAnnotatedMessage> exampleCache() throws Exception {
         final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
         return mache(String.class, CassandraAnnotatedMessage.class)
+                .cachedBy(guava())
                 .backedBy(cassandra()
                         .withCluster(Cluster.builder()
                                         .addContactPoint("10.28.1.140")

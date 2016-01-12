@@ -1,6 +1,6 @@
 package com.excelian.mache.jmeter.couch.knownKeys;
 
-import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.couch.AbstractCouchSamplerClient;
 import com.excelian.mache.jmeter.couch.CouchTestEntity;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class WriteToDB extends AbstractCouchSamplerClient {
     private static final long serialVersionUID = 4662847886347883622L;
-    private AbstractCacheLoader<String, CouchTestEntity, ?> db;
+    private MacheLoader<String, CouchTestEntity, ?> db;
 
     @Override
     public void setupTest(JavaSamplerContext context) {

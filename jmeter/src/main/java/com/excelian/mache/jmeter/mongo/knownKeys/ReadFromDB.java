@@ -12,6 +12,7 @@ import org.apache.jmeter.samplers.SampleResult;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 import java.util.Map;
+import static com.excelian.mache.guava.builder.GuavaProvisioner.guava;
 
 public class ReadFromDB extends AbstractMongoSamplerClient {
     private static final long serialVersionUID = 251140199032740124L;
@@ -25,6 +26,7 @@ public class ReadFromDB extends AbstractMongoSamplerClient {
 
         try {
             final Mache<String, MongoTestEntity> mache = mache(String.class, MongoTestEntity.class)
+                .cachedBy(guava())
                 .backedBy(mongodb()
                     .withSeeds(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017))
                     .withDatabase(mapParams.get("keyspace.name"))

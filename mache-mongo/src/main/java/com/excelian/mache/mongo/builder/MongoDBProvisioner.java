@@ -6,13 +6,10 @@ import static java.util.stream.Collectors.toList;
 import java.util.Collections;
 import java.util.List;
 
+import com.excelian.mache.core.*;
 import org.springframework.data.mongodb.core.CollectionOptions;
 
 import com.excelian.mache.builder.storage.StorageProvisioner;
-import com.excelian.mache.core.AbstractCacheLoader;
-import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.MacheFactory;
-import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.mongo.MongoDBCacheLoader;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
@@ -46,13 +43,13 @@ public class MongoDBProvisioner implements StorageProvisioner {
 	}
 
 	@Override
-	public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType) {
+	public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType, Cache<K, V> inMemoryCache) {
 		final MacheFactory macheFactory = new MacheFactory();
-		return macheFactory.create(getCacheLoader(keyType, valueType));
+		return macheFactory.create(inMemoryCache, getCacheLoader(keyType, valueType));
 	}
 
 	@Override
-	public <K, V> AbstractCacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+	public <K, V> MacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
 		return new MongoDBCacheLoader<>(keyType, valueType, seeds, mongoCredentials, clientOptions, database,
 				schemaOptions, collectionOptions);
 	}

@@ -1,6 +1,6 @@
 package com.excelian.mache.jmeter.mongo.knownKeys;
 
-import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.mongo.AbstractMongoSamplerClient;
 import com.excelian.mache.jmeter.mongo.MongoTestEntity;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class WriteToDB extends AbstractMongoSamplerClient {
     private static final long serialVersionUID = 4662847886347883622L;
-    private AbstractCacheLoader<String, MongoTestEntity, ?> db;
+    private MacheLoader<String, MongoTestEntity, ?> db;
 
     @Override
     public void setupTest(JavaSamplerContext context) {

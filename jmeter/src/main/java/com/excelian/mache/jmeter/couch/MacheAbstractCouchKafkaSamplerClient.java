@@ -10,6 +10,7 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
+import static com.excelian.mache.guava.builder.GuavaProvisioner.guava;
 import java.util.Map;
 
 @SuppressWarnings("serial")
@@ -59,6 +60,7 @@ public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouch
         final String couchServer = mapParams.get("couch.server.ip.address");
 
         final Mache<String, CouchTestEntity> mache = mache(String.class, CouchTestEntity.class)
+            .cachedBy(guava())
             .backedBy(couchbase()
                 .withBucketSettings(builder().name(keySpace).quota(150).build())
                 .withNodes(couchServer)

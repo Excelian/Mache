@@ -9,10 +9,7 @@ import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.storage.StorageProvisioner;
-import com.excelian.mache.core.AbstractCacheLoader;
-import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.MacheFactory;
-import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.core.*;
 import com.excelian.mache.couchbase.CouchbaseCacheLoader;
 
 /**
@@ -39,13 +36,13 @@ public class CouchbaseProvisioner implements StorageProvisioner {
     }
 
     @Override
-    public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType) {
-        return new MacheFactory().create(getCacheLoader(keyType, valueType));
+    public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType, Cache<K, V> inMemoryCache) {
+        return new MacheFactory().create(inMemoryCache, getCacheLoader(keyType, valueType));
     }
-    
+
     @Override
-    public <K, V> AbstractCacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-    	return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings,
+    public <K, V> MacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+        return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings,
                 couchbaseEnvironment, nodes, adminUser, adminPassword, schemaOptions);
     }
 
