@@ -1,6 +1,5 @@
 package com.excelian.mache.chroniclemap;
 
-import com.excelian.mache.chroniclemap.chroniclemap.ChronicleMapMacheProvisioner;
 import com.excelian.mache.core.HashMapCacheLoader;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;

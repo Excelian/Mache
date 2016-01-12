@@ -11,6 +11,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Provides base client for Mache JMeter tests.
+ */
 @SuppressWarnings("serial")
 public abstract class MacheAbstractJavaSamplerClient extends AbstractJavaSamplerClient implements Serializable {
 

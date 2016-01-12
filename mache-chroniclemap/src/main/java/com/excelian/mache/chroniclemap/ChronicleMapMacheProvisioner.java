@@ -1,8 +1,7 @@
-package com.excelian.mache.chroniclemap.chroniclemap;
+package com.excelian.mache.chroniclemap;
 
 import com.excelian.mache.builder.CacheProvisioner;
-import com.excelian.mache.chroniclemap.chroniclemap.solr.ConcurrentLRUCache;
-import com.excelian.mache.chroniclemap.chroniclemap.solr.ConcurrentLRUCache.EvictionListener;
+import com.excelian.mache.chroniclemap.solr.ConcurrentLRUCache;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
 import net.openhft.chronicle.map.ChronicleMapBuilder;
@@ -12,7 +11,6 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- *
  * Provisions a {@link ChronicleMapMache} backed by the off heap store ChronicleMap.
  *
  * @param <K> key type of the cache to be provisioned.
@@ -25,13 +23,23 @@ public class ChronicleMapMacheProvisioner<K, V> implements CacheProvisioner<K, V
     private final int acceptableWatermark;
     private final boolean runCleanupThread;
     private final boolean runNewThreadForCleanup;
-    private final EvictionListener<K, V> evictionListener;
+    private final ConcurrentLRUCache.EvictionListener<K, V> evictionListener;
     private final ChronicleMapBuilder<K, V> chronicleMapBuilder;
     private final File persistedTo;
 
+    /**
+     * @param upperWaterMark start clearing cache when size above this mark.
+     * @param lowerWaterMark lower mark to attempt to clear down to.
+     * @param acceptableWatermark mark where clearing is considered finished.
+     * @param runCleanupThread run clean up in separate thread.
+     * @param runNewThreadForCleanup run clean up in new thread each time.
+     * @param evictionListener listens for evictions due to size.
+     * @param chronicleMapBuilder the builder for a ChronicleMap.
+     * @param persistedTo The location to persist to.
+     */
     public ChronicleMapMacheProvisioner(int upperWaterMark, int lowerWaterMark, int acceptableWatermark,
                                         boolean runCleanupThread, boolean runNewThreadForCleanup,
-                                        EvictionListener<K, V> evictionListener,
+                                        ConcurrentLRUCache.EvictionListener<K, V> evictionListener,
                                         ChronicleMapBuilder<K, V> chronicleMapBuilder, File persistedTo) {
         this.upperWaterMark = upperWaterMark;
         this.lowerWaterMark = lowerWaterMark;
@@ -51,7 +59,8 @@ public class ChronicleMapMacheProvisioner<K, V> implements CacheProvisioner<K, V
         return new ChronicleMapMacheBuilder<>(builder);
     }
 
-    public static <K, V> ChronicleMapMacheBuilder<K, V> chronicleMap(ChronicleMapBuilder<K, V> builder, File persistedTo) {
+    public static <K, V> ChronicleMapMacheBuilder<K, V> chronicleMap(ChronicleMapBuilder<K, V> builder,
+                                                                     File persistedTo) {
         return new ChronicleMapMacheBuilder<>(builder, persistedTo);
     }
 
@@ -81,6 +90,12 @@ public class ChronicleMapMacheProvisioner<K, V> implements CacheProvisioner<K, V
         return new ChronicleMapMache<>(cacheLoader, cache);
     }
 
+    /**
+     * Provisions a ChronicleMap Mache Builder.
+     *
+     * @param <K> the type of key to store in Mache.
+     * @param <V> the type of value to store in Mache.
+     */
     public static class ChronicleMapMacheBuilder<K, V> {
 
         private final ChronicleMapBuilder<K, V> chronicleMapBuilder;
@@ -90,7 +105,7 @@ public class ChronicleMapMacheProvisioner<K, V> implements CacheProvisioner<K, V
         private int acceptableWatermark = 9000;
         private boolean runCleanupThread = false;
         private boolean runNewThreadForCleanup = false;
-        private EvictionListener<K, V> evictionListener;
+        private ConcurrentLRUCache.EvictionListener<K, V> evictionListener;
 
         public ChronicleMapMacheBuilder(ChronicleMapBuilder<K, V> chronicleMapBuilder) {
             this.chronicleMapBuilder = chronicleMapBuilder;
@@ -128,7 +143,8 @@ public class ChronicleMapMacheProvisioner<K, V> implements CacheProvisioner<K, V
             return this;
         }
 
-        public ChronicleMapMacheBuilder withEvictionListener(EvictionListener<K, V> evictionListener) {
+        public ChronicleMapMacheBuilder withEvictionListener(
+                ConcurrentLRUCache.EvictionListener<K, V> evictionListener) {
             this.evictionListener = evictionListener;
             return this;
         }

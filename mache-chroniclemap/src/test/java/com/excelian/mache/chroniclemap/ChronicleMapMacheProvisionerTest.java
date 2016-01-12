@@ -1,4 +1,4 @@
-package com.excelian.mache.chroniclemap.chroniclemap;
+package com.excelian.mache.chroniclemap;
 
 import com.excelian.mache.core.HashMapCacheLoader;
 import com.excelian.mache.core.Mache;
@@ -13,7 +13,9 @@ public class ChronicleMapMacheProvisionerTest {
     public void testCreate() throws Exception {
         Mache<String, String> provisioner =
                 ChronicleMapMacheProvisioner.chronicleMap(ChronicleMapBuilder.of(String.class, String.class)
-                        .entries(10)).create().create(String.class, String.class, new HashMapCacheLoader<>(String.class));
+                        .entries(10))
+                        .create()
+                        .create(String.class, String.class, new HashMapCacheLoader<>(String.class));
 
         for (int i = 0; i < 30; i++) {
             provisioner.put("" + i, "" + i);

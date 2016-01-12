@@ -1,4 +1,4 @@
-package com.excelian.mache.jmeter.couch.knownKeys;
+package com.excelian.mache.jmeter.couch.knownkeys;
 
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
@@ -13,6 +13,9 @@ import java.util.Map;
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
 
+/**
+ * JMeter test that measures writing directly to the Cassandra backing store.
+ */
 public class WriteToDB extends AbstractCouchSamplerClient {
     private static final long serialVersionUID = 4662847886347883622L;
     private MacheLoader<String, CouchTestEntity, ?> db;

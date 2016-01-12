@@ -25,17 +25,17 @@ public class CassandraProvisioner implements StorageProvisioner {
         this.replicationFactor = replicationFactor;
     }
 
-    @Override
-    public <K, V> CassandraCacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-    	return new CassandraCacheLoader<>(keyType, valueType, cluster,
-                schemaOptions, keySpace, replicationClass, replicationFactor);
-    }
-
     /**
      * @return A builder for a {@link CassandraProvisioner}.
      */
     public static ClusterBuilder cassandra() {
         return cluster -> keyspace -> new CassandraProvisionerBuilder(cluster, keyspace);
+    }
+
+    @Override
+    public <K, V> CassandraCacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+        return new CassandraCacheLoader<>(keyType, valueType, cluster,
+                schemaOptions, keySpace, replicationClass, replicationFactor);
     }
 
     /**

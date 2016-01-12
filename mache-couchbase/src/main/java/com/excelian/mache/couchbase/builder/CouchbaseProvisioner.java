@@ -36,17 +36,17 @@ public class CouchbaseProvisioner implements StorageProvisioner {
         this.schemaOptions = schemaOptions;
     }
 
-    @Override
-    public <K, V> MacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-    	return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings,
-                couchbaseEnvironment, nodes, adminUser, adminPassword, schemaOptions);
-    }
-
     /**
      * @return A builder for a {@link CouchbaseProvisioner}.
      */
     public static BucketBuilder couchbase() {
         return CouchbaseProvisionerBuilder::new;
+    }
+
+    @Override
+    public <K, V> MacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+        return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings,
+                couchbaseEnvironment, nodes, adminUser, adminPassword, schemaOptions);
     }
 
     /**
@@ -92,6 +92,11 @@ public class CouchbaseProvisioner implements StorageProvisioner {
             return this;
         }
 
+        /**
+         * Creates a CouchbaseProvisioner.
+         *
+         * @return the created CouchbaseProvisioner
+         */
         public CouchbaseProvisioner create() {
             if (couchbaseEnvironment == null) {
                 couchbaseEnvironment = DefaultCouchbaseEnvironment.create();

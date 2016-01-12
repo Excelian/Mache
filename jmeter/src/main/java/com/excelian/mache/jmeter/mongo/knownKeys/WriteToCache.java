@@ -1,4 +1,4 @@
-package com.excelian.mache.jmeter.mongo.knownKeys;
+package com.excelian.mache.jmeter.mongo.knownkeys;
 
 import com.excelian.mache.jmeter.mongo.MacheAbstractMongoKafkaSamplerClient;
 import com.excelian.mache.jmeter.mongo.MongoTestEntity;
@@ -8,6 +8,9 @@ import org.apache.jmeter.samplers.SampleResult;
 
 import java.util.Map;
 
+/**
+ * JMeter test that measures writing directly to Mache.
+ */
 public class WriteToCache extends MacheAbstractMongoKafkaSamplerClient {
     private static final long serialVersionUID = 2401450622395824431L;
 
@@ -45,9 +48,8 @@ public class WriteToCache extends MacheAbstractMongoKafkaSamplerClient {
         final String docNumber = params.get("entity.keyNo");
         final String entityValue = params.get("entity.value");
         final String key = "document_" + docNumber;
-        final String value = entityValue != null && entityValue.equals("CURRENTTIME") ?
-            key + "_" + System.currentTimeMillis() :
-            entityValue;
+        final String value = entityValue != null && entityValue.equals("CURRENTTIME")
+                ? key + "_" + System.currentTimeMillis() : entityValue;
 
         if (cache1 == null) {
             throw new Exception("Cache object is not initialised");

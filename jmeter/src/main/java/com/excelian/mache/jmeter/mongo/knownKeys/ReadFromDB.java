@@ -1,4 +1,4 @@
-package com.excelian.mache.jmeter.mongo.knownKeys;
+package com.excelian.mache.jmeter.mongo.knownkeys;
 
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
@@ -9,11 +9,15 @@ import com.mongodb.ServerAddress;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
+import java.util.Map;
+
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
-import java.util.Map;
 
+/**
+ * JMeter test that measures reading directly from the backing Mongo store.
+ */
 public class ReadFromDB extends AbstractMongoSamplerClient {
     private static final long serialVersionUID = 251140199032740124L;
     private MacheLoader db;

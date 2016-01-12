@@ -26,21 +26,10 @@ import static org.junit.Assert.assertNotNull;
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCassandraDbForTests.class)
 public class CassandraCacheLoaderIntegrationTest {
 
-    @Rule
-    public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
-
     protected static String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
     private static Mache<String, TestEntity> mache;
-
-    @Before
-    public void setUp() throws Exception {
-        mache = getMache(String.class, TestEntity.class);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        mache.close();
-    }
+    @Rule
+    public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     private static <K, V> Mache<K, V> getMache(Class<K> keyType, Class<V> valueType) throws Exception {
         return mache(keyType, valueType)
@@ -58,7 +47,15 @@ public class CassandraCacheLoaderIntegrationTest {
                 .macheUp();
     }
 
+    @Before
+    public void setUp() throws Exception {
+        mache = getMache(String.class, TestEntity.class);
+    }
 
+    @After
+    public void tearDown() throws Exception {
+        mache.close();
+    }
 
     @Test
     public void testCanGetDriverSession() throws Exception {
@@ -173,26 +170,23 @@ public class CassandraCacheLoaderIntegrationTest {
         public CompositeKey() {
         }
 
-        @Override
-        public int hashCode()
-        {
-            return (personId + "-"+workstationId+"-"+application).hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj)
-        {
-            CompositeKey o = (CompositeKey) obj;
-            return (o.personId.equals(this.personId)
-            && o.application.equals(this.application)
-            && workstationId.equals(this.workstationId));
-        }
-
         public CompositeKey(String personId, String workstationId, String application) {
-
             this.personId = personId;
             this.workstationId = workstationId;
             this.application = application;
+        }
+
+        @Override
+        public int hashCode() {
+            return (personId + "-" + workstationId + "-" + application).hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            CompositeKey o = (CompositeKey) obj;
+            return (o.personId.equals(this.personId)
+                    && o.application.equals(this.application)
+                    && workstationId.equals(this.workstationId));
         }
     }
 }

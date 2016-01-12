@@ -14,7 +14,7 @@ import org.junit.Test;
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.caffeine.CaffeineMacheProvisioner.caffeine;
-import static com.excelian.mache.chroniclemap.chroniclemap.ChronicleMapMacheProvisioner.chronicleMap;
+import static com.excelian.mache.chroniclemap.ChronicleMapMacheProvisioner.chronicleMap;
 import static com.excelian.mache.core.SchemaOptions.CREATE_AND_DROP_SCHEMA;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;

@@ -19,6 +19,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Consumes Mache events from Active MQ.
+ *
+ * @param <K> key of Mache
+ */
 public class ActiveMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K> {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQEventConsumer.class);
     ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -27,8 +32,13 @@ public class ActiveMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
     private Future<?> task;
     private volatile boolean notStopped = true;
 
-    public ActiveMQEventConsumer(final Connection connection,
-                                 final String producerTopicName,
+    /**
+     * @param connection The ActiveMQ Connection to use.
+     * @param producerTopicName The topic name to receive events from.
+     * @param acknowledgementMode The JMS acknowledgement mode to use.
+     * @throws JMSException If a JMS error occurred.
+     */
+    public ActiveMQEventConsumer(final Connection connection, final String producerTopicName,
                                  int acknowledgementMode) throws JMSException {
         super(producerTopicName);
         session = connection.createSession(false, acknowledgementMode);

@@ -1,4 +1,4 @@
-package com.excelian.mache.jmeter.couch.knownKeys;
+package com.excelian.mache.jmeter.couch.knownkeys;
 
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
@@ -8,14 +8,16 @@ import com.excelian.mache.jmeter.couch.CouchTestEntity;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-import static com.excelian.mache.builder.MacheBuilder.mache;
-import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
-import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
-import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
-
-
 import java.util.Map;
 
+import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
+import static com.excelian.mache.builder.MacheBuilder.mache;
+import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
+import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
+
+/**
+ * JMeter test that measures reading directly from the backing Couchbase store.
+ */
 public class ReadFromDB extends AbstractCouchSamplerClient {
     private static final long serialVersionUID = 251140199032740124L;
     private MacheLoader db;
@@ -31,14 +33,14 @@ public class ReadFromDB extends AbstractCouchSamplerClient {
             final String couchServer = mapParams.get("couch.server.ip.address");
 
             final Mache<String, CouchTestEntity> mache = mache(String.class, CouchTestEntity.class)
-                .cachedBy(guava())
-                .storedIn(couchbase()
-                    .withBucketSettings(builder().name(keySpace).quota(150).build())
-                    .withNodes(couchServer)
-                    .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                    .create())
-                .withNoMessaging()
-                .macheUp();
+                    .cachedBy(guava())
+                    .storedIn(couchbase()
+                            .withBucketSettings(builder().name(keySpace).quota(150).build())
+                            .withNodes(couchServer)
+                            .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                            .create())
+                    .withNoMessaging()
+                    .macheUp();
 
             db = mache.getCacheLoader();
             db.create();

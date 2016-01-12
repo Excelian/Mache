@@ -4,6 +4,9 @@ import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 
+/**
+ * Provides base client for Couchbase JMeter tests.
+ */
 @SuppressWarnings("serial")
 public abstract class AbstractCouchSamplerClient extends MacheAbstractJavaSamplerClient {
     @Override

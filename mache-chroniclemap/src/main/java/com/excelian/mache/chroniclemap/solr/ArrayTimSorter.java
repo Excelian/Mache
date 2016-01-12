@@ -1,4 +1,5 @@
-package com.excelian.mache.chroniclemap.chroniclemap.solr;/*
+package com.excelian.mache.chroniclemap.solr;
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,21 +19,31 @@ package com.excelian.mache.chroniclemap.chroniclemap.solr;/*
 import java.util.Comparator;
 
 /**
- * An {@link IntroSorter} for object arrays.
+ * A {@link TimSorter} for object arrays.
  *
  * @param <T> - Type to sort.
  *
  */
-final class ArrayIntroSorter<T> extends IntroSorter {
+final class ArrayTimSorter<T> extends TimSorter {
 
-    private final T[] arr;
     private final Comparator<? super T> comparator;
-    private T pivot;
+    private final T[] arr;
+    private final T[] tmp;
 
-    public ArrayIntroSorter(T[] arr, Comparator<? super T> comparator) {
+    /**
+     * Create a new {@link ArrayTimSorter}.
+     */
+    public ArrayTimSorter(T[] arr, Comparator<? super T> comparator, int maxTempSlots) {
+        super(maxTempSlots);
         this.arr = arr;
         this.comparator = comparator;
-        pivot = null;
+        if (maxTempSlots > 0) {
+            @SuppressWarnings("unchecked")
+            final T[] tmp = (T[]) new Object[maxTempSlots];
+            this.tmp = tmp;
+        } else {
+            this.tmp = null;
+        }
     }
 
     @Override
@@ -46,13 +57,23 @@ final class ArrayIntroSorter<T> extends IntroSorter {
     }
 
     @Override
-    protected void setPivot(int i) {
-        pivot = arr[i];
+    protected void copy(int src, int dest) {
+        arr[dest] = arr[src];
     }
 
     @Override
-    protected int comparePivot(int i) {
-        return comparator.compare(pivot, arr[i]);
+    protected void save(int start, int len) {
+        System.arraycopy(arr, start, tmp, 0, len);
+    }
+
+    @Override
+    protected void restore(int src, int dest) {
+        arr[dest] = tmp[src];
+    }
+
+    @Override
+    protected int compareSaved(int i, int j) {
+        return comparator.compare(tmp[i], arr[j]);
     }
 
 }

@@ -39,6 +39,7 @@ public abstract class BaseCoordinationEntryEventConsumer<K> implements Closeable
         return topicName;
     }
 
+    @SuppressWarnings("unchecked")
     public void registerEventListener(CoordinationEventListener<K> listener) {
         if (listener instanceof RemoteCacheEntryCreatedListener) {
             createdEventConsumers.add((RemoteCacheEntryCreatedListener) listener);

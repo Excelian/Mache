@@ -1,4 +1,4 @@
-package com.excelian.mache.chroniclemap.chroniclemap.solr;
+package com.excelian.mache.chroniclemap.solr;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more

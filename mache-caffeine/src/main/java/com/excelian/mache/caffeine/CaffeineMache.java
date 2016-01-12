@@ -7,6 +7,12 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 
 import java.util.UUID;
 
+/**
+ * A Mache with a Caffeine In Memory store.
+ *
+ * @param <K> the type of key to store in Mache.
+ * @param <V> the type of value to store in Mache.
+ */
 public class CaffeineMache<K, V> implements Mache<K, V> {
 
     private final MacheLoader<K, V, ?> cacheLoader;
@@ -14,6 +20,10 @@ public class CaffeineMache<K, V> implements Mache<K, V> {
 
     private final LoadingCache<K, V> cache;
 
+    /**
+     * @param cacheLoader The MacheLoader of the backing store for this Mache.
+     * @param cache The created Caffeine LoadingCache.
+     */
     public CaffeineMache(final MacheLoader<K, V, ?> cacheLoader, LoadingCache<K, V> cache) {
         this.cacheLoader = cacheLoader;
         this.cache = cache;

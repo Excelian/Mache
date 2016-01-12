@@ -8,11 +8,15 @@ import com.mongodb.ServerAddress;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 
+import java.util.Map;
+
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
-import java.util.Map;
 
+/**
+ * JMeter client for MongoDB/Kafka.
+ */
 @SuppressWarnings("serial")
 public abstract class MacheAbstractMongoKafkaSamplerClient extends AbstractMongoSamplerClient {
 
@@ -36,8 +40,9 @@ public abstract class MacheAbstractMongoKafkaSamplerClient extends AbstractMongo
 
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        if (cache1 != null)
+        if (cache1 != null) {
             cache1.close();
+        }
     }
 
     @Override

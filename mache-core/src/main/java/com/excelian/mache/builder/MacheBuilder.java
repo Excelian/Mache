@@ -3,6 +3,12 @@ package com.excelian.mache.builder;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
 
+/**
+ * Builds a Mache instance
+ *
+ * @param <K> key type of the cache to be provisioned.
+ * @param <V> value type of the cache to be provisioned.
+ */
 public class MacheBuilder<K, V> {
 
     public static <K, V> FluentMacheBuilder<K, V> mache(Class<K> keyType, Class<V> valueType) {
@@ -10,14 +16,32 @@ public class MacheBuilder<K, V> {
                 new MacheBuilder<>(keyType, valueType, cacheProvisioner, storageProvisioner, messagingProvisioner);
     }
 
+    /**
+     * Adds a cache provisioner.
+     *
+     * @param <K> key type of the cache to be provisioned.
+     * @param <V> value type of the cache to be provisioned.
+     */
     public interface FluentMacheBuilder<K, V> {
         StorageProvisionerBuilder<K, V> cachedBy(CacheProvisioner<K, V> storageProvisioner);
     }
 
+    /**
+     * Adds a storage provisioner.
+     *
+     * @param <K> key type of the cache to be provisioned.
+     * @param <V> value type of the cache to be provisioned.
+     */
     public interface StorageProvisionerBuilder<K, V> {
         MessagingProvisionerBuilder<K, V> storedIn(StorageProvisioner storageProvisioner);
     }
 
+    /**
+     * Adds a messaging provisioner.
+     *
+     * @param <K> key type of the cache to be provisioned.
+     * @param <V> value type of the cache to be provisioned.
+     */
     public interface MessagingProvisionerBuilder<K, V> {
         MacheBuilder<K, V> withMessaging(MessagingProvisioner messagingProvisioner);
 
