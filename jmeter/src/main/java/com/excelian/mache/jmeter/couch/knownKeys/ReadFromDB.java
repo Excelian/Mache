@@ -1,5 +1,8 @@
 package com.excelian.mache.jmeter.couch.knownKeys;
 
+import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.CouchbaseCluster;
+import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
@@ -30,13 +33,16 @@ public class ReadFromDB extends AbstractCouchSamplerClient {
             final String keySpace = mapParams.get("keyspace.name");
             final String couchServer = mapParams.get("couch.server.ip.address");
 
+            //TOODO: need to disconnect cluster..
+            final Cluster cluster = CouchbaseCluster.create(DefaultCouchbaseEnvironment.create(), couchServer);
+
             final Mache<String, CouchTestEntity> mache = mache(String.class, CouchTestEntity.class)
                 .cachedBy(guava())
-                .backedBy(couchbase()
-                    .withBucketSettings(builder().name(keySpace).quota(150).build())
-                    .withNodes(couchServer)
-                    .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                    .create())
+                .backedBy(couchbase().withCluster(cluster)
+                        .withBucketSettings(builder().name(keySpace).quota(150).build())
+                        .withDefaultAdminDetails()
+                        .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                        .build())
                 .withNoMessaging()
                 .macheUp();
 
