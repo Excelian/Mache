@@ -21,6 +21,7 @@ import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static com.excelian.mache.guava.builder.GuavaProvisioner.guava;
 
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCassandraDbForTests.class)
 public class CassandraCacheLoaderIntegrationTest {
@@ -52,6 +53,7 @@ public class CassandraCacheLoaderIntegrationTest {
     private static <K, V> Mache<K, V> getMache(Class<K> keyType, Class<V> valueType, Cluster cluster) throws Exception {
 
         return mache(keyType, valueType)
+                .cachedBy(guava())
                 .backedBy(cassandra()
                         .withCluster(cluster)
                         .withKeyspace(keySpace)

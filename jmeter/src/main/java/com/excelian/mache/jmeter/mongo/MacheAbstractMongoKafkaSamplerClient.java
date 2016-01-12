@@ -11,6 +11,7 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 import java.util.Map;
+import static com.excelian.mache.guava.builder.GuavaProvisioner.guava;
 
 @SuppressWarnings("serial")
 public abstract class MacheAbstractMongoKafkaSamplerClient extends AbstractMongoSamplerClient {
@@ -56,6 +57,7 @@ public abstract class MacheAbstractMongoKafkaSamplerClient extends AbstractMongo
                 .withTopic(mapParams.get("kafka.topic"));
 
         cache1 = mache(String.class, com.excelian.mache.jmeter.mongo.MongoTestEntity.class)
+            .cachedBy(guava())
             .backedBy(mongodb()
                 .withSeeds(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017))
                 .withDatabase(mapParams.get("keyspace.name"))

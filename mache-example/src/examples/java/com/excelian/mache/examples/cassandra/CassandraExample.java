@@ -10,6 +10,7 @@ import java.util.Date;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+import static com.excelian.mache.guava.builder.GuavaProvisioner.guava;
 
 /**
  * A factory for a Cassandra backed {@link Example}.
@@ -27,6 +28,7 @@ public class CassandraExample implements Example<CassandraAnnotatedMessage> {
                 .withClusterName("BluePrint").build();
 
         return mache(String.class, CassandraAnnotatedMessage.class)
+                .cachedBy(guava())
                 .backedBy(cassandra()
                         .withCluster(cluster)
                         .withKeyspace(keySpace)

@@ -22,6 +22,7 @@ import static com.excelian.mache.core.SchemaOptions.CREATE_AND_DROP_SCHEMA;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.*;
+import static com.excelian.mache.guava.builder.GuavaProvisioner.guava;
 
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCouchbaseDbForTests.class)
 public class CouchbaseCacheLoaderIntegrationTest {
@@ -45,6 +46,7 @@ public class CouchbaseCacheLoaderIntegrationTest {
         cluster = CouchbaseCluster.create(couchbaseEnvironment, COUCHBASE_HOST);
 
         cache = mache(String.class, TestEntity.class)
+                .cachedBy(guava())
                 .backedBy(couchbase()
                         .withCluster(cluster)
                         .withBucketSettings(builder().name(BUCKET).quota(150).build())

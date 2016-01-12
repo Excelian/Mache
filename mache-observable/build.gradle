@@ -8,6 +8,7 @@ dependencies {
         exclude module: 'log4j'
     }
     testCompile project(path: ':mache-core', configuration: 'tests')
+    testCompile project(path: ':mache-guava')
 }
 
 task testJar(type: Jar, dependsOn: testClasses) {

@@ -1,18 +1,16 @@
-package com.excelian.mache.core;
+package com.excelian.mache.guava;
 
+import com.excelian.mache.core.MacheImpl;
+import com.excelian.mache.core.MacheLoader;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import java.util.concurrent.ExecutionException;
 
-public class MacheImplTest {
+public class GuavaBackedMacheIntegrationTest {
 
-    private MacheLoader<String, String, String> fixture;
     private int created;
     private int read;
     private int removed;
@@ -86,7 +84,7 @@ public class MacheImplTest {
     @Before
     public void setUp() throws Exception {
 
-        fixture = new MacheLoader<String, String, String>() {
+        MacheLoader<String, String, String> cacheLoaderFixture = new MacheLoader<String, String, String>() {
             public String load(String key) throws Exception {
                 read++;
                 return "FIXTURE:loaded_" + key;
@@ -116,39 +114,8 @@ public class MacheImplTest {
                 return "yay";
             }
 
-            public void invalidateAll() {
-            }
         };
 
-        final Cache<String, String> cache = new Cache<String, String>() {
-            private final Map<String, String> cache = new ConcurrentHashMap<>();
-
-            @Override
-            public void create(MacheLoader<String, String, ?> cacheLoader, String... optionalSpec) {
-
-            }
-
-            @Override
-            public String getUnchecked(String key) {
-                return this.cache.get(key);
-            }
-
-            @Override
-            public void invalidate(String key) {
-                this.cache.remove(key);
-            }
-
-            @Override
-            public void invalidateAll() {
-                this.cache.clear();
-            }
-
-            @Override
-            public void put(String key, String value) {
-                this.cache.put(key, value);
-            }
-        };
-
-        mache = new MacheImpl<String, String>(cache, fixture);
+        mache = new MacheImpl<>(new GuavaCache<>(), cacheLoaderFixture);
     }
 }

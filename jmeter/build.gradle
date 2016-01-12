@@ -110,6 +110,9 @@ task pluginJar(type: Jar, dependsOn: compileJava) {
 
     from project(':mache-cassandra').sourceSets.main.output.classesDir
     include '**/*.class'
+
+    from project(':mache-guava').sourceSets.main.output.classesDir
+    include '**/*.class'
 }
 
 assemble.dependsOn pluginJar
@@ -138,6 +141,7 @@ dependencies {
     compile project(':mache-core')
 
     compile project(':mache-cassandra')
+    compile project(':mache-guava')
 
     compile 'org.apache.jmeter:ApacheJMeter_java:2.11' // 2.11 and jcenter compiles ok
     compile 'commons-logging:commons-logging:1.1.1'

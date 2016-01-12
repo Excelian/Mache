@@ -1,19 +1,10 @@
 package com.excelian.mache.couchbase.builder;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.cluster.BucketSettings;
-import com.couchbase.client.java.env.CouchbaseEnvironment;
-import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.storage.StorageProvisioner;
-import com.excelian.mache.core.AbstractCacheLoader;
-import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.MacheFactory;
-import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.core.*;
 import com.excelian.mache.couchbase.CouchbaseCacheLoader;
 
 /**
@@ -39,13 +30,13 @@ public class CouchbaseProvisioner implements StorageProvisioner {
     }
 
     @Override
-    public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType) {
-        return new MacheFactory().create(getCacheLoader(keyType, valueType));
+    public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType, Cache<K, V> inMemoryCache) {
+        return new MacheFactory().create(inMemoryCache, getCacheLoader(keyType, valueType));
     }
-    
+
     @Override
-    public <K, V> AbstractCacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-    	return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings, cluster, adminUser, adminPassword, schemaOptions);
+    public <K, V> MacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+        return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings, cluster, adminUser, adminPassword, schemaOptions);
     }
 
     /**
@@ -79,8 +70,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
     /**
      * A builder with defaults for a Couchbase cluster.
      */
-    public static class CouchbaseProvisionerBuilder implements ClusterBuilder,BucketBuilder,AdminSettings,SchemaOptionsSettings
-    {
+    public static class CouchbaseProvisionerBuilder implements ClusterBuilder,BucketBuilder,AdminSettings,SchemaOptionsSettings {
         private Cluster cluster;
         private BucketSettings bucketSettings;
         private String adminUser = "Administrator";

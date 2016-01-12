@@ -2,6 +2,7 @@ dependencies {
   compile project(':mache-core')
   compile project(':mache-observable')
   compile 'org.apache.activemq:activemq-core:5.7.0'
+  compile 'com.google.guava:guava:18.0'
   testCompile project(path: ':mache-observable', configuration: 'tests')
   testCompile project(path: ':mache-core', configuration: 'tests')
 }

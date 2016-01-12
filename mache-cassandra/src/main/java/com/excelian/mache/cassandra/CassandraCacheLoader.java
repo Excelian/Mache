@@ -3,7 +3,7 @@ package com.excelian.mache.cassandra;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.DriverException;
-import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ import org.springframework.data.cassandra.core.CassandraTemplate;
  * @param <K> Cache key type.
  * @param <V> Cache value type.
  */
-public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Session> {
+public class CassandraCacheLoader<K, V> implements MacheLoader<K, V, Session> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CassandraCacheLoader.class);
     private static final String CREATE_KEYPSACE = "CREATE KEYSPACE IF NOT EXISTS %s  "
