@@ -8,7 +8,6 @@ package com.excelian.mache.core;
  * @param <V> the type of the values
  * @param <D> the type of the driver for the underlying store
  */
-//todo: Would this class be better named MacheDataStore ???
 public interface MacheLoader<K, V, D> extends AutoCloseable {
 
     /**
@@ -52,7 +51,5 @@ public interface MacheLoader<K, V, D> extends AutoCloseable {
     /*
      * @return a session to the underlying driver
      */
-    //todo: this method is only called in test code - can we remove it and the
-    // generic declaration at the top of this class too?
     D getDriverSession();
 }
