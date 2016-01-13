@@ -29,7 +29,7 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
 
     private Class<K> keyType;
     private Class<V> valueType;
-    private final Cluster cluster;
+    private static Cluster cluster;
     private ClusterManager manager;
     private CouchbaseTemplate template;
     private BucketSettings bucketSettings;
