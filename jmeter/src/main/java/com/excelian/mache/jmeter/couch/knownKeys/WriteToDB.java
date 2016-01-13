@@ -3,6 +3,7 @@ package com.excelian.mache.jmeter.couch.knownKeys;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.couch.AbstractCouchSamplerClient;
@@ -13,11 +14,14 @@ import org.apache.jmeter.samplers.SampleResult;
 
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
+import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbaseConnectionContext;
+
 import java.util.Map;
 
 public class WriteToDB extends AbstractCouchSamplerClient {
     private static final long serialVersionUID = 4662847886347883622L;
     private AbstractCacheLoader<String, CouchTestEntity, ?> db;
+    private ConnectionContext<Cluster> connectionContext;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -29,10 +33,9 @@ public class WriteToDB extends AbstractCouchSamplerClient {
             final String keySpace = mapParams.get("keyspace.name");
             final String couchServer = mapParams.get("couch.server.ip.address");
 
-            //TOODO: need to disconnect cluster..
-            final Cluster cluster = CouchbaseCluster.create(DefaultCouchbaseEnvironment.create(),couchServer);
+            connectionContext = couchbaseConnectionContext(couchServer);
 
-            db = couchbase().withCluster(cluster)
+            db = couchbase().withContext(connectionContext)
                 .withBucketSettings(builder().name(keySpace).quota(150).build())
                 .withDefaultAdminDetails()
                 .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
@@ -49,6 +52,15 @@ public class WriteToDB extends AbstractCouchSamplerClient {
     public void teardownTest(JavaSamplerContext context) {
         if (db != null) {
             db.close();
+        }
+
+        if(connectionContext!=null)
+        {
+            try {
+                connectionContext.close();
+            } catch (Exception e) {
+                getLogger().error("Error closing connection to cassandra", e);
+            }
         }
     }
 

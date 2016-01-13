@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.builder.storage.StorageProvisioner;
 import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.Mache;
@@ -22,16 +24,16 @@ import com.excelian.mache.couchbase.CouchbaseCacheLoader;
 public class CouchbaseProvisioner implements StorageProvisioner {
 
     private final BucketSettings bucketSettings;
-    private Cluster cluster;
+    private ConnectionContext<Cluster> connectionContext;
 
     private String adminUser;
     private String adminPassword;
     private SchemaOptions schemaOptions;
 
-    private CouchbaseProvisioner(Cluster cluster, BucketSettings bucketSettings,
+    private CouchbaseProvisioner(ConnectionContext<Cluster> connectionContext, BucketSettings bucketSettings,
                                  String adminUser, String adminPassword,
                                  SchemaOptions schemaOptions) {
-        this.cluster = cluster;
+        this.connectionContext = connectionContext;
         this.bucketSettings = bucketSettings;
         this.adminUser = adminUser;
         this.adminPassword = adminPassword;
@@ -45,7 +47,38 @@ public class CouchbaseProvisioner implements StorageProvisioner {
     
     @Override
     public <K, V> AbstractCacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-    	return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings, cluster, adminUser, adminPassword, schemaOptions);
+    	return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings, connectionContext, adminUser, adminPassword, schemaOptions);
+    }
+
+    public static ConnectionContext<Cluster> couchbaseConnectionContext(String contactPoint)
+    {
+        return new ConnectionContext<Cluster>() {
+
+            Cluster cluster;
+
+            @Override
+            public Cluster getStorage() {
+                if(cluster==null) {
+                    synchronized (this) {
+                        if (cluster == null) {
+                            DefaultCouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
+                            cluster = CouchbaseCluster.create(couchbaseEnvironment, contactPoint);
+                        }
+                    }
+                }
+                return cluster;
+            }
+
+            @Override
+            public void close() throws Exception {
+                if(cluster!=null) {
+                    synchronized (this) {
+                        cluster.disconnect();
+                        cluster = null;
+                    }
+                }
+            }
+        };
     }
 
     /**
@@ -59,7 +92,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
      * Forces bucket settings to be provided.
      */
     public interface ClusterBuilder {
-        BucketBuilder withCluster(Cluster cluster);
+        BucketBuilder withContext(ConnectionContext<Cluster> connectionContext);
     }
 
     public interface BucketBuilder {
@@ -81,18 +114,18 @@ public class CouchbaseProvisioner implements StorageProvisioner {
      */
     public static class CouchbaseProvisionerBuilder implements ClusterBuilder,BucketBuilder,AdminSettings,SchemaOptionsSettings
     {
-        private Cluster cluster;
+        private ConnectionContext<Cluster> connectionContext;
         private BucketSettings bucketSettings;
         private String adminUser = "Administrator";
         private String adminPassword = "password";
         private SchemaOptions schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
 
-        public BucketBuilder withCluster(Cluster cluster) {
-            if(cluster==null) {
-                throw new NullPointerException("Cannot build without a cluster defined");
+        public BucketBuilder withContext(ConnectionContext<Cluster> connectionContext) {
+            if(connectionContext==null) {
+                throw new NullPointerException("Cannot build without a connectionContext defined");
             }
 
-            this.cluster = cluster;
+            this.connectionContext = connectionContext;
             return this;
         }
 
@@ -127,7 +160,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
         }
 
         public CouchbaseProvisioner build() {
-            return new CouchbaseProvisioner(cluster, bucketSettings, adminUser, adminPassword, schemaOptions);
+            return new CouchbaseProvisioner(connectionContext, bucketSettings, adminUser, adminPassword, schemaOptions);
         }
     }
 

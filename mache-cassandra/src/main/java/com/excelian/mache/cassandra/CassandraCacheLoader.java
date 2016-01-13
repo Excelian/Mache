@@ -3,6 +3,7 @@ package com.excelian.mache.cassandra;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.DriverException;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
 
     private final Class<K> keyType;
     private final Class<V> valueType;
-    private final Cluster cluster;
+    private final ConnectionContext<Cluster> connectionContext;
     private final SchemaOptions schemaOption;
     private final String replicationClass;
     private final int replicationFactor;
@@ -40,16 +41,16 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
     /**
      * @param keyType           The class type of the cache key.
      * @param valueType         The class type of the cache value.
-     * @param cluster           The Cassandra cluster object that defines cluster parameters.
+     * @param connectionContext           The Cassandra cluster object that defines cluster parameters.
      * @param schemaOption      Determine whether to create/drop key space.
      * @param keySpace          The name of the key space to use.
      * @param replicationClass  The type of replication strategy to use for the key space.
      * @param replicationFactor The replication factor for the keyspace.
      */
-    public CassandraCacheLoader(Class<K> keyType, Class<V> valueType, Cluster cluster, SchemaOptions schemaOption,
+    public CassandraCacheLoader(Class<K> keyType, Class<V> valueType, ConnectionContext<Cluster> connectionContext, SchemaOptions schemaOption,
                                 String keySpace, String replicationClass, int replicationFactor) {
         this.keyType = keyType;
-        this.cluster = cluster;
+        this.connectionContext = connectionContext;
         this.schemaOption = schemaOption;
         this.replicationClass = replicationClass;
         this.replicationFactor = replicationFactor;
@@ -62,7 +63,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
         if (schemaOption.shouldCreateSchema() && session == null) {
             synchronized (this) {
                 if (session == null) {
-                    session = cluster.connect();
+                    session = connectionContext.getStorage().connect();
                     if (schemaOption.shouldCreateSchema()) {
                         createKeySpace();
                     }
@@ -70,7 +71,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
                 }
             }
         } else {
-            session = cluster.connect(keySpace);
+            session = connectionContext.getStorage().connect(keySpace);
         }
     }
 
@@ -115,6 +116,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
                 }
             }
             session.close();
+            session=null;
         }
     }
 
@@ -138,7 +140,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
     @Override
     public String toString() {
         return "CassandraCacheLoader{"
-                + "cluster=" + cluster
+                + "storageContext=" + connectionContext
                 + ", schemaOption=" + schemaOption
                 + ", replicationClass='" + replicationClass + '\''
                 + ", replicationFactor=" + replicationFactor

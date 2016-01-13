@@ -1,9 +1,11 @@
 package com.excelian.mache.jmeter.cassandra.knownKeys;
 
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandraConnectionContext;
 
 import java.util.Map;
 
+import com.excelian.mache.builder.storage.ConnectionContext;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
@@ -17,6 +19,7 @@ import com.excelian.mache.jmeter.cassandra.CassandraTestEntity;
 public class WriteToDB extends AbstractCassandraSamplerClient {
 	private static final long serialVersionUID = 4662847886347883622L;
 	private AbstractCacheLoader<String, CassandraTestEntity, ?> db;
+	private ConnectionContext<Cluster> connectionContext;
 
 	@Override
 	public void setupTest(JavaSamplerContext context) {
@@ -25,9 +28,14 @@ public class WriteToDB extends AbstractCassandraSamplerClient {
 		final Map<String, String> mapParams = extractParameters(context);
 
 		try {
+			connectionContext = cassandraConnectionContext(
+					Cluster.builder()
+							.addContactPoint(mapParams.get("cassandra.server.ip.address"))
+							.withPort(9042)
+							.withClusterName("BluePrint") );
+
 			db = cassandra()
-					.withCluster(Cluster.builder().withClusterName("BluePrint")
-							.addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042).build())
+					.withContext(connectionContext)
 					.withKeyspace(mapParams.get("keyspace.name"))
 					.withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED).build()
 					.getCacheLoader(String.class, CassandraTestEntity.class);
@@ -41,6 +49,14 @@ public class WriteToDB extends AbstractCassandraSamplerClient {
 	public void teardownTest(JavaSamplerContext context) {
 		if (db != null) {
 			db.close();
+		}
+
+		if(connectionContext!=null){
+			try {
+				connectionContext.close();
+			} catch (Exception e) {
+				getLogger().error("Error closing cassandra context", e);
+			}
 		}
 	}
 

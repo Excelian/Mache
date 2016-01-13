@@ -2,9 +2,9 @@ package com.excelian.mache.couchbase;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.NoMessagingProvisioner;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.google.common.cache.CacheLoader;
 import org.junit.After;
@@ -20,7 +20,7 @@ import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.core.SchemaOptions.CREATE_AND_DROP_SCHEMA;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbaseConnectionContext;
 import static org.junit.Assert.*;
 
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCouchbaseDbForTests.class)
@@ -37,16 +37,16 @@ public class CouchbaseCacheLoaderIntegrationTest {
     private static final DefaultCouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
 
     private Mache<String, TestEntity> cache;
-    private Cluster cluster;
+    private ConnectionContext<Cluster> connectionContext;
 
     @Before
     public void setup() throws Exception {
 
-        cluster = CouchbaseCluster.create(couchbaseEnvironment, COUCHBASE_HOST);
+        connectionContext = couchbaseConnectionContext(COUCHBASE_HOST);
 
         cache = mache(String.class, TestEntity.class)
                 .backedBy(couchbase()
-                        .withCluster(cluster)
+                        .withContext(connectionContext)
                         .withBucketSettings(builder().name(BUCKET).quota(150).build())
                         .withAdminDetails(ADMIN_USER, PASSWORD)
                         .withSchemaOptions(CREATE_AND_DROP_SCHEMA).build())
@@ -55,9 +55,9 @@ public class CouchbaseCacheLoaderIntegrationTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Exception {
         cache.close();
-        cluster.disconnect();
+        connectionContext.close();
     }
 
     @Test

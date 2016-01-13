@@ -3,6 +3,7 @@ package com.excelian.mache.jmeter.couch;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.integration.KafkaMqConfig;
@@ -13,12 +14,15 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
+import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbaseConnectionContext;
+
 import java.util.Map;
 
 @SuppressWarnings("serial")
 public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouchSamplerClient {
 
     protected Mache<String, CouchTestEntity> cache1 = null;
+    protected ConnectionContext<Cluster> connectionContext;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -38,8 +42,17 @@ public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouch
 
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        if (cache1 != null)
+        if (cache1 != null) {
             cache1.close();
+        }
+        if(connectionContext!=null){
+            try {
+                connectionContext.close();
+            } catch (Exception e) {
+                getLogger().error("mache error closing connection", e);
+            }
+        }
+
     }
 
     @Override
@@ -61,11 +74,11 @@ public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouch
         final String keySpace = mapParams.get("keyspace.name");
         final String couchServer = mapParams.get("couch.server.ip.address");
 
-        final  Cluster cluster = CouchbaseCluster.create(DefaultCouchbaseEnvironment.create(), couchServer);
+        connectionContext = couchbaseConnectionContext(couchServer);
 
         final Mache<String, CouchTestEntity> mache = mache(String.class, CouchTestEntity.class)
             .backedBy(couchbase()
-                    .withCluster(cluster)
+                    .withContext(connectionContext)
                     .withBucketSettings(builder().name(keySpace).quota(150).build())
                     .withDefaultAdminDetails()
                     .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)

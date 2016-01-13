@@ -6,6 +6,7 @@ import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.cluster.ClusterManager;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import org.slf4j.Logger;
@@ -29,7 +30,8 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
 
     private Class<K> keyType;
     private Class<V> valueType;
-    private final Cluster cluster;
+    private final ConnectionContext<Cluster> connectionContext;
+    private Bucket bucket;
     private ClusterManager manager;
     private CouchbaseTemplate template;
     private BucketSettings bucketSettings;
@@ -43,23 +45,23 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
      * @param keyType The class type of the cache key.
      * @param valueType The class type of the cache value.
      * @param bucketSettings Bucket that will hold cached objects.
-     * @param cluster Cluster connection.
+     * @param connectionContext Cluster connection.
      * @param adminUser Administration user for Couchbase cluster.
      * @param adminPassword Password for Administration user for Couchbase cluster.
      * @param schemaOptions Determine whether to create/drop bucket.
      */
     public CouchbaseCacheLoader(Class<K> keyType, Class<V> valueType, BucketSettings bucketSettings,
-                                Cluster cluster, String adminUser,
+                                ConnectionContext<Cluster> connectionContext, String adminUser,
                                 String adminPassword, SchemaOptions schemaOptions) {
         this.keyType = keyType;
         this.valueType = valueType;
         this.bucketSettings = bucketSettings;
-        this.cluster = cluster;
+        this.connectionContext = connectionContext;
         this.adminUser = adminUser;
         this.adminPassword = adminPassword;
         this.schemaOptions = schemaOptions;
 
-        if(cluster==null)
+        if(connectionContext==null)
         {
             throw new NullPointerException("Cluster cannot be null");
         }
@@ -70,10 +72,11 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
         synchronized (this) {
             if (manager == null) {
                 LOG.info("Attempting to connect to authenticate to Couchbase cluster as {}", adminUser);
-                manager = cluster.clusterManager(adminUser, adminPassword);
+                manager = connectionContext.getStorage().clusterManager(adminUser, adminPassword);
 
                 dropBucketIfRequired();
-                Bucket bucket = createBucketIfRequired();
+                bucket = createBucketIfRequired();
+
                 template = new CouchbaseTemplate(manager.info(), bucket);
                 LOG.info("Using Couchbase bucket: {}", bucket);
             }
@@ -85,7 +88,6 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
         checkNotNull(key);
         return template.findById(key.toString(), valueType);
     }
-
     @Override
     public void put(K key, V value) {
         template.save(value);
@@ -105,11 +107,21 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
                 }
             }
         }
+
+        if (bucket != null) {
+            synchronized (this) {
+                if (bucket != null) {
+                    bucket.close();
+                    bucket=null;
+                }
+            }
+        }
+
     }
 
     @Override
     public Cluster getDriverSession() {
-        return cluster;
+        return connectionContext.getStorage();
     }
 
     @Override
@@ -129,13 +141,13 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
             LOG.info("Creating bucket {}", bucketSettings.name());
             manager.insertBucket(bucketSettings);
         }
-        return cluster.openBucket(bucketSettings.name());
+        return connectionContext.getStorage().openBucket(bucketSettings.name());
     }
 
     @Override
     public String toString() {
         return "CouchbaseCacheLoader{"
-                + "cluster=" + cluster
+                + "connectionContext=" + connectionContext
                 + ", manager=" + manager
                 + ", template=" + template
                 + ", bucketSettings=" + bucketSettings
