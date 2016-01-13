@@ -120,11 +120,6 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
     }
 
     @Override
-    public Cluster getDriverSession() {
-        return connectionContext.getStorage();
-    }
-
-    @Override
     public String getName() {
         return getClass().getSimpleName();
     }

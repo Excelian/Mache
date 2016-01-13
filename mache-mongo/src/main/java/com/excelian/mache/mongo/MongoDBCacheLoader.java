@@ -98,14 +98,6 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, MongoCli
         }
     }
 
-    @Override
-    public MongoClient getDriverSession() {
-        if (mongoClient == null) {
-            throw new IllegalStateException("Session has not been created - read/write to cache first");
-        }
-        return mongoClient;
-    }
-
     private MongoOperations ops() {
         return new MongoTemplate(mongoClient, database);
     }

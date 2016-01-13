@@ -38,11 +38,6 @@ public class InMemoryCacheLoader<K, V, D> extends AbstractCacheLoader<K, V, Obje
     }
 
     @Override
-    public String getDriverSession() {
-        throw new UnsupportedOperationException("Not implemented.");
-    }
-
-    @Override
     public V load(K key) throws Exception {
         V result = store.get(key);
 

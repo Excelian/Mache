@@ -125,14 +125,6 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
         return valueType.getSimpleName();
     }
 
-    @Override
-    public Session getDriverSession() {
-        if (session == null) {
-            throw new IllegalStateException("Session has not been created - read/write to cache first");
-        }
-        return session;
-    }
-
     private CassandraOperations ops() {
         return new CassandraTemplate(session);
     }

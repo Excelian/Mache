@@ -82,18 +82,6 @@ public class CouchbaseCacheLoaderIntegrationTest {
         assertEquals(0.93, cache.get("test3").value, DELTA);
     }
 
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void canGetDriver() {
-        CouchbaseCacheLoader<String, Object> loader = (CouchbaseCacheLoader) cache.getCacheLoader();
-        loader.create();
-        Cluster cluster = loader.getDriverSession();
-        assertNotNull(cluster);
-        loader.close();
-        assertNull(loader.getDriverSession());
-    }
-
     @Document
     public static class TestEntity {
         @Id

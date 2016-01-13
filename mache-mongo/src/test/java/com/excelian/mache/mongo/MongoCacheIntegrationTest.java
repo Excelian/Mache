@@ -53,16 +53,7 @@ public class MongoCacheIntegrationTest {
     public void tearDown() throws Exception {
         mache.close();
     }
-
-    @Test
-    public void testGetDriver() throws Exception {
-        mache.put("test-1", new TestEntity("test-1"));
-        mache.get("test-1");
-        MongoDBCacheLoader cacheLoader = (MongoDBCacheLoader) mache.getCacheLoader();
-        Mongo driver = cacheLoader.getDriverSession();
-        assertNotNull(driver.getAddress());
-    }
-
+    
     @Test
     public void testPut() throws Exception {
         mache.put("test-1", new TestEntity("test-1"));
