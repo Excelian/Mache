@@ -1,8 +1,5 @@
 package com.excelian.mache.jmeter.couch.knownKeys;
 
-import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.CouchbaseCluster;
-import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.couch.AbstractCouchSamplerClient;
@@ -28,15 +25,11 @@ public class WriteToDB extends AbstractCouchSamplerClient {
         try {
             final String keySpace = mapParams.get("keyspace.name");
             final String couchServer = mapParams.get("couch.server.ip.address");
-
-            //TOODO: need to disconnect cluster..
-            final Cluster cluster = CouchbaseCluster.create(DefaultCouchbaseEnvironment.create(),couchServer);
-
-            db = couchbase().withCluster(cluster)
+            db = couchbase()
                 .withBucketSettings(builder().name(keySpace).quota(150).build())
-                .withDefaultAdminDetails()
+                .withNodes(couchServer)
                 .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                .build().getCacheLoader(String.class, CouchTestEntity.class);
+                .create().getCacheLoader(String.class, CouchTestEntity.class);
 
             db.create();// ensure we are connected and schema exists
 

@@ -29,11 +29,11 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
 
     private Class<K> keyType;
     private Class<V> valueType;
-    private static Cluster cluster;
+    private Cluster cluster;
     private ClusterManager manager;
     private CouchbaseTemplate template;
     private BucketSettings bucketSettings;
-
+    private CouchbaseEnvironment couchbaseEnvironment;
     private List<String> nodes;
     private String adminUser;
     private String adminPassword;
@@ -43,39 +43,38 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
      * @param keyType The class type of the cache key.
      * @param valueType The class type of the cache value.
      * @param bucketSettings Bucket that will hold cached objects.
-     * @param cluster Cluster connection.
+     * @param couchbaseEnvironment Cluster environment properties.
+     * @param nodes List of nodes to connect to.
      * @param adminUser Administration user for Couchbase cluster.
      * @param adminPassword Password for Administration user for Couchbase cluster.
      * @param schemaOptions Determine whether to create/drop bucket.
      */
     public CouchbaseCacheLoader(Class<K> keyType, Class<V> valueType, BucketSettings bucketSettings,
-                                Cluster cluster, String adminUser,
+                                CouchbaseEnvironment couchbaseEnvironment, List<String> nodes, String adminUser,
                                 String adminPassword, SchemaOptions schemaOptions) {
         this.keyType = keyType;
         this.valueType = valueType;
         this.bucketSettings = bucketSettings;
-        this.cluster = cluster;
+        this.couchbaseEnvironment = couchbaseEnvironment;
+        this.nodes = nodes;
         this.adminUser = adminUser;
         this.adminPassword = adminPassword;
         this.schemaOptions = schemaOptions;
-
-        if(cluster==null)
-        {
-            throw new NullPointerException("Cluster cannot be null");
-        }
     }
 
     @Override
     public void create() {
-        synchronized (this) {
-            if (manager == null) {
-                LOG.info("Attempting to connect to authenticate to Couchbase cluster as {}", adminUser);
-                manager = cluster.clusterManager(adminUser, adminPassword);
-
-                dropBucketIfRequired();
-                Bucket bucket = createBucketIfRequired();
-                template = new CouchbaseTemplate(manager.info(), bucket);
-                LOG.info("Using Couchbase bucket: {}", bucket);
+        if (cluster == null) {
+            synchronized (this) {
+                if (cluster == null) {
+                    LOG.info("Attempting to connect to Couchbase cluster hosted at {}", nodes);
+                    cluster = CouchbaseCluster.create(couchbaseEnvironment, nodes);
+                    manager = cluster.clusterManager(adminUser, adminPassword);
+                    dropBucketIfRequired();
+                    Bucket bucket = createBucketIfRequired();
+                    template = new CouchbaseTemplate(manager.info(), bucket);
+                    LOG.info("Using Couchbase bucket: {}", bucket);
+                }
             }
         }
     }
@@ -142,6 +141,7 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
                 + ", manager=" + manager
                 + ", template=" + template
                 + ", bucketSettings=" + bucketSettings
+                + ", couchbaseEnvironment=" + couchbaseEnvironment
                 + ", nodes=" + nodes
                 + ", adminUser='" + adminUser + '\''
                 + ", adminPassword='" + adminPassword + '\''
