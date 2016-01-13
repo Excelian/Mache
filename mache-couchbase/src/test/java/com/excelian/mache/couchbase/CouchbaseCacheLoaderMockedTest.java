@@ -1,13 +1,11 @@
 package com.excelian.mache.couchbase;
 
-import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.cluster.ClusterManager;
 import com.couchbase.client.java.cluster.DefaultBucketSettings;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
-import com.excelian.mache.builder.NoMessagingProvisioner;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.couchbase.CouchbaseCacheLoader;
 import org.junit.Before;
@@ -22,10 +20,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Collections;
 
-import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
-import static com.excelian.mache.builder.MacheBuilder.mache;
-import static com.excelian.mache.core.SchemaOptions.CREATE_AND_DROP_SCHEMA;
-import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
 import static org.mockito.Mockito.*;
 
 @PrepareForTest(CouchbaseCluster.class)
@@ -36,18 +30,14 @@ public class CouchbaseCacheLoaderMockedTest {
     CouchbaseCacheLoader loader;
     CouchbaseCluster mockedCluster;
     ClusterManager mockedManager;
-    private static final DefaultCouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
 
     @Before
     public void mockCouchbaseCluster() {
         PowerMockito.mockStatic(CouchbaseCluster.class);
         mockedCluster = mock(CouchbaseCluster.class);
-
-        when(CouchbaseCluster.create(any(CouchbaseEnvironment.class),  anyString()))
-                .thenReturn(mockedCluster);
-
+        when(CouchbaseCluster.create(any(CouchbaseEnvironment.class),
+                anyListOf(String.class))).thenReturn(mockedCluster);
         mockedManager = mock(ClusterManager.class);
-
         when(mockedCluster.clusterManager(anyString(), anyString())).thenReturn(mockedManager);
     }
 
@@ -122,9 +112,8 @@ public class CouchbaseCacheLoaderMockedTest {
 
     private void givenCacheLoaderWith(SchemaOptions schemaOptions) {
         BucketSettings bucket = DefaultBucketSettings.builder().name("test").build();
-
-        Cluster cluster = CouchbaseCluster.create(couchbaseEnvironment, "localhost");
-        loader = new CouchbaseCacheLoader<>(String.class, Object.class, bucket,cluster, "Admin", "Pass", schemaOptions);
+        loader = new CouchbaseCacheLoader<>(String.class, Object.class, bucket, DefaultCouchbaseEnvironment.create(),
+                Collections.singletonList("localhost"), "Admin", "Pass", schemaOptions);
     }
 
 
