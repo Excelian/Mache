@@ -98,13 +98,10 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
 
     @Override
     public void close() {
-        if (cluster != null) {
+        if (manager != null) {
             synchronized (this) {
-                if (cluster != null) {
+                if (manager != null) {
                     dropBucketIfRequired();
-                    LOG.info("Disconnecting from Couchbase cluster {}", nodes);
-                    cluster.disconnect();
-                    cluster = null;
                 }
             }
         }
