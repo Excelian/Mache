@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.couchbase.client.core.env.DefaultCoreEnvironment;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.BucketSettings;
@@ -50,7 +51,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
     	return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings, connectionContext, adminUser, adminPassword, schemaOptions);
     }
 
-    public static ConnectionContext<Cluster> couchbaseConnectionContext(String contactPoint)
+    public static ConnectionContext<Cluster> couchbaseConnectionContext(String contactPoint, DefaultCouchbaseEnvironment builder)
     {
         return new ConnectionContext<Cluster>() {
 
@@ -61,8 +62,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
                 if(cluster==null) {
                     synchronized (this) {
                         if (cluster == null) {
-                            DefaultCouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
-                            cluster = CouchbaseCluster.create(couchbaseEnvironment, contactPoint);
+                            cluster = CouchbaseCluster.create(builder, contactPoint);
                         }
                     }
                 }
@@ -73,6 +73,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
             public void close() throws Exception {
                 if(cluster!=null) {
                     synchronized (this) {
+
                         cluster.disconnect();
                         cluster = null;
                     }

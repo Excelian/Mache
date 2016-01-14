@@ -42,7 +42,7 @@ public class CouchbaseCacheLoaderIntegrationTest {
     @Before
     public void setup() throws Exception {
 
-        connectionContext = couchbaseConnectionContext(COUCHBASE_HOST);
+        connectionContext = couchbaseConnectionContext(COUCHBASE_HOST, couchbaseEnvironment);
 
         cache = mache(String.class, TestEntity.class)
                 .backedBy(couchbase()

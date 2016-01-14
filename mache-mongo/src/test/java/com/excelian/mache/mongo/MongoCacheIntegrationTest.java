@@ -62,6 +62,7 @@ public class MongoCacheIntegrationTest {
     }
 
     @Test
+    @IgnoreIf(condition = NoRunningMongoDbForTests.class)
     public void testPut() throws Exception {
         mache.put("test-1", new TestEntity("test-1"));
         TestEntity test = mache.get("test-1");
