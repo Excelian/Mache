@@ -63,7 +63,7 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
 
         if(connectionContext==null)
         {
-            throw new NullPointerException("Cluster cannot be null");
+            throw new NullPointerException("ConnectionContext cannot be null");
         }
     }
 

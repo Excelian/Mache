@@ -38,16 +38,20 @@ public class CassandraCacheLoaderIntegrationTest {
     @BeforeClass
     public static void setUpClass()
     {
-        connectionContext = cassandraConnectionContext(Cluster.builder()
-                .addContactPoint(new NoRunningCassandraDbForTests().getHost())
-                .withPort(9042)
-                .withClusterName("BluePrint"));
+        if(new NoRunningCassandraDbForTests().isSatisfied()==false) {
+            connectionContext = cassandraConnectionContext(Cluster.builder()
+                    .addContactPoint(new NoRunningCassandraDbForTests().getHost())
+                    .withPort(9042)
+                    .withClusterName("BluePrint"));
+        }
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
-        connectionContext.close();
-        connectionContext=null;
+        if(connectionContext!=null) {
+            connectionContext.close();
+            connectionContext = null;
+        }
     }
 
     @Before

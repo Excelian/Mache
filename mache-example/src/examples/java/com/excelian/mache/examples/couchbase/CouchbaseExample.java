@@ -18,15 +18,15 @@ import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbas
 /**
  * A factory for a Couchbase backed {@link Example}.
  */
-public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage> {
+public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, Cluster, CouchbaseAnnotatedMessage> {
 
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 
     @Override
-    public Mache<String, CouchbaseAnnotatedMessage> exampleCache() throws Exception {
-        ConnectionContext<Cluster> context=couchbaseConnectionContext( "10.28.1.140");
+    public Mache<String, CouchbaseAnnotatedMessage> exampleCache(ConnectionContext<Cluster> context) throws Exception {
 
         final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
+
         return mache(String.class, CouchbaseAnnotatedMessage.class)
                 .backedBy(couchbase()
                         .withContext(context)
@@ -36,5 +36,15 @@ public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage> {
                         .build())
                 .withNoMessaging()
                 .macheUp();
+    }
+
+    @Override
+    public CouchbaseAnnotatedMessage createEntity(String primaryKey, String msg) {
+        return new CouchbaseAnnotatedMessage(primaryKey, msg);
+    }
+
+    @Override
+    public ConnectionContext<Cluster> createConnectionContext() {
+        return couchbaseConnectionContext( "10.28.1.140");
     }
 }

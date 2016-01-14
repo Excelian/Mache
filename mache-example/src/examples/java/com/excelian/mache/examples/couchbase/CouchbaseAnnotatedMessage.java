@@ -1,5 +1,6 @@
 package com.excelian.mache.examples.couchbase;
 
+import com.excelian.mache.examples.Example;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.couchbase.core.mapping.Document;
 
@@ -7,7 +8,7 @@ import org.springframework.data.couchbase.core.mapping.Document;
  * Example Spring Data Couchbase Annotated Object.
  */
 @Document
-public class CouchbaseAnnotatedMessage {
+public class CouchbaseAnnotatedMessage implements Example.KeyedMessge{
 
     private final String msg;
 

@@ -1,5 +1,6 @@
 package com.excelian.mache.examples;
 
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.examples.cassandra.CassandraExample;
 import com.excelian.mache.examples.couchbase.CouchbaseExample;
@@ -38,14 +39,17 @@ public class GettingCacheClient {
         doExample(count, example);
     }
 
-    private static <T> void doExample(int count, Example<T> example) throws Exception {
-        final Mache<String, T> cache = example.exampleCache();
-        LOG.info("Getting...");
-        for (int i = 0; i < count; i++) {
-            final T hello = cache.get("msg_" + i);
-            LOG.info("hello = " + hello);
+    private static <T,C, M extends Example.KeyedMessge> void doExample(int count, Example<T,C, M> example) throws Exception {
+
+        try(ConnectionContext<C> context = example.createConnectionContext()) {
+            try(final Mache<String, T> cache = example.exampleCache(context)) {
+                LOG.info("Getting...");
+                for (int i = 0; i < count; i++) {
+                    final T hello = cache.get("msg_" + i);
+                    LOG.info("hello = " + hello);
+                }
+            }
         }
-        cache.close();
     }
 
     private static Args parseArgs(String[] args) {

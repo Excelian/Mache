@@ -16,25 +16,33 @@ import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandr
 /**
  * A factory for a Cassandra backed {@link Example}.
  */
-public class CassandraExample implements Example<CassandraAnnotatedMessage> {
+public class CassandraExample implements Example<CassandraAnnotatedMessage, Cluster, CassandraAnnotatedMessage> {
 
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 
-    @Override
-    public Mache<String, CassandraAnnotatedMessage> exampleCache() throws Exception {
-        final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
-
-        ConnectionContext<Cluster> context=cassandraConnectionContext(Cluster.builder()
+    public ConnectionContext<Cluster> createConnectionContext()
+    {
+        return cassandraConnectionContext(Cluster.builder()
                 .addContactPoint("10.28.1.140")
                 .withPort(9042)
                 .withClusterName("BluePrint"));
+    }
+
+    @Override
+    public Mache<String, CassandraAnnotatedMessage> exampleCache(ConnectionContext<Cluster> connectionContext) throws Exception {
+        final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
 
         return mache(String.class, CassandraAnnotatedMessage.class)
                 .backedBy(cassandra()
-                        .withContext(context)
+                        .withContext(connectionContext)
                         .withKeyspace(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA).build())
                 .withNoMessaging()
                 .macheUp();
+    }
+
+    @Override
+    public CassandraAnnotatedMessage createEntity(String primaryKey, String msg) {
+        return new CassandraAnnotatedMessage(primaryKey, msg);
     }
 }
