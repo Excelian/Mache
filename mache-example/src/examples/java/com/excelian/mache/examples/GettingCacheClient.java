@@ -24,13 +24,13 @@ public class GettingCacheClient {
         final Example example;
         switch (args.cacheType) {
             case Cassandra:
-                example = new CassandraExample();
+                example = new CassandraExample("192.168.2.9");
                 break;
             case Mongo:
-                example = new MongoExample();
+                example = new MongoExample("10.28.1.140");
                 break;
             case Couchbase:
-                example = new CouchbaseExample();
+                example = new CouchbaseExample("10.28.1.140");
                 break;
             default:
                 throw new RuntimeException("Invalid cache type: [" + args.cacheType + "].  Valid values are:"

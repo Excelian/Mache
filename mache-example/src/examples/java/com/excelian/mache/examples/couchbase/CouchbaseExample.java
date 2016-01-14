@@ -21,6 +21,12 @@ import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbas
 public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, Cluster, CouchbaseAnnotatedMessage> {
 
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+    private String serverIpAdress;
+
+    public CouchbaseExample(String serverIpAdress)
+    {
+        this.serverIpAdress = serverIpAdress;
+    }
 
     @Override
     public Mache<String, CouchbaseAnnotatedMessage> exampleCache(ConnectionContext<Cluster> context) throws Exception {
@@ -45,6 +51,6 @@ public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, Clus
 
     @Override
     public ConnectionContext<Cluster> createConnectionContext() {
-        return couchbaseConnectionContext( "10.28.1.140", DefaultCouchbaseEnvironment.create());
+        return couchbaseConnectionContext(serverIpAdress, DefaultCouchbaseEnvironment.create());
     }
 }

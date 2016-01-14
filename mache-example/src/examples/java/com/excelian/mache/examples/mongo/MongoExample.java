@@ -20,6 +20,12 @@ import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 public class MongoExample implements Example<MongoAnnotatedMessage, List<ServerAddress> , MongoAnnotatedMessage > {
 
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+    private String serverIpAdress;
+
+    public MongoExample(String serverIpAdress)
+    {
+        this.serverIpAdress = serverIpAdress;
+    }
 
     @Override
     public Mache<String, MongoAnnotatedMessage> exampleCache(ConnectionContext connectionContext) throws Exception {
@@ -36,7 +42,7 @@ public class MongoExample implements Example<MongoAnnotatedMessage, List<ServerA
 
     @Override
     public ConnectionContext<List<ServerAddress>> createConnectionContext() {
-        return mongoConnectionContext(new ServerAddress("10.28.1.140", 9042));
+        return mongoConnectionContext(new ServerAddress(serverIpAdress, 9042));
     }
 
     @Override

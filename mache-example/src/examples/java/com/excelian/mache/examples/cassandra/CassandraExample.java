@@ -19,11 +19,17 @@ import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandr
 public class CassandraExample implements Example<CassandraAnnotatedMessage, Cluster, CassandraAnnotatedMessage> {
 
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+    private String serverIpAdress;
+
+    public CassandraExample(String serverIpAdress)
+    {
+        this.serverIpAdress = serverIpAdress;
+    }
 
     public ConnectionContext<Cluster> createConnectionContext()
     {
         return cassandraConnectionContext(Cluster.builder()
-                .addContactPoint("10.28.1.140")
+                .addContactPoint(serverIpAdress)
                 .withPort(9042)
                 .withClusterName("BluePrint"));
     }
