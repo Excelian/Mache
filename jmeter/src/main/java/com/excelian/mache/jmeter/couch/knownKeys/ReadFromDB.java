@@ -35,7 +35,7 @@ public class ReadFromDB extends AbstractCouchSamplerClient {
             final String keySpace = mapParams.get("keyspace.name");
             final String couchServer = mapParams.get("couch.server.ip.address");
 
-            connectionContext = couchbaseConnectionContext(couchServer);
+            connectionContext = couchbaseConnectionContext(couchServer, DefaultCouchbaseEnvironment.create());
 
             final Mache<String, CouchTestEntity> mache = mache(String.class, CouchTestEntity.class)
                 .backedBy(couchbase().withContext(connectionContext)

@@ -33,7 +33,7 @@ public class WriteToDB extends AbstractCouchSamplerClient {
             final String keySpace = mapParams.get("keyspace.name");
             final String couchServer = mapParams.get("couch.server.ip.address");
 
-            connectionContext = couchbaseConnectionContext(couchServer);
+            connectionContext = couchbaseConnectionContext(couchServer, DefaultCouchbaseEnvironment.create());
 
             db = couchbase().withContext(connectionContext)
                 .withBucketSettings(builder().name(keySpace).quota(150).build())

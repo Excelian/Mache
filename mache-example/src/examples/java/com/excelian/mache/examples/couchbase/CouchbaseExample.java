@@ -45,6 +45,6 @@ public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, Clus
 
     @Override
     public ConnectionContext<Cluster> createConnectionContext() {
-        return couchbaseConnectionContext( "10.28.1.140");
+        return couchbaseConnectionContext( "10.28.1.140", DefaultCouchbaseEnvironment.create());
     }
 }
