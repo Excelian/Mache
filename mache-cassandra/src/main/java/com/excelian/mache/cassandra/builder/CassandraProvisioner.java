@@ -57,7 +57,7 @@ public class CassandraProvisioner implements StorageProvisioner {
             public Cluster getStorage() {
                 if(cluster==null)
                     synchronized (this) {
-                        if(cluster==null){
+                        if(cluster==null) {
                             cluster=builder.build();
                         }
                     }

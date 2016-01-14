@@ -73,7 +73,6 @@ public class CouchbaseProvisioner implements StorageProvisioner {
             public void close() throws Exception {
                 if(cluster!=null) {
                     synchronized (this) {
-
                         cluster.disconnect();
                         cluster = null;
                     }
