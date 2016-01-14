@@ -1,7 +1,6 @@
 package com.excelian.mache.jmeter.couch.knownKeys;
 
 import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.AbstractCacheLoader;
@@ -12,11 +11,11 @@ import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
+import java.util.Map;
+
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbaseConnectionContext;
-
-import java.util.Map;
 
 public class WriteToDB extends AbstractCouchSamplerClient {
     private static final long serialVersionUID = 4662847886347883622L;
@@ -36,10 +35,10 @@ public class WriteToDB extends AbstractCouchSamplerClient {
             connectionContext = couchbaseConnectionContext(couchServer, DefaultCouchbaseEnvironment.create());
 
             db = couchbase().withContext(connectionContext)
-                .withBucketSettings(builder().name(keySpace).quota(150).build())
-                .withDefaultAdminDetails()
-                .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                .build().getCacheLoader(String.class, CouchTestEntity.class);
+                    .withBucketSettings(builder().name(keySpace).quota(150).build())
+                    .withDefaultAdminDetails()
+                    .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                    .build().getCacheLoader(String.class, CouchTestEntity.class);
 
             db.create();// ensure we are connected and schema exists
 
@@ -54,8 +53,7 @@ public class WriteToDB extends AbstractCouchSamplerClient {
             db.close();
         }
 
-        if(connectionContext!=null)
-        {
+        if (connectionContext != null) {
             try {
                 connectionContext.close();
             } catch (Exception e) {

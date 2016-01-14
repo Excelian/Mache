@@ -44,14 +44,16 @@ public abstract class MacheAbstractCassandraKafkaSamplerClient extends AbstractC
 
     @Override
     public void teardownTest(JavaSamplerContext context) {
-        if (cache1 != null)
+        if (cache1 != null) {
             cache1.close();
-        if (connectionContext != null)
+        }
+        if (connectionContext != null) {
             try {
                 connectionContext.close();
             } catch (Exception e) {
                 getLogger().error("mache error closing db session", e);
             }
+        }
     }
 
     @Override
