@@ -28,18 +28,17 @@ import static org.mockito.Mockito.*;
 @RunWith(PowerMockRunner.class)
 public class CouchbaseCacheLoaderMockedTest {
 
+    private static final DefaultCouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
     CouchbaseCacheLoader loader;
     CouchbaseCluster mockedCluster;
     ClusterManager mockedManager;
-
-    private static final DefaultCouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
 
     @Before
     public void mockCouchbaseCluster() {
         PowerMockito.mockStatic(CouchbaseCluster.class);
         mockedCluster = mock(CouchbaseCluster.class);
 
-        when(CouchbaseCluster.create(any(CouchbaseEnvironment.class),  anyString()))
+        when(CouchbaseCluster.create(any(CouchbaseEnvironment.class), anyString()))
                 .thenReturn(mockedCluster);
 
         mockedManager = mock(ClusterManager.class);
@@ -48,16 +47,15 @@ public class CouchbaseCacheLoaderMockedTest {
     }
 
     @After
-    public void tearDown()
-    {
-        if(loader!=null){
+    public void tearDown() {
+        if (loader != null) {
             loader.close();
         }
     }
 
     @Test
     public void shouldCreateConnection() throws Exception {
-        try(ConnectionContext connectionContext=couchbaseConnectionContext("localhost", couchbaseEnvironment)) {
+        try (ConnectionContext connectionContext = couchbaseConnectionContext("localhost", couchbaseEnvironment)) {
             givenCacheLoaderWith(connectionContext, SchemaOptions.USE_EXISTING_SCHEMA);
             loader.create();
             thenClusterManagerAndBucketCreated(mockedCluster);
@@ -66,7 +64,7 @@ public class CouchbaseCacheLoaderMockedTest {
 
     @Test
     public void shouldCreateBucket() throws Exception {
-        try(ConnectionContext connectionContext=couchbaseConnectionContext("localhost", couchbaseEnvironment)) {
+        try (ConnectionContext connectionContext = couchbaseConnectionContext("localhost", couchbaseEnvironment)) {
             givenCacheLoaderWith(connectionContext, SchemaOptions.CREATE_SCHEMA_IF_NEEDED);
 
             when(mockedManager.hasBucket(anyString())).thenReturn(false);
@@ -81,7 +79,7 @@ public class CouchbaseCacheLoaderMockedTest {
 
     @Test
     public void shouldDropAndCreateBucket() throws Exception {
-        try(ConnectionContext connectionContext=couchbaseConnectionContext("localhost", couchbaseEnvironment)) {
+        try (ConnectionContext connectionContext = couchbaseConnectionContext("localhost", couchbaseEnvironment)) {
             givenCacheLoaderWith(connectionContext, SchemaOptions.CREATE_AND_DROP_SCHEMA);
 
             when(mockedManager.hasBucket(anyString())).thenAnswer(getAlternatingBooleanAnswer());
@@ -97,7 +95,7 @@ public class CouchbaseCacheLoaderMockedTest {
 
     @Test
     public void shouldCloseCluster() throws Exception {
-        try(ConnectionContext connectionContext=couchbaseConnectionContext("localhost", couchbaseEnvironment)) {
+        try (ConnectionContext connectionContext = couchbaseConnectionContext("localhost", couchbaseEnvironment)) {
             givenCacheLoaderWith(connectionContext, SchemaOptions.USE_EXISTING_SCHEMA);
             loader.create();
             loader.close();
@@ -107,7 +105,7 @@ public class CouchbaseCacheLoaderMockedTest {
 
     @Test
     public void shouldCloseClusterAndDropSchema() throws Exception {
-        try(ConnectionContext connectionContext=couchbaseConnectionContext("localhost", couchbaseEnvironment)) {
+        try (ConnectionContext connectionContext = couchbaseConnectionContext("localhost", couchbaseEnvironment)) {
             givenCacheLoaderWith(connectionContext, SchemaOptions.CREATE_AND_DROP_SCHEMA);
             loader.create();
             when(mockedManager.hasBucket(anyString())).thenReturn(true);
@@ -136,7 +134,7 @@ public class CouchbaseCacheLoaderMockedTest {
 
     private void givenCacheLoaderWith(ConnectionContext<Cluster> connectionContext, SchemaOptions schemaOptions) {
         BucketSettings bucket = DefaultBucketSettings.builder().name("test").build();
-        loader = new CouchbaseCacheLoader<>(String.class, Object.class, bucket,connectionContext, "Admin", "Pass", schemaOptions);
+        loader = new CouchbaseCacheLoader<>(String.class, Object.class, bucket, connectionContext, "Admin", "Pass", schemaOptions);
     }
 
     private Answer<Boolean> getAlternatingBooleanAnswer() {

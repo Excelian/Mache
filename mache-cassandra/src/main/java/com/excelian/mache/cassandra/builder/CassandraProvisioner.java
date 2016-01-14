@@ -28,18 +28,6 @@ public class CassandraProvisioner implements StorageProvisioner {
         this.replicationFactor = replicationFactor;
     }
 
-    @Override
-    public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType) {
-        final MacheFactory macheFactory = new MacheFactory();
-        return macheFactory.create(getCacheLoader(keyType, valueType));
-    }
-    
-    @Override
-    public <K, V> CassandraCacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-    	return new CassandraCacheLoader<>(keyType, valueType, connectionContext,
-                schemaOptions, keySpace, replicationClass, replicationFactor);
-    }
-
     /**
      * @return A builder for a {@link CassandraProvisioner}.
      */
@@ -47,18 +35,17 @@ public class CassandraProvisioner implements StorageProvisioner {
         return storageContext -> keyspace -> new CassandraProvisionerBuilder(storageContext, keyspace);
     }
 
-    public static ConnectionContext<Cluster> cassandraConnectionContext(final Cluster.Builder builder)
-    {
+    public static ConnectionContext<Cluster> cassandraConnectionContext(final Cluster.Builder builder) {
         return new ConnectionContext<Cluster>() {
 
             Cluster cluster;
 
             @Override
             public Cluster getStorage() {
-                if(cluster==null)
+                if (cluster == null)
                     synchronized (this) {
-                        if(cluster==null) {
-                            cluster=builder.build();
+                        if (cluster == null) {
+                            cluster = builder.build();
                         }
                     }
                 return cluster;
@@ -73,6 +60,18 @@ public class CassandraProvisioner implements StorageProvisioner {
                     }
             }
         };
+    }
+
+    @Override
+    public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType) {
+        final MacheFactory macheFactory = new MacheFactory();
+        return macheFactory.create(getCacheLoader(keyType, valueType));
+    }
+
+    @Override
+    public <K, V> CassandraCacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+        return new CassandraCacheLoader<>(keyType, valueType, connectionContext,
+                schemaOptions, keySpace, replicationClass, replicationFactor);
     }
 
     /**
