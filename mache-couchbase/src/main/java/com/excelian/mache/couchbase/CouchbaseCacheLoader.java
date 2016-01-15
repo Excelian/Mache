@@ -35,8 +35,6 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
     private ClusterManager manager;
     private CouchbaseTemplate template;
     private BucketSettings bucketSettings;
-
-    private List<String> nodes;
     private String adminUser;
     private String adminPassword;
     private SchemaOptions schemaOptions;
@@ -146,7 +144,6 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCacheLoader<K, V, Cluste
                 + ", manager=" + manager
                 + ", template=" + template
                 + ", bucketSettings=" + bucketSettings
-                + ", nodes=" + nodes
                 + ", adminUser='" + adminUser + '\''
                 + ", adminPassword='" + adminPassword + '\''
                 + ", schemaOptions=" + schemaOptions
