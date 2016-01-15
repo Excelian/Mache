@@ -42,7 +42,7 @@ public class MongoExample implements Example<MongoAnnotatedMessage, List<ServerA
 
     @Override
     public ConnectionContext<List<ServerAddress>> createConnectionContext() {
-        return mongoConnectionContext(new ServerAddress(serverIpAddress, 9042));
+        return mongoConnectionContext(new ServerAddress(serverIpAddress, 27017));
     }
 
     @Override
