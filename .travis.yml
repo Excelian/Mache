@@ -34,4 +34,5 @@ script:
   - gradle check
   - gradle :mache-example:putClient -Parg=10,Cassandra,localhost
   - gradle :mache-example:putClient -Parg=10,Mongo,localhost
-  - gradle :mache-example:putClient -Parg=10,Couchbase,127.0.0.1
+  - gradle :mache-example:putClient -Parg=10,Couchbase,localhost
+

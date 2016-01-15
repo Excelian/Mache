@@ -5,6 +5,7 @@ import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
+import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.examples.Example;
 
 import java.text.SimpleDateFormat;
@@ -38,7 +39,7 @@ public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, Clus
                         .withContext(context)
                         .withBucketSettings(builder().name(keySpace).quota(150).build())
                         .withDefaultAdminDetails()
-                        .withDefaultSchemaOptions()
+                        .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                         .build())
                 .withNoMessaging()
                 .macheUp();
