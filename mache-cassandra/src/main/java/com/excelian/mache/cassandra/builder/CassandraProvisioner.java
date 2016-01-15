@@ -55,8 +55,10 @@ public class CassandraProvisioner implements StorageProvisioner {
             public void close() throws Exception {
                 if (cluster != null)
                     synchronized (this) {
-                        cluster.close();
-                        cluster = null;
+                        if (cluster != null) {
+                            cluster.close();
+                            cluster = null;
+                        }
                     }
             }
         };

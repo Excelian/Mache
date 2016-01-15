@@ -55,8 +55,10 @@ public class CouchbaseProvisioner implements StorageProvisioner {
             public void close() throws Exception {
                 if (cluster != null) {
                     synchronized (this) {
-                        cluster.disconnect();
-                        cluster = null;
+                        if (cluster != null) {
+                            cluster.disconnect();
+                            cluster = null;
+                        }
                     }
                 }
             }
@@ -156,5 +158,4 @@ public class CouchbaseProvisioner implements StorageProvisioner {
             return new CouchbaseProvisioner(connectionContext, bucketSettings, adminUser, adminPassword, schemaOptions);
         }
     }
-
 }
