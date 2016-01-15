@@ -29,3 +29,7 @@ cache:
   directories:
     - ~/.gradle
     - ~/binaries
+
+script:
+  - gradle check
+  - gradle :mache-example:putClient -Parg=10,Cassandra,localhost

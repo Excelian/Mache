@@ -23,9 +23,9 @@ public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, Clus
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
     private String serverIpAdress;
 
-    public CouchbaseExample(String serverIpAdress)
+    public CouchbaseExample(String serverIpAddress)
     {
-        this.serverIpAdress = serverIpAdress;
+        this.serverIpAdress = serverIpAddress;
     }
 
     @Override

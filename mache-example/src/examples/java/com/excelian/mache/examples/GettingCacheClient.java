@@ -21,16 +21,17 @@ public class GettingCacheClient {
     public static void main(String... commandLine) throws Exception {
         final Args args = parseArgs(commandLine);
         final int count = args.count;
+        final String hostAddress = args.host;
         final Example example;
         switch (args.cacheType) {
             case Cassandra:
-                example = new CassandraExample("192.168.2.9");
+                example = new CassandraExample(hostAddress);
                 break;
             case Mongo:
-                example = new MongoExample("10.28.1.140");
+                example = new MongoExample(hostAddress);
                 break;
             case Couchbase:
-                example = new CouchbaseExample("10.28.1.140");
+                example = new CouchbaseExample(hostAddress);
                 break;
             default:
                 throw new RuntimeException("Invalid cache type: [" + args.cacheType + "].  Valid values are:"
@@ -53,10 +54,12 @@ public class GettingCacheClient {
     }
 
     private static Args parseArgs(String[] args) {
-        if (args.length == 2) {
-            final CacheType cacheType = CacheType.valueOf(args[1]);
+        if (args.length == 3) {
             final int count = Integer.parseInt(args[0]);
-            return new Args(count, cacheType);
+            final CacheType cacheType = CacheType.valueOf(args[1]);
+            final String hostAddress = args[2];
+
+            return new Args(count, cacheType, hostAddress);
         } else {
             throw new RuntimeException("Usage : GettingCacheClient <get count> " + Arrays.toString(CacheType.values()));
         }

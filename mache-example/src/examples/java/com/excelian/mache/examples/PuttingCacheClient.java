@@ -23,17 +23,18 @@ public class PuttingCacheClient {
     public static void main(String... commandLine) throws Exception {
         final Args args = parseArgs(commandLine);
         final int count = args.count;
+        final String hostAddress = args.host;
         Example example;
 
         switch (args.cacheType) {
             case Cassandra:
-                example = new CassandraExample("192.168.2.9");
+                example = new CassandraExample(hostAddress);
                 break;
             case Mongo:
-                example =  new MongoExample("10.28.1.140");
+                example =  new MongoExample(hostAddress);
                 break;
             case Couchbase:
-                example = new CouchbaseExample("10.28.1.140");
+                example = new CouchbaseExample(hostAddress);
                 break;
 
             default:
@@ -60,10 +61,12 @@ public class PuttingCacheClient {
 
 
     private static Args parseArgs(String[] args) {
-        if (args.length == 2) {
-            final CacheType cacheType = CacheType.valueOf(args[1]);
+        if (args.length == 3) {
             final int count = Integer.parseInt(args[0]);
-            return new Args(count, cacheType);
+            final CacheType cacheType = CacheType.valueOf(args[1]);
+            final String ipAddress = args[2];
+
+            return new Args(count, cacheType, ipAddress);
         } else {
             throw new RuntimeException("Usage : PuttingCacheClient <put count> " + Arrays.toString(CacheType.values()));
         }
