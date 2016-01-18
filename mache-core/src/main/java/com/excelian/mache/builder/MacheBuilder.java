@@ -23,7 +23,7 @@ public class MacheBuilder<K, V> {
      * @param <V> value type of the cache to be provisioned.
      */
     public interface FluentMacheBuilder<K, V> {
-        StorageProvisionerBuilder<K, V> cachedBy(CacheProvisioner<K, V> storageProvisioner);
+        StorageProvisionerBuilder<K, V> cachedBy(CacheProvisioner<K, V> cacheProvisioner);
     }
 
     /**
