@@ -8,7 +8,6 @@ import com.excelian.mache.observable.utils.UUIDUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -92,7 +91,7 @@ public class ObservableMap<K, V> implements Mache<K, V> {
     }
 
     private void fireInvalidate(K key) {
-        final CoordinationEntryEvent<K> event = new CoordinationEntryEvent<K>(getId(),
+        final CoordinationEntryEvent<K> event = new CoordinationEntryEvent<>(getId(),
             getName(), key, EventType.INVALIDATE, uuidUtils);
         listener.send(event);
     }

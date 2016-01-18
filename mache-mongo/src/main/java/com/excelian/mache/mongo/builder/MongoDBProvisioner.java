@@ -4,6 +4,7 @@ import com.excelian.mache.builder.StorageProvisioner;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.mongo.MongoDBCacheLoader;
+import com.excelian.mache.mongo.MongoDBJsonCacheLoader;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
@@ -44,8 +45,10 @@ public class MongoDBProvisioner implements StorageProvisioner {
 
     @Override
     public <K, V> MacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-        return new MongoDBCacheLoader<>(keyType, valueType, seeds, mongoCredentials, clientOptions, database,
-                schemaOptions, collectionOptions);
+        //return new MongoDBCacheLoader<>(keyType, valueType, seeds, mongoCredentials, clientOptions, database,
+                //schemaOptions, collectionOptions);
+        return new MongoDBJsonCacheLoader(seeds, mongoCredentials, clientOptions, database,
+                schemaOptions);
     }
 
     /**

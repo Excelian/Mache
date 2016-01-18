@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '1.2.2'
+}
+
+def vertexVersion = '3.2.0'
+
+dependencies {
+    compile project(':mache-core')
+    compile project(':mache-guava')
+    compile project(':mache-cassandra')
+    compile project(':mache-mongo')
+
+    compile "io.vertx:vertx-core:$vertexVersion"
+    compile "io.vertx:vertx-web:$vertexVersion"
+
+    compile 'org.codehaus.groovy:groovy:2.3.7'
+}
+
+mainClassName = 'com.excelian.mache.vertx.MongoConfig'
+
+shadowJar {
+    classifier = 'fat'
+    mergeServiceFiles {
+        include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.8'
+}

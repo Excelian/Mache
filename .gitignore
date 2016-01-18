@@ -11,3 +11,4 @@ out/
 *.class
 .idea/
 releases/
+.vertx/
