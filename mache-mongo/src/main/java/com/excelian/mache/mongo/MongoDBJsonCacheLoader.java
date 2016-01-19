@@ -62,7 +62,7 @@ public class MongoDBJsonCacheLoader<K, V> implements MacheLoader<String, String,
         dbObject.put("_id", key);
         DB database = mongoClient.getDB(this.database); // TODO, cache DB object
         DBCollection collection = database.getCollection(this.database);// TODO, how do we get map name?
-        collection.insert(dbObject);
+        collection.update(dbObject, dbObject, true, false);
     }
 
     @Override
