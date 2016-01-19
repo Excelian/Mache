@@ -1,7 +1,7 @@
 package com.excelian.mache.vertx;
 
 import com.excelian.mache.core.Mache;
-import io.vertx.core.Vertx;
+import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -16,8 +16,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * TODO threading/synchronisation
  */
-public class MacheVertical {
-
+public class MacheVertical extends AbstractVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(MacheVertical.class);
     private final MacheInstanceCache instanceCache;
 
@@ -25,25 +24,13 @@ public class MacheVertical {
         this.instanceCache = instanceCache;
     }
 
-    public void run() {
+    @Override
+    public void start() throws Exception {
         // Entry point to the REST service
-        Vertx vertx = Vertx.vertx();
         Router router = Router.router(vertx);
+        registerRoutes(router);
 
-        router.route().handler(StaticHandler.create());
-        router.route("/map/*").handler(BodyHandler.create());
-
-        router.exceptionHandler(this::handleException);
-
-        router.route(HttpMethod.DELETE, "/map/:mapName")
-                .handler(this::handleDeleteMap);
-        router.route(HttpMethod.GET, "/map/:mapName/:key")
-                .order(-1)
-                .handler(this::handleGetMap); // avoid static handler interception
-        router.route(HttpMethod.PUT, "/map/:mapName/:key")
-                .handler(this::handlePutMap);
-
-        vertx
+        getVertx()
                 .createHttpServer()
                 .requestHandler(router::accept)
                 .listen(8080, handler -> {
@@ -53,6 +40,21 @@ public class MacheVertical {
                         System.err.println("Failed to listen on port 8080");
                     }
                 });
+    }
+
+    private void registerRoutes(Router router) {
+        router.route().handler(StaticHandler.create());
+        router.route("/map/*").handler(BodyHandler.create());
+
+        router.exceptionHandler(this::handleException);
+
+        router.route(HttpMethod.DELETE, "/map/:mapName/:key")
+                .handler(this::handleDeleteMap);
+        router.route(HttpMethod.GET, "/map/:mapName/:key")
+                .order(-1)
+                .handler(this::handleGetMap); // avoid static handler interception
+        router.route(HttpMethod.PUT, "/map/:mapName/:key")
+                .handler(this::handlePutMap);
     }
 
     private void handleException(Throwable throwable) {
@@ -76,16 +78,11 @@ public class MacheVertical {
 
     private void handleDeleteMap(RoutingContext req) {
         String mapName = req.request().getParam("mapName");
+        String key = req.request().getParam("key");
 
         try {
-            Mache<String, String> old = instanceCache.deleteMap(mapName);
-            if(old == null){
-                req.response()
-                        .setStatusCode(400)
-                        .end("map does not exist");
-            } else {
-                req.response().end(String.format("removed %s map", mapName));
-            }
+            instanceCache.removeKey(mapName, key);
+            req.response().end(String.format("removed key %s from %s map", key, mapName));
         } catch (Exception e) {
             req.fail(500);
         }
@@ -99,7 +96,7 @@ public class MacheVertical {
         try {
             instanceCache.putKey(mapName, key, value);
             req.response().end(String.format("PUT %s %s", mapName, key));
-        } catch (Exception e){
+        } catch (Exception e) {
             req.fail(500);
         }
     }

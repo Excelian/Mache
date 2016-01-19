@@ -5,7 +5,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '1.2.2'
 }
 
-def vertexVersion = '3.2.0'
+def vertxVersion = '3.2.0'
 
 dependencies {
     compile project(':mache-core')
@@ -13,8 +13,9 @@ dependencies {
     compile project(':mache-cassandra')
     compile project(':mache-mongo')
 
-    compile "io.vertx:vertx-core:$vertexVersion"
-    compile "io.vertx:vertx-web:$vertexVersion"
+    compile "io.vertx:vertx-core:$vertxVersion"
+    compile "io.vertx:vertx-web:$vertxVersion"
+    testCompile "io.vertx:vertx-unit:$vertxVersion"
 
     compile 'org.codehaus.groovy:groovy:2.3.7'
 }

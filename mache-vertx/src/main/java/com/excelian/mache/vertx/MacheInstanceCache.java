@@ -44,10 +44,7 @@ public class MacheInstanceCache {
      * @param value The value
      */
     public void putKey(String mapId, String key, String value) {
-        Mache<String, String> mache = cacheInstances.get(mapId);
-        if (mache == null) {
-            mache = createMap(mapId);
-        }
+        Mache<String, String> mache = getMache(mapId);
         mache.put(key, value);
     }
 
@@ -58,21 +55,25 @@ public class MacheInstanceCache {
      * @return The value
      */
     public String getKey(String mapId, String key) {
+        Mache<String, String> mache = getMache(mapId);
+        return mache.get(key);
+    }
+
+    private Mache<String, String> getMache(String mapId) {
         Mache<String, String> mache = cacheInstances.get(mapId);
         if (mache == null) {
             mache = createMap(mapId);
         }
-        return mache.get(key);
+        return mache;
     }
 
     /**
-     * Removes a map from the instance cache
+     * Removes an entry from the cache
      * @param mapId The map to remove
-     * @return The removed map
+     * @param key The key to remove
      */
-    public Mache<String, String> deleteMap(String mapId) {
-        // TODO, should a delete remove data or just local copy?
-        // update API documentation to reflect
-        return cacheInstances.remove(mapId);
+    public void removeKey(String mapId, String key) {
+        Mache<String, String> mache = getMache(mapId);
+        mache.remove(key);
     }
 }

@@ -8,15 +8,20 @@ info:
 produces:
   - application/json
 paths:
-  /map/{mapName}:
+  /map/{mapName}/{key}:
     delete:
       tags:
         - map
-      summary: Remove this map
+      summary: Remove the specified key from the map
       parameters:
         - in: path
           name: mapName
           description: The name of the map to remove
+          required: true
+          type: string
+        - in: path
+          name: key
+          description: The key that a value needs to be retrieved for
           required: true
           type: string
       responses:
@@ -24,7 +29,6 @@ paths:
           description: Succeeded
         400:
           description: Delete failed
-  /map/{mapName}/{key}:
     get:
       tags:
         - map
