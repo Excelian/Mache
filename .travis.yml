@@ -8,6 +8,7 @@ branches:
     - jmeter-build-steps
     - create-provider-specific-builders
     - jmeter-multithreaded-tests
+    - travis-mono-eval
 
 services:
   - rabbitmq
@@ -19,6 +20,7 @@ before_install: chmod +x ./config/travis-scripts/*
 install:
   - ./config/travis-scripts/prepare-kafka.sh
   - ./config/travis-scripts/prepare-couchbase.sh
+  - ./config/travis-scripts/prepare-mono.sh
 
 notifications:
   slack: exceliandev:1eNY8ozgMfUYwzAECmL4LNHi
