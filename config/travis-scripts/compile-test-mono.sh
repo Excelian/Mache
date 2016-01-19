@@ -1,2 +1,2 @@
 #!/bin/bash
-xbuild mono-example/monoExample.sln
+xbuild ./mono-example/monoExample.sln
