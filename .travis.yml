@@ -20,6 +20,7 @@ before_install:
  - ./config/travis-scripts/prepare-mono.sh
 
 install:
+  - ./config/travis-scripts/compile-test-mono.sh
   - ./config/travis-scripts/prepare-kafka.sh
   - ./config/travis-scripts/prepare-couchbase.sh
 
