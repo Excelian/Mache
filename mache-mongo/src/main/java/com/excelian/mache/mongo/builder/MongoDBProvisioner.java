@@ -45,10 +45,14 @@ public class MongoDBProvisioner implements StorageProvisioner {
 
     @Override
     public <K, V> MacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-        //return new MongoDBCacheLoader<>(keyType, valueType, seeds, mongoCredentials, clientOptions, database,
-                //schemaOptions, collectionOptions);
-        return new MongoDBJsonCacheLoader(seeds, mongoCredentials, clientOptions, database,
-                schemaOptions);
+        // TODO this is the wrong approach but gets tests running for now
+        if (valueType == String.class) {
+            return new MongoDBJsonCacheLoader(seeds, mongoCredentials, clientOptions, database,
+                    schemaOptions);
+        } else {
+            return new MongoDBCacheLoader<>(keyType, valueType, seeds, mongoCredentials, clientOptions, database,
+                    schemaOptions, collectionOptions);
+        }
     }
 
     /**

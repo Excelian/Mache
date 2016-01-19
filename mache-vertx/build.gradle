@@ -12,6 +12,7 @@ dependencies {
     compile project(':mache-guava')
     compile project(':mache-cassandra')
     compile project(':mache-mongo')
+    testCompile project(path: ':mache-core', configuration: 'tests')
 
     compile "io.vertx:vertx-core:$vertxVersion"
     compile "io.vertx:vertx-web:$vertxVersion"

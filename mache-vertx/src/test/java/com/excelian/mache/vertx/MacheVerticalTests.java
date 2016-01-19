@@ -1,14 +1,12 @@
 package com.excelian.mache.vertx;
 
-import com.excelian.mache.builder.NoMessagingProvisioner;
 import com.excelian.mache.builder.StorageProvisioner;
 import com.excelian.mache.core.HashMapCacheLoader;
+import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
-import com.excelian.mache.factory.MacheFactory;
 import com.google.common.net.MediaType;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpHeaders;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -17,6 +15,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
+
+import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 
 @RunWith(VertxUnitRunner.class)
@@ -28,13 +30,23 @@ public class MacheVerticalTests {
     public void setUp(TestContext context) {
         vertx = Vertx.vertx();
 
-        MacheFactory factory = new MacheFactory(guava(),
-                        new StorageProvisioner() {
+        Supplier<Mache<String, String>> factory = () -> {
+            try {
+                return mache(String.class, String.class)
+                        .cachedBy(guava())
+                        .storedIn(new StorageProvisioner() {
                             @Override
                             public <K, V> MacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
                                 return new HashMapCacheLoader<>(valueType);
                             }
-                        }, new NoMessagingProvisioner());
+                        })
+                        .withNoMessaging()
+                        .macheUp();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        };
 
         instanceCache = new MacheInstanceCache(factory);
         MacheVertical vertical = new MacheVertical(instanceCache);
@@ -73,14 +85,22 @@ public class MacheVerticalTests {
     @Test
     public void Delete_Should_Remove_Key_From_Map(TestContext context) {
         final Async async = context.async();
+        AtomicBoolean getFailed = new AtomicBoolean(false);
 
         instanceCache.putKey("names", "1", "{'name': 'ben'}");
         vertx.createHttpClient().delete(8080, "localhost", "/map/names/1",
                 response -> {
                     context.assertEquals(200, response.statusCode());
-                    context.assertTrue(instanceCache.getKey("names", "1") == null);
+                    try {
+                        instanceCache.getKey("names", "1"); // get will raise exception
+                    } catch (Exception e) {
+                        getFailed.set(true);
+                    }
                     async.complete();
-                });
+                })
+                .end();
+        async.await();
+        context.assertTrue(getFailed.get());
     }
 
     @Test
@@ -95,9 +115,9 @@ public class MacheVerticalTests {
                     context.assertEquals(jsonData, instanceCache.getKey("names", "1"));
                     async.complete();
                 })
-        .putHeader(HttpHeaders.CONTENT_LENGTH, jsonData.length() + "")
-        .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString())
-        .write(jsonData)
-        .end();
+                .putHeader(HttpHeaders.CONTENT_LENGTH, jsonData.length() + "")
+                .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString())
+                .write(jsonData)
+                .end();
     }
 }

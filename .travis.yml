@@ -9,6 +9,7 @@ branches:
     - create-provider-specific-builders
     - jmeter-multithreaded-tests
     - 53-alternative-cache-implementations
+    - Vertx-REST-Spike
 
 services:
   - rabbitmq
