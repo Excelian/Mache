@@ -10,6 +10,8 @@ branches:
     - create-provider-specific-builders
     - jmeter-multithreaded-tests
     - travis-mono-eval
+    - couchprovcleanup
+
 services:
   - rabbitmq
   - mongodb
