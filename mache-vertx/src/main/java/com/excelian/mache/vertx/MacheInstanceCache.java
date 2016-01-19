@@ -1,12 +1,12 @@
 package com.excelian.mache.vertx;
 
 import com.excelian.mache.core.Mache;
-import com.excelian.mache.factory.MacheFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Manages the Mache instances created by the vertx REST endpoint
@@ -15,12 +15,12 @@ public class MacheInstanceCache {
 
     private static final Logger LOG = LoggerFactory.getLogger(MacheInstanceCache.class);
     private final Map<String, Mache<String, String>> cacheInstances = new HashMap<>();
-    private final MacheFactory factory;
+    private final Supplier<Mache<String, String>> factory;
 
     /**
      * Creates an instance cache that will retain the queried instances
      */
-    public MacheInstanceCache(MacheFactory factory) {
+    public MacheInstanceCache(Supplier<Mache<String, String>> factory) {
         this.factory = factory;
     }
 
@@ -28,7 +28,7 @@ public class MacheInstanceCache {
         LOG.trace("adding map {} to cache", mapId);
         Mache<String, String> newMache = null;
         try {
-            newMache = factory.create(String.class, String.class);
+            newMache = factory.get();
             cacheInstances.put(mapId, newMache);
         } catch (Exception e) {
             LOG.error("failed adding map {} to cache", mapId, e);

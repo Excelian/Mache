@@ -1,10 +1,9 @@
 package com.excelian.mache.vertx
 
-import com.excelian.mache.builder.NoMessagingProvisioner
 import com.excelian.mache.core.SchemaOptions
-import com.excelian.mache.factory.MacheFactory
 import com.mongodb.ServerAddress
 
+import static com.excelian.mache.builder.MacheBuilder.mache
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 
@@ -14,15 +13,16 @@ public class MongoConfig {
     public static void main(String[] args) {
         MacheRestService restService = new MacheRestService();
 
-        restService.run(
-                new MacheFactory(
-                        guava(),
+        restService.run({ ->
+            mache(String.class, String.class)
+                    .cachedBy(guava())
+                    .storedIn(
                         mongodb()
                                 .withSeeds(new ServerAddress("localhost", 27017))
                                 .withDatabase(keySpace)
                                 .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
-                                .build(),
-                        new NoMessagingProvisioner()
-                ));
+                                .build())
+                    .withNoMessaging()
+                    .macheUp(); });
     }
 }

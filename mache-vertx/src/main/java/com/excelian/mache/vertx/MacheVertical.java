@@ -1,6 +1,5 @@
 package com.excelian.mache.vertx;
 
-import com.excelian.mache.core.Mache;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
@@ -30,7 +29,7 @@ public class MacheVertical extends AbstractVerticle {
         Router router = Router.router(vertx);
         registerRoutes(router);
 
-        getVertx()
+        vertx
                 .createHttpServer()
                 .requestHandler(router::accept)
                 .listen(8080, handler -> {
