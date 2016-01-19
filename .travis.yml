@@ -1,4 +1,5 @@
 language: java
+sudo: required
 jdk:
   - oraclejdk8
 branches:
@@ -9,7 +10,6 @@ branches:
     - create-provider-specific-builders
     - jmeter-multithreaded-tests
     - travis-mono-eval
-
 services:
   - rabbitmq
   - mongodb
