@@ -63,7 +63,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
         if (schemaOption.shouldCreateSchema() && session == null) {
             synchronized (this) {
                 if (session == null) {
-                    session = connectionContext.getStorage().connect();
+                    session = connectionContext.getConnection().connect();
                     if (schemaOption.shouldCreateSchema()) {
                         createKeySpace();
                     }
@@ -71,7 +71,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
                 }
             }
         } else {
-            session = connectionContext.getStorage().connect(keySpace);
+            session = connectionContext.getConnection().connect(keySpace);
         }
     }
 
@@ -132,7 +132,7 @@ public class CassandraCacheLoader<K, V> extends AbstractCacheLoader<K, V, Sessio
     @Override
     public String toString() {
         return "CassandraCacheLoader{"
-                + "storageContext=" + connectionContext
+                + "connectionContext=" + connectionContext
                 + ", schemaOption=" + schemaOption
                 + ", replicationClass='" + replicationClass + '\''
                 + ", replicationFactor=" + replicationFactor

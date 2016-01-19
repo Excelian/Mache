@@ -40,7 +40,6 @@ public class ReadFromDB extends AbstractCouchSamplerClient {
             final Mache<String, CouchTestEntity> mache = mache(String.class, CouchTestEntity.class)
                 .backedBy(couchbase().withContext(connectionContext)
                         .withBucketSettings(builder().name(keySpace).quota(150).build())
-                        .withDefaultAdminDetails()
                         .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
                         .build())
                 .withNoMessaging()

@@ -40,7 +40,7 @@ public class CassandraExample implements Example<CassandraAnnotatedMessage, Clus
 
         return mache(String.class, CassandraAnnotatedMessage.class)
                 .backedBy(cassandra()
-                        .withContext(connectionContext)
+                        .withConnectionContext(connectionContext)
                         .withKeyspace(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA).build())
                 .withNoMessaging()

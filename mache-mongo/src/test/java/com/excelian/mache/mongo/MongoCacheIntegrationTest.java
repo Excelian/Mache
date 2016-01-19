@@ -47,7 +47,7 @@ public class MongoCacheIntegrationTest {
 
         return MacheBuilder.mache(String.class, TestEntity.class)
                 .backedBy(mongodb()
-                        .withContext(context)
+                        .withConnectionContext(context)
                         .withDatabase(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                         .build())

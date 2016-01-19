@@ -31,7 +31,7 @@ public class ReadFromDB extends AbstractCassandraSamplerClient {
                     .addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042));
 
             db = cassandra()
-                    .withContext(connectionContext)
+                    .withConnectionContext(connectionContext)
                     .withKeyspace(mapParams.get("keyspace.name"))
                     .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED).build()
                     .getCacheLoader(String.class, CassandraTestEntity.class);

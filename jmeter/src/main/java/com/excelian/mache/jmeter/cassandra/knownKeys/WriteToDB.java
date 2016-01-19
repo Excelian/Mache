@@ -35,7 +35,7 @@ public class WriteToDB extends AbstractCassandraSamplerClient {
                             .withClusterName("BluePrint") );
 
             db = cassandra()
-                    .withContext(connectionContext)
+                    .withConnectionContext(connectionContext)
                     .withKeyspace(mapParams.get("keyspace.name"))
                     .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED).build()
                     .getCacheLoader(String.class, CassandraTestEntity.class);

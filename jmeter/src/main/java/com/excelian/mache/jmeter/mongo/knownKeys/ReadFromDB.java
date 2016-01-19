@@ -34,7 +34,7 @@ public class ReadFromDB extends AbstractMongoSamplerClient {
 
             final Mache<String, MongoTestEntity> mache = mache(String.class, MongoTestEntity.class)
                 .backedBy(mongodb()
-                    .withContext(connectionContext)
+                    .withConnectionContext(connectionContext)
                     .withDatabase(mapParams.get("keyspace.name"))
                     .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
                     .build()).withNoMessaging().macheUp();

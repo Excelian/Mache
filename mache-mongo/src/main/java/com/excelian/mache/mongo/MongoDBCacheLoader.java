@@ -104,7 +104,7 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, MongoCli
     }
 
     private MongoClient connect() {
-        return new MongoClient(seeds.getStorage(), credentials, clientOptions);
+        return new MongoClient(seeds.getConnection(), credentials, clientOptions);
     }
 
     @Override

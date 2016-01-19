@@ -40,7 +40,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
             Cluster cluster;
 
             @Override
-            public Cluster getStorage() {
+            public Cluster getConnection() {
                 if (cluster == null) {
                     synchronized (this) {
                         if (cluster == null) {
@@ -69,7 +69,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
      * @return A builder for a {@link CouchbaseProvisioner}.
      */
     public static ClusterBuilder couchbase() {
-        return new CouchbaseProvisionerBuilder();
+        return cluster -> bucket -> new CouchbaseProvisionerBuilder(cluster, bucket);
     }
 
     @Override
@@ -90,67 +90,32 @@ public class CouchbaseProvisioner implements StorageProvisioner {
     }
 
     public interface BucketBuilder {
-        AdminSettings withBucketSettings(BucketSettings bucketSettings);
-    }
-
-    public interface AdminSettings {
-        SchemaOptionsSettings withAdminDetails(String adminUser, String adminPassword);
-
-        SchemaOptionsSettings withDefaultAdminDetails();
-    }
-
-    public interface SchemaOptionsSettings {
-        CouchbaseProvisionerBuilder withSchemaOptions(SchemaOptions schemaOptions);
-
-        CouchbaseProvisionerBuilder withDefaultSchemaOptions();
+        CouchbaseProvisionerBuilder withBucketSettings(BucketSettings bucketSettings);
     }
 
     /**
      * A builder with defaults for a Couchbase cluster.
      */
-    public static class CouchbaseProvisionerBuilder implements ClusterBuilder, BucketBuilder, AdminSettings, SchemaOptionsSettings {
-        private ConnectionContext<Cluster> connectionContext;
-        private BucketSettings bucketSettings;
+    public static class CouchbaseProvisionerBuilder {
+        private final ConnectionContext<Cluster> connectionContext;
+        private final BucketSettings bucketSettings;
         private String adminUser = "Administrator";
         private String adminPassword = "password";
         private SchemaOptions schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
 
-        public BucketBuilder withContext(ConnectionContext<Cluster> connectionContext) {
-            if (connectionContext == null) {
-                throw new NullPointerException("Cannot build without a connectionContext defined");
-            }
-
+        public CouchbaseProvisionerBuilder(ConnectionContext<Cluster> connectionContext, BucketSettings bucketSettings) {
             this.connectionContext = connectionContext;
-            return this;
+            this.bucketSettings = bucketSettings;
         }
 
-        public SchemaOptionsSettings withAdminDetails(String adminUser, String adminPassword) {
+        public CouchbaseProvisionerBuilder withAdminDetails(String adminUser, String adminPassword) {
             this.adminUser = adminUser;
             this.adminPassword = adminPassword;
             return this;
         }
 
-        @Override
-        public SchemaOptionsSettings withDefaultAdminDetails() {
-            adminUser = "Administrator";
-            adminPassword = "password";
-            return this;
-        }
-
         public CouchbaseProvisionerBuilder withSchemaOptions(SchemaOptions schemaOptions) {
             this.schemaOptions = schemaOptions;
-            return this;
-        }
-
-        @Override
-        public CouchbaseProvisionerBuilder withDefaultSchemaOptions() {
-            schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
-            return this;
-        }
-
-        @Override
-        public AdminSettings withBucketSettings(BucketSettings bucketSettings) {
-            this.bucketSettings = bucketSettings;
             return this;
         }
 

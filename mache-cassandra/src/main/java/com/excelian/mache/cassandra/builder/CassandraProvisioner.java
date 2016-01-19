@@ -41,7 +41,7 @@ public class CassandraProvisioner implements StorageProvisioner {
             Cluster cluster;
 
             @Override
-            public Cluster getStorage() {
+            public Cluster getConnection() {
                 if (cluster == null)
                     synchronized (this) {
                         if (cluster == null) {
@@ -80,7 +80,7 @@ public class CassandraProvisioner implements StorageProvisioner {
      * Forces cluster settings to be provided.
      */
     public interface ClusterBuilder {
-        KeyspaceBuilder withContext(ConnectionContext<Cluster> connectionContext);
+        KeyspaceBuilder withConnectionContext(ConnectionContext<Cluster> connectionContext);
     }
 
     /**

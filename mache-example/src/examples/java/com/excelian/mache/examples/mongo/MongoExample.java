@@ -32,7 +32,7 @@ public class MongoExample implements Example<MongoAnnotatedMessage, List<ServerA
         final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
         return mache(String.class, MongoAnnotatedMessage.class)
                 .backedBy(mongodb()
-                        .withContext(connectionContext)
+                        .withConnectionContext(connectionContext)
                         .withDatabase(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                         .build())

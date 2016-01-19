@@ -72,7 +72,7 @@ public abstract class MacheAbstractMongoKafkaSamplerClient extends AbstractMongo
 
         cache1 = mache(String.class, com.excelian.mache.jmeter.mongo.MongoTestEntity.class)
             .backedBy(mongodb()
-                .withContext(connectionContext)
+                .withConnectionContext(connectionContext)
                 .withDatabase(mapParams.get("keyspace.name"))
                 .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
                 .build())

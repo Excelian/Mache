@@ -70,7 +70,7 @@ public class CassandraCacheLoaderIntegrationTest {
 
         return mache(keyType, valueType)
                 .backedBy(cassandra()
-                        .withContext(connectionContext)
+                        .withConnectionContext(connectionContext)
                         .withKeyspace(keySpace)
                         .withSchemaOptions(schemaOptions)
                         .build())

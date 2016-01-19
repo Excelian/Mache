@@ -49,7 +49,7 @@ public class MongoDBProvisioner implements StorageProvisioner {
     public static ConnectionContext<List<ServerAddress>> mongoConnectionContext(ServerAddress... seeds) {
         return new ConnectionContext<List<ServerAddress>>() {
             @Override
-            public List<ServerAddress> getStorage() {
+            public List<ServerAddress> getConnection() {
                 return stream(seeds).collect(toList());
             }
 
@@ -76,7 +76,7 @@ public class MongoDBProvisioner implements StorageProvisioner {
      * Forces seeds to be provided.
      */
     public interface ConnectionContextBuilder {
-        DatabaseNameBuilder withContext(ConnectionContext<List<ServerAddress>> context);
+        DatabaseNameBuilder withConnectionContext(ConnectionContext<List<ServerAddress>> context);
     }
 
 

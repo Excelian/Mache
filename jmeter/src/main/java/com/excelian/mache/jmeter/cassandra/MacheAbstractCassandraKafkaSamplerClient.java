@@ -78,7 +78,7 @@ public abstract class MacheAbstractCassandraKafkaSamplerClient extends AbstractC
                 .addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042));
 
         cache1 = mache(String.class, CassandraTestEntity.class).backedBy(cassandra()
-                .withContext(connectionContext)
+                .withConnectionContext(connectionContext)
                 .withKeyspace(mapParams.get("keyspace.name")).withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
                 .build()).withMessaging(kafkaProvisioner).macheUp();
     }

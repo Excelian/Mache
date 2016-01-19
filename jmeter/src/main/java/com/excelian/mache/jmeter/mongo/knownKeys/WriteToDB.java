@@ -32,7 +32,7 @@ public class WriteToDB extends AbstractMongoSamplerClient {
             connectionContext = mongoConnectionContext(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017));
 
             db = mongodb()
-                .withContext(connectionContext)
+                .withConnectionContext(connectionContext)
                 .withDatabase(mapParams.get("keyspace.name"))
                 .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
                 .build().getCacheLoader(String.class, MongoTestEntity.class);

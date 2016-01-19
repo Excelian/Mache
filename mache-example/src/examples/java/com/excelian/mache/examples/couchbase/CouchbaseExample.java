@@ -38,7 +38,6 @@ public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, Clus
                 .backedBy(couchbase()
                         .withContext(context)
                         .withBucketSettings(builder().name(keySpace).quota(150).build())
-                        .withDefaultAdminDetails()
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                         .build())
                 .withNoMessaging()

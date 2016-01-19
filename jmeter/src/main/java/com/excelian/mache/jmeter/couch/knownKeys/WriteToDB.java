@@ -36,7 +36,6 @@ public class WriteToDB extends AbstractCouchSamplerClient {
 
             db = couchbase().withContext(connectionContext)
                     .withBucketSettings(builder().name(keySpace).quota(150).build())
-                    .withDefaultAdminDetails()
                     .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
                     .build().getCacheLoader(String.class, CouchTestEntity.class);
 
