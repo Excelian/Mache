@@ -1,14 +1,14 @@
 package com.excelian.mache.vertx;
 
-import com.excelian.mache.builder.CacheProvisioner;
-import com.excelian.mache.builder.MessagingProvisioner;
-import com.excelian.mache.builder.StorageProvisioner;
+import com.excelian.mache.core.Mache;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A vertx vertical is synonymous to an Actor. This class will register the routes that we are interested in
@@ -18,12 +18,11 @@ import io.vertx.ext.web.handler.StaticHandler;
  */
 public class MacheVertical {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MacheVertical.class);
     private final MacheInstanceCache instanceCache;
 
-    public MacheVertical(CacheProvisioner cacheProvisioner,
-                         StorageProvisioner storageProvisioner,
-                         MessagingProvisioner messagingProvisioner) {
-        instanceCache = new MacheInstanceCache(storageProvisioner, cacheProvisioner, messagingProvisioner);
+    public MacheVertical(MacheInstanceCache instanceCache) {
+        this.instanceCache = instanceCache;
     }
 
     public void run() {
@@ -33,6 +32,8 @@ public class MacheVertical {
 
         router.route().handler(StaticHandler.create());
         router.route("/map/*").handler(BodyHandler.create());
+
+        router.exceptionHandler(this::handleException);
 
         router.route(HttpMethod.DELETE, "/map/:mapName")
                 .handler(this::handleDeleteMap);
@@ -54,26 +55,40 @@ public class MacheVertical {
                 });
     }
 
+    private void handleException(Throwable throwable) {
+        LOG.error("Vertx server exception {}", throwable);
+    }
+
     private void handleGetMap(RoutingContext req) {
         String mapName = req.request().getParam("mapName");
         String key = req.request().getParam("key");
 
-        String value = null;
         try {
-            value = instanceCache.getKey(mapName, key);
+            String value = instanceCache.getKey(mapName, key);
+            req.response().end(value == null ? "" : value);
         } catch (Exception e) {
             // key not present
+            req.response()
+                    .setStatusCode(400)
+                    .end("key not found");
         }
-
-        req.response().end(value == null ? "" : value);
     }
 
     private void handleDeleteMap(RoutingContext req) {
         String mapName = req.request().getParam("mapName");
 
-        instanceCache.deleteMap(mapName);
-
-        req.response().end("Deleted map " + mapName);
+        try {
+            Mache<String, String> old = instanceCache.deleteMap(mapName);
+            if(old == null){
+                req.response()
+                        .setStatusCode(400)
+                        .end("map does not exist");
+            } else {
+                req.response().end(String.format("removed %s map", mapName));
+            }
+        } catch (Exception e) {
+            req.fail(500);
+        }
     }
 
     private void handlePutMap(RoutingContext req) {
@@ -81,8 +96,11 @@ public class MacheVertical {
         String key = req.request().getParam("key");
         String value = req.getBodyAsString();
 
-        instanceCache.putKey(mapName, key, value);
-
-        req.response().end("PUT " + mapName + " " + key);
+        try {
+            instanceCache.putKey(mapName, key, value);
+            req.response().end(String.format("PUT %s %s", mapName, key));
+        } catch (Exception e){
+            req.fail(500);
+        }
     }
 }

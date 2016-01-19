@@ -1,50 +1,38 @@
 package com.excelian.mache.vertx;
 
-import com.excelian.mache.builder.CacheProvisioner;
-import com.excelian.mache.builder.MessagingProvisioner;
-import com.excelian.mache.builder.StorageProvisioner;
 import com.excelian.mache.core.Mache;
+import com.excelian.mache.factory.MacheFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.excelian.mache.builder.MacheBuilder.mache;
 
 /**
  * Manages the Mache instances created by the vertx REST endpoint
  */
 public class MacheInstanceCache {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MacheInstanceCache.class);
     private final Map<String, Mache<String, String>> cacheInstances = new HashMap<>();
-    // TODO Elements required to create new instances, may be better wrapped behind a factory interface
-    // can any element change (e.g. database) without requiring new factory?
-    private final StorageProvisioner storageProvisioner;
-    private final CacheProvisioner<String, String> cacheProvisioner;
-    private final MessagingProvisioner messagingProvisioner;
+    private final MacheFactory factory;
 
     /**
-     * Creates an instance cache that will create new Mache as required
+     * Creates an instance cache that will retain the queried instances
      */
-    public MacheInstanceCache(StorageProvisioner storageProvisioner,
-                              CacheProvisioner<String, String> cacheProvisioner,
-                              MessagingProvisioner messagingProvisioner) {
-        this.storageProvisioner = storageProvisioner;
-        this.cacheProvisioner = cacheProvisioner;
-        this.messagingProvisioner = messagingProvisioner;
+    public MacheInstanceCache(MacheFactory factory) {
+        this.factory = factory;
     }
 
     private Mache<String, String> createMap(String mapId) {
+        LOG.trace("adding map {} to cache", mapId);
         Mache<String, String> newMache = null;
         try {
-            newMache = mache(String.class, String.class)
-                    .cachedBy(cacheProvisioner)
-                    .storedIn(storageProvisioner)
-                    .withMessaging(messagingProvisioner)
-                    .macheUp();
+            newMache = factory.create(String.class, String.class);
             cacheInstances.put(mapId, newMache);
         } catch (Exception e) {
-            // TODO log, return failure
-            e.printStackTrace();
+            LOG.error("failed adding map {} to cache", mapId, e);
+            throw new RuntimeException("Failed to create map", e);
         }
         return newMache;
     }
@@ -83,7 +71,8 @@ public class MacheInstanceCache {
      * @return The removed map
      */
     public Mache<String, String> deleteMap(String mapId) {
-        // Todo, check the map exists
+        // TODO, should a delete remove data or just local copy?
+        // update API documentation to reflect
         return cacheInstances.remove(mapId);
     }
 }
