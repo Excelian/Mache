@@ -1,5 +1,6 @@
 package com.excelian.mache.jmeter.mongo.knownKeys;
 
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.mongo.AbstractMongoSamplerClient;
@@ -9,12 +10,17 @@ import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
+import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongoConnectionContext;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
+
+import java.util.List;
 import java.util.Map;
 
 public class WriteToDB extends AbstractMongoSamplerClient {
     private static final long serialVersionUID = 4662847886347883622L;
+
     private AbstractCacheLoader<String, MongoTestEntity, ?> db;
+    private ConnectionContext<List<ServerAddress>> connectionContext;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -23,15 +29,17 @@ public class WriteToDB extends AbstractMongoSamplerClient {
         final Map<String, String> mapParams = extractParameters(context);
 
         try {
+            connectionContext = mongoConnectionContext(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017));
+
             db = mongodb()
-                .withSeeds(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017))
+                .withContext(connectionContext)
                 .withDatabase(mapParams.get("keyspace.name"))
                 .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
                 .build().getCacheLoader(String.class, MongoTestEntity.class);
             db.create();// ensure we are connected and schema exists
 
         } catch (Exception e) {
-            getLogger().error("Error connecting to cassandra", e);
+            getLogger().error("Error connecting to mongo", e);
         }
     }
 
@@ -39,6 +47,14 @@ public class WriteToDB extends AbstractMongoSamplerClient {
     public void teardownTest(JavaSamplerContext context) {
         if (db != null) {
             db.close();
+        }
+
+        if(connectionContext!=null){
+            try {
+                connectionContext.close();
+            } catch (Exception e) {
+                getLogger().error("Error disconnecting from mongo", e);
+            }
         }
     }
 

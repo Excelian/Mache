@@ -1,13 +1,10 @@
 package com.excelian.mache.couchbase.builder;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.BucketSettings;
-import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.builder.storage.StorageProvisioner;
 import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.Mache;
@@ -21,76 +18,122 @@ import com.excelian.mache.couchbase.CouchbaseCacheLoader;
 public class CouchbaseProvisioner implements StorageProvisioner {
 
     private final BucketSettings bucketSettings;
-    private CouchbaseEnvironment couchbaseEnvironment;
-    private List<String> nodes;
+    private ConnectionContext<Cluster> connectionContext;
+
     private String adminUser;
     private String adminPassword;
     private SchemaOptions schemaOptions;
 
-    private CouchbaseProvisioner(CouchbaseEnvironment couchbaseEnvironment, BucketSettings bucketSettings,
-                                 List<String> nodes, String adminUser, String adminPassword,
+    private CouchbaseProvisioner(ConnectionContext<Cluster> connectionContext, BucketSettings bucketSettings,
+                                 String adminUser, String adminPassword,
                                  SchemaOptions schemaOptions) {
-        this.couchbaseEnvironment = couchbaseEnvironment;
+        this.connectionContext = connectionContext;
         this.bucketSettings = bucketSettings;
-        this.nodes = nodes;
         this.adminUser = adminUser;
         this.adminPassword = adminPassword;
         this.schemaOptions = schemaOptions;
+    }
+
+    public static ConnectionContext<Cluster> couchbaseConnectionContext(String contactPoint, DefaultCouchbaseEnvironment builder) {
+        return new ConnectionContext<Cluster>() {
+
+            Cluster cluster;
+
+            @Override
+            public Cluster getStorage() {
+                if (cluster == null) {
+                    synchronized (this) {
+                        if (cluster == null) {
+                            cluster = CouchbaseCluster.create(builder, contactPoint);
+                        }
+                    }
+                }
+                return cluster;
+            }
+
+            @Override
+            public void close() throws Exception {
+                if (cluster != null) {
+                    synchronized (this) {
+                        if (cluster != null) {
+                            cluster.disconnect();
+                            cluster = null;
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    /**
+     * @return A builder for a {@link CouchbaseProvisioner}.
+     */
+    public static ClusterBuilder couchbase() {
+        return new CouchbaseProvisionerBuilder();
     }
 
     @Override
     public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType) {
         return new MacheFactory().create(getCacheLoader(keyType, valueType));
     }
-    
+
     @Override
     public <K, V> AbstractCacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-    	return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings,
-                couchbaseEnvironment, nodes, adminUser, adminPassword, schemaOptions);
-    }
-
-    /**
-     * @return A builder for a {@link CouchbaseProvisioner}.
-     */
-    public static BucketBuilder couchbase() {
-        return CouchbaseProvisionerBuilder::new;
+        return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings, connectionContext, adminUser, adminPassword, schemaOptions);
     }
 
     /**
      * Forces bucket settings to be provided.
      */
+    public interface ClusterBuilder {
+        BucketBuilder withContext(ConnectionContext<Cluster> connectionContext);
+    }
+
     public interface BucketBuilder {
-        CouchbaseProvisionerBuilder withBucketSettings(BucketSettings bucketSettings);
+        AdminSettings withBucketSettings(BucketSettings bucketSettings);
+    }
+
+    public interface AdminSettings {
+        SchemaOptionsSettings withAdminDetails(String adminUser, String adminPassword);
+
+        SchemaOptionsSettings withDefaultAdminDetails();
+    }
+
+    public interface SchemaOptionsSettings {
+        CouchbaseProvisionerBuilder withSchemaOptions(SchemaOptions schemaOptions);
+
+        CouchbaseProvisionerBuilder withDefaultSchemaOptions();
     }
 
     /**
      * A builder with defaults for a Couchbase cluster.
      */
-    public static class CouchbaseProvisionerBuilder {
+    public static class CouchbaseProvisionerBuilder implements ClusterBuilder, BucketBuilder, AdminSettings, SchemaOptionsSettings {
+        private ConnectionContext<Cluster> connectionContext;
         private BucketSettings bucketSettings;
-        private CouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
-        private List<String> nodes = Collections.singletonList("localhost");
         private String adminUser = "Administrator";
         private String adminPassword = "password";
         private SchemaOptions schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
 
-        public CouchbaseProvisionerBuilder(BucketSettings bucketSettings) {
-            this.bucketSettings = bucketSettings;
-        }
+        public BucketBuilder withContext(ConnectionContext<Cluster> connectionContext) {
+            if (connectionContext == null) {
+                throw new NullPointerException("Cannot build without a connectionContext defined");
+            }
 
-        public CouchbaseProvisionerBuilder withCouchbaseEnvironment(CouchbaseEnvironment couchbaseEnvironment) {
-            this.couchbaseEnvironment = couchbaseEnvironment;
+            this.connectionContext = connectionContext;
             return this;
         }
 
-        public CouchbaseProvisionerBuilder withNodes(String... nodes) {
-            this.nodes = Arrays.stream(nodes).collect(Collectors.toList());
-            return this;
-        }
-
-        public CouchbaseProvisionerBuilder withAdminDetails(String adminUser, String adminPassword) {
+        public SchemaOptionsSettings withAdminDetails(String adminUser, String adminPassword) {
             this.adminUser = adminUser;
             this.adminPassword = adminPassword;
+            return this;
+        }
+
+        @Override
+        public SchemaOptionsSettings withDefaultAdminDetails() {
+            adminUser = "Administrator";
+            adminPassword = "password";
             return this;
         }
 
@@ -99,10 +142,20 @@ public class CouchbaseProvisioner implements StorageProvisioner {
             return this;
         }
 
-        public CouchbaseProvisioner create() {
-            return new CouchbaseProvisioner(couchbaseEnvironment, bucketSettings, nodes, adminUser, adminPassword,
-                    schemaOptions);
+        @Override
+        public CouchbaseProvisionerBuilder withDefaultSchemaOptions() {
+            schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
+            return this;
+        }
+
+        @Override
+        public AdminSettings withBucketSettings(BucketSettings bucketSettings) {
+            this.bucketSettings = bucketSettings;
+            return this;
+        }
+
+        public CouchbaseProvisioner build() {
+            return new CouchbaseProvisioner(connectionContext, bucketSettings, adminUser, adminPassword, schemaOptions);
         }
     }
-
 }

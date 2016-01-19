@@ -1,5 +1,6 @@
 package com.excelian.mache.mongo;
 
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.mongodb.MongoClient;
@@ -23,17 +24,17 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, MongoCli
     private MongoClient mongoClient;
     private Class<K> keyType;
     private Class<V> valueType;
-    private List<ServerAddress> seeds;
+    private ConnectionContext<List<ServerAddress>> seeds;
     private SchemaOptions schemaOptions;
     private CollectionOptions collectionOptions;
     private String database;
 
-    public MongoDBCacheLoader(Class<K> keyType, Class<V> valueType, List<ServerAddress> seeds,
+    public MongoDBCacheLoader(Class<K> keyType, Class<V> valueType, ConnectionContext<List<ServerAddress>> connectionContext,
                               List<MongoCredential> credentials, MongoClientOptions clientOptions,
                               String database, SchemaOptions schemaOptions, CollectionOptions collectionOptions) {
         this.keyType = keyType;
         this.valueType = valueType;
-        this.seeds = seeds;
+        this.seeds = connectionContext;
         this.credentials = credentials;
         this.clientOptions = clientOptions;
         this.database = database;
@@ -98,20 +99,12 @@ public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, MongoCli
         }
     }
 
-    @Override
-    public MongoClient getDriverSession() {
-        if (mongoClient == null) {
-            throw new IllegalStateException("Session has not been created - read/write to cache first");
-        }
-        return mongoClient;
-    }
-
     private MongoOperations ops() {
         return new MongoTemplate(mongoClient, database);
     }
 
     private MongoClient connect() {
-        return new MongoClient(seeds, credentials, clientOptions);
+        return new MongoClient(seeds.getStorage(), credentials, clientOptions);
     }
 
     @Override

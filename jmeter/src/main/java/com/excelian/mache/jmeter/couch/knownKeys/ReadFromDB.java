@@ -1,5 +1,9 @@
 package com.excelian.mache.jmeter.couch.knownKeys;
 
+import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.CouchbaseCluster;
+import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
@@ -11,6 +15,7 @@ import org.apache.jmeter.samplers.SampleResult;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
+import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbaseConnectionContext;
 
 
 import java.util.Map;
@@ -18,6 +23,7 @@ import java.util.Map;
 public class ReadFromDB extends AbstractCouchSamplerClient {
     private static final long serialVersionUID = 251140199032740124L;
     private MacheLoader db;
+    private ConnectionContext<Cluster> connectionContext;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -29,12 +35,14 @@ public class ReadFromDB extends AbstractCouchSamplerClient {
             final String keySpace = mapParams.get("keyspace.name");
             final String couchServer = mapParams.get("couch.server.ip.address");
 
+            connectionContext = couchbaseConnectionContext(couchServer, DefaultCouchbaseEnvironment.create());
+
             final Mache<String, CouchTestEntity> mache = mache(String.class, CouchTestEntity.class)
-                .backedBy(couchbase()
-                    .withBucketSettings(builder().name(keySpace).quota(150).build())
-                    .withNodes(couchServer)
-                    .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                    .create())
+                .backedBy(couchbase().withContext(connectionContext)
+                        .withBucketSettings(builder().name(keySpace).quota(150).build())
+                        .withDefaultAdminDetails()
+                        .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                        .build())
                 .withNoMessaging()
                 .macheUp();
 
@@ -42,7 +50,7 @@ public class ReadFromDB extends AbstractCouchSamplerClient {
             db.create();
 
         } catch (Exception e) {
-            getLogger().error("Error connecting to cassandra", e);
+            getLogger().error("Error connecting to couchbase", e);
         }
     }
 
@@ -50,6 +58,14 @@ public class ReadFromDB extends AbstractCouchSamplerClient {
     public void teardownTest(JavaSamplerContext context) {
         if (db != null) {
             db.close();
+        }
+
+        if (connectionContext != null) {
+            try {
+                connectionContext.close();
+            } catch (Exception e) {
+                getLogger().error("Error disconnecting from couchbase", e);
+            }
         }
     }
 

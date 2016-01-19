@@ -1,5 +1,6 @@
 package com.excelian.mache.examples.mongo;
 
+import com.excelian.mache.examples.Example;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -8,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
  * Example Spring Data Mongo Annotated Object.
  */
 @Document
-public class MongoAnnotatedMessage {
+public class MongoAnnotatedMessage implements Example.KeyedMessge{
 
     @Field
     private final String msg;

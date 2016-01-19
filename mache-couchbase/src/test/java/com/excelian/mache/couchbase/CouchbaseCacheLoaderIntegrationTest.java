@@ -4,6 +4,7 @@ import com.codeaffine.test.ConditionalIgnoreRule;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.NoMessagingProvisioner;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.google.common.cache.CacheLoader;
 import org.junit.After;
@@ -19,7 +20,7 @@ import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.core.SchemaOptions.CREATE_AND_DROP_SCHEMA;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbaseConnectionContext;
 import static org.junit.Assert.*;
 
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCouchbaseDbForTests.class)
@@ -33,26 +34,30 @@ public class CouchbaseCacheLoaderIntegrationTest {
     private static final String PASSWORD = "password";
     private static final double DELTA = 0.000001;
     private static final String COUCHBASE_HOST = new NoRunningCouchbaseDbForTests().getHost();
+    private static final DefaultCouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
 
     private Mache<String, TestEntity> cache;
+    private ConnectionContext<Cluster> connectionContext;
 
     @Before
     public void setup() throws Exception {
+
+        connectionContext = couchbaseConnectionContext(COUCHBASE_HOST, couchbaseEnvironment);
+
         cache = mache(String.class, TestEntity.class)
                 .backedBy(couchbase()
+                        .withContext(connectionContext)
                         .withBucketSettings(builder().name(BUCKET).quota(150).build())
-                        .withCouchbaseEnvironment(DefaultCouchbaseEnvironment.builder()
-                                .connectTimeout(SECONDS.toMillis(100)).build())
                         .withAdminDetails(ADMIN_USER, PASSWORD)
-                        .withNodes(COUCHBASE_HOST)
-                        .withSchemaOptions(CREATE_AND_DROP_SCHEMA).create())
+                        .withSchemaOptions(CREATE_AND_DROP_SCHEMA).build())
                 .withMessaging(new NoMessagingProvisioner())
                 .macheUp();
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Exception {
         cache.close();
+        connectionContext.close();
     }
 
     @Test
@@ -75,18 +80,6 @@ public class CouchbaseCacheLoaderIntegrationTest {
         cache.put("test3", new TestEntity("test3", "FXRATE", 3.93));
         cache.put("test3", new TestEntity("test3", "FXRATE", 0.93));
         assertEquals(0.93, cache.get("test3").value, DELTA);
-    }
-
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void canGetDriver() {
-        CouchbaseCacheLoader<String, Object> loader = (CouchbaseCacheLoader) cache.getCacheLoader();
-        loader.create();
-        Cluster cluster = loader.getDriverSession();
-        assertNotNull(cluster);
-        loader.close();
-        assertNull(loader.getDriverSession());
     }
 
     @Document
