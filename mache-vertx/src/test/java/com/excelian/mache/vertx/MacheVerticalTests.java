@@ -51,7 +51,9 @@ public class MacheVerticalTests {
         instanceCache = new MacheInstanceCache(factory);
         MacheVertical vertical = new MacheVertical(instanceCache);
 
-        vertx.deployVerticle(vertical);
+        final Async async = context.async();
+        vertx.deployVerticle(vertical, event -> async.complete());
+        async.await();
     }
 
     @After
