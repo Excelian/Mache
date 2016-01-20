@@ -4,27 +4,30 @@ import com.excelian.mache.core.Mache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
 /**
  * Manages the Mache instances created by the vertx REST endpoint
+ * <p>
+ * The methods exposed from this class are threadsafe
  */
 public class MacheInstanceCache {
-
     private static final Logger LOG = LoggerFactory.getLogger(MacheInstanceCache.class);
-    private final Map<String, Mache<String, String>> cacheInstances = new HashMap<>();
+    private final ConcurrentMap<String, Mache<String, String>> cacheInstances = new ConcurrentHashMap<>();
     private final Supplier<Mache<String, String>> factory;
 
     /**
      * Creates an instance cache that will retain the queried instances
+     *
+     * @param factory A threadsafe factory to dispense new map instances
      */
     public MacheInstanceCache(Supplier<Mache<String, String>> factory) {
         this.factory = factory;
     }
 
-    private Mache<String, String> createMap(String mapId) {
+    private synchronized Mache<String, String> createMap(String mapId) {
         LOG.trace("adding map {} to cache", mapId);
         Mache<String, String> newMache = null;
         try {
@@ -39,8 +42,9 @@ public class MacheInstanceCache {
 
     /**
      * Puts a key/value into the specified map, if the map does not exist it is created
+     *
      * @param mapId The map
-     * @param key The key
+     * @param key   The key
      * @param value The value
      */
     public void putKey(String mapId, String key, String value) {
@@ -50,8 +54,9 @@ public class MacheInstanceCache {
 
     /**
      * Get the value for the given map and key
+     *
      * @param mapId The map
-     * @param key The key
+     * @param key   The key
      * @return The value
      */
     public String getKey(String mapId, String key) {
@@ -59,7 +64,7 @@ public class MacheInstanceCache {
         return mache.get(key);
     }
 
-    private Mache<String, String> getMache(String mapId) {
+    private synchronized Mache<String, String> getMache(String mapId) {
         Mache<String, String> mache = cacheInstances.get(mapId);
         if (mache == null) {
             mache = createMap(mapId);
@@ -69,8 +74,9 @@ public class MacheInstanceCache {
 
     /**
      * Removes an entry from the cache
+     *
      * @param mapId The map to remove
-     * @param key The key to remove
+     * @param key   The key to remove
      */
     public void removeKey(String mapId, String key) {
         Mache<String, String> mache = getMache(mapId);

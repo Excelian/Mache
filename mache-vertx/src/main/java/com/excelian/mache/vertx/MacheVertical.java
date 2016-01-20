@@ -9,18 +9,53 @@ import io.vertx.ext.web.handler.StaticHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 /**
  * A vertx vertical is synonymous to an Actor. This class will register the routes that we are interested in
  * and forward calls to a MacheInstanceCache
  * <p>
- * TODO threading/synchronisation
+ * Threading/synchronisation is handled by the map instances
  */
 public class MacheVertical extends AbstractVerticle {
+
+    /**
+     * Utility to detect if a specific IP is a loopback address or bound on any local NIC
+     */
+    @FunctionalInterface
+    public interface LocalAddressCheck {
+        boolean isLocalAddress(InetAddress address);
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(MacheVertical.class);
+    private final MacheRestServiceConfiguration serviceConfiguration;
     private final MacheInstanceCache instanceCache;
 
-    public MacheVertical(MacheInstanceCache instanceCache) {
+    private LocalAddressCheck localAddressCheck = this::runLocalAddressCheck;
+
+    private boolean runLocalAddressCheck(InetAddress address) {
+        if (address.isAnyLocalAddress() || address.isLoopbackAddress()) {
+            return true;
+        }
+
+        // Check if the address is defined on any interface
+        try {
+            return NetworkInterface.getByInetAddress(address) != null;
+        } catch (SocketException e) {
+            return false;
+        }
+    }
+
+    public MacheVertical(MacheRestServiceConfiguration serviceConfiguration, MacheInstanceCache instanceCache) {
+        this.serviceConfiguration = serviceConfiguration;
         this.instanceCache = instanceCache;
+    }
+
+    public void setLocalAddressCheck(LocalAddressCheck localAddressCheck) {
+        this.localAddressCheck = localAddressCheck;
     }
 
     @Override
@@ -32,17 +67,34 @@ public class MacheVertical extends AbstractVerticle {
         vertx
                 .createHttpServer()
                 .requestHandler(router::accept)
-                .listen(8080, handler -> {
-                    if (handler.succeeded()) {
-                        System.out.println("http://localhost:8080/");
-                    } else {
-                        System.err.println("Failed to listen on port 8080");
-                    }
-                });
+                .listen(serviceConfiguration.getBindPort(), serviceConfiguration.getBindIp(),
+                        handler -> {
+                            if (handler.succeeded()) {
+                                System.out.println(String.format("Running on http://%s:%s/",
+                                        serviceConfiguration.getBindIp(), serviceConfiguration.getBindPort()));
+                            } else {
+                                System.err.println("Failed to listen on port 8080");
+                            }
+                        });
     }
 
     private void registerRoutes(Router router) {
-        router.route().handler(StaticHandler.create());
+        router.route().handler(context -> {
+            try {
+                boolean isLocal = localAddressCheck.isLocalAddress(
+                        InetAddress.getByName(context.request().remoteAddress().host()));
+
+                if (serviceConfiguration.isLocalOnly() && !isLocal) {
+                    context.fail(401);
+                } else {
+                    context.next();
+                }
+
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+        });
+
         router.route("/map/*").handler(BodyHandler.create());
 
         router.exceptionHandler(this::handleException);
@@ -50,10 +102,12 @@ public class MacheVertical extends AbstractVerticle {
         router.route(HttpMethod.DELETE, "/map/:mapName/:key")
                 .handler(this::handleDeleteMap);
         router.route(HttpMethod.GET, "/map/:mapName/:key")
-                .order(-1)
                 .handler(this::handleGetMap); // avoid static handler interception
         router.route(HttpMethod.PUT, "/map/:mapName/:key")
                 .handler(this::handlePutMap);
+
+        // Register static handler last to avoid GET on a map URL being intercepted
+        router.route().handler(StaticHandler.create());
     }
 
     private void handleException(Throwable throwable) {
@@ -66,7 +120,7 @@ public class MacheVertical extends AbstractVerticle {
 
         try {
             String value = instanceCache.getKey(mapName, key);
-            if(value == null){
+            if (value == null) {
                 req.response()
                         .setStatusCode(400)
                         .end("key not found");

@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.net.InetAddress;
 import java.util.function.Supplier;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
@@ -25,6 +25,7 @@ import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 public class MacheVerticalTests {
     private Vertx vertx;
     private MacheInstanceCache instanceCache;
+    private MacheVertical vertical;
 
     @Before
     public void setUp(TestContext context) {
@@ -49,11 +50,8 @@ public class MacheVerticalTests {
         };
 
         instanceCache = new MacheInstanceCache(factory);
-        MacheVertical vertical = new MacheVertical(instanceCache);
-
-        final Async async = context.async();
-        vertx.deployVerticle(vertical, event -> async.complete());
-        async.await();
+        vertical = new MacheVertical(new MacheRestServiceConfiguration(), instanceCache);
+        vertx.deployVerticle(vertical, context.asyncAssertSuccess());
     }
 
     @After
@@ -61,8 +59,43 @@ public class MacheVerticalTests {
         vertx.close(context.asyncAssertSuccess());
     }
 
+
     @Test
-    public void Get_Should_Return_Known_Key(TestContext context) {
+    public void getRootShouldReturnDocumentation(TestContext context) {
+        final Async async = context.async();
+
+        vertx.createHttpClient().getNow(8080, "localhost", "/",
+                response -> response.bodyHandler(body -> {
+                    // Check for swagger to be present as the Mache references are loaded via JS scripts
+                    context.assertTrue(body.toString().toLowerCase().contains("swagger"));
+                    async.complete();
+                }));
+    }
+
+    @Test
+    public void externalAddressShouldReceive401ReplyWhenLocalOnly(TestContext context) {
+        final Async async = context.async();
+
+
+        MacheRestServiceConfiguration configuration = new MacheRestServiceConfiguration(8080, "localhost", true);
+
+        // Need a vertical with the new config
+        vertx.undeploy(vertx.deploymentIDs().iterator().next());
+        vertical = new MacheVertical(configuration, instanceCache);
+        vertx.deployVerticle(vertical, context.asyncAssertSuccess());
+
+        // Show the address as external
+        vertical.setLocalAddressCheck(address -> false);
+
+        vertx.createHttpClient().getNow(8080, "localhost", "/map/names/2",
+                response -> {
+                    context.assertEquals(401, response.statusCode());
+                    async.complete();
+                });
+    }
+
+    @Test
+    public void getShouldReturnKnownKey(TestContext context) {
         final Async async = context.async();
 
         instanceCache.putKey("names", "1", "{'name': 'ben'");
@@ -74,7 +107,7 @@ public class MacheVerticalTests {
     }
 
     @Test
-    public void Get_Should_Return_400_Missing_Key(TestContext context) {
+    public void getShouldReturn400MissingKey(TestContext context) {
         final Async async = context.async();
 
         vertx.createHttpClient().getNow(8080, "localhost", "/map/names/2",
@@ -85,9 +118,8 @@ public class MacheVerticalTests {
     }
 
     @Test
-    public void Delete_Should_Remove_Key_From_Map(TestContext context) {
+    public void deleteShouldRemoveKeyFromMap(TestContext context) {
         final Async async = context.async();
-        AtomicBoolean getFailed = new AtomicBoolean(false);
 
         instanceCache.putKey("names", "1", "{'name': 'ben'}");
         vertx.createHttpClient().delete(8080, "localhost", "/map/names/1",
@@ -101,7 +133,7 @@ public class MacheVerticalTests {
     }
 
     @Test
-    public void Put_Should_Add_Key_To_Map(TestContext context) {
+    public void putShouldAddKeyToMap(TestContext context) {
         final Async async = context.async();
 
         instanceCache.putKey("names", "1", "{'name': 'ben'");
