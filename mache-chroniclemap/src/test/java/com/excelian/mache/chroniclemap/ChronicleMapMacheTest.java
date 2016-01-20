@@ -59,11 +59,11 @@ public class ChronicleMapMacheTest {
         verify(loader, times(0)).load("Hello");
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testRemove() throws Exception {
         mache.put("Hello", "World!");
         mache.remove("Hello");
-        mache.get("Hello");
+        assertEquals(null, mache.get("Hello"));
     }
 
     @Test

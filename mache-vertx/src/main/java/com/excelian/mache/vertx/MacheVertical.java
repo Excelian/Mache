@@ -66,12 +66,15 @@ public class MacheVertical extends AbstractVerticle {
 
         try {
             String value = instanceCache.getKey(mapName, key);
-            req.response().end(value == null ? "" : value);
+            if(value == null){
+                req.response()
+                        .setStatusCode(400)
+                        .end("key not found");
+            } else {
+                req.response().end(value);
+            }
         } catch (Exception e) {
-            // key not present
-            req.response()
-                    .setStatusCode(400)
-                    .end("key not found");
+            req.fail(500);
         }
     }
 

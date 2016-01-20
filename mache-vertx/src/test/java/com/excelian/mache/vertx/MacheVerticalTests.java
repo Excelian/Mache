@@ -91,16 +91,11 @@ public class MacheVerticalTests {
         vertx.createHttpClient().delete(8080, "localhost", "/map/names/1",
                 response -> {
                     context.assertEquals(200, response.statusCode());
-                    try {
-                        instanceCache.getKey("names", "1"); // get will raise exception
-                    } catch (Exception e) {
-                        getFailed.set(true);
-                    }
+                    String value = instanceCache.getKey("names", "1");
+                    context.assertEquals(null, value);
                     async.complete();
                 })
                 .end();
-        async.await();
-        context.assertTrue(getFailed.get());
     }
 
     @Test
