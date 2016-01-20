@@ -5,8 +5,9 @@ import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
 import java.util.Map;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class ReadFromCacheUntilItMatchesValue extends ReadFromCache {
     private static final long serialVersionUID = -8612323545680365704L;

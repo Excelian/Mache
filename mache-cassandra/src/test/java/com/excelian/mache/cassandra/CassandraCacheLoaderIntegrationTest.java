@@ -2,6 +2,7 @@ package com.excelian.mache.cassandra;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.datastax.driver.core.Cluster;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.google.common.cache.CacheLoader;
@@ -19,6 +20,7 @@ import java.util.Date;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandraConnectionContext;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -29,43 +31,51 @@ public class CassandraCacheLoaderIntegrationTest {
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     protected static String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
+
+    private static ConnectionContext<Cluster> connectionContext;
     private Mache<String, TestEntity> mache;
-    private Cluster cluster;
+
+    @BeforeClass
+    public static void setUpClass()
+    {
+        if(new NoRunningCassandraDbForTests().isSatisfied()==false) {
+            connectionContext = cassandraConnectionContext(Cluster.builder()
+                    .addContactPoint(new NoRunningCassandraDbForTests().getHost())
+                    .withPort(9042)
+                    .withClusterName("BluePrint"));
+        }
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        if(connectionContext!=null) {
+            connectionContext.close();
+            connectionContext = null;
+        }
+    }
 
     @Before
     public void setUp() throws Exception {
-        cluster = Cluster.builder()
-                .withClusterName("BluePrint")
-                .addContactPoint(new NoRunningCassandraDbForTests().getHost())
-                .withPort(9042)
-                .build();
-
-        mache = getMache(String.class, TestEntity.class, cluster);
+        mache = getMache(String.class, TestEntity.class, connectionContext, SchemaOptions.CREATE_AND_DROP_SCHEMA);
     }
 
     @After
     public void tearDown() throws Exception {
         mache.close();
-        cluster.close();
     }
 
-    private static <K, V> Mache<K, V> getMache(Class<K> keyType, Class<V> valueType, Cluster cluster) throws Exception {
+    private static <K, V> Mache<K, V> getMache(Class<K> keyType, Class<V> valueType
+            , ConnectionContext<Cluster> connectionContext
+                                               ,SchemaOptions schemaOptions   ) throws Exception {
 
         return mache(keyType, valueType)
                 .backedBy(cassandra()
-                        .withCluster(cluster)
+                        .withConnectionContext(connectionContext)
                         .withKeyspace(keySpace)
-                        .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
+                        .withSchemaOptions(schemaOptions)
                         .build())
                 .withNoMessaging()
                 .macheUp();
-    }
-
-    @Test
-    public void testCanGetDriverSession() throws Exception {
-        mache.put("test-2", new TestEntity("test-2"));
-        mache.get("test-2");
-        assertNotNull(mache.getCacheLoader().getDriverSession());
     }
 
     @Test
@@ -105,17 +115,18 @@ public class CassandraCacheLoaderIntegrationTest {
         mache.put("test-2", new TestEntity("test-2"));
         mache.put("test-3", new TestEntity("test-3"));
         // replace the cache
-        mache = getMache(String.class, TestEntity.class, cluster);
-
-        TestEntity test = mache.get("test-2");
-        assertEquals("test-2", test.pkString);
+        try(Mache<String, TestEntity> anothermache = getMache(String.class, TestEntity.class, connectionContext, SchemaOptions.CREATE_SCHEMA_IF_NEEDED))
+        {
+            TestEntity test = anothermache.get("test-2");
+            assertEquals("test-2", test.pkString);
+        }
     }
 
     @Test
     public void testPutComposite() throws Exception {
 
         try(Mache<CompositeKey, TestEntityWithCompositeKey> compCache =
-                getMache(CompositeKey.class, TestEntityWithCompositeKey.class, cluster))
+                getMache(CompositeKey.class, TestEntityWithCompositeKey.class, connectionContext, SchemaOptions.CREATE_AND_DROP_SCHEMA))
         {
 
             TestEntityWithCompositeKey value = new TestEntityWithCompositeKey("neil", "mac", "explorer");

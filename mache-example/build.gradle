@@ -6,12 +6,8 @@ repositories {
 
 dependencies {
     compile project(':mache-core')
-    compile project(':mache-activemq')
-    compile project(':mache-rabbit')
     compile project(':mache-mongo')
     compile project(':mache-cassandra')
-    compile project(':mache-observable')
-    compile project(':mache-core')
     compile project(':mache-couchbase')
 }
 
@@ -28,11 +24,19 @@ test {
 }
 
 task getClient(dependsOn: 'classes', type: JavaExec) {
+    if(project.hasProperty('arg')){
+        args(arg.split(','))
+    }
+
     main = 'com.excelian.mache.examples.GettingCacheClient'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task putClient(dependsOn: 'classes', type: JavaExec) {
+    if(project.hasProperty('arg')){
+        args(arg.split(','))
+    }
+
     main = 'com.excelian.mache.examples.PuttingCacheClient'
     classpath = sourceSets.main.runtimeClasspath
 }

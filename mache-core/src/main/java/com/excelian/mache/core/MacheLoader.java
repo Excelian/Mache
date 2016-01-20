@@ -48,11 +48,4 @@ public interface MacheLoader<K, V, D> extends AutoCloseable {
      * @return A simple name to describe implementers of this class
      */
     String getName();
-
-    /*
-     * @return a session to the underlying driver
-     */
-    //todo: this method is only called in test code - can we remove it and the
-    // generic declaration at the top of this class too?
-    D getDriverSession();
 }
