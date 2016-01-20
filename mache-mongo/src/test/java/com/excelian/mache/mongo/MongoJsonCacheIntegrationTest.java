@@ -85,12 +85,12 @@ public class MongoJsonCacheIntegrationTest {
         assertEquals("test-2", ((DBObject) JSON.parse(test)).get("_id"));
     }
 
-    @Test(expected = CacheLoader.InvalidCacheLoadException.class)
+    @Test
     public void testRemove() throws Exception {
         String key = "rem-test-2";
         mache.put(key, getJsonKey(key));
         mache.remove(key);
-        mache.get(key);
+        assertEquals(null, mache.get(key));
     }
 
     /*

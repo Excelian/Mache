@@ -57,6 +57,12 @@ public class GuavaMacheTest {
     }
 
     @Test
+    public void missingKeyShouldReturnNull(){
+        String missing = mache.get("Missing");
+        assertEquals(null, missing);
+    }
+
+    @Test
     public void multipleInvalidateWorks() {
         final String key = "TEST";
         mache.put(key, "VALUE");
@@ -77,7 +83,7 @@ public class GuavaMacheTest {
         MacheLoader<String, String, String> fixture = new MacheLoader<String, String, String>() {
             public String load(String key) throws Exception {
                 read++;
-                return "FIXTURE:loaded_" + key;
+                return key.equalsIgnoreCase("missing") ? null : "FIXTURE:loaded_" + key;
             }
 
             public void close() {

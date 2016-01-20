@@ -87,12 +87,12 @@ public class MongoCacheIntegrationTest {
         assertEquals("test-2", test.pkString);
     }
 
-    @Test(expected = CacheLoader.InvalidCacheLoadException.class)
+    @Test
     public void testRemove() throws Exception {
         String key = "rem-test-2";
         mache.put(key, new TestEntity(key));
         mache.remove(key);
-        mache.get(key);
+        assertEquals(null, mache.get(key));
     }
 
     @Test
