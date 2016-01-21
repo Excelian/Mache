@@ -3,7 +3,6 @@ package com.excelian.mache.couchbase.builder;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
-import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.storage.AbstractConnectionContext;
 import com.excelian.mache.core.AbstractCacheLoader;
 
