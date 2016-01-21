@@ -35,8 +35,8 @@ public class MessageQueueObservableCacheFactoryTest {
 
     private final UUIDUtils uuidUtils = new UUIDUtils();
     private final Gson gson = new Gson();
-    MacheLoader<String, TestEntity, Object> cacheLoader1;
-    MacheLoader<String, TestEntity, Object> cacheLoader2;
+    MacheLoader<String, TestEntity> cacheLoader1;
+    MacheLoader<String, TestEntity> cacheLoader2;
     MQConfiguration mqConfiguration = () -> "testTopic";
     @Mock
     MQFactory<String> mqFactory1;
@@ -104,7 +104,7 @@ public class MessageQueueObservableCacheFactoryTest {
 
     @Test
     public void shouldProperlyPropagateValues() throws ExecutionException, InterruptedException, JMSException {
-        MacheLoader<String, TestEntity2, Object> cacheLoader =
+        MacheLoader<String, TestEntity2> cacheLoader =
                 new HashMapCacheLoader<>(TestEntity2.class);
         ObservableCacheFactory<String, TestEntity2> observableCacheFactory1 =
                 new MessageQueueObservableCacheFactory<>(mqFactory1, mqConfiguration, new UUIDUtils());

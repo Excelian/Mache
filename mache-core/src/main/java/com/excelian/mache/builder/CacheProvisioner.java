@@ -18,5 +18,5 @@ public interface CacheProvisioner<K, V> {
      * @param cacheLoader the cache loader to retrieve elements
      * @return Mache instance for the specified key value types
      */
-    Mache<K, V> create(Class<K> keyType, Class<V> valueType, MacheLoader<K, V, ?> cacheLoader);
+    Mache<K, V> create(Class<K> keyType, Class<V> valueType, MacheLoader<K, V> cacheLoader);
 }

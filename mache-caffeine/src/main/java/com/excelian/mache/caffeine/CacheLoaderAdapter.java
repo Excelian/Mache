@@ -11,9 +11,9 @@ import com.github.benmanes.caffeine.cache.CacheLoader;
  */
 public class CacheLoaderAdapter<K, V> implements CacheLoader<K, V> {
 
-    private MacheLoader<K, V, ?> cacheLoader;
+    private MacheLoader<K, V> cacheLoader;
 
-    public CacheLoaderAdapter(MacheLoader<K, V, ?> cacheLoader) {
+    public CacheLoaderAdapter(MacheLoader<K, V> cacheLoader) {
         this.cacheLoader = cacheLoader;
     }
 

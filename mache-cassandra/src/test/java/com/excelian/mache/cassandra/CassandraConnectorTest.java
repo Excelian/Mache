@@ -1,7 +1,6 @@
 package com.excelian.mache.cassandra;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
-import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Metadata;
 import com.datastax.driver.core.Session;
@@ -20,7 +19,7 @@ public class CassandraConnectorTest {
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     @Test
-    @IgnoreIf(condition = NoRunningCassandraDbForTests.class)
+    @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCassandraDbForTests.class)
     public void connectsToTheCassandraCluster() throws Exception {
         Cluster cluster = Cluster.builder()
                 .addContactPoint(new NoRunningCassandraDbForTests().getHost())

@@ -1,5 +1,6 @@
 package com.excelian.mache.examples;
 
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.examples.cassandra.CassandraExample;
 import com.excelian.mache.examples.couchbase.CouchbaseExample;
@@ -20,16 +21,17 @@ public class GettingCacheClient {
     public static void main(String... commandLine) throws Exception {
         final Args args = parseArgs(commandLine);
         final int count = args.count;
+        final String hostAddress = args.host;
         final Example example;
         switch (args.cacheType) {
             case Cassandra:
-                example = new CassandraExample();
+                example = new CassandraExample(hostAddress);
                 break;
             case Mongo:
-                example = new MongoExample();
+                example = new MongoExample(hostAddress);
                 break;
             case Couchbase:
-                example = new CouchbaseExample();
+                example = new CouchbaseExample(hostAddress);
                 break;
             default:
                 throw new RuntimeException("Invalid cache type: [" + args.cacheType + "].  Valid values are:"
@@ -38,21 +40,26 @@ public class GettingCacheClient {
         doExample(count, example);
     }
 
-    private static <T> void doExample(int count, Example<T> example) throws Exception {
-        final Mache<String, T> cache = example.exampleCache();
-        LOG.info("Getting...");
-        for (int i = 0; i < count; i++) {
-            final T hello = cache.get("msg_" + i);
-            LOG.info("hello = " + hello);
+    private static <T,C, M extends Example.KeyedMessge> void doExample(int count, Example<T,C, M> example) throws Exception {
+
+        try(ConnectionContext<C> context = example.createConnectionContext()) {
+            try(final Mache<String, T> cache = example.exampleCache(context)) {
+                LOG.info("Getting...");
+                for (int i = 0; i < count; i++) {
+                    final T hello = cache.get("msg_" + i);
+                    LOG.info("hello = " + hello);
+                }
+            }
         }
-        cache.close();
     }
 
     private static Args parseArgs(String[] args) {
-        if (args.length == 2) {
-            final CacheType cacheType = CacheType.valueOf(args[1]);
+        if (args.length == 3) {
             final int count = Integer.parseInt(args[0]);
-            return new Args(count, cacheType);
+            final CacheType cacheType = CacheType.valueOf(args[1]);
+            final String hostAddress = args[2];
+
+            return new Args(count, cacheType, hostAddress);
         } else {
             throw new RuntimeException("Usage : GettingCacheClient <get count> " + Arrays.toString(CacheType.values()));
         }

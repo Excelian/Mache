@@ -1,6 +1,7 @@
 package com.excelian.mache.mongo.builder;
 
 import com.excelian.mache.builder.StorageProvisioner;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.mongo.MongoDBCacheLoader;
@@ -21,17 +22,18 @@ import static java.util.stream.Collectors.toList;
  */
 public class MongoDBProvisioner implements StorageProvisioner {
 
-    private final List<ServerAddress> seeds;
+    private final ConnectionContext<List<ServerAddress>> connectionContext;
     private final List<MongoCredential> mongoCredentials;
     private final MongoClientOptions clientOptions;
     private final String database;
     private final SchemaOptions schemaOptions;
     private final CollectionOptions collectionOptions;
 
-    private MongoDBProvisioner(List<ServerAddress> seeds, List<MongoCredential> credentials,
+    private MongoDBProvisioner(ConnectionContext<List<ServerAddress>> connectionContext, List<MongoCredential> credentials,
                                MongoClientOptions clientOptions, String database, SchemaOptions schemaOptions,
                                CollectionOptions collectionOptions) {
-        this.seeds = seeds;
+
+        this.connectionContext = connectionContext;
         this.mongoCredentials = credentials;
         this.clientOptions = clientOptions;
         this.database = database;
@@ -39,18 +41,32 @@ public class MongoDBProvisioner implements StorageProvisioner {
         this.collectionOptions = collectionOptions;
     }
 
-    public static SeedsListBuilder mongodb() {
-        return seeds -> database -> new MongoDBProvisionerBuilder(stream(seeds).collect(toList()), database);
+    public static ConnectionContextBuilder mongodb() {
+        return connectionContext -> database -> new MongoDBProvisionerBuilder(connectionContext, database);
+    }
+
+    public static ConnectionContext<List<ServerAddress>> mongoConnectionContext(ServerAddress... seeds) {
+        return new ConnectionContext<List<ServerAddress>>() {
+            @Override
+            public List<ServerAddress> getConnection() {
+                return stream(seeds).collect(toList());
+            }
+
+            @Override
+            public void close() throws Exception {
+                return;
+            }
+        };
     }
 
     @Override
-    public <K, V> MacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+    public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
         // TODO this is the wrong approach but gets tests running for now
         if (valueType == String.class) {
-            return new MongoDBJsonCacheLoader(seeds, mongoCredentials, clientOptions, database,
+            return new MongoDBJsonCacheLoader(connectionContext, mongoCredentials, clientOptions, database,
                     schemaOptions);
         } else {
-            return new MongoDBCacheLoader<>(keyType, valueType, seeds, mongoCredentials, clientOptions, database,
+            return new MongoDBCacheLoader<>(keyType, valueType, connectionContext, mongoCredentials, clientOptions, database,
                     schemaOptions, collectionOptions);
         }
     }
@@ -58,9 +74,10 @@ public class MongoDBProvisioner implements StorageProvisioner {
     /**
      * Forces seeds to be provided.
      */
-    public interface SeedsListBuilder {
-        DatabaseNameBuilder withSeeds(ServerAddress... seeds);
+    public interface ConnectionContextBuilder {
+        DatabaseNameBuilder withConnectionContext(ConnectionContext<List<ServerAddress>> context);
     }
+
 
     /**
      * Forces database name to be provided.
@@ -73,15 +90,15 @@ public class MongoDBProvisioner implements StorageProvisioner {
      * A builder with defaults for a Mongo DB cluster.
      */
     public static class MongoDBProvisionerBuilder {
-        private final List<ServerAddress> seeds;
+        private final ConnectionContext<List<ServerAddress>> connectionContext;
         private final String database;
         private List<MongoCredential> mongoCredentials = Collections.emptyList();
         private MongoClientOptions mongoClientOptions = MongoClientOptions.builder().build();
         private SchemaOptions schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
         private CollectionOptions collectionOptions = null;
 
-        private MongoDBProvisionerBuilder(List<ServerAddress> seeds, String database) {
-            this.seeds = seeds;
+        private MongoDBProvisionerBuilder(ConnectionContext<List<ServerAddress>> connectionContext, String database) {
+            this.connectionContext = connectionContext;
             this.database = database;
         }
 
@@ -107,7 +124,7 @@ public class MongoDBProvisioner implements StorageProvisioner {
         }
 
         public MongoDBProvisioner build() {
-            return new MongoDBProvisioner(seeds, mongoCredentials, mongoClientOptions, database, schemaOptions,
+            return new MongoDBProvisioner(connectionContext, mongoCredentials, mongoClientOptions, database, schemaOptions,
                     collectionOptions);
         }
     }

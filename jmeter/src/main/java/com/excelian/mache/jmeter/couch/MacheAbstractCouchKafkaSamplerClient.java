@@ -1,5 +1,8 @@
 package com.excelian.mache.jmeter.couch;
 
+import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.integration.KafkaMqConfig;
@@ -12,7 +15,9 @@ import java.util.Map;
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
+import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbaseConnectionContext;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
+
 
 /**
  * JMeter client for Cassandra/Kafka.
@@ -21,6 +26,7 @@ import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouchSamplerClient {
 
     protected Mache<String, CouchTestEntity> cache1 = null;
+    protected ConnectionContext<Cluster> connectionContext;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -43,6 +49,14 @@ public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouch
         if (cache1 != null) {
             cache1.close();
         }
+        if (connectionContext != null) {
+            try {
+                connectionContext.close();
+            } catch (Exception e) {
+                getLogger().error("mache error closing connection", e);
+            }
+        }
+
     }
 
     @Override
@@ -56,24 +70,24 @@ public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouch
 
     protected void createCache(Map<String, String> mapParams) throws Exception {
         final KafkaMessagingProvisioner kafkaProvisioner =
-            KafkaMessagingProvisioner.kafka()
-                .withKafkaMqConfig(KafkaMqConfig.KafkaMqConfigBuilder.builder()
-                    .withZkHost(mapParams.get("kafka.connection")).build())
-                .withTopic(mapParams.get("kafka.topic"));
+                KafkaMessagingProvisioner.kafka()
+                        .withKafkaMqConfig(KafkaMqConfig.KafkaMqConfigBuilder.builder()
+                                .withZkHost(mapParams.get("kafka.connection")).build())
+                        .withTopic(mapParams.get("kafka.topic"));
 
         final String keySpace = mapParams.get("keyspace.name");
         final String couchServer = mapParams.get("couch.server.ip.address");
 
+        connectionContext = couchbaseConnectionContext(couchServer, DefaultCouchbaseEnvironment.create());
+
         final Mache<String, CouchTestEntity> mache = mache(String.class, CouchTestEntity.class)
-            .cachedBy(guava())
-            .storedIn(couchbase()
-                    .withBucketSettings(builder().name(keySpace).quota(150).build())
-                    .withNodes(couchServer)
-                    .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                    .create())
-            .withMessaging(kafkaProvisioner)
-            .macheUp();
-
-
+                .cachedBy(guava())
+                .storedIn(couchbase()
+                        .withContext(connectionContext)
+                        .withBucketSettings(builder().name(keySpace).quota(150).build())
+                        .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                        .build())
+                .withMessaging(kafkaProvisioner)
+                .macheUp();
     }
 }

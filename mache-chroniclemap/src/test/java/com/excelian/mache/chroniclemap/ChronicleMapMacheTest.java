@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 public class ChronicleMapMacheTest {
 
     Mache<String, String> mache;
-    private MacheLoader<String, String, ?> loader;
+    private MacheLoader<String, String> loader;
 
     @Before
     public void setUp() throws Exception {

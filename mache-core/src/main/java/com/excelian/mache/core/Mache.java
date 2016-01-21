@@ -11,7 +11,7 @@ import java.util.UUID;
  * @param <K> The type of Keys
  * @param <V> The type of Values
  */
-public interface Mache<K, V> {
+public interface Mache<K, V> extends AutoCloseable {
     String getName();
 
     UUID getId();

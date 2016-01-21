@@ -1,7 +1,7 @@
 package com.excelian.mache.jmeter.couch.knownkeys;
 
-import com.excelian.mache.jmeter.couch.MacheAbstractCouchKafkaSamplerClient;
 import com.excelian.mache.jmeter.couch.CouchTestEntity;
+import com.excelian.mache.jmeter.couch.MacheAbstractCouchKafkaSamplerClient;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;

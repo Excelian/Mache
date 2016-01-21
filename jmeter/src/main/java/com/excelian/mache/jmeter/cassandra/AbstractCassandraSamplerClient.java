@@ -1,9 +1,8 @@
 package com.excelian.mache.jmeter.cassandra;
 
+import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
-
-import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 
 /**
  * Provides base client for Cassandra JMeter tests.

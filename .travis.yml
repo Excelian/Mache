@@ -10,6 +10,7 @@ branches:
     - jmeter-multithreaded-tests
     - 53-alternative-cache-implementations
     - Vertx-REST-Spike
+    - couchprovcleanup
 
 services:
   - rabbitmq
@@ -22,11 +23,18 @@ install:
   - ./config/travis-scripts/prepare-kafka.sh
   - ./config/travis-scripts/prepare-couchbase.sh
 
-#notifications:
-#  slack: exceliandev:1eNY8ozgMfUYwzAECmL4LNHi
+notifications:
+  slack: exceliandev:1eNY8ozgMfUYwzAECmL4LNHi
 
 # cache maven repository to speed up build
 cache:
   directories:
     - ~/.gradle
     - ~/binaries
+
+script:
+  - gradle check
+  - gradle :mache-example:putClient -Parg=10,Cassandra,localhost
+  - gradle :mache-example:putClient -Parg=10,Mongo,localhost
+  - gradle :mache-example:putClient -Parg=10,Couchbase,localhost
+

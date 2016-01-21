@@ -1,5 +1,8 @@
 package com.excelian.mache.jmeter.couch.knownkeys;
 
+import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.couch.AbstractCouchSamplerClient;
@@ -12,13 +15,15 @@ import java.util.Map;
 
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
+import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbaseConnectionContext;
 
 /**
  * JMeter test that measures writing directly to the Cassandra backing store.
  */
 public class WriteToDB extends AbstractCouchSamplerClient {
     private static final long serialVersionUID = 4662847886347883622L;
-    private MacheLoader<String, CouchTestEntity, ?> db;
+    private MacheLoader<String, CouchTestEntity> db;
+    private ConnectionContext<Cluster> connectionContext;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -29,11 +34,13 @@ public class WriteToDB extends AbstractCouchSamplerClient {
         try {
             final String keySpace = mapParams.get("keyspace.name");
             final String couchServer = mapParams.get("couch.server.ip.address");
-            db = couchbase()
-                .withBucketSettings(builder().name(keySpace).quota(150).build())
-                .withNodes(couchServer)
-                .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                .create().getCacheLoader(String.class, CouchTestEntity.class);
+
+            connectionContext = couchbaseConnectionContext(couchServer, DefaultCouchbaseEnvironment.create());
+
+            db = couchbase().withContext(connectionContext)
+                    .withBucketSettings(builder().name(keySpace).quota(150).build())
+                    .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                    .build().getCacheLoader(String.class, CouchTestEntity.class);
 
             db.create();// ensure we are connected and schema exists
 
@@ -46,6 +53,14 @@ public class WriteToDB extends AbstractCouchSamplerClient {
     public void teardownTest(JavaSamplerContext context) {
         if (db != null) {
             db.close();
+        }
+
+        if (connectionContext != null) {
+            try {
+                connectionContext.close();
+            } catch (Exception e) {
+                getLogger().error("Error closing connection to cassandra", e);
+            }
         }
     }
 

@@ -80,7 +80,7 @@ public class GuavaMacheTest {
     @Before
     public void setUp() throws Exception {
 
-        MacheLoader<String, String, String> fixture = new MacheLoader<String, String, String>() {
+        MacheLoader<String, String> fixture = new MacheLoader<String, String>() {
             public String load(String key) throws Exception {
                 read++;
                 return key.equalsIgnoreCase("missing") ? null : "FIXTURE:loaded_" + key;
@@ -103,10 +103,6 @@ public class GuavaMacheTest {
 
             public String getName() {
                 return "myCache";
-            }
-
-            public String getDriverSession() {
-                return "yay";
             }
 
             public void invalidateAll() {

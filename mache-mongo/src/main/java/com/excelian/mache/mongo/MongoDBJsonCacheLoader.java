@@ -1,5 +1,6 @@
 package com.excelian.mache.mongo;
 
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.mongodb.*;
@@ -18,17 +19,17 @@ import java.util.List;
  * TODO move to mongo V3 api, the older API is deprecated but will work
  * TODO remove unused generic arguments, some references will break if changed ar present
  */
-public class MongoDBJsonCacheLoader<K, V> implements MacheLoader<String, String, MongoClient> {
+public class MongoDBJsonCacheLoader<K, V> implements MacheLoader<String, String> {
     private static final Logger LOG = LoggerFactory.getLogger(MongoDBJsonCacheLoader.class);
     private final List<MongoCredential> credentials;
     private final MongoClientOptions clientOptions;
-    private final List<ServerAddress> seeds;
     private final SchemaOptions schemaOptions;
     private final String database;
+    private ConnectionContext<List<ServerAddress>> seeds;
 
     private MongoClient mongoClient;
 
-    public MongoDBJsonCacheLoader(List<ServerAddress> seeds,
+    public MongoDBJsonCacheLoader(ConnectionContext<List<ServerAddress>> seeds,
                                   List<MongoCredential> credentials,
                                   MongoClientOptions clientOptions,
                                   String database, SchemaOptions schemaOptions) {
@@ -108,16 +109,8 @@ public class MongoDBJsonCacheLoader<K, V> implements MacheLoader<String, String,
         }
     }
 
-    @Override
-    public MongoClient getDriverSession() {
-        if (mongoClient == null) {
-            throw new IllegalStateException("Session has not been created - read/write to cache first");
-        }
-        return mongoClient;
-    }
-
     private MongoClient connect() {
-        return new MongoClient(seeds, credentials, clientOptions);
+        return new MongoClient(seeds.getConnection(), credentials, clientOptions);
     }
 
     @Override

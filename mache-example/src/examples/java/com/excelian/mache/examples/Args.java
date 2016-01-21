@@ -6,9 +6,11 @@ package com.excelian.mache.examples;
 public class Args {
     final int count;
     final CacheType cacheType;
+    final String host;
 
-    public Args(int count, CacheType cacheType) {
+    public Args(int count, CacheType cacheType, String host) {
         this.count = count;
         this.cacheType = cacheType;
+        this.host = host;
     }
 }
