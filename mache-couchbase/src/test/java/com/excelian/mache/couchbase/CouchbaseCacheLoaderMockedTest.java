@@ -80,7 +80,6 @@ public class CouchbaseCacheLoaderMockedTest {
         thenBucketDropped();
         thenBucketCreated();
         thenClusterManagerAndBucketCreated(mockedCluster);
-        avoidLoaderBeingClosedAgain();
     }
 
     @Test
