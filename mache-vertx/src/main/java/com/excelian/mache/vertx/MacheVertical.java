@@ -70,10 +70,10 @@ public class MacheVertical extends AbstractVerticle {
                 .listen(serviceConfiguration.getBindPort(), serviceConfiguration.getBindIp(),
                         handler -> {
                             if (handler.succeeded()) {
-                                System.out.println(String.format("Running on http://%s:%s/",
-                                        serviceConfiguration.getBindIp(), serviceConfiguration.getBindPort()));
+                                LOG.info("Running on http://{}:{}/",
+                                        serviceConfiguration.getBindIp(), serviceConfiguration.getBindPort());
                             } else {
-                                System.err.println("Failed to listen on port 8080");
+                                LOG.error("Failed to listen on port {}", serviceConfiguration.getBindPort());
                             }
                         });
     }

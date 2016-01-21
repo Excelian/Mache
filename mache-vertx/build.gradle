@@ -18,7 +18,7 @@ dependencies {
     compile "io.vertx:vertx-web:$vertxVersion"
     testCompile "io.vertx:vertx-unit:$vertxVersion"
 
-    compile 'org.codehaus.groovy:groovy:2.3.7'
+    compile 'org.codehaus.groovy:groovy:2.4.4'
 }
 
 mainClassName = 'com.excelian.mache.vertx.MongoConfig'

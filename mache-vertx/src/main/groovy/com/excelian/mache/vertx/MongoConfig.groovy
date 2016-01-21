@@ -5,6 +5,7 @@ import com.mongodb.ServerAddress
 
 import static com.excelian.mache.builder.MacheBuilder.mache
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava
+import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongoConnectionContext
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 
 public class MongoConfig {
@@ -18,7 +19,7 @@ public class MongoConfig {
                     .cachedBy(guava())
                     .storedIn(
                         mongodb()
-                                .withSeeds(new ServerAddress("localhost", 27017))
+                                .withConnectionContext(mongoConnectionContext(new ServerAddress("localhost", 27017)))
                                 .withDatabase(keySpace)
                                 .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                                 .build())
