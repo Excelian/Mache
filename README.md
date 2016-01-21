@@ -6,10 +6,15 @@ of open source technologies for multiple pluggable NoSQL backends and multiple
 pluggable messaging platforms.
 
 ## Features:
-- Nearside caching for common NoSQL platforms using Google's Guava Cache 
+- Nearside caching for common NoSQL platforms using various Open Source In Memory LRU Caches
 - ORM Modelling for POJO's using Spring data
 - Event listener support 
 - Eventing and invalidation between various client-side caches 
+
+## Current In Memory Cache Support
+- OpenHFT ChronicleMap
+- Google Guava
+- Caffeine
 
 ## Current Storage Layer Support
 - Cassandra 
@@ -29,6 +34,8 @@ pluggable messaging platforms.
 ## Getting started:
 
  1. Add mache-core.jar to the classpath
+ 2. Add the chosen in memory cache provider jar to the classpath; mache-caffeine.jar,
+    mache-guava.jar or mache-chroniclemap.jar
  2. Add the chosen data store provider jar to the classpath; mache-cassandra.jar, 
     mache-couchbase.jar or mache-mongo.jar
  3. If you require eventing, add mache-observable.jar to the classpath, then add 
@@ -79,8 +86,9 @@ public static class TestEntity {
     public static void main(String [] args){
         final String keySpace = "my_mongo_keyspace_name";        
         Mache<String, TestEntity> mache = mache(String.class, TestEntity.class)
-                        .backedBy(mongodb()
-                                .withSeeds(new ServerAddress("10.28.1.140", 9042))
+                        .cachedBy(caffeine())
+                        .storedIn(mongodb()
+                                .withConnectionContext(mongoConnectionContext(new ServerAddress("1.2.3.4", 27017)))
                                 .withDatabase(keySpace)
                                 .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                                 .build())
@@ -103,7 +111,6 @@ public static class TestEntity {
 
 
 # Get Involved!
-
 mailto:mache@excelian.com
 
 ## Team board
