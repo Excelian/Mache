@@ -43,10 +43,10 @@ repositories {
     jcenter()
 }
 dependencies {
-  compile 'com.excelian.mache:mache-core:1.0'
-  compile 'com.excelian.mache:mache-cassandra:1.0'
-  compile 'com.excelian.mache:mache-observable:1.0'
-  compile 'com.excelian.mache:mache-activemq:1.0'
+  compile 'com.excelian.mache:mache-core:0.6.1'
+  compile 'com.excelian.mache:mache-cassandra:0.6.1'
+  compile 'com.excelian.mache:mache-observable:0.6.1'
+  compile 'com.excelian.mache:mache-activemq:0.6.1'
 ````
 
 Once you have the appropriate jars in your classpath you can then construct a 

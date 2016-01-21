@@ -25,7 +25,7 @@ public class CaffeineMacheProvisioner<K, V> implements CacheProvisioner<K, V> {
         this.builder = builder;
     }
 
-    public Mache<K, V> create(Class<K> keyType, Class<V> valueType, MacheLoader<K, V, ?> cacheLoader) {
+    public Mache<K, V> create(Class<K> keyType, Class<V> valueType, MacheLoader<K, V> cacheLoader) {
         LoadingCache<K, V> cache = builder.build(new CacheLoaderAdapter<>(cacheLoader));
         return new CaffeineMache<>(cacheLoader, cache);
     }

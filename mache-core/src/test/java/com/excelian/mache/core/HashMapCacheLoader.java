@@ -3,7 +3,7 @@ package com.excelian.mache.core;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class HashMapCacheLoader<K, V, D> implements MacheLoader<K, V, Object> {
+public class HashMapCacheLoader<K, V> implements MacheLoader<K, V> {
     private final String cacheName;
     private final Map<K, V> store = new ConcurrentHashMap<>();
 
@@ -35,11 +35,6 @@ public class HashMapCacheLoader<K, V, D> implements MacheLoader<K, V, Object> {
     @Override
     public String getName() {
         return cacheName;
-    }
-
-    @Override
-    public String getDriverSession() {
-        throw new UnsupportedOperationException("Not implemented.");
     }
 
     @Override

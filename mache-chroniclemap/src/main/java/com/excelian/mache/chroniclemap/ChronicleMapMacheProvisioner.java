@@ -65,7 +65,7 @@ public class ChronicleMapMacheProvisioner<K, V> implements CacheProvisioner<K, V
     }
 
     @Override
-    public Mache<K, V> create(Class<K> keyType, Class<V> valueType, MacheLoader<K, V, ?> cacheLoader) {
+    public Mache<K, V> create(Class<K> keyType, Class<V> valueType, MacheLoader<K, V> cacheLoader) {
         ConcurrentMap<K, V> map;
 
         if (chronicleMapBuilder == null) {

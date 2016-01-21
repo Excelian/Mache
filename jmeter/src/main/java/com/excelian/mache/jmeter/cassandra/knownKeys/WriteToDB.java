@@ -1,6 +1,7 @@
 package com.excelian.mache.jmeter.cassandra.knownkeys;
 
 import com.datastax.driver.core.Cluster;
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.cassandra.AbstractCassandraSamplerClient;
@@ -12,13 +13,15 @@ import org.apache.jmeter.samplers.SampleResult;
 import java.util.Map;
 
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandraConnectionContext;
 
 /**
  * JMeter test that measures writing directly to the Cassandra backing store.
  */
 public class WriteToDB extends AbstractCassandraSamplerClient {
     private static final long serialVersionUID = 4662847886347883622L;
-    private MacheLoader<String, CassandraTestEntity, ?> db;
+    private MacheLoader<String, CassandraTestEntity> db;
+    private ConnectionContext<Cluster> connectionContext;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -27,9 +30,14 @@ public class WriteToDB extends AbstractCassandraSamplerClient {
         final Map<String, String> mapParams = extractParameters(context);
 
         try {
+            connectionContext = cassandraConnectionContext(
+                    Cluster.builder()
+                            .addContactPoint(mapParams.get("cassandra.server.ip.address"))
+                            .withPort(9042)
+                            .withClusterName("BluePrint"));
+
             db = cassandra()
-                    .withCluster(Cluster.builder().withClusterName("BluePrint")
-                            .addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042).build())
+                    .withConnectionContext(connectionContext)
                     .withKeyspace(mapParams.get("keyspace.name"))
                     .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED).build()
                     .getCacheLoader(String.class, CassandraTestEntity.class);
@@ -43,6 +51,14 @@ public class WriteToDB extends AbstractCassandraSamplerClient {
     public void teardownTest(JavaSamplerContext context) {
         if (db != null) {
             db.close();
+        }
+
+        if (connectionContext != null) {
+            try {
+                connectionContext.close();
+            } catch (Exception e) {
+                getLogger().error("Error closing cassandra context", e);
+            }
         }
     }
 

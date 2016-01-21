@@ -8,7 +8,7 @@ subprojects {
     group = 'com.excelian.mache'
 
     sourceCompatibility = 1.8
-    version = '0.6.1'
+    version = '0.7-SNAPSHOT'
 
     repositories {
         maven { url 'https://repository.jboss.org/nexus/content/groups/public' }
@@ -46,10 +46,17 @@ subprojects {
         }
     }
 
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allJava
+    }
+
     publishing {
         publications {
             mavenJava(MavenPublication) {
                 from components.java
+                artifact sourceJar {
+                    classifier "sources"
+                }
             }
         }
         repositories {

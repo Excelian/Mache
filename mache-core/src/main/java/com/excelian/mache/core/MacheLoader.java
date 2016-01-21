@@ -6,10 +6,9 @@ package com.excelian.mache.core;
  *
  * @param <K> the type of the keys
  * @param <V> the type of the values
- * @param <D> the type of the driver for the underlying store
  */
 //todo: Would this class be better named MacheDataStore ???
-public interface MacheLoader<K, V, D> {
+public interface MacheLoader<K, V> extends AutoCloseable {
 
     /**
      * Creates the underlying store.
@@ -48,11 +47,4 @@ public interface MacheLoader<K, V, D> {
      * @return A simple name to describe implementers of this class
      */
     String getName();
-
-    /*
-     * @return a session to the underlying driver
-     */
-    //todo: this method is only called in test code - can we remove it and the
-    // generic declaration at the top of this class too?
-    D getDriverSession();
 }

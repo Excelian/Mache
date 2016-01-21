@@ -9,6 +9,7 @@ branches:
     - create-provider-specific-builders
     - jmeter-multithreaded-tests
     - 53-alternative-cache-implementations
+    - couchprovcleanup
 
 services:
   - rabbitmq
@@ -29,3 +30,10 @@ cache:
   directories:
     - ~/.gradle
     - ~/binaries
+
+script:
+  - gradle check
+  - gradle :mache-example:putClient -Parg=10,Cassandra,localhost
+  - gradle :mache-example:putClient -Parg=10,Mongo,localhost
+  - gradle :mache-example:putClient -Parg=10,Couchbase,localhost
+

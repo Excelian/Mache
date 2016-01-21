@@ -1,5 +1,6 @@
 package com.excelian.mache.jmeter.mongo;
 
+import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.events.integration.KafkaMqConfig;
@@ -8,10 +9,12 @@ import com.mongodb.ServerAddress;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
+import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongoConnectionContext;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 
 /**
@@ -20,6 +23,7 @@ import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 @SuppressWarnings("serial")
 public abstract class MacheAbstractMongoKafkaSamplerClient extends AbstractMongoSamplerClient {
 
+    protected ConnectionContext<List<ServerAddress>> connectionContext;
     protected Mache<String, MongoTestEntity> cache1 = null;
 
     @Override
@@ -42,6 +46,14 @@ public abstract class MacheAbstractMongoKafkaSamplerClient extends AbstractMongo
     public void teardownTest(JavaSamplerContext context) {
         if (cache1 != null) {
             cache1.close();
+
+            if (connectionContext != null) {
+                try {
+                    connectionContext.close();
+                } catch (Exception e) {
+                    getLogger().error("mache disconnection from mongo", e);
+                }
+            }
         }
     }
 
@@ -56,20 +68,22 @@ public abstract class MacheAbstractMongoKafkaSamplerClient extends AbstractMongo
 
     protected void createCache(Map<String, String> mapParams) throws Exception {
         final KafkaMessagingProvisioner kafkaProvisioner =
-            KafkaMessagingProvisioner.kafka()
-                .withKafkaMqConfig(KafkaMqConfig.KafkaMqConfigBuilder.builder()
-                    .withZkHost(mapParams.get("kafka.connection")).build())
-                .withTopic(mapParams.get("kafka.topic"));
+                KafkaMessagingProvisioner.kafka()
+                        .withKafkaMqConfig(KafkaMqConfig.KafkaMqConfigBuilder.builder()
+                                .withZkHost(mapParams.get("kafka.connection")).build())
+                        .withTopic(mapParams.get("kafka.topic"));
+
+        connectionContext = mongoConnectionContext(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017));
 
         cache1 = mache(String.class, com.excelian.mache.jmeter.mongo.MongoTestEntity.class)
-            .cachedBy(guava())
-            .storedIn(mongodb()
-                .withSeeds(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017))
-                .withDatabase(mapParams.get("keyspace.name"))
-                .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                .build())
-            .withMessaging(kafkaProvisioner)
-            .macheUp();
+                .cachedBy(guava())
+                .storedIn(mongodb()
+                        .withConnectionContext(connectionContext)
+                        .withDatabase(mapParams.get("keyspace.name"))
+                        .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                        .build())
+                .withMessaging(kafkaProvisioner)
+                .macheUp();
 
 
     }

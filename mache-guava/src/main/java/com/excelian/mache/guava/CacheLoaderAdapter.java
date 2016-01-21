@@ -11,9 +11,9 @@ import com.google.common.cache.CacheLoader;
  */
 public class CacheLoaderAdapter<K, V> extends CacheLoader<K, V> {
 
-    final MacheLoader<K, V, ?> macheLoader;
+    final MacheLoader<K, V> macheLoader;
 
-    public CacheLoaderAdapter(MacheLoader<K, V, ?> macheLoader) {
+    public CacheLoaderAdapter(MacheLoader<K, V> macheLoader) {
         this.macheLoader = macheLoader;
     }
 

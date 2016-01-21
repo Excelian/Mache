@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 public class GuavaMache<K, V> implements Mache<K, V> {
 
-    private final MacheLoader<K, V, ?> cacheLoader;
+    private final MacheLoader<K, V> cacheLoader;
     private final UUID cacheId;
 
     private final LoadingCache<K, V> cache;
@@ -24,7 +24,7 @@ public class GuavaMache<K, V> implements Mache<K, V> {
      * @param cacheLoader The MacheLoader of the backing store for this Mache.
      * @param cache The created Guava LoadingCache.
      */
-    public GuavaMache(final MacheLoader<K, V, ?> cacheLoader, LoadingCache<K, V> cache) {
+    public GuavaMache(final MacheLoader<K, V> cacheLoader, LoadingCache<K, V> cache) {
         this.cacheLoader = cacheLoader;
         this.cache = cache;
         cacheId = Generators.nameBasedGenerator().generate(getName() + toString());

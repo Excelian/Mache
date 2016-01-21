@@ -19,7 +19,7 @@ public abstract class TestEnvironmentPortCheckIgnoreCondition implements Conditi
             host = "localhost";
             hostPresent = true;
         } else {
-            host = "not-set";
+            host = "not-set-as-no-host-running";
             hostPresent = false;
         }
     }

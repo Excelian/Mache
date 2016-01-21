@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 public class ChronicleMapMache<K, V> implements Mache<K, V> {
 
-    private final MacheLoader<K, V, ?> cacheLoader;
+    private final MacheLoader<K, V> cacheLoader;
     private final UUID cacheId;
     private final ConcurrentLRUCache<K, V> cache;
 
@@ -23,7 +23,7 @@ public class ChronicleMapMache<K, V> implements Mache<K, V> {
      * @param cacheLoader The MacheLoader of the backing store for this Mache.
      * @param cache A built ConcurrentLRUCache backed by ChronicleMap.
      */
-    public ChronicleMapMache(MacheLoader<K, V, ?> cacheLoader, ConcurrentLRUCache<K, V> cache) {
+    public ChronicleMapMache(MacheLoader<K, V> cacheLoader, ConcurrentLRUCache<K, V> cache) {
         this.cacheLoader = cacheLoader;
         cacheId = Generators.nameBasedGenerator().generate(getName() + toString());
         this.cache = cache;
