@@ -22,8 +22,8 @@ install:
   - ./config/travis-scripts/prepare-kafka.sh
   - ./config/travis-scripts/prepare-couchbase.sh
 
-#notifications:
-#  slack: exceliandev:1eNY8ozgMfUYwzAECmL4LNHi
+notifications:
+  slack: exceliandev:1eNY8ozgMfUYwzAECmL4LNHi
 
 # cache maven repository to speed up build
 cache:
