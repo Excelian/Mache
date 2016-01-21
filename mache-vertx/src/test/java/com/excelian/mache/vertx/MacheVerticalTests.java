@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.net.InetAddress;
 import java.util.function.Supplier;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
@@ -37,7 +36,7 @@ public class MacheVerticalTests {
                         .cachedBy(guava())
                         .storedIn(new StorageProvisioner() {
                             @Override
-                            public <K, V> MacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+                            public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
                                 return new HashMapCacheLoader<>(valueType);
                             }
                         })

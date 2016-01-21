@@ -60,10 +60,11 @@ public class MongoDBJsonCacheLoader<K, V> implements MacheLoader<String, String>
     public void put(String key, String value) {
         LOG.trace("Saving to mongo key={}, newValue={}", key, value);
         DBObject dbObject = (DBObject) JSON.parse(value);
-        dbObject.put("_id", key);
+        DBObject keyObject = new BasicDBObject();
+        keyObject.put("_id", key);
         DB database = mongoClient.getDB(this.database); // TODO, cache DB object
         DBCollection collection = database.getCollection(this.database);// TODO, how do we get map name?
-        collection.update(dbObject, dbObject, true, false);
+        collection.update(keyObject, dbObject, true, false);
     }
 
     @Override

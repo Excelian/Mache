@@ -18,6 +18,7 @@ import java.util.Date;
 
 import static com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
+import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongoConnectionContext;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -41,7 +42,7 @@ public class MongoJsonCacheIntegrationTest {
         return MacheBuilder.mache(String.class, String.class)
                 .cachedBy(guava())
                 .storedIn(mongodb()
-                        .withSeeds(new ServerAddress(new NoRunningMongoDbForTests().getHost(), 27017))
+                        .withConnectionContext(mongoConnectionContext(new ServerAddress(new NoRunningMongoDbForTests().getHost(), 27017)))
                         .withDatabase(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                         .build())
@@ -52,15 +53,6 @@ public class MongoJsonCacheIntegrationTest {
     @After
     public void tearDown() throws Exception {
         mache.close();
-    }
-
-    @Test
-    public void testGetDriver() throws Exception {
-        mache.put("test-1", getJsonKey("test-1"));
-        mache.get("test-1");
-        MongoDBJsonCacheLoader cacheLoader = (MongoDBJsonCacheLoader) mache.getCacheLoader();
-        Mongo driver = cacheLoader.getDriverSession();
-        assertNotNull(driver.getAddress());
     }
 
     @Test
@@ -93,7 +85,6 @@ public class MongoJsonCacheIntegrationTest {
         assertEquals(null, mache.get(key));
     }
 
-    /*
     @Test
     public void testInvalidate() throws Exception {
         final Mache<String, String> mache = getMache();
@@ -101,17 +92,18 @@ public class MongoJsonCacheIntegrationTest {
         final String key = "test-1";
         final String expectedDescription = "test1-description";
         this.mache.put(key, getJsonKey(key, expectedDescription));
-        assertEquals(expectedDescription, this.mache.get(key).getaString());
-        assertEquals(expectedDescription, mache.get(key).getaString());
+        assertEquals(expectedDescription, ((DBObject) JSON.parse(this.mache.get(key))).get("value"));
+        assertEquals(expectedDescription, ((DBObject) JSON.parse(mache.get(key))).get("value"));
+
 
         final String expectedDescription2 = "test-description2";
         mache.put(key, getJsonKey(key, expectedDescription2));
         this.mache.invalidate(key);
-        assertEquals(expectedDescription2, this.mache.get(key).getaString());
-        assertEquals(expectedDescription2, mache.get(key).getaString());
+        assertEquals(expectedDescription2, ((DBObject) JSON.parse(this.mache.get(key))).get("value"));
+        assertEquals(expectedDescription2, ((DBObject) JSON.parse(mache.get(key))).get("value"));
 
         mache.close();
-    }*/
+    }
 
     @Test
     public void testReadThrough() throws Exception {
