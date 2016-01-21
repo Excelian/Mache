@@ -60,7 +60,7 @@ public class CouchbaseCacheLoader<K, V> implements MacheLoader<K, V> {
         synchronized (this) {
             if (manager == null) {
                 LOG.info("Attempting to connect to authenticate to Couchbase cluster as {}", adminUser);
-                manager = connectionContext.getConnection().clusterManager(adminUser, adminPassword);
+                manager = connectionContext.getConnection(this).clusterManager(adminUser, adminPassword);
 
                 dropBucketIfRequired();
                 bucket = createBucketIfRequired();
@@ -105,7 +105,7 @@ public class CouchbaseCacheLoader<K, V> implements MacheLoader<K, V> {
                 }
             }
         }
-
+        connectionContext.close(this);
     }
 
     @Override
@@ -125,7 +125,7 @@ public class CouchbaseCacheLoader<K, V> implements MacheLoader<K, V> {
             LOG.info("Creating bucket {}", bucketSettings.name());
             manager.insertBucket(bucketSettings);
         }
-        return connectionContext.getConnection().openBucket(bucketSettings.name());
+        return connectionContext.getConnection(this).openBucket(bucketSettings.name());
     }
 
     @Override

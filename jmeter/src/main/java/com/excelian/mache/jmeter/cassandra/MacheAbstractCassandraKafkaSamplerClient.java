@@ -18,7 +18,6 @@ import java.util.Map;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
-import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandraConnectionContext;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 
 /**
@@ -75,14 +74,14 @@ public abstract class MacheAbstractCassandraKafkaSamplerClient extends AbstractC
                         .withZkHost(mapParams.get("kafka.connection")).build())
                 .withTopic(mapParams.get("kafka.topic"));
 
-        connectionContext = cassandraConnectionContext(Cluster.builder().withClusterName("BluePrint")
-                .withQueryOptions(new QueryOptions().setConsistencyLevel(ConsistencyLevel.LOCAL_QUORUM))
-                .withRetryPolicy(DefaultRetryPolicy.INSTANCE)
-                .withLoadBalancingPolicy(new TokenAwarePolicy(new DCAwareRoundRobinPolicy()))
-                .addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042));
+        final Cluster.Builder bluePrint = Cluster.builder().withClusterName("BluePrint")
+            .withQueryOptions(new QueryOptions().setConsistencyLevel(ConsistencyLevel.LOCAL_QUORUM))
+            .withRetryPolicy(DefaultRetryPolicy.INSTANCE)
+            .withLoadBalancingPolicy(new TokenAwarePolicy(new DCAwareRoundRobinPolicy()))
+            .addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042);
 
         cache1 = mache(String.class, CassandraTestEntity.class).cachedBy(guava()).storedIn(cassandra()
-                .withConnectionContext(connectionContext)
+            .withCluster(bluePrint)
                 .withKeyspace(mapParams.get("keyspace.name")).withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
                 .build()).withMessaging(kafkaProvisioner).macheUp();
     }

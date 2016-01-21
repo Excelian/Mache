@@ -26,21 +26,18 @@ public class CassandraExample implements Example<CassandraAnnotatedMessage, Clus
         this.serverIpAddress = serverIpAddress;
     }
 
-    public ConnectionContext<Cluster> createConnectionContext() {
-        return cassandraConnectionContext(Cluster.builder()
-                .addContactPoint(serverIpAddress)
-                .withPort(9042)
-                .withClusterName("BluePrint"));
-    }
 
     @Override
-    public Mache<String, CassandraAnnotatedMessage> exampleCache(ConnectionContext<Cluster> connectionContext) throws Exception {
+    public Mache<String, CassandraAnnotatedMessage> exampleCache() throws Exception {
         final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
 
         return mache(String.class, CassandraAnnotatedMessage.class)
                 .cachedBy(guava())
                 .storedIn(cassandra()
-                        .withConnectionContext(connectionContext)
+                    .withCluster(Cluster.builder()
+                        .addContactPoint(serverIpAddress)
+                        .withPort(9042)
+                        .withClusterName("BluePrint"))
                         .withKeyspace(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA).build())
                 .withNoMessaging()

@@ -11,18 +11,11 @@ import com.excelian.mache.core.Mache;
 public interface Example<T, S, M extends Example.KeyedMessge> {
 
     /**
-     * Provides connection context for subsequent Mache clients to utilise
-     *
-     * @return The connection context.
-     */
-    public ConnectionContext<S> createConnectionContext();
-
-    /**
      * Provides a {@link Mache} type for an example client.
      *
      * @return The example mache client.
      */
-    Mache<String, T> exampleCache(ConnectionContext<S> connectionContext) throws Exception;
+    Mache<String, T> exampleCache() throws Exception;
 
     M createEntity(String primaryKey, String msg);
 

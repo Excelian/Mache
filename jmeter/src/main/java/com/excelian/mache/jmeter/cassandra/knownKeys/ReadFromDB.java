@@ -12,7 +12,6 @@ import org.apache.jmeter.samplers.SampleResult;
 import java.util.Map;
 
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
-import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandraConnectionContext;
 
 /**
  * JMeter test that measures reading directly from the backing Cassandra store.
@@ -29,11 +28,11 @@ public class ReadFromDB extends AbstractCassandraSamplerClient {
         final Map<String, String> mapParams = extractParameters(context);
 
         try {
-            connectionContext = cassandraConnectionContext(Cluster.builder().withClusterName("BluePrint")
-                    .addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042));
+            final Cluster.Builder bluePrint = Cluster.builder().withClusterName("BluePrint")
+                .addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042);
 
             db = cassandra()
-                    .withConnectionContext(connectionContext)
+                .withCluster(bluePrint)
                     .withKeyspace(mapParams.get("keyspace.name"))
                     .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED).build()
                     .getCacheLoader(String.class, CassandraTestEntity.class);

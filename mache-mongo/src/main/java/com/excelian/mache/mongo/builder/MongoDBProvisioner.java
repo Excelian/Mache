@@ -21,14 +21,14 @@ import static java.util.stream.Collectors.toList;
  */
 public class MongoDBProvisioner implements StorageProvisioner {
 
-    private final ConnectionContext<List<ServerAddress>> connectionContext;
+    private final MongoConnectionContext connectionContext;
     private final List<MongoCredential> mongoCredentials;
     private final MongoClientOptions clientOptions;
     private final String database;
     private final SchemaOptions schemaOptions;
     private final CollectionOptions collectionOptions;
 
-    private MongoDBProvisioner(ConnectionContext<List<ServerAddress>> connectionContext, List<MongoCredential> credentials,
+    private MongoDBProvisioner(MongoConnectionContext connectionContext, List<MongoCredential> credentials,
                                MongoClientOptions clientOptions, String database, SchemaOptions schemaOptions,
                                CollectionOptions collectionOptions) {
 
@@ -40,22 +40,17 @@ public class MongoDBProvisioner implements StorageProvisioner {
         this.collectionOptions = collectionOptions;
     }
 
-    public static ConnectionContextBuilder mongodb() {
-        return connectionContext -> database -> new MongoDBProvisionerBuilder(connectionContext, database);
+
+    public static SeedsListBuilder mongodb() {
+        return seeds -> database -> {
+            final MongoConnectionContext mongoConnectionContext = MongoConnectionContext.getInstance(seeds);
+            return new MongoDBProvisionerBuilder(mongoConnectionContext, database);
+        };
     }
 
-    public static ConnectionContext<List<ServerAddress>> mongoConnectionContext(ServerAddress... seeds) {
-        return new ConnectionContext<List<ServerAddress>>() {
-            @Override
-            public List<ServerAddress> getConnection() {
-                return stream(seeds).collect(toList());
-            }
 
-            @Override
-            public void close() throws Exception {
-                return;
-            }
-        };
+    public static MongoConnectionContext mongoConnectionContext(ServerAddress... seeds) {
+        return MongoConnectionContext.getInstance(seeds);
     }
 
     @Override
@@ -67,10 +62,9 @@ public class MongoDBProvisioner implements StorageProvisioner {
     /**
      * Forces seeds to be provided.
      */
-    public interface ConnectionContextBuilder {
-        DatabaseNameBuilder withConnectionContext(ConnectionContext<List<ServerAddress>> context);
+    public interface SeedsListBuilder {
+        DatabaseNameBuilder withSeeds(ServerAddress... seeds);
     }
-
 
     /**
      * Forces database name to be provided.
@@ -83,14 +77,14 @@ public class MongoDBProvisioner implements StorageProvisioner {
      * A builder with defaults for a Mongo DB cluster.
      */
     public static class MongoDBProvisionerBuilder {
-        private final ConnectionContext<List<ServerAddress>> connectionContext;
+        private final MongoConnectionContext connectionContext;
         private final String database;
         private List<MongoCredential> mongoCredentials = Collections.emptyList();
         private MongoClientOptions mongoClientOptions = MongoClientOptions.builder().build();
         private SchemaOptions schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
         private CollectionOptions collectionOptions = null;
 
-        private MongoDBProvisionerBuilder(ConnectionContext<List<ServerAddress>> connectionContext, String database) {
+        private MongoDBProvisionerBuilder(MongoConnectionContext connectionContext, String database) {
             this.connectionContext = connectionContext;
             this.database = database;
         }

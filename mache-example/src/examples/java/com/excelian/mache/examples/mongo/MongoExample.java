@@ -23,28 +23,22 @@ public class MongoExample implements Example<MongoAnnotatedMessage, List<ServerA
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
     private String serverIpAddress;
 
-    public MongoExample(String serverIpAddress)
-    {
+    public MongoExample(String serverIpAddress) {
         this.serverIpAddress = serverIpAddress;
     }
 
     @Override
-    public Mache<String, MongoAnnotatedMessage> exampleCache(ConnectionContext connectionContext) throws Exception {
+    public Mache<String, MongoAnnotatedMessage> exampleCache() throws Exception {
         final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
         return mache(String.class, MongoAnnotatedMessage.class)
                 .cachedBy(guava())
                 .storedIn(mongodb()
-                        .withConnectionContext(connectionContext)
+                    .withSeeds(new ServerAddress(serverIpAddress, 27017))
                         .withDatabase(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                         .build())
                 .withNoMessaging()
                 .macheUp();
-    }
-
-    @Override
-    public ConnectionContext<List<ServerAddress>> createConnectionContext() {
-        return mongoConnectionContext(new ServerAddress(serverIpAddress, 27017));
     }
 
     @Override

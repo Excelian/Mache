@@ -2,10 +2,13 @@ package com.excelian.mache.cassandra;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.datastax.driver.core.Cluster;
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.google.common.cache.CacheLoader;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -14,14 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.cassandra.core.Ordering;
 import org.springframework.cassandra.core.PrimaryKeyType;
-import org.springframework.data.cassandra.mapping.Column;
-import org.springframework.data.cassandra.mapping.PrimaryKey;
-import org.springframework.data.cassandra.mapping.PrimaryKeyClass;
-import org.springframework.data.cassandra.mapping.PrimaryKeyColumn;
-import org.springframework.data.cassandra.mapping.Table;
-
-import java.io.Serializable;
-import java.util.Date;
+import org.springframework.data.cassandra.mapping.*;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
@@ -29,57 +25,45 @@ import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandr
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import java.io.Serializable;
+import java.util.Date;
 
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCassandraDbForTests.class)
 public class CassandraCacheLoaderIntegrationTest {
 
     protected static String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
-    private static ConnectionContext<Cluster> connectionContext;
+
     @Rule
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
     private Mache<String, TestEntity> mache;
 
-    @BeforeClass
-    public static void setUpClass() {
-        if (new NoRunningCassandraDbForTests().isSatisfied() == false) {
-            connectionContext = cassandraConnectionContext(Cluster.builder()
-                    .addContactPoint(new NoRunningCassandraDbForTests().getHost())
-                    .withPort(9042)
-                    .withClusterName("BluePrint"));
-        }
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (connectionContext != null) {
-            connectionContext.close();
-            connectionContext = null;
-        }
-    }
-
-    private static <K, V> Mache<K, V> getMache(Class<K> keyType, Class<V> valueType
-            , ConnectionContext<Cluster> connectionContext
-            , SchemaOptions schemaOptions) throws Exception {
-
-        return mache(keyType, valueType)
-                .cachedBy(guava())
-                .storedIn(cassandra()
-                        .withConnectionContext(connectionContext)
-                        .withKeyspace(keySpace)
-                        .withSchemaOptions(schemaOptions)
-                        .build())
-                .withNoMessaging()
-                .macheUp();
-    }
-
     @Before
     public void setUp() throws Exception {
-        mache = getMache(String.class, TestEntity.class, connectionContext, SchemaOptions.CREATE_AND_DROP_SCHEMA);
+        mache = getMache(String.class, TestEntity.class, SchemaOptions.CREATE_AND_DROP_SCHEMA);
     }
 
     @After
     public void tearDown() throws Exception {
-        mache.close();
+        if (mache != null) {
+            mache.close();
+        }
+    }
+
+    private static <K, V> Mache<K, V> getMache(Class<K> keyType,
+                                               Class<V> valueType,
+                                               SchemaOptions schemaOptions) throws Exception {
+        return mache(keyType, valueType)
+                .cachedBy(guava())
+                .storedIn(cassandra()
+                    .withCluster(Cluster.builder()
+                                        .withClusterName("BluePrint")
+                                        .addContactPoint(CASSANDRA_BLUEPRINT.getHost())
+                                        .withPort(9042))
+                                    .withKeyspace(keySpace)
+                                    .withSchemaOptions(schemaOptions)
+                                    .build())
+                                .withNoMessaging()
+                                .macheUp();
     }
 
     @Test

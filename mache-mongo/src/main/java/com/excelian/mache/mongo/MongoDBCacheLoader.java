@@ -1,12 +1,11 @@
 package com.excelian.mache.mongo;
 
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.mongo.builder.MongoConnectionContext;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.CollectionOptions;
@@ -24,17 +23,17 @@ public class MongoDBCacheLoader<K, V> implements MacheLoader<K, V> {
     private MongoClient mongoClient;
     private Class<K> keyType;
     private Class<V> valueType;
-    private ConnectionContext<List<ServerAddress>> seeds;
+    private MongoConnectionContext mongoConnectionContext;
     private SchemaOptions schemaOptions;
     private CollectionOptions collectionOptions;
     private String database;
 
-    public MongoDBCacheLoader(Class<K> keyType, Class<V> valueType, ConnectionContext<List<ServerAddress>> connectionContext,
+    public MongoDBCacheLoader(Class<K> keyType, Class<V> valueType, MongoConnectionContext connectionContext,
                               List<MongoCredential> credentials, MongoClientOptions clientOptions,
                               String database, SchemaOptions schemaOptions, CollectionOptions collectionOptions) {
         this.keyType = keyType;
         this.valueType = valueType;
-        this.seeds = connectionContext;
+        this.mongoConnectionContext = connectionContext;
         this.credentials = credentials;
         this.clientOptions = clientOptions;
         this.database = database;
@@ -94,6 +93,7 @@ public class MongoDBCacheLoader<K, V> implements MacheLoader<K, V> {
                     }
                     mongoClient.close();
                     mongoClient = null;
+                    mongoConnectionContext.close(this);
                 }
             }
         }
@@ -104,7 +104,7 @@ public class MongoDBCacheLoader<K, V> implements MacheLoader<K, V> {
     }
 
     private MongoClient connect() {
-        return new MongoClient(seeds.getConnection(), credentials, clientOptions);
+        return new MongoClient(mongoConnectionContext.getConnection(this), credentials, clientOptions);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class MongoDBCacheLoader<K, V> implements MacheLoader<K, V> {
                 + ", mongoClient=" + mongoClient
                 + ", keyType=" + keyType
                 + ", valueType=" + valueType
-                + ", seeds=" + seeds
+                + ", mongoConnectionContext=" + mongoConnectionContext
                 + ", schemaOptions=" + schemaOptions
                 + ", collectionOptions=" + collectionOptions
                 + ", database='" + database + '\''
