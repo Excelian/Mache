@@ -22,9 +22,8 @@ import java.util.List;
  */
 public class CouchbaseProvisioner implements StorageProvisioner {
 
-    private final CouchbaseConnectionContext couchbaseConnectionContext;
+    private final CouchbaseConnectionContext connectionContext;
     private final BucketSettings bucketSettings;
-    private ConnectionContext<Cluster> connectionContext;
 
     private String adminUser;
     private String adminPassword;
@@ -33,7 +32,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
     private CouchbaseProvisioner(CouchbaseConnectionContext couchbaseConnectionContext, BucketSettings bucketSettings,
                                  String adminUser, String adminPassword,
                                  SchemaOptions schemaOptions) {
-        this.couchbaseConnectionContext = couchbaseConnectionContext;
+        this.connectionContext = couchbaseConnectionContext;
         this.bucketSettings = bucketSettings;
         this.adminUser = adminUser;
         this.adminPassword = adminPassword;

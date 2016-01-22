@@ -53,7 +53,9 @@ public class CouchbaseCacheLoaderIntegrationTest {
 
     @After
     public void tearDown() {
-        cache.close();
+        if (cache != null) {
+            cache.close();
+        }
     }
 
     @Test
