@@ -5,6 +5,7 @@ import com.excelian.mache.builder.MacheBuilder;
 import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.mongo.builder.MongoConnectionContext;
 import com.google.common.cache.CacheLoader;
 import com.mongodb.ServerAddress;
 import org.junit.After;

@@ -16,7 +16,7 @@ import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 /**
  * A factory for a Cassandra backed {@link Example}.
  */
-public class CassandraExample implements Example<CassandraAnnotatedMessage, Cluster, CassandraAnnotatedMessage> {
+public class CassandraExample implements Example<CassandraAnnotatedMessage, CassandraAnnotatedMessage> {
 
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
     private String serverIpAddress;

@@ -17,7 +17,8 @@ public class CassandraProvisioner implements StorageProvisioner {
     private final String replicationClass;
     private final int replicationFactor;
 
-    private CassandraProvisioner(ConnectionContext<Cluster> connectionContext, SchemaOptions schemaOptions, String keySpace,
+    private CassandraProvisioner(ConnectionContext<Cluster> connectionContext,
+                                 SchemaOptions schemaOptions, String keySpace,
                                  String replicationClass, int replicationFactor) {
         this.connectionContext = connectionContext;
         this.schemaOptions = schemaOptions;
@@ -31,7 +32,8 @@ public class CassandraProvisioner implements StorageProvisioner {
      */
     public static ClusterBuilder cassandra() {
         return clusterBuilder -> keyspace -> {
-            final CassandraConnectionContext cassandraConnectionContext = CassandraConnectionContext.getInstance(clusterBuilder);
+            final CassandraConnectionContext cassandraConnectionContext =
+                CassandraConnectionContext.getInstance(clusterBuilder);
             return new CassandraProvisionerBuilder(cassandraConnectionContext, keyspace);
         };
     }
@@ -87,7 +89,8 @@ public class CassandraProvisioner implements StorageProvisioner {
         }
 
         public CassandraProvisioner build() {
-            return new CassandraProvisioner(connectionContext, schemaOptions, keySpace, replicationClass, replicationFactor);
+            return new CassandraProvisioner(connectionContext, schemaOptions,
+                keySpace, replicationClass, replicationFactor);
         }
     }
 }

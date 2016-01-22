@@ -40,7 +40,7 @@ public class GettingCacheClient {
         doExample(count, example);
     }
 
-    private static <T,C, M extends Example.KeyedMessge> void doExample(int count, Example<T,C, M> example) throws Exception {
+    private static <T,M extends Example.KeyedMessge> void doExample(int count, Example<T,M> example) throws Exception {
 
         try (final Mache<String, T> cache = example.exampleCache()) {
             LOG.info("Getting...");

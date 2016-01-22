@@ -1,20 +1,20 @@
-package com.excelian.mache.jmeter.cassandra.knownKeys;
-
-import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
-
-import java.util.Map;
-
-import com.excelian.mache.builder.storage.ConnectionContext;
-import org.apache.jmeter.config.Arguments;
-import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
-import org.apache.jmeter.samplers.SampleResult;
+package com.excelian.mache.jmeter.cassandra.knownkeys;
 
 import com.datastax.driver.core.Cluster;
+
 import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.cassandra.AbstractCassandraSamplerClient;
 import com.excelian.mache.jmeter.cassandra.CassandraTestEntity;
+
+import org.apache.jmeter.config.Arguments;
+import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
+import org.apache.jmeter.samplers.SampleResult;
+
+import java.util.Map;
+
+import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
 
 /**
  * JMeter test that measures writing directly to the Cassandra backing store.

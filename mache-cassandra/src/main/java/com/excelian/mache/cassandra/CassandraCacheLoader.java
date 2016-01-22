@@ -41,14 +41,16 @@ public class CassandraCacheLoader<K, V> implements MacheLoader<K, V> {
     /**
      * @param keyType           The class type of the cache key.
      * @param valueType         The class type of the cache value.
-     * @param connectionContext           The Cassandra cluster object that defines cluster parameters.
+     * @param connectionContext The Cassandra cluster object that defines cluster parameters.
      * @param schemaOption      Determine whether to create/drop key space.
      * @param keySpace          The name of the key space to use.
      * @param replicationClass  The type of replication strategy to use for the key space.
      * @param replicationFactor The replication factor for the keyspace.
      */
-    public CassandraCacheLoader(Class<K> keyType, Class<V> valueType, ConnectionContext<Cluster> connectionContext, SchemaOptions schemaOption,
-                                String keySpace, String replicationClass, int replicationFactor) {
+    public CassandraCacheLoader(Class<K> keyType, Class<V> valueType,
+                                ConnectionContext<Cluster> connectionContext,
+                                SchemaOptions schemaOption, String keySpace,
+                                String replicationClass, int replicationFactor) {
         this.keyType = keyType;
         this.connectionContext = connectionContext;
         this.schemaOption = schemaOption;

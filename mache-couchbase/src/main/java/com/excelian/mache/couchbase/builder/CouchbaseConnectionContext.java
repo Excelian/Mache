@@ -10,7 +10,7 @@ import com.excelian.mache.core.MacheLoader;
 import java.util.List;
 
 /**
- * Created by jbowkett on 21/01/2016.
+ * Manages access to couchbase cluster.
  */
 public class CouchbaseConnectionContext extends AbstractConnectionContext<Cluster> {
 
@@ -50,7 +50,15 @@ public class CouchbaseConnectionContext extends AbstractConnectionContext<Cluste
 
     private static CouchbaseConnectionContext singletonInstance;
 
-    public static CouchbaseConnectionContext getInstance(CouchbaseEnvironment couchbaseEnvironment, List<String> nodes) {
+    /**
+     * Gets the singleton.
+     * @param couchbaseEnvironment - the single couchbase env, if null then the
+     *                             default is instantiated
+     * @param nodes - the nodes to connect to
+     * @return the singleton connection context
+     */
+    public static CouchbaseConnectionContext getInstance(CouchbaseEnvironment couchbaseEnvironment,
+                                                         List<String> nodes) {
         if (singletonInstance == null) {
             synchronized (CouchbaseConnectionContext.class) {
                 if (singletonInstance == null) {

@@ -5,6 +5,9 @@ import com.rabbitmq.client.MessageProperties;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+/**
+ * Type for the Rabbit MQ config.
+ */
 public class RabbitMqConfig {
 
     private final String exchangeName;
@@ -14,7 +17,19 @@ public class RabbitMqConfig {
     private final int messageTtl;
     private final BasicProperties routingHeader;
 
-    private RabbitMqConfig(String exchangeName, int maxLength, int messageExpiry, int networkRecoveryInterval, int messageTtl, BasicProperties routingHeader) {
+    /**
+     * Constructor.
+     *
+     * @param exchangeName            - exchangeName
+     * @param maxLength               - maxLength
+     * @param messageExpiry           - messageExpiry
+     * @param networkRecoveryInterval - networkRecoveryInterval
+     * @param messageTtl              - messageTtl
+     * @param routingHeader           - routingHeader
+     */
+    private RabbitMqConfig(String exchangeName, int maxLength,
+                           int messageExpiry, int networkRecoveryInterval,
+                           int messageTtl, BasicProperties routingHeader) {
         this.exchangeName = exchangeName;
         this.maxLength = maxLength;
         this.messageExpiry = messageExpiry;
@@ -23,6 +38,9 @@ public class RabbitMqConfig {
         this.routingHeader = routingHeader;
     }
 
+    /**
+     * Builder to produce Rabbit MQ config.
+     */
     public static class RabbitMqConfigBuilder {
         private String exchangeName = "default-exchange";
         private int maxLength = 10000;
@@ -67,7 +85,8 @@ public class RabbitMqConfig {
         }
 
         public RabbitMqConfig build() {
-            return new RabbitMqConfig(exchangeName, maxLength, messageExpiry, networkRecoveryInterval, messageTtl, routingHeader);
+            return new RabbitMqConfig(exchangeName, maxLength, messageExpiry,
+                networkRecoveryInterval, messageTtl, routingHeader);
         }
     }
 

@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+/**
+ * Sends events to Rabbit MQ.
+ *
+ * @param <K> the type of the keys
+ */
 public class RabbitMQEventProducer<K> extends BaseCoordinationEntryEventProducer<K> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RabbitMQEventProducer.class);
@@ -19,6 +24,12 @@ public class RabbitMQEventProducer<K> extends BaseCoordinationEntryEventProducer
     private String exchangeName;
     private final RabbitMqConfig rabbitMqConfig;
 
+    /**
+     * Constructor.
+     * @param channel - channel
+     * @param topic - topic
+     * @param rabbitMqConfig - rabbitMqConfig
+     */
     public RabbitMQEventProducer(Channel channel, String topic, RabbitMqConfig rabbitMqConfig) {
         super(topic);
         this.channel = channel;

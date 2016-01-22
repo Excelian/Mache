@@ -18,7 +18,7 @@ import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 /**
  * A factory for a Mongo backed {@link Example}.
  */
-public class MongoExample implements Example<MongoAnnotatedMessage, List<ServerAddress> , MongoAnnotatedMessage > {
+public class MongoExample implements Example<MongoAnnotatedMessage, MongoAnnotatedMessage> {
 
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
     private String serverIpAddress;

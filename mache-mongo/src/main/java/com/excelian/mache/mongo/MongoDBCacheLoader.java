@@ -16,6 +16,11 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
 
+/**
+ * Cacheloader to connect to Mongo for its data.
+ * @param <K> the type of the keys
+ * @param <V> the type of the values
+ */
 public class MongoDBCacheLoader<K, V> implements MacheLoader<K, V> {
     private static final Logger LOG = LoggerFactory.getLogger(MongoDBCacheLoader.class);
     private final List<MongoCredential> credentials;
@@ -28,6 +33,17 @@ public class MongoDBCacheLoader<K, V> implements MacheLoader<K, V> {
     private CollectionOptions collectionOptions;
     private String database;
 
+    /**
+     * Constructor.
+     * @param keyType - keyType
+     * @param valueType - valueType
+     * @param connectionContext - connectionContext
+     * @param credentials - credentials
+     * @param clientOptions - clientOptions
+     * @param database - database
+     * @param schemaOptions - schemaOptions
+     * @param collectionOptions - collectionOptions
+     */
     public MongoDBCacheLoader(Class<K> keyType, Class<V> valueType, MongoConnectionContext connectionContext,
                               List<MongoCredential> credentials, MongoClientOptions clientOptions,
                               String database, SchemaOptions schemaOptions, CollectionOptions collectionOptions) {

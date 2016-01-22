@@ -1,21 +1,17 @@
 package com.excelian.mache.couchbase.builder;
 
-import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
-import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
-import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.excelian.mache.builder.StorageProvisioner;
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.couchbase.CouchbaseCacheLoader;
 
+import java.util.List;
+
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
-import java.util.List;
 
 /**
  * {@link StorageProvisioner} implementation for Couchbase.
@@ -29,7 +25,8 @@ public class CouchbaseProvisioner implements StorageProvisioner {
     private String adminPassword;
     private SchemaOptions schemaOptions;
 
-    private CouchbaseProvisioner(CouchbaseConnectionContext couchbaseConnectionContext, BucketSettings bucketSettings,
+    private CouchbaseProvisioner(CouchbaseConnectionContext couchbaseConnectionContext,
+                                 BucketSettings bucketSettings,
                                  String adminUser, String adminPassword,
                                  SchemaOptions schemaOptions) {
         this.connectionContext = couchbaseConnectionContext;
@@ -98,9 +95,15 @@ public class CouchbaseProvisioner implements StorageProvisioner {
             return this;
         }
 
+        /**
+         * Builds the provisioner given the inputs.
+         * @return a couchbase provisioner
+         */
         public CouchbaseProvisioner build() {
-            final CouchbaseConnectionContext connectionContext = CouchbaseConnectionContext.getInstance(couchbaseEnvironment, nodes);
-            return new CouchbaseProvisioner(connectionContext, bucketSettings, adminUser, adminPassword, schemaOptions);
+            final CouchbaseConnectionContext connectionContext =
+                CouchbaseConnectionContext.getInstance(couchbaseEnvironment, nodes);
+            return new CouchbaseProvisioner(connectionContext, bucketSettings,
+                adminUser, adminPassword, schemaOptions);
         }
     }
 }

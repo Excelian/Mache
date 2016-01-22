@@ -7,8 +7,9 @@ import com.excelian.mache.core.Mache;
  * Provides a {@link Mache} type for an example client.
  *
  * @param <T> The Spring Data Annotated object type.
+ * @param <M> The value type to store
  */
-public interface Example<T, S, M extends Example.KeyedMessge> {
+public interface Example<T, M extends Example.KeyedMessge> {
 
     /**
      * Provides a {@link Mache} type for an example client.
@@ -19,7 +20,9 @@ public interface Example<T, S, M extends Example.KeyedMessge> {
 
     M createEntity(String primaryKey, String msg);
 
-
+    /**
+     * A value type with a key.
+     */
     public interface KeyedMessge {
         public String getPrimaryKey();
     }

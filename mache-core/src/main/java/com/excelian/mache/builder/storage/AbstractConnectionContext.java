@@ -6,7 +6,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by jbowkett on 20/01/2016.
+ * Builds a Mache instance
+ *
+ * @param <T> The type of the shared resource, often a cluster, depending on
+ *            the platform.
  */
 public abstract class AbstractConnectionContext<T> implements ConnectionContext<T> {
     private final Set<MacheLoader> loadersUsingCluster = new HashSet<>();

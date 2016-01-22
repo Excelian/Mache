@@ -19,7 +19,7 @@ import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 /**
  * A factory for a Couchbase backed {@link Example}.
  */
-public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, Cluster, CouchbaseAnnotatedMessage> {
+public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, CouchbaseAnnotatedMessage> {
 
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
     private String serverIpAddress;

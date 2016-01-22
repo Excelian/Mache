@@ -6,7 +6,7 @@ import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.excelian.mache.observable.coordination.RemoteCacheEntryListener;
-import com.excelian.mache.observable.utils.UUIDUtils;
+import com.excelian.mache.observable.utils.UuidUtils;
 
 import javax.cache.event.CacheEntryListenerException;
 
@@ -18,7 +18,7 @@ import javax.cache.event.CacheEntryListenerException;
 public class MessageQueueObservableCacheFactory<K, V> implements ObservableCacheFactory<K, V> {
     private final MQFactory<K> communicationFactory;
     private final MQConfiguration configuration;
-    private final UUIDUtils uuidUtils;
+    private final UuidUtils uuidUtils;
 
     /**
      * @param communicationFactory The {@link MQFactory} for the underlying messaging framework.
@@ -27,7 +27,7 @@ public class MessageQueueObservableCacheFactory<K, V> implements ObservableCache
      */
     public MessageQueueObservableCacheFactory(final MQFactory<K> communicationFactory,
                                               final MQConfiguration configuration,
-                                              final UUIDUtils uuidUtils) {
+                                              final UuidUtils uuidUtils) {
         this.communicationFactory = communicationFactory;
         this.configuration = configuration;
         this.uuidUtils = uuidUtils;

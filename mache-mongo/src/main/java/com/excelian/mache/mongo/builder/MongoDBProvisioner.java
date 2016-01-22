@@ -28,6 +28,15 @@ public class MongoDBProvisioner implements StorageProvisioner {
     private final SchemaOptions schemaOptions;
     private final CollectionOptions collectionOptions;
 
+    /**
+     * Constructor.
+     * @param connectionContext - connectionContext
+     * @param credentials - credentials
+     * @param clientOptions - clientOptions
+     * @param database - database
+     * @param schemaOptions - schemaOptions
+     * @param collectionOptions - collectionOptions
+     */
     private MongoDBProvisioner(MongoConnectionContext connectionContext, List<MongoCredential> credentials,
                                MongoClientOptions clientOptions, String database, SchemaOptions schemaOptions,
                                CollectionOptions collectionOptions) {
@@ -40,7 +49,10 @@ public class MongoDBProvisioner implements StorageProvisioner {
         this.collectionOptions = collectionOptions;
     }
 
-
+    /**
+     * Gets default mongodb config.
+     * @return the start of the builder for mongodb
+     */
     public static SeedsListBuilder mongodb() {
         return seeds -> database -> {
             final MongoConnectionContext mongoConnectionContext = MongoConnectionContext.getInstance(seeds);
@@ -49,14 +61,19 @@ public class MongoDBProvisioner implements StorageProvisioner {
     }
 
 
+    /**
+     * Creates a mongo connection context from the server addresses.
+     * @param seeds the mongo servers
+     * @return the connection context
+     */
     public static MongoConnectionContext mongoConnectionContext(ServerAddress... seeds) {
         return MongoConnectionContext.getInstance(seeds);
     }
 
     @Override
     public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-        return new MongoDBCacheLoader<>(keyType, valueType, connectionContext, mongoCredentials, clientOptions, database,
-                schemaOptions, collectionOptions);
+        return new MongoDBCacheLoader<>(keyType, valueType, connectionContext,
+            mongoCredentials, clientOptions, database, schemaOptions, collectionOptions);
     }
 
     /**
@@ -111,8 +128,8 @@ public class MongoDBProvisioner implements StorageProvisioner {
         }
 
         public MongoDBProvisioner build() {
-            return new MongoDBProvisioner(connectionContext, mongoCredentials, mongoClientOptions, database, schemaOptions,
-                    collectionOptions);
+            return new MongoDBProvisioner(connectionContext, mongoCredentials,
+                mongoClientOptions, database, schemaOptions, collectionOptions);
         }
     }
 }
