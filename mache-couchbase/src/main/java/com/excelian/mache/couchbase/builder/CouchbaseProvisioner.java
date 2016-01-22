@@ -65,7 +65,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
      */
     public static class CouchbaseProvisionerBuilder {
         private final BucketSettings bucketSettings;
-        private CouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
+        private CouchbaseEnvironment couchbaseEnvironment;
         private List<String> nodes = singletonList("localhost");
         private String adminUser = "Administrator";
         private String adminPassword = "password";

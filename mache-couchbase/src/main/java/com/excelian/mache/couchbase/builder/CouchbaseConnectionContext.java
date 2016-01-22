@@ -3,6 +3,7 @@ package com.excelian.mache.couchbase.builder;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
+import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.storage.AbstractConnectionContext;
 import com.excelian.mache.core.AbstractCacheLoader;
 
@@ -53,6 +54,9 @@ public class CouchbaseConnectionContext extends AbstractConnectionContext<Cluste
         if (singletonInstance == null) {
             synchronized (CouchbaseConnectionContext.class) {
                 if (singletonInstance == null) {
+                    if (couchbaseEnvironment == null) {
+                        couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
+                    }
                     singletonInstance = new CouchbaseConnectionContext(couchbaseEnvironment, nodes);
                 }
             }
