@@ -6,10 +6,9 @@ package com.excelian.mache.core;
  *
  * @param <K> the type of the keys
  * @param <V> the type of the values
- * @param <D> the type of the driver for the underlying store
  */
 //todo: Would this class be better named MacheDataStore ???
-public interface MacheLoader<K, V, D> extends AutoCloseable {
+public interface MacheLoader<K, V> extends AutoCloseable {
 
     /**
      * Creates the underlying store.

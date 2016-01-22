@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
+import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongoConnectionContext;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 import static org.junit.Assert.assertEquals;
@@ -46,7 +47,8 @@ public class MongoCacheIntegrationTest {
     private Mache<String, TestEntity> getMache(ConnectionContext<List<ServerAddress>> context) throws Exception {
 
         return MacheBuilder.mache(String.class, TestEntity.class)
-                .backedBy(mongodb()
+                .cachedBy(guava())
+                .storedIn(mongodb()
                         .withConnectionContext(context)
                         .withDatabase(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)

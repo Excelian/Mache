@@ -1,26 +1,29 @@
 package com.excelian.mache.events.integration;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
-
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Type;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import java.lang.reflect.Type;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
+/**
+ * Consumes Mache events from Active MQ.
+ *
+ * @param <K> key of Mache
+ */
 public class ActiveMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K> {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQEventConsumer.class);
     ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -29,8 +32,13 @@ public class ActiveMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
     private Future<?> task;
     private volatile boolean notStopped = true;
 
-    public ActiveMQEventConsumer(final Connection connection,
-                                 final String producerTopicName,
+    /**
+     * @param connection The ActiveMQ Connection to use.
+     * @param producerTopicName The topic name to receive events from.
+     * @param acknowledgementMode The JMS acknowledgement mode to use.
+     * @throws JMSException If a JMS error occurred.
+     */
+    public ActiveMQEventConsumer(final Connection connection, final String producerTopicName,
                                  int acknowledgementMode) throws JMSException {
         super(producerTopicName);
         session = connection.createSession(false, acknowledgementMode);

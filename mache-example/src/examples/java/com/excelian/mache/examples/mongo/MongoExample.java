@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
+import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongoConnectionContext;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 
@@ -31,7 +32,8 @@ public class MongoExample implements Example<MongoAnnotatedMessage, List<ServerA
     public Mache<String, MongoAnnotatedMessage> exampleCache(ConnectionContext connectionContext) throws Exception {
         final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
         return mache(String.class, MongoAnnotatedMessage.class)
-                .backedBy(mongodb()
+                .cachedBy(guava())
+                .storedIn(mongodb()
                         .withConnectionContext(connectionContext)
                         .withDatabase(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)

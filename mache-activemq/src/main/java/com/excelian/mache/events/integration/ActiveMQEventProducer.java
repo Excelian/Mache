@@ -13,15 +13,18 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-
+/**
+ * Send Mache events to Active MQ.
+ *
+ * @param <K> key of Mache
+ */
 public class ActiveMQEventProducer<K> extends BaseCoordinationEntryEventProducer<K> {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQEventProducer.class);
     Session session;
     MessageProducer producer;
 
     protected ActiveMQEventProducer(Connection connection, String topicName, long timeToLiveInMillis, int deliveryMode,
-                                    int acknowledgementMode)
-            throws JMSException {
+                                    int acknowledgementMode) throws JMSException {
         super(topicName);
 
         session = connection.createSession(false, acknowledgementMode);

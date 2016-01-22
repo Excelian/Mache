@@ -12,6 +12,7 @@ import java.util.Date;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandraConnectionContext;
+import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 
 /**
  * A factory for a Cassandra backed {@link Example}.
@@ -21,13 +22,11 @@ public class CassandraExample implements Example<CassandraAnnotatedMessage, Clus
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
     private String serverIpAddress;
 
-    public CassandraExample(String serverIpAddress)
-    {
+    public CassandraExample(String serverIpAddress) {
         this.serverIpAddress = serverIpAddress;
     }
 
-    public ConnectionContext<Cluster> createConnectionContext()
-    {
+    public ConnectionContext<Cluster> createConnectionContext() {
         return cassandraConnectionContext(Cluster.builder()
                 .addContactPoint(serverIpAddress)
                 .withPort(9042)
@@ -39,7 +38,8 @@ public class CassandraExample implements Example<CassandraAnnotatedMessage, Clus
         final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
 
         return mache(String.class, CassandraAnnotatedMessage.class)
-                .backedBy(cassandra()
+                .cachedBy(guava())
+                .storedIn(cassandra()
                         .withConnectionContext(connectionContext)
                         .withKeyspace(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA).build())

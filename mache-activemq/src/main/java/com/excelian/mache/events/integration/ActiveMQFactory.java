@@ -10,12 +10,23 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 
+/**
+ * A Factory to create Active MQ Event objects.
+ *
+ * @param <K> key of Mache
+ */
 public class ActiveMQFactory<K> implements MQFactory<K> {
     private final Connection connection;
     private long timeToLiveInMillis;
     private int deliveryMode;
     private int acknowledgementMode;
 
+    /**
+     * @param connectionFactory The ActiveMQ ConnectionFactory to use.
+     * @param timeToLiveInMillis The JMS TTL to use.
+     * @param deliveryMode The JMS delivery mode to use.
+     * @param acknowledgementMode The JMS acknowledgement mode to use.
+     */
     public ActiveMQFactory(ConnectionFactory connectionFactory, long timeToLiveInMillis, int deliveryMode,
                            int acknowledgementMode) {
         this.timeToLiveInMillis = timeToLiveInMillis;

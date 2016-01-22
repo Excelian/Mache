@@ -3,12 +3,10 @@ package com.excelian.mache.couchbase.builder;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.BucketSettings;
-import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
+import com.couchbase.client.java.env.CouchbaseEnvironment;
+import com.excelian.mache.builder.StorageProvisioner;
 import com.excelian.mache.builder.storage.ConnectionContext;
-import com.excelian.mache.builder.storage.StorageProvisioner;
-import com.excelian.mache.core.AbstractCacheLoader;
-import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.MacheFactory;
+import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.couchbase.CouchbaseCacheLoader;
 
@@ -34,7 +32,15 @@ public class CouchbaseProvisioner implements StorageProvisioner {
         this.schemaOptions = schemaOptions;
     }
 
-    public static ConnectionContext<Cluster> couchbaseConnectionContext(String contactPoint, DefaultCouchbaseEnvironment builder) {
+    /**
+     * Provides a connection context for couchbase.
+     *
+     * @param contactPoint the host address for couchbase.
+     * @param builder a couchbase environment builder.
+     * @return a connection context for couchbase.
+     */
+    public static ConnectionContext<Cluster> couchbaseConnectionContext(String contactPoint,
+                                                                        CouchbaseEnvironment builder) {
         return new ConnectionContext<Cluster>() {
 
             Cluster cluster;
@@ -73,22 +79,21 @@ public class CouchbaseProvisioner implements StorageProvisioner {
     }
 
     @Override
-    public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType) {
-        return new MacheFactory().create(getCacheLoader(keyType, valueType));
-    }
-
-    @Override
-    public <K, V> AbstractCacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-        return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings, connectionContext, adminUser, adminPassword, schemaOptions);
+    public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+        return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings, connectionContext, adminUser,
+                adminPassword, schemaOptions);
     }
 
     /**
-     * Forces bucket settings to be provided.
+     * Forces a connection context to be provided.
      */
     public interface ClusterBuilder {
         BucketBuilder withContext(ConnectionContext<Cluster> connectionContext);
     }
 
+    /**
+     * Forces bucket settings to be provided.
+     */
     public interface BucketBuilder {
         CouchbaseProvisionerBuilder withBucketSettings(BucketSettings bucketSettings);
     }
@@ -103,7 +108,12 @@ public class CouchbaseProvisioner implements StorageProvisioner {
         private String adminPassword = "password";
         private SchemaOptions schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
 
-        public CouchbaseProvisionerBuilder(ConnectionContext<Cluster> connectionContext, BucketSettings bucketSettings) {
+        /**
+         * @param connectionContext the mandatory connection context.
+         * @param bucketSettings the mandatory bucket settings.
+         */
+        public CouchbaseProvisionerBuilder(ConnectionContext<Cluster> connectionContext,
+                                           BucketSettings bucketSettings) {
             this.connectionContext = connectionContext;
             this.bucketSettings = bucketSettings;
         }

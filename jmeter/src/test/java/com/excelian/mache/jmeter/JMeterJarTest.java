@@ -22,11 +22,10 @@ import static org.junit.Assert.*;
 
 public class JMeterJarTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JMeterJarTest.class);
-
     public static final String MAIN_PLUGIN_JAR_PATH = "./build/libs/jmeter-mache-plugin-0.7-SNAPSHOT.jar";
     public static final String SUPPORT_JAR_PATH =
-        "./build/distributions/jmeter-mache-plugin-support-all-0.7-SNAPSHOT-src.zip";
+            "./build/distributions/jmeter-mache-plugin-support-all-0.7-SNAPSHOT-src.zip";
+    private static final Logger LOG = LoggerFactory.getLogger(JMeterJarTest.class);
 
     @Test
     public void jmeterMachePluginDirectoryExists() {

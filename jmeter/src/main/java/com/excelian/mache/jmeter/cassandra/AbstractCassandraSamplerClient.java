@@ -1,10 +1,12 @@
 package com.excelian.mache.jmeter.cassandra;
 
+import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 
-import com.excelian.mache.jmeter.MacheAbstractJavaSamplerClient;
-
+/**
+ * Provides base client for Cassandra JMeter tests.
+ */
 @SuppressWarnings("serial")
 public abstract class AbstractCassandraSamplerClient extends MacheAbstractJavaSamplerClient {
     @Override
@@ -13,11 +15,11 @@ public abstract class AbstractCassandraSamplerClient extends MacheAbstractJavaSa
         //extractParameters(context);
         getLogger().info("mache setupTest completed. ");
     }
-    
+
     @Override
     public void teardownTest(JavaSamplerContext context) {
     }
-    
+
     @Override
     public Arguments getDefaultParameters() {
         Arguments defaultParameters = new Arguments();

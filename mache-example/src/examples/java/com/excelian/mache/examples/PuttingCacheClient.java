@@ -2,11 +2,8 @@ package com.excelian.mache.examples;
 
 import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
-import com.excelian.mache.examples.cassandra.CassandraAnnotatedMessage;
 import com.excelian.mache.examples.cassandra.CassandraExample;
-import com.excelian.mache.examples.couchbase.CouchbaseAnnotatedMessage;
 import com.excelian.mache.examples.couchbase.CouchbaseExample;
-import com.excelian.mache.examples.mongo.MongoAnnotatedMessage;
 import com.excelian.mache.examples.mongo.MongoExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +28,7 @@ public class PuttingCacheClient {
                 example = new CassandraExample(hostAddress);
                 break;
             case Mongo:
-                example =  new MongoExample(hostAddress);
+                example = new MongoExample(hostAddress);
                 break;
             case Couchbase:
                 example = new CouchbaseExample(hostAddress);
@@ -47,8 +44,8 @@ public class PuttingCacheClient {
 
     private static void populateWithMsgs(int count, Example example) throws Exception {
 
-        try(ConnectionContext context =  example.createConnectionContext()) {
-            try(Mache mache = example.exampleCache(context)) {
+        try (ConnectionContext context = example.createConnectionContext()) {
+            try (Mache mache = example.exampleCache(context)) {
                 LOG.info("Putting...");
                 for (int i = 0; i < count; i++) {
                     Example.KeyedMessge v = example.createEntity("msg_" + i, "Hello World - " + i);

@@ -19,7 +19,11 @@ import java.util.Map;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandraConnectionContext;
+import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 
+/**
+ * JMeter client for Cassandra/Kafka.
+ */
 @SuppressWarnings("serial")
 public abstract class MacheAbstractCassandraKafkaSamplerClient extends AbstractCassandraSamplerClient {
 
@@ -77,7 +81,7 @@ public abstract class MacheAbstractCassandraKafkaSamplerClient extends AbstractC
                 .withLoadBalancingPolicy(new TokenAwarePolicy(new DCAwareRoundRobinPolicy()))
                 .addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042));
 
-        cache1 = mache(String.class, CassandraTestEntity.class).backedBy(cassandra()
+        cache1 = mache(String.class, CassandraTestEntity.class).cachedBy(guava()).storedIn(cassandra()
                 .withConnectionContext(connectionContext)
                 .withKeyspace(mapParams.get("keyspace.name")).withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
                 .build()).withMessaging(kafkaProvisioner).macheUp();

@@ -1,5 +1,4 @@
-package com.excelian.mache.jmeter.cassandra.knownKeys;
-
+package com.excelian.mache.jmeter.cassandra.knownkeys;
 
 import com.datastax.driver.core.Cluster;
 import com.excelian.mache.builder.storage.ConnectionContext;
@@ -15,6 +14,9 @@ import java.util.Map;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandraConnectionContext;
 
+/**
+ * JMeter test that measures reading directly from the backing Cassandra store.
+ */
 public class ReadFromDB extends AbstractCassandraSamplerClient {
     private static final long serialVersionUID = 251140199032740124L;
     private CassandraCacheLoader<String, CassandraTestEntity> db;

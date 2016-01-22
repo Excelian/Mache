@@ -1,10 +1,8 @@
 package com.excelian.mache.mongo.builder;
 
+import com.excelian.mache.builder.StorageProvisioner;
 import com.excelian.mache.builder.storage.ConnectionContext;
-import com.excelian.mache.builder.storage.StorageProvisioner;
-import com.excelian.mache.core.AbstractCacheLoader;
-import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.MacheFactory;
+import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.mongo.MongoDBCacheLoader;
 import com.mongodb.MongoClientOptions;
@@ -61,13 +59,7 @@ public class MongoDBProvisioner implements StorageProvisioner {
     }
 
     @Override
-    public <K, V> Mache<K, V> getCache(Class<K> keyType, Class<V> valueType) {
-        final MacheFactory macheFactory = new MacheFactory();
-        return macheFactory.create(getCacheLoader(keyType, valueType));
-    }
-
-    @Override
-    public <K, V> AbstractCacheLoader<K, V, ?> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+    public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
         return new MongoDBCacheLoader<>(keyType, valueType, connectionContext, mongoCredentials, clientOptions, database,
                 schemaOptions, collectionOptions);
     }

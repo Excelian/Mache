@@ -1,7 +1,7 @@
-package com.excelian.mache.jmeter.mongo.knownKeys;
+package com.excelian.mache.jmeter.mongo.knownkeys;
 
 import com.excelian.mache.builder.storage.ConnectionContext;
-import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.mongo.AbstractMongoSamplerClient;
 import com.excelian.mache.jmeter.mongo.MongoTestEntity;
@@ -10,16 +10,18 @@ import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongoConnectionContext;
-import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
-
 import java.util.List;
 import java.util.Map;
 
+import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongoConnectionContext;
+import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
+
+/**
+ * JMeter test that measures writing directly to the MongoDB backing store.
+ */
 public class WriteToDB extends AbstractMongoSamplerClient {
     private static final long serialVersionUID = 4662847886347883622L;
-
-    private AbstractCacheLoader<String, MongoTestEntity, ?> db;
+    private MacheLoader<String, MongoTestEntity> db;
     private ConnectionContext<List<ServerAddress>> connectionContext;
 
     @Override
@@ -32,10 +34,10 @@ public class WriteToDB extends AbstractMongoSamplerClient {
             connectionContext = mongoConnectionContext(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017));
 
             db = mongodb()
-                .withConnectionContext(connectionContext)
-                .withDatabase(mapParams.get("keyspace.name"))
-                .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                .build().getCacheLoader(String.class, MongoTestEntity.class);
+                    .withConnectionContext(connectionContext)
+                    .withDatabase(mapParams.get("keyspace.name"))
+                    .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                    .build().getCacheLoader(String.class, MongoTestEntity.class);
             db.create();// ensure we are connected and schema exists
 
         } catch (Exception e) {
@@ -49,7 +51,7 @@ public class WriteToDB extends AbstractMongoSamplerClient {
             db.close();
         }
 
-        if(connectionContext!=null){
+        if (connectionContext != null) {
             try {
                 connectionContext.close();
             } catch (Exception e) {

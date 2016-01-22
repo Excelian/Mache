@@ -1,7 +1,6 @@
 package com.excelian.mache.cassandra;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
-import com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Metadata;
 import com.datastax.driver.core.Session;

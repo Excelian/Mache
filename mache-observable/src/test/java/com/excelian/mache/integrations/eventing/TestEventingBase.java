@@ -247,21 +247,25 @@ public abstract class TestEventingBase {
                 "ID1", UPDATED, new UUIDUtils()));
     }
 
+    @SuppressWarnings("unchecked")
     private void then_aCreatedEventIsReceivedBy(CacheEventCollector<String> consumer) throws InterruptedException {
         consumer.pollWithTimeout(150);
         verify(consumer).onCreated(any(Iterable.class));
     }
 
+    @SuppressWarnings("unchecked")
     private void then_anUpdatedEventIsReceivedBy(CacheEventCollector<String> consumer) throws InterruptedException {
         consumer.pollWithTimeout(150);
         verify(consumer).onUpdated(any(Iterable.class));
     }
 
+    @SuppressWarnings("unchecked")
     private void then_aRemovedEventIsReceivedBy(CacheEventCollector<String> consumer) throws InterruptedException {
         consumer.pollWithTimeout(150);
         verify(consumer).onRemoved(any(Iterable.class));
     }
 
+    @SuppressWarnings("unchecked")
     private void then_anInvalidatedEventIsReceivedBy(CacheEventCollector<String> consumer) throws InterruptedException {
         consumer.pollWithTimeout(150);
         verify(consumer).onInvalidate(any(Iterable.class));

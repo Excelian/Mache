@@ -4,6 +4,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+/**
+ * Provides a test entity for JMeter testing.
+ */
 @Document
 public class MongoTestEntity {
     @Id

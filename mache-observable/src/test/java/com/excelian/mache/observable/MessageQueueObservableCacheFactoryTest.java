@@ -1,9 +1,9 @@
 package com.excelian.mache.observable;
 
-import com.excelian.mache.core.AbstractCacheLoader;
-import com.excelian.mache.core.InMemoryCacheLoader;
+import com.excelian.mache.builder.CacheProvisioner;
+import com.excelian.mache.core.HashMapCacheLoader;
 import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.MacheFactory;
+import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.TestEntity;
 import com.excelian.mache.core.TestEntity2;
 import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
@@ -25,6 +25,7 @@ import javax.jms.JMSException;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
@@ -34,8 +35,8 @@ public class MessageQueueObservableCacheFactoryTest {
 
     private final UUIDUtils uuidUtils = new UUIDUtils();
     private final Gson gson = new Gson();
-    AbstractCacheLoader<String, TestEntity, Object> cacheLoader1;
-    AbstractCacheLoader<String, TestEntity, Object> cacheLoader2;
+    MacheLoader<String, TestEntity> cacheLoader1;
+    MacheLoader<String, TestEntity> cacheLoader2;
     MQConfiguration mqConfiguration = () -> "testTopic";
     @Mock
     MQFactory<String> mqFactory1;
@@ -47,13 +48,15 @@ public class MessageQueueObservableCacheFactoryTest {
     Mache<String, TestEntity> spiedCache1;
     TestEntity testValue = new TestEntity("testValue");
     TestEntity testValue2 = new TestEntity("testValue2");
-    MacheFactory macheFactory = new MacheFactory();
+    CacheProvisioner<String, TestEntity> macheFactory = guava();
+    CacheProvisioner<String, TestEntity2> macheFactory2 = guava();
+
     String currentMessage = null;
 
     @Before
     public void beforeTest() throws Throwable {
-        cacheLoader1 = new InMemoryCacheLoader<>(TestEntity.class);
-        cacheLoader2 = new InMemoryCacheLoader<>(TestEntity.class);
+        cacheLoader1 = new HashMapCacheLoader<>(TestEntity.class);
+        cacheLoader2 = new HashMapCacheLoader<>(TestEntity.class);
 
         BaseCoordinationEntryEventConsumer<String> inMemoryConsumer1 = getInMemoryConsumer();
         BaseCoordinationEntryEventConsumer<String> inMemoryConsumer2 = getInMemoryConsumer();
@@ -67,7 +70,7 @@ public class MessageQueueObservableCacheFactoryTest {
         observableCacheFactory1 = new MessageQueueObservableCacheFactory<>(mqFactory1, mqConfiguration, uuidUtils);
         observableCacheFactory2 = new MessageQueueObservableCacheFactory<>(mqFactory2, mqConfiguration, uuidUtils);
 
-        Mache<String, TestEntity> macheImpl = macheFactory.create(cacheLoader1);
+        Mache<String, TestEntity> macheImpl = macheFactory.create(String.class, TestEntity.class, cacheLoader1);
         spiedCache1 = spy(macheImpl);
         unspiedCache1 = observableCacheFactory1.createCache(spiedCache1);
     }
@@ -80,17 +83,20 @@ public class MessageQueueObservableCacheFactoryTest {
 
     @Test
     public void shouldProperlySetupCachesUsingSameCacheLoader() throws ExecutionException, InterruptedException {
-        Mache<String, TestEntity> cache1 = observableCacheFactory1.createCache(macheFactory.create(cacheLoader1));
+        Mache<String, TestEntity> cache1 = observableCacheFactory1.createCache(
+                macheFactory.create(String.class, TestEntity.class, cacheLoader1));
         cache1.put(testValue.pkey, testValue);
 
-        Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(macheFactory.create(cacheLoader1));
+        Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(
+                macheFactory.create(String.class, TestEntity.class, cacheLoader1));
         assertEquals(testValue, cache2.get(testValue.pkey));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldProperlyInvalidateFromAnotherCacheWhenItemPut() throws ExecutionException, InterruptedException {
-        Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(macheFactory.create(cacheLoader2));
+        Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(
+                macheFactory.create(String.class, TestEntity.class, cacheLoader2));
         reset(spiedCache1);
         cache2.put(testValue2.pkey, testValue2);
         verify(spiedCache1).invalidate(testValue2.pkey);
@@ -98,15 +104,17 @@ public class MessageQueueObservableCacheFactoryTest {
 
     @Test
     public void shouldProperlyPropagateValues() throws ExecutionException, InterruptedException, JMSException {
-        AbstractCacheLoader<String, TestEntity2, Object> cacheLoader =
-                new InMemoryCacheLoader<>(TestEntity2.class);
+        MacheLoader<String, TestEntity2> cacheLoader =
+                new HashMapCacheLoader<>(TestEntity2.class);
         ObservableCacheFactory<String, TestEntity2> observableCacheFactory1 =
                 new MessageQueueObservableCacheFactory<>(mqFactory1, mqConfiguration, new UUIDUtils());
         ObservableCacheFactory<String, TestEntity2> observableCacheFactory2 =
                 new MessageQueueObservableCacheFactory<>(mqFactory2, mqConfiguration, new UUIDUtils());
 
-        Mache<String, TestEntity2> cache1 = observableCacheFactory1.createCache(macheFactory.create(cacheLoader));
-        Mache<String, TestEntity2> cache2 = observableCacheFactory2.createCache(macheFactory.create(cacheLoader));
+        Mache<String, TestEntity2> cache1 = observableCacheFactory1.createCache(
+                macheFactory2.create(String.class, TestEntity2.class, cacheLoader));
+        Mache<String, TestEntity2> cache2 = observableCacheFactory2.createCache(
+                macheFactory2.create(String.class, TestEntity2.class, cacheLoader));
 
         final String key1 = "X1";
         final String val1 = "someValue1";
@@ -124,8 +132,10 @@ public class MessageQueueObservableCacheFactoryTest {
     public void shouldNotInvalidateFromAnotherCacheWhenItemFetched() throws ExecutionException, InterruptedException {
         // a get in one cache does nothing to the other
 
-        Mache<String, TestEntity> cache1 = observableCacheFactory1.createCache(macheFactory.create(cacheLoader1));
-        Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(macheFactory.create(cacheLoader1));
+        Mache<String, TestEntity> cache1 = observableCacheFactory1.createCache(
+                macheFactory.create(String.class, TestEntity.class, cacheLoader1));
+        Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(
+                macheFactory.create(String.class, TestEntity.class, cacheLoader1));
 
 		/* insert data into loader and ensure it is within cache */
         cache1.put(testValue2.pkey, testValue2);

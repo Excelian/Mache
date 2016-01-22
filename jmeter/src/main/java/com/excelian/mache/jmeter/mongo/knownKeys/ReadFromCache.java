@@ -1,4 +1,4 @@
-package com.excelian.mache.jmeter.mongo.knownKeys;
+package com.excelian.mache.jmeter.mongo.knownkeys;
 
 import com.excelian.mache.jmeter.mongo.MacheAbstractMongoKafkaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -6,6 +6,9 @@ import org.apache.jmeter.samplers.SampleResult;
 
 import java.util.Map;
 
+/**
+ * JMeter test that measures reading directly from Mache.
+ */
 public class ReadFromCache extends MacheAbstractMongoKafkaSamplerClient {
     private static final long serialVersionUID = -8612414345680365704L;
 

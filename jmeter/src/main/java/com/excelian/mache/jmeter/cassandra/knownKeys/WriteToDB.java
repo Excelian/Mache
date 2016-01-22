@@ -1,24 +1,26 @@
-package com.excelian.mache.jmeter.cassandra.knownKeys;
+package com.excelian.mache.jmeter.cassandra.knownkeys;
 
-import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
-import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandraConnectionContext;
-
-import java.util.Map;
-
+import com.datastax.driver.core.Cluster;
 import com.excelian.mache.builder.storage.ConnectionContext;
+import com.excelian.mache.core.MacheLoader;
+import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.jmeter.cassandra.AbstractCassandraSamplerClient;
+import com.excelian.mache.jmeter.cassandra.CassandraTestEntity;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-import com.datastax.driver.core.Cluster;
-import com.excelian.mache.core.AbstractCacheLoader;
-import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.jmeter.cassandra.AbstractCassandraSamplerClient;
-import com.excelian.mache.jmeter.cassandra.CassandraTestEntity;
+import java.util.Map;
 
+import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandraConnectionContext;
+
+/**
+ * JMeter test that measures writing directly to the Cassandra backing store.
+ */
 public class WriteToDB extends AbstractCassandraSamplerClient {
     private static final long serialVersionUID = 4662847886347883622L;
-    private AbstractCacheLoader<String, CassandraTestEntity, ?> db;
+    private MacheLoader<String, CassandraTestEntity> db;
     private ConnectionContext<Cluster> connectionContext;
 
     @Override
@@ -32,7 +34,7 @@ public class WriteToDB extends AbstractCassandraSamplerClient {
                     Cluster.builder()
                             .addContactPoint(mapParams.get("cassandra.server.ip.address"))
                             .withPort(9042)
-                            .withClusterName("BluePrint") );
+                            .withClusterName("BluePrint"));
 
             db = cassandra()
                     .withConnectionContext(connectionContext)
@@ -51,7 +53,7 @@ public class WriteToDB extends AbstractCassandraSamplerClient {
             db.close();
         }
 
-        if(connectionContext != null) {
+        if (connectionContext != null) {
             try {
                 connectionContext.close();
             } catch (Exception e) {
@@ -68,8 +70,7 @@ public class WriteToDB extends AbstractCassandraSamplerClient {
             writeDocumentToDbWithNewData(extractParameters(context));
             result.sampleEnd();
             result.setSuccessful(true);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             result.sampleEnd();
             result.setSuccessful(false);
             getLogger().error("Error running test", e);
@@ -85,7 +86,7 @@ public class WriteToDB extends AbstractCassandraSamplerClient {
         final String entityValue = params.get("entity.value");
         final String key = "document_" + docNumber;
         final String value = (entityValue.equals("CURRENTTIME")) ? key + "_" + System.currentTimeMillis() : entityValue;
-        
+
         getLogger().info("Writing to db key=" + key);
         db.put(key, new CassandraTestEntity(key, value));
     }

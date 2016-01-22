@@ -1,7 +1,7 @@
 package com.excelian.mache.mongo;
 
 import com.excelian.mache.builder.storage.ConnectionContext;
-import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -17,7 +17,7 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
 
-public class MongoDBCacheLoader<K, V> extends AbstractCacheLoader<K, V, MongoClient> {
+public class MongoDBCacheLoader<K, V> implements MacheLoader<K, V> {
     private static final Logger LOG = LoggerFactory.getLogger(MongoDBCacheLoader.class);
     private final List<MongoCredential> credentials;
     private final MongoClientOptions clientOptions;

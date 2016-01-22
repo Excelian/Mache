@@ -4,6 +4,9 @@ import org.springframework.data.cassandra.mapping.Column;
 import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
 
+/**
+ * Provides a test entity for JMeter testing.
+ */
 @Table
 public class CassandraTestEntity {
     @PrimaryKey

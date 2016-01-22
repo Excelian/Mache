@@ -8,7 +8,7 @@ import com.excelian.mache.core.Mache;
  *
  * @param <T> The Spring Data Annotated object type.
  */
-public interface Example<T,S, M extends Example.KeyedMessge>   {
+public interface Example<T, S, M extends Example.KeyedMessge> {
 
     /**
      * Provides connection context for subsequent Mache clients to utilise
@@ -27,7 +27,7 @@ public interface Example<T,S, M extends Example.KeyedMessge>   {
     M createEntity(String primaryKey, String msg);
 
 
-    public interface KeyedMessge{
+    public interface KeyedMessge {
         public String getPrimaryKey();
     }
 }
