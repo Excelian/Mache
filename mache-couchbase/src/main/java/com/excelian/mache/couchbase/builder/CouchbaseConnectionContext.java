@@ -5,7 +5,7 @@ import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.storage.AbstractConnectionContext;
-import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class CouchbaseConnectionContext extends AbstractConnectionContext<Cluste
     }
 
     @Override
-    public Cluster getConnection(AbstractCacheLoader cacheLoader) {
+    public Cluster getConnection(MacheLoader cacheLoader) {
         super.registerLoader(cacheLoader);
         if (cluster == null) {
             synchronized (this) {

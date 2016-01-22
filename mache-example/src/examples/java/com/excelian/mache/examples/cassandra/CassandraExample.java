@@ -11,7 +11,6 @@ import java.util.Date;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
-import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandraConnectionContext;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 
 /**

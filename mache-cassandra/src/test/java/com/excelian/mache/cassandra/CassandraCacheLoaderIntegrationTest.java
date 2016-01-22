@@ -21,7 +21,6 @@ import org.springframework.data.cassandra.mapping.*;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
-import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandraConnectionContext;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -31,6 +30,7 @@ import java.util.Date;
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCassandraDbForTests.class)
 public class CassandraCacheLoaderIntegrationTest {
 
+    private static final NoRunningCassandraDbForTests CASSANDRA_BLUEPRINT = new NoRunningCassandraDbForTests();
     protected static String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
 
     @Rule
@@ -103,7 +103,7 @@ public class CassandraCacheLoaderIntegrationTest {
         mache.put("test-2", new TestEntity("test-2"));
         mache.put("test-3", new TestEntity("test-3"));
         // replace the cache
-        try (Mache<String, TestEntity> anothermache = getMache(String.class, TestEntity.class, connectionContext, SchemaOptions.CREATE_SCHEMA_IF_NEEDED)) {
+        try (Mache<String, TestEntity> anothermache = getMache(String.class, TestEntity.class, SchemaOptions.CREATE_SCHEMA_IF_NEEDED)) {
             TestEntity test = anothermache.get("test-2");
             assertEquals("test-2", test.pkString);
         }
@@ -113,7 +113,7 @@ public class CassandraCacheLoaderIntegrationTest {
     public void testPutComposite() throws Exception {
 
         try (Mache<CompositeKey, TestEntityWithCompositeKey> compCache =
-                     getMache(CompositeKey.class, TestEntityWithCompositeKey.class, connectionContext, SchemaOptions.CREATE_AND_DROP_SCHEMA)) {
+                 getMache(CompositeKey.class, TestEntityWithCompositeKey.class, SchemaOptions.CREATE_AND_DROP_SCHEMA)) {
 
             TestEntityWithCompositeKey value = new TestEntityWithCompositeKey("neil", "mac", "explorer");
             compCache.put(value.compositeKey, value);

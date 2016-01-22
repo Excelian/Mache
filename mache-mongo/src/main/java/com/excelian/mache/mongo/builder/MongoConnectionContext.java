@@ -1,7 +1,7 @@
 package com.excelian.mache.mongo.builder;
 
 import com.excelian.mache.builder.storage.AbstractConnectionContext;
-import com.excelian.mache.core.AbstractCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 import com.mongodb.ServerAddress;
 
 import static java.util.Arrays.stream;
@@ -20,7 +20,7 @@ public class MongoConnectionContext extends AbstractConnectionContext<List<Serve
     }
 
     @Override
-    public List<ServerAddress> getConnection(AbstractCacheLoader cacheLoader) {
+    public List<ServerAddress> getConnection(MacheLoader cacheLoader) {
         super.registerLoader(cacheLoader);
         return stream(seeds).collect(toList());
     }
@@ -43,5 +43,4 @@ public class MongoConnectionContext extends AbstractConnectionContext<List<Serve
         }
         return singleton;
     }
-
 }

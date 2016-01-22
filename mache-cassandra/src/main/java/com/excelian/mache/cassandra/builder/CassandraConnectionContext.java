@@ -2,12 +2,7 @@ package com.excelian.mache.cassandra.builder;
 
 import com.datastax.driver.core.Cluster;
 import com.excelian.mache.builder.storage.AbstractConnectionContext;
-import com.excelian.mache.builder.storage.ConnectionContext;
-import com.excelian.mache.core.AbstractCacheLoader;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
+import com.excelian.mache.core.MacheLoader;
 
 /**
  * Created by jbowkett on 20/01/2016.
@@ -22,7 +17,7 @@ public class CassandraConnectionContext extends AbstractConnectionContext<Cluste
     }
 
     @Override
-    public Cluster getConnection(AbstractCacheLoader cacheLoader) {
+    public Cluster getConnection(MacheLoader cacheLoader) {
         registerLoader(cacheLoader);
         if (cluster == null) {
             synchronized (this) {

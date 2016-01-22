@@ -1,4 +1,4 @@
-package com.excelian.mache.jmeter.couch.knownkeys;
+package com.excelian.mache.jmeter.couch.knownKeys;
 
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
@@ -16,8 +16,6 @@ import java.util.Map;
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
-import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
-import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbaseConnectionContext;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 
 /**

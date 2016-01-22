@@ -21,7 +21,7 @@ import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbas
  */
 public class WriteToDB extends AbstractCouchSamplerClient {
     private static final long serialVersionUID = 4662847886347883622L;
-    private MacheLoader<String, CouchTestEntity, ?> db;
+    private MacheLoader<String, CouchTestEntity> db;
 
     @Override
     public void setupTest(JavaSamplerContext context) {

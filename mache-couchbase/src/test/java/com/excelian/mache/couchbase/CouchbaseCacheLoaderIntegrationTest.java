@@ -1,7 +1,9 @@
 package com.excelian.mache.couchbase;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
+import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.NoMessagingProvisioner;
@@ -11,16 +13,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.concurrent.TimeUnit;
-
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.caffeine.CaffeineMacheProvisioner.caffeine;
 import static com.excelian.mache.core.SchemaOptions.CREATE_AND_DROP_SCHEMA;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.*;
-import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbaseConnectionContext;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -34,8 +31,8 @@ public class CouchbaseCacheLoaderIntegrationTest {
     private static final double DELTA = 0.000001;
     private static final String COUCHBASE_HOST = new NoRunningCouchbaseDbForTests().getHost();
 
-    private static final CouchbaseEnvironment COUCHBASE_ENVIRONMENT = DefaultCouchbaseEnvironment.builder()
-            .connectTimeout(SECONDS.toMillis(100)).build();
+    private static final CouchbaseEnvironment COUCHBASE_ENVIRONMENT =
+        DefaultCouchbaseEnvironment.builder().connectTimeout(SECONDS.toMillis(100)).build();
     @Rule
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
     private Mache<String, TestEntity> cache;
@@ -47,7 +44,6 @@ public class CouchbaseCacheLoaderIntegrationTest {
                 .storedIn(couchbase()
                         .withBucketSettings(builder().name(BUCKET).quota(150).build())
                         .withCouchbaseEnvironment(COUCHBASE_ENVIRONMENT)
-                        .connectTimeout(SECONDS.toMillis(100)).build())
                         .withAdminDetails(ADMIN_USER, PASSWORD)
                     .withNodes(COUCHBASE_HOST)
                         .withSchemaOptions(CREATE_AND_DROP_SCHEMA).build())

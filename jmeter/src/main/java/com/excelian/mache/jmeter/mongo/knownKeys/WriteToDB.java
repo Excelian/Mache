@@ -1,8 +1,6 @@
-package com.excelian.mache.jmeter.mongo.knownkeys;
+package com.excelian.mache.jmeter.mongo.knownKeys;
 
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
-import com.excelian.mache.core.AbstractCacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.mongo.AbstractMongoSamplerClient;
 import com.excelian.mache.jmeter.mongo.MongoTestEntity;
@@ -11,13 +9,10 @@ import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-import java.util.List;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 
 import java.util.Map;
 
-import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongoConnectionContext;
-import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 
 /**
  * JMeter test that measures writing directly to the MongoDB backing store.
