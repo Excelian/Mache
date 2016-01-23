@@ -5,11 +5,7 @@ branches:
   only:
     - master
     - development
-    - jmeter-build-steps
-    - create-provider-specific-builders
-    - jmeter-multithreaded-tests
-    - 53-alternative-cache-implementations
-    - Vertx-REST-Spike
+    - 53-finish-chroniclemap-todos
 
 services:
   - rabbitmq

@@ -17,6 +17,8 @@ package com.excelian.mache.chroniclemap.solr;
  */
 
 import net.openhft.chronicle.map.ChronicleMap;
+import org.apache.lucene.util.PriorityQueue;
+import org.apache.solr.common.util.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

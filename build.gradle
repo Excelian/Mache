@@ -11,7 +11,19 @@ subprojects {
     version = '0.7-SNAPSHOT'
 
     repositories {
-        maven { url 'https://repository.jboss.org/nexus/content/groups/public' }
+        maven {
+            url 'https://repository.jboss.org/nexus/content/groups/public'
+        }
+        maven {
+            url 'http://repo.spring.io/milestone'
+        }
+        maven {
+            url 'http://files.couchbase.com/maven2'
+        }
+        maven {
+            url 'http://repo.spring.io/libs-release-remote'
+        }
+        jcenter()
         mavenCentral()
     }
 

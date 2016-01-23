@@ -1,14 +1,3 @@
-repositories {
-    jcenter()
-    maven {
-        url 'http://repo.spring.io/milestone'
-    }
-    maven {
-        url 'http://files.couchbase.com/maven2'
-    }
-}
-
-
 task pluginSupportJar(type: Zip) {
     /*
     Builds the jar to be copied to JMETER/lib/Mache folder
