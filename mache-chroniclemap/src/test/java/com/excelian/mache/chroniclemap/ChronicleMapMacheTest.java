@@ -26,6 +26,7 @@ public class ChronicleMapMacheTest {
         loader = Mockito.spy(new HashMapCacheLoader<>(String.class));
 
         mache = ChronicleMapMacheProvisioner.<String, String>chronicleMap()
+                .create()
                 .create(String.class, String.class, loader);
     }
 

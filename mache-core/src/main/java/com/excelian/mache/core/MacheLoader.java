@@ -7,7 +7,6 @@ package com.excelian.mache.core;
  * @param <K> the type of the keys
  * @param <V> the type of the values
  */
-//todo: Would this class be better named MacheDataStore ???
 public interface MacheLoader<K, V> extends AutoCloseable {
 
     /**

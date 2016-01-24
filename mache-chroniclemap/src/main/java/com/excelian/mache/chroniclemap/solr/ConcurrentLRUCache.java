@@ -176,7 +176,7 @@ public class ConcurrentLRUCache<K, V> implements Cache<K, V> {
             this.oldestEntry = oldestEntry;     // volatile write to make isCleaning visible
 
             long timeCurrent = stats.accessCounter.get();
-            int sz = stats.size.get();
+            int currentSize = stats.size.get();
 
             int numRemoved = 0;
             int numKept = 0;
@@ -185,14 +185,11 @@ public class ConcurrentLRUCache<K, V> implements Cache<K, V> {
             long newOldestEntry = Long.MAX_VALUE;
 
             int wantToKeep = lowerWaterMark;
-            int wantToRemove = sz - lowerWaterMark;
+            int wantToRemove = currentSize - lowerWaterMark;
 
             @SuppressWarnings("unchecked") // generic array's are annoying
-                    CacheEntry<K>[] eset = new CacheEntry[sz];
+            CacheEntry<K>[] eset = new CacheEntry[currentSize];
             int eSize = 0;
-
-            // System.out.println("newestEntry="+newestEntry + " oldestEntry="+oldestEntry);
-            // System.out.println("items removed:" + numRemoved + " numKept=" + numKept + " esetSz="+ eSize + " sz-numRemoved=" + (sz-numRemoved));
 
             for (CacheEntry<K> ce : map.values()) {
                 // set lastAccessedCopy to avoid more volatile reads
@@ -223,20 +220,16 @@ public class ConcurrentLRUCache<K, V> implements Cache<K, V> {
                 }
             }
 
-            // System.out.println("items removed:" + numRemoved + " numKept=" + numKept + " esetSz="+ eSize + " sz-numRemoved=" + (sz-numRemoved));
-            // TODO: allow this to be customized in the constructor?
-            int numPasses = 1; // maximum number of linear passes over the data
-
             // if we didn't remove enough entries, then make more passes
             // over the values we collected, with updated min and max values.
-            while (sz - numRemoved > acceptableWaterMark && --numPasses >= 0) {
+            if (currentSize - numRemoved > acceptableWaterMark) {
 
                 oldestEntry = newOldestEntry == Long.MAX_VALUE ? oldestEntry : newOldestEntry;
                 newOldestEntry = Long.MAX_VALUE;
                 newestEntry = newNewestEntry;
                 newNewestEntry = -1;
                 wantToKeep = lowerWaterMark - numKept;
-                wantToRemove = sz - lowerWaterMark - numRemoved;
+                wantToRemove = currentSize - lowerWaterMark - numRemoved;
 
                 // iterate backward to make it easy to remove items.
                 for (int i = eSize - 1; i >= 0; i--) {
@@ -270,20 +263,18 @@ public class ConcurrentLRUCache<K, V> implements Cache<K, V> {
                         newOldestEntry = Math.min(thisEntry, newOldestEntry);
                     }
                 }
-                // System.out.println("items removed:" + numRemoved + " numKept=" + numKept + " esetSz="+ eSize + " sz-numRemoved=" + (sz-numRemoved));
             }
 
 
             // if we still didn't remove enough entries, then make another pass while
             // inserting into a priority queue
-            if (sz - numRemoved > acceptableWaterMark) {
+            if (currentSize - numRemoved > acceptableWaterMark) {
 
                 oldestEntry = newOldestEntry == Long.MAX_VALUE ? oldestEntry : newOldestEntry;
                 newOldestEntry = Long.MAX_VALUE;
                 newestEntry = newNewestEntry;
-                newNewestEntry = -1;
                 wantToKeep = lowerWaterMark - numKept;
-                wantToRemove = sz - lowerWaterMark - numRemoved;
+                wantToRemove = currentSize - lowerWaterMark - numRemoved;
 
                 PQueue<K, V> queue = new PQueue<>(wantToRemove);
 
@@ -295,9 +286,6 @@ public class ConcurrentLRUCache<K, V> implements Cache<K, V> {
                         // this entry is guaranteed not to be in the bottom
                         // group, so do nothing but remove it from the eset.
                         numKept++;
-                        // removal not necessary on last pass.
-                        // eset[i] = eset[eSize-1];
-                        // eSize--;
 
                         newOldestEntry = Math.min(thisEntry, newOldestEntry);
 
@@ -307,9 +295,6 @@ public class ConcurrentLRUCache<K, V> implements Cache<K, V> {
                         evictEntry(ce.key);
                         numRemoved++;
 
-                        // removal not necessary on last pass.
-                        // eset[i] = eset[eSize-1];
-                        // eSize--;
                     } else {
                         // This entry *could* be in the bottom group.
                         // add it to the priority queue
@@ -320,7 +305,7 @@ public class ConcurrentLRUCache<K, V> implements Cache<K, V> {
                         // first reduce the size of the priority queue to account for
                         // the number of items we have already removed while executing
                         // this loop so far.
-                        queue.myMaxSize = sz - lowerWaterMark - numRemoved;
+                        queue.myMaxSize = currentSize - lowerWaterMark - numRemoved;
                         while (queue.size() > queue.myMaxSize && queue.size() > 0) {
                             CacheEntry otherEntry = queue.pop();
                             newOldestEntry = Math.min(otherEntry.lastAccessedCopy, newOldestEntry);
@@ -342,7 +327,6 @@ public class ConcurrentLRUCache<K, V> implements Cache<K, V> {
                     numRemoved++;
                 }
 
-                // System.out.println("items removed:" + numRemoved + " numKept=" + numKept + " initialQueueSize="+ wantToRemove + " finalQueueSize=" + queue.size() + " sz-numRemoved=" + (sz-numRemoved));
             }
 
             oldestEntry = newOldestEntry == Long.MAX_VALUE ? oldestEntry : newOldestEntry;
@@ -399,6 +383,7 @@ public class ConcurrentLRUCache<K, V> implements Cache<K, V> {
     public void close() {
         ChronicleMap<K, V> backingChronicleMap = (ChronicleMap<K, V>) backingMap;
         backingChronicleMap.close();
+        destroy();
     }
 
     public static interface EvictionListener<K, V> {
