@@ -22,8 +22,8 @@ python mache-example/src/examples/python/MacheRestTest.py || { echo 'Python REST
 #node mache-example/src/examples/javascript/MacheRestTest.js || { echo 'Javascript REST test failed' ; exit 1; }
 
 echo "Running mono REST tests"
-xbuild ./mono-example/monoExample.sln || { echo 'Mono build failed' ; exit 1; }
-nunit-console ./mono-example/MonoExampleTests/bin/Debug/MonoExampleTests.dll || { echo 'Mono REST test failed' ; exit 1; }
+xbuild ./mache-example/src/examples/mono/MonoExample.sln || { echo 'Mono build failed' ; exit 1; }
+nunit-console ./mache-example/src/examples/mono/MonoExampleTests/bin/Debug/MonoExampleTests.dll || { echo 'Mono REST test failed' ; exit 1; }
 
 echo "Stopping mache"
 kill $MACHE_PID
