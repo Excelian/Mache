@@ -23,7 +23,6 @@ before_install:
   - ./config/travis-scripts/prepare-environment.sh
 
 install:
-  - ./config/travis-scripts/run-rest-test.sh
   - ./config/travis-scripts/prepare-kafka.sh
   - ./config/travis-scripts/prepare-couchbase.sh
 
@@ -38,6 +37,7 @@ cache:
 
 script: |
   gradle check &&
+  ./config/travis-scripts/run-rest-test.sh &&
   gradle :mache-example:putClient -Parg=10,Cassandra,localhost &&
   gradle :mache-example:putClient -Parg=10,Mongo,localhost &&
   gradle :mache-example:putClient -Parg=10,Couchbase,localhost
