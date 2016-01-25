@@ -42,3 +42,11 @@ script: |
   gradle :mache-example:putClient -Parg=10,Mongo,localhost &&
   gradle :mache-example:putClient -Parg=10,Couchbase,localhost
 
+addons:
+  apt:
+    packages:
+      - mono-devel
+      - mono-gmcs
+      - nunit-console
+      - npm
+	

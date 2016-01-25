@@ -13,10 +13,15 @@ if [ $NEXT_WAIT_TIME -eq 5 ] && [ $? -ne 0 ]; then
    exit 1
 fi
 
-echo "Mache started, PID $MACHE-PID"
+echo "Mache started, PID $MACHE_PID"
 
+echo "Running python REST tests"
 python mache-example/src/examples/python/MacheRestTest.py || { echo 'Python REST test failed' ; exit 1; }
 
+echo "Running node REST tests"
 node mache-example/src/examples/javascript/MacheRestTest.js || { echo 'Javascript REST test failed' ; exit 1; }
 
+echo "Stopping mache"
 kill $MACHE_PID
+
+echo "REST Tests complete"

@@ -3,10 +3,6 @@
 echo "Installing requests for python"
 pip install --user requests || { echo 'pip package install failed'; exit 1; }
 
-echo "apt-get for mono/nunit/npm packages"
-sudo apt-get -qq update
-sudo apt-get -qq install -y mono-devel mono-gmcs nunit-console npm
-
 echo "Installing n for node"
 # Possible issue with https certificate
 sudo npm config set registry http://registry.npmjs.org/
