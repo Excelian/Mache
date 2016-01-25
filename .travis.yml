@@ -48,4 +48,3 @@ addons:
       - mono-devel
       - mono-gmcs
       - nunit-console
-      - npm
