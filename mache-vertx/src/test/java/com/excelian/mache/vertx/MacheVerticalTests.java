@@ -75,12 +75,16 @@ public class MacheVerticalTests {
     public void externalAddressShouldReceive401ReplyWhenLocalOnly(TestContext context) {
         MacheRestServiceConfiguration configuration = new MacheRestServiceConfiguration(8080, "localhost", true);
 
+        final Async asyncStart = context.async();
+
         // Need a vertical with the new config
         vertx.undeploy(vertx.deploymentIDs().iterator().next());
         vertical = new MacheVertical(configuration, instanceCache);
-        vertx.deployVerticle(vertical, context.asyncAssertSuccess());
+        vertx.deployVerticle(vertical, (x) -> asyncStart.complete());
 
-        final Async async = context.async();
+        asyncStart.await();
+
+        final Async asyncRun = context.async();
 
         // Show the address as external
         vertical.setLocalAddressCheck(address -> false);
@@ -88,7 +92,7 @@ public class MacheVerticalTests {
         vertx.createHttpClient().getNow(8080, "localhost", "/map/names/2",
                 response -> {
                     context.assertEquals(401, response.statusCode());
-                    async.complete();
+                    asyncRun.complete();
                 });
     }
 
