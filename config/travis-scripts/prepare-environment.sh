@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Installing requests for python"
-sudo pip install requests
+pip install requests
 
 echo "apt-get for mono/nunit/npm packages"
 sudo apt-get -qq update
