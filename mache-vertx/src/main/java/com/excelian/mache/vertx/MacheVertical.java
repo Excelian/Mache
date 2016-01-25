@@ -128,6 +128,7 @@ public class MacheVertical extends AbstractVerticle {
                 req.response().end(value);
             }
         } catch (Exception e) {
+            LOG.error("Failed to get key {} from map {}", key, mapName, e);
             req.fail(500);
         }
     }
@@ -140,6 +141,7 @@ public class MacheVertical extends AbstractVerticle {
             instanceCache.removeKey(mapName, key);
             req.response().end(String.format("removed key %s from %s map", key, mapName));
         } catch (Exception e) {
+            LOG.error("Failed to remove key {} from map {}", key, mapName, e);
             req.fail(500);
         }
     }
@@ -153,6 +155,7 @@ public class MacheVertical extends AbstractVerticle {
             instanceCache.putKey(mapName, key, value);
             req.response().end(String.format("PUT %s %s", mapName, key));
         } catch (Exception e) {
+            LOG.error("Failed to put key {} to map {}", key, mapName, e);
             req.fail(500);
         }
     }
