@@ -18,8 +18,8 @@ echo "Mache started, PID $MACHE_PID"
 echo "Running python REST tests"
 python mache-example/src/examples/python/MacheRestTest.py || { echo 'Python REST test failed' ; exit 1; }
 
-echo "Running node REST tests"
-node mache-example/src/examples/javascript/MacheRestTest.js || { echo 'Javascript REST test failed' ; exit 1; }
+#echo "Running node REST tests"
+#node mache-example/src/examples/javascript/MacheRestTest.js || { echo 'Javascript REST test failed' ; exit 1; }
 
 echo "Running mono REST tests"
 xbuild ./mono-example/monoExample.sln || { echo 'Mono build failed' ; exit 1; }
