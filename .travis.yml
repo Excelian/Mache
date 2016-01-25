@@ -1,4 +1,5 @@
 language: java
+sudo: required
 jdk:
   - oraclejdk8
 branches:
@@ -17,9 +18,12 @@ services:
   - mongodb
   - cassandra
 
-before_install: chmod +x ./config/travis-scripts/*
+before_install:
+  - chmod +x ./config/travis-scripts/*
+  - ./config/travis-scripts/prepare-environment.sh
 
 install:
+  - ./config/travis-scripts/run-rest-test.sh
   - ./config/travis-scripts/prepare-kafka.sh
   - ./config/travis-scripts/prepare-couchbase.sh
 
