@@ -168,7 +168,7 @@ public class ConcurrentLRUCache<K, V> implements Cache<K, V> {
         // Also, if we want to remove 500 entries, then
         // oldestEntry through oldestEntry+500 are guaranteed to be
         // removed (however many there are there).
-
+        System.out.println("clean");
         if (!markAndSweepLock.tryLock()) return;
         try {
             long oldestEntry = this.oldestEntry;
