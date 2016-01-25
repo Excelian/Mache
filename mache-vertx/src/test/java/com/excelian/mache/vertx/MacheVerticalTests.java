@@ -75,10 +75,12 @@ public class MacheVerticalTests {
     public void externalAddressShouldReceive401ReplyWhenLocalOnly(TestContext context) {
         MacheRestServiceConfiguration configuration = new MacheRestServiceConfiguration(8080, "localhost", true);
 
-        final Async asyncStart = context.async();
 
+        final Async asyncStop = context.async();
         // Need a vertical with the new config
-        vertx.undeploy(vertx.deploymentIDs().iterator().next());
+        vertx.undeploy(vertx.deploymentIDs().iterator().next(), (x) -> asyncStop.complete());
+        asyncStop.await();
+        final Async asyncStart = context.async();
         vertical = new MacheVertical(configuration, instanceCache);
         vertx.deployVerticle(vertical, (x) -> asyncStart.complete());
 
