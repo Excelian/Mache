@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Installing requests for python"
-pip install requests
+pip install --user requests || { echo 'pip package install failed'; exit 1; }
 
 echo "apt-get for mono/nunit/npm packages"
 sudo apt-get -qq update
