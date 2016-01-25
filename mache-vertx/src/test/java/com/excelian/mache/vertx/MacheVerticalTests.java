@@ -73,15 +73,14 @@ public class MacheVerticalTests {
 
     @Test
     public void externalAddressShouldReceive401ReplyWhenLocalOnly(TestContext context) {
-        final Async async = context.async();
-
-
         MacheRestServiceConfiguration configuration = new MacheRestServiceConfiguration(8080, "localhost", true);
 
         // Need a vertical with the new config
         vertx.undeploy(vertx.deploymentIDs().iterator().next());
         vertical = new MacheVertical(configuration, instanceCache);
         vertx.deployVerticle(vertical, context.asyncAssertSuccess());
+
+        final Async async = context.async();
 
         // Show the address as external
         vertical.setLocalAddressCheck(address -> false);
