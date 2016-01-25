@@ -35,7 +35,7 @@ putAndGetShouldReturnSameValue = function () {
             resGet.on('data', function (chunk) {
                 body += chunk;
             });
-            resGet.on('end', () => {
+            resGet.on('end', function () {
                 var result = JSON.parse(body)
                 assert.equal('honda', result.make)
             });
