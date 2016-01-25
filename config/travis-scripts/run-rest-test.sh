@@ -17,4 +17,6 @@ echo "Mache started, PID $MACHE-PID"
 
 python mache-example/src/examples/python/MacheRestTest.py || { echo 'Python REST test failed' ; exit 1; }
 
+node mache-example/src/examples/javascript/MacheRestTest.js || { echo 'Javascript REST test failed' ; exit 1; }
+
 kill $MACHE_PID
