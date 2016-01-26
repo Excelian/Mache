@@ -14,9 +14,13 @@ branches:
 services:
   - rabbitmq
   - mongodb
-  - cassandra
 
-before_install: chmod +x ./config/travis-scripts/*
+before_install:
+  - chmod +x ./config/travis-scripts/*
+  - sudo rm -rf /var/lib/cassandra/*
+  - wget https://archive.apache.org/dist/cassandra/3.2.1/apache-cassandra-3.2.1-bin.tar.gz
+  - tar -xzf apache-cassandra-3.2.1-bin.tar.gz
+  - sudo sh apache-cassandra-3.2.1/bin/cassandra > /dev/null
 
 install:
   - ./config/travis-scripts/prepare-kafka.sh
