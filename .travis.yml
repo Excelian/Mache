@@ -43,6 +43,8 @@ script: |
 
 addons:
   apt:
+    sources:
+      - mono-beta
     packages:
       - mono-devel
       - mono-gmcs

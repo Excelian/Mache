@@ -22,7 +22,8 @@ python mache-example/src/examples/python/MacheRestTest.py || { echo 'Python REST
 #node mache-example/src/examples/javascript/MacheRestTest.js || { echo 'Javascript REST test failed' ; exit 1; }
 
 echo "Running mono REST tests"
-nuget restore mache-example/src/examples/mono/MonoExample.sln
+wget -P mache-example/src/examples/mono/ https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+mono mache-example/src/examples/mono/nuget.exe restore mache-example/src/examples/mono/
 xbuild ./mache-example/src/examples/mono/MonoExample.sln || { echo 'Mono build failed' ; exit 1; }
 nunit-console ./mache-example/src/examples/mono/MonoExampleTests/bin/Debug/MonoExampleTests.dll || { echo 'Mono REST test failed' ; exit 1; }
 
