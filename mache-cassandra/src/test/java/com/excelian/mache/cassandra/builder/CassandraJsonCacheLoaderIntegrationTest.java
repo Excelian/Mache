@@ -15,6 +15,7 @@ import org.junit.Test;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraConnectionContext.getInstance;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+import static com.excelian.mache.core.SchemaOptions.CREATE_SCHEMA_IF_NEEDED;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static org.junit.Assert.assertEquals;
 
@@ -141,7 +142,7 @@ public class CassandraJsonCacheLoaderIntegrationTest {
             .cachedBy(guava())
             .storedIn(cassandra().withCluster(theCluster())
                 .withKeyspace(keySpace)
-                .withSchemaOptions(SchemaOptions.USE_EXISTING_SCHEMA)
+                .withSchemaOptions(CREATE_SCHEMA_IF_NEEDED)
                 .asJsonDocuments()
                 .inTable("users")
                 .withIDField("id")
