@@ -16,6 +16,7 @@ public class CassandraJsonCacheLoader extends AbstractCassandraCacheLoader<Strin
 
     private final String table;
     private final String idColumn;
+    private final String keyspaceDotTable;
 
     /**
      * Constructor.
@@ -37,24 +38,25 @@ public class CassandraJsonCacheLoader extends AbstractCassandraCacheLoader<Strin
         super(String.class, String.class, connectionContext, schemaOption,
             keySpace, replicationClass, replicationFactor);
         this.table = table;
+        this.keyspaceDotTable = keySpace + "." + table;
         this.idColumn = idColumn;
     }
 
     @Override
     public void put(String key, String value) {
-        final String insert = String.format("INSERT INTO %s JSON '%s';", table, value);
+        final String insert = String.format("INSERT INTO %s JSON ('%s');", keyspaceDotTable, value);
         session.execute(insert);
     }
 
     @Override
     public void remove(String key) {
-        final String delete = String.format("DELETE from %s WHERE id = '%s';", table, key);
+        final String delete = String.format("DELETE from %s WHERE id = '%s';", keyspaceDotTable, key);
         session.execute(delete);
     }
 
     @Override
     public String load(String key) throws Exception {
-        final String select = String.format("SELECT JSON * from %s WHERE %s = '%s';", table, idColumn, key);
+        final String select = String.format("SELECT JSON * from %s WHERE %s = '%s';", keyspaceDotTable, idColumn, key);
         final ResultSet execute = session.execute(select);
         return execute.one().getString(0);
     }

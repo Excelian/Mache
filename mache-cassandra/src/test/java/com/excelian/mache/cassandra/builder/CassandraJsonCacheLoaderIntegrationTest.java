@@ -128,7 +128,7 @@ public class CassandraJsonCacheLoaderIntegrationTest {
 
     private void given_anInsertedRecordWithJsonValues() {
         final String jsonValue = "{\"id\": \"user123-JSON\", \"age\": 44, \"state\": \"TX\"}";
-        final String insert = format("INSERT INTO %s.users JSON '%s';", KEY_SPACE, jsonValue);
+        final String insert = format("INSERT INTO %s.users JSON ('%s');", KEY_SPACE, jsonValue);
         getSession().execute(insert);
     }
 
