@@ -12,5 +12,5 @@ fi
 
 mkdir -p cassandra && tar xzf $HOME/binaries/cassandra.tgz -C cassandra --strip-components 1
 
-nohup bash -c "cd cassandra && bin/cassandra"
+nohup bash -c "cd cassandra && bin/cassandra & "
 sleep 5
