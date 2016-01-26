@@ -42,7 +42,7 @@ public class CassandraJsonCacheLoader extends AbstractCassandraCacheLoader<Strin
 
     @Override
     public void put(String key, String value) {
-        final String insert = String.format("INSERT INTO %s JSON '%s'", table, value);
+        final String insert = String.format("INSERT INTO %s JSON '%s';", table, value);
         session.execute(insert);
     }
 

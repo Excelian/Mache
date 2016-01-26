@@ -16,6 +16,7 @@ import static com.excelian.mache.cassandra.builder.CassandraConnectionContext.ge
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
 import static com.excelian.mache.core.SchemaOptions.CREATE_SCHEMA_IF_NEEDED;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
+import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCassandraDbForTests.class)
@@ -63,12 +64,8 @@ public class CassandraJsonCacheLoaderIntegrationTest {
     }
 
     private String createTable() {
-        return "CREATE TABLE if not exists "
-            + KEY_SPACE
-            + ".users ("
-            + "id text PRIMARY KEY, "
-            + "age int, "
-            + "state text)";
+        return format("CREATE TABLE if not exists %s.users "
+            + "(id text PRIMARY KEY, age int, state text);", KEY_SPACE);
     }
 
     @After
@@ -80,7 +77,7 @@ public class CassandraJsonCacheLoaderIntegrationTest {
     }
 
     private String dropTable() {
-        return "DROP TABLE if exists " + KEY_SPACE + ".users";
+        return format("DROP TABLE if exists %s.users;", KEY_SPACE);
     }
 
     @Test
@@ -112,7 +109,7 @@ public class CassandraJsonCacheLoaderIntegrationTest {
     }
 
     private void when_theDatabaseIsQueriedForKey(String key) {
-        final String select = "SELECT JSON * from " + KEY_SPACE + ".users where id = '" + key + "'";
+        final String select = format("SELECT JSON * from %s.users where id = '%s';", KEY_SPACE, key);
         final ResultSet resultSet = getSession().execute(select);
         resultFromDatabase = resultSet.one().getString(0);
     }
@@ -130,14 +127,15 @@ public class CassandraJsonCacheLoaderIntegrationTest {
     }
 
     private void given_anInsertedRecordWithJsonValues() {
-        final String jsonValue = "'{\"id\": \"user123-JSON\", \"age\": 44, \"state\": \"TX\"}'";
-        final String insert = "INSERT INTO " + KEY_SPACE + ".users JSON " + jsonValue;
+        final String jsonValue = "{\"id\": \"user123-JSON\", \"age\": 44, \"state\": \"TX\"}";
+        final String insert = format("INSERT INTO %s.users JSON '%s';", KEY_SPACE, jsonValue);
         getSession().execute(insert);
     }
 
     private void given_anInsertedRecordWithRawColumnValues() {
-        getSession().execute("INSERT INTO " + KEY_SPACE
-            + ".users (id, age, state) VALUES ('user123', 42, 'TX')");
+        final String insert = format("INSERT INTO %s.users (id, age, state) "
+            + "VALUES ('user123', 42, 'TX');", KEY_SPACE);
+        getSession().execute(insert);
     }
 
     private Mache<String, String> exampleCache() throws Exception {
