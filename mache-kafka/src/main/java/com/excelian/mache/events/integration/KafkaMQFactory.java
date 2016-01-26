@@ -9,6 +9,10 @@ import java.io.IOException;
 import java.util.Properties;
 import javax.jms.JMSException;
 
+/**
+ * Creates config for kafka consumers and producers.
+ * @param <K> the type of the keys being stored in mache
+ */
 public class KafkaMQFactory<K> implements MQFactory<K> {
     private final KafkaMqConfig kafkaMqConfig;
 

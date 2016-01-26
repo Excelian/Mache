@@ -22,6 +22,11 @@ import java.util.concurrent.Future;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+/**
+ * Listens to events from Kafka.
+ *
+ * @param <K> The type of the keys
+ */
 public class KafkaEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K> {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaEventConsumer.class);
@@ -31,8 +36,15 @@ public class KafkaEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K>
     volatile boolean taskStarted = false;
     private Future<?> task;
 
-    public KafkaEventConsumer(Properties consumerConfig, String producerTypeName, KafkaMqConfig kafkaConfig) {
-        super(producerTypeName);
+    /**
+     * Constructor.
+     *
+     * @param consumerConfig properties to configure the kafka endpoint
+     * @param topicName      the topic on which to subscribe
+     * @param kafkaConfig    the config for kafka itself
+     */
+    public KafkaEventConsumer(Properties consumerConfig, String topicName, KafkaMqConfig kafkaConfig) {
+        super(topicName);
         this.config = kafkaConfig;
 
         final String consumerGroup = getUniqueConsumerGroupName();
@@ -50,22 +62,20 @@ public class KafkaEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K>
     @Override
     public void beginSubscriptionThread() throws InterruptedException, IOException {
 
-        final String TOPIC = getTopicName().replace("$", ".");
+        final String topic = getTopicName().replace("$", ".");
 
         Map<String, Integer> topicCountMap = new HashMap<>();
-        topicCountMap.put(TOPIC, 1);
+        topicCountMap.put(topic, 1);
         Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap =
             consumer.createMessageStreams(topicCountMap);
-        final List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(TOPIC);
+        final List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(topic);
         final KafkaStream<byte[], byte[]> stream = streams.get(0);
 
         taskStarted = false;
 
-        task = executor.submit(new Runnable() {
-            @Override
-            public void run() {
+        task = executor.submit((Runnable) () -> {
                 LOG.info("[KafkaEventConsumer{}] Signed up for topic : {} stream - {}",
-                    Thread.currentThread().getId(), TOPIC, stream);
+                    Thread.currentThread().getId(), topic, stream);
 
                 ConsumerIterator<byte[], byte[]> iterator = stream.iterator();
                 taskStarted = true;
@@ -83,14 +93,14 @@ public class KafkaEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K>
                         routeEventToListeners(event);
                     }
                 }
-            }
-        });
+            });
 
         while (!taskStarted) {
             Thread.sleep(1);
         }
     }
 
+    @Override
     public void close() {
         try {
             if (task != null) {

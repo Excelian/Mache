@@ -6,7 +6,10 @@ import java.util.UUID;
 
 import static java.util.Calendar.OCTOBER;
 
-public class UUIDUtils {
+/**
+ * Creates a timestamp from a UUID identifier.
+ */
+public class UuidUtils {
     /**
      * Solution taken from http://stackoverflow.com/questions/13070674/get-the-unix-timestamp-from-type-1-uuid
      *

@@ -17,6 +17,11 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.jms.JMSException;
 
+/**
+ * Abstract base class for event consumers.
+ *
+ * @param <K> the type of the keys on the events
+ */
 public abstract class BaseCoordinationEntryEventConsumer<K> implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(BaseCoordinationEntryEventConsumer.class);
 
@@ -29,8 +34,13 @@ public abstract class BaseCoordinationEntryEventConsumer<K> implements Closeable
     private final Queue<RemoteCacheEntryCreatedListener<K>> createdEventConsumers = new ConcurrentLinkedQueue<>();
     private final Queue<RemoteCacheEntryRemovedListener<K>> removedEventConsumers = new ConcurrentLinkedQueue<>();
     private final Queue<RemoteCacheEntryUpdatedListener<K>> updatedEventConsumers = new ConcurrentLinkedQueue<>();
-    private final Queue<RemoteCacheEntryInvalidateListener<K>> invalidatedEventConsumers = new ConcurrentLinkedQueue<>();
+    private final Queue<RemoteCacheEntryInvalidateListener<K>>
+        invalidatedEventConsumers = new ConcurrentLinkedQueue<>();
 
+    /**
+     * Constructor.
+     * @param topicName the topic name.
+     */
     protected BaseCoordinationEntryEventConsumer(String topicName) {
         this.topicName = topicName;
     }
@@ -39,6 +49,10 @@ public abstract class BaseCoordinationEntryEventConsumer<K> implements Closeable
         return topicName;
     }
 
+    /**
+     * Registers the event listener.
+     * @param listener the listener to register
+     */
     @SuppressWarnings("unchecked")
     public void registerEventListener(CoordinationEventListener<K> listener) {
         if (listener instanceof RemoteCacheEntryCreatedListener) {
@@ -72,6 +86,8 @@ public abstract class BaseCoordinationEntryEventConsumer<K> implements Closeable
             case INVALIDATE:
                 routeToInvalidateConsumers(events);
                 break;
+            default:
+                throw new IllegalArgumentException("Unknown event type:[" + event.getEventType() + "]");
         }
         return event;
     }

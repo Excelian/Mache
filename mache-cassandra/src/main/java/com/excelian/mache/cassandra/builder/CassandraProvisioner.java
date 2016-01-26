@@ -17,7 +17,8 @@ public class CassandraProvisioner implements StorageProvisioner {
     private final String replicationClass;
     private final int replicationFactor;
 
-    private CassandraProvisioner(ConnectionContext<Cluster> connectionContext, SchemaOptions schemaOptions, String keySpace,
+    private CassandraProvisioner(ConnectionContext<Cluster> connectionContext,
+                                 SchemaOptions schemaOptions, String keySpace,
                                  String replicationClass, int replicationFactor) {
         this.connectionContext = connectionContext;
         this.schemaOptions = schemaOptions;
@@ -30,35 +31,10 @@ public class CassandraProvisioner implements StorageProvisioner {
      * @return A builder for a {@link CassandraProvisioner}.
      */
     public static ClusterBuilder cassandra() {
-        return storageContext -> keyspace -> new CassandraProvisionerBuilder(storageContext, keyspace);
-    }
-
-    public static ConnectionContext<Cluster> cassandraConnectionContext(final Cluster.Builder builder) {
-        return new ConnectionContext<Cluster>() {
-
-            Cluster cluster;
-
-            @Override
-            public Cluster getConnection() {
-                if (cluster == null)
-                    synchronized (this) {
-                        if (cluster == null) {
-                            cluster = builder.build();
-                        }
-                    }
-                return cluster;
-            }
-
-            @Override
-            public void close() throws Exception {
-                if (cluster != null)
-                    synchronized (this) {
-                        if (cluster != null) {
-                            cluster.close();
-                            cluster = null;
-                        }
-                    }
-            }
+        return clusterBuilder -> keyspace -> {
+            final CassandraConnectionContext cassandraConnectionContext =
+                CassandraConnectionContext.getInstance(clusterBuilder);
+            return new CassandraProvisionerBuilder(cassandraConnectionContext, keyspace);
         };
     }
 
@@ -72,7 +48,7 @@ public class CassandraProvisioner implements StorageProvisioner {
      * Forces cluster settings to be provided.
      */
     public interface ClusterBuilder {
-        KeyspaceBuilder withConnectionContext(ConnectionContext<Cluster> connectionContext);
+        KeyspaceBuilder withCluster(Cluster.Builder clusterBuilder);
     }
 
     /**
@@ -113,7 +89,8 @@ public class CassandraProvisioner implements StorageProvisioner {
         }
 
         public CassandraProvisioner build() {
-            return new CassandraProvisioner(connectionContext, schemaOptions, keySpace, replicationClass, replicationFactor);
+            return new CassandraProvisioner(connectionContext, schemaOptions,
+                keySpace, replicationClass, replicationFactor);
         }
     }
 }

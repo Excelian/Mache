@@ -8,6 +8,12 @@ public class Args {
     final CacheType cacheType;
     final String host;
 
+    /**
+     * Constructor.
+     * @param count argument count
+     * @param cacheType which type of DB backing store
+     * @param host the db host
+     */
     public Args(int count, CacheType cacheType, String host) {
         this.count = count;
         this.cacheType = cacheType;

@@ -47,8 +47,10 @@ public class CassandraCacheLoader<K, V> implements MacheLoader<K, V> {
      * @param replicationClass  The type of replication strategy to use for the key space.
      * @param replicationFactor The replication factor for the keyspace.
      */
-    public CassandraCacheLoader(Class<K> keyType, Class<V> valueType, ConnectionContext<Cluster> connectionContext, SchemaOptions schemaOption,
-                                String keySpace, String replicationClass, int replicationFactor) {
+    public CassandraCacheLoader(Class<K> keyType, Class<V> valueType,
+                                ConnectionContext<Cluster> connectionContext,
+                                SchemaOptions schemaOption, String keySpace,
+                                String replicationClass, int replicationFactor) {
         this.keyType = keyType;
         this.connectionContext = connectionContext;
         this.schemaOption = schemaOption;
@@ -63,7 +65,7 @@ public class CassandraCacheLoader<K, V> implements MacheLoader<K, V> {
         if (schemaOption.shouldCreateSchema() && session == null) {
             synchronized (this) {
                 if (session == null) {
-                    session = connectionContext.getConnection().connect();
+                    session = connectionContext.getConnection(this).connect();
                     if (schemaOption.shouldCreateSchema()) {
                         createKeySpace();
                     }
@@ -71,7 +73,7 @@ public class CassandraCacheLoader<K, V> implements MacheLoader<K, V> {
                 }
             }
         } else {
-            session = connectionContext.getConnection().connect(keySpace);
+            session = connectionContext.getConnection(this).connect(keySpace);
         }
     }
 
@@ -118,6 +120,7 @@ public class CassandraCacheLoader<K, V> implements MacheLoader<K, V> {
             session.close();
             session = null;
         }
+        this.connectionContext.close(this);
     }
 
     @Override

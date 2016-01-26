@@ -5,11 +5,14 @@ import com.excelian.mache.core.Mache;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.observable.MessageQueueObservableCacheFactory;
-import com.excelian.mache.observable.utils.UUIDUtils;
+import com.excelian.mache.observable.utils.UuidUtils;
 
 import javax.jms.JMSException;
 import java.io.IOException;
 
+/**
+ * Base class for provisioners of messaging.
+ */
 public abstract class AbstractMessagingProvisioner implements MessagingProvisioner {
 
     protected final String topic;
@@ -25,7 +28,7 @@ public abstract class AbstractMessagingProvisioner implements MessagingProvision
         final MQConfiguration mqConfiguration = () -> topic;
 
         final MessageQueueObservableCacheFactory<K, V> cacheFactory =
-                new MessageQueueObservableCacheFactory<>(mqFactory, mqConfiguration, new UUIDUtils());
+                new MessageQueueObservableCacheFactory<>(mqFactory, mqConfiguration, new UuidUtils());
 
         return cacheFactory.createCache(toWireIn);
     }

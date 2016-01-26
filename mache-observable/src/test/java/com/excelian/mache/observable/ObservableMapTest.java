@@ -1,10 +1,9 @@
 package com.excelian.mache.observable;
 
 import com.excelian.mache.events.MQFactory;
-import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.excelian.mache.core.Mache;
 import org.junit.Test;
-import com.excelian.mache.observable.utils.UUIDUtils;
+import com.excelian.mache.observable.utils.UuidUtils;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -15,7 +14,7 @@ import static org.mockito.Mockito.mock;
 @RunWith(MockitoJUnitRunner.class)
 public class ObservableMapTest {
     private int fired;
-    private final UUIDUtils uuidUtils = new UUIDUtils();
+    private final UuidUtils uuidUtils = new UuidUtils();
 
     @Mock
     Mache<String, String> cache;

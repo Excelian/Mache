@@ -9,10 +9,10 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
 
-public class UUIDUtilsTest {
-    private final UUIDUtils uuidUtils = new UUIDUtils();
+public class UuidUtilsTest {
+    private final UuidUtils uuidUtils = new UuidUtils();
 
-    private static final Logger LOG = LoggerFactory.getLogger(UUIDUtilsTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UuidUtilsTest.class);
 
     @Test
     public void testTimestamps() throws Exception {

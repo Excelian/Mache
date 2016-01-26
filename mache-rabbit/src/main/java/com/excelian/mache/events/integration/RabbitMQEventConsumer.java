@@ -18,6 +18,11 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.jms.JMSException;
 
+/**
+ * Event consumer for Rabbit MQ.
+ *
+ * @param <K> the type of the keys
+ */
 public class RabbitMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RabbitMQEventConsumer.class);
@@ -26,11 +31,19 @@ public class RabbitMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
     private final String queueName;
     String consumerTag = "";
 
+    /**
+     * Constructor.
+     * @param channel - channel
+     * @param topicName - topicName
+     * @param rabbitMqConfig - rabbitMqConfig
+     * @throws JMSException if Rabbit cannot be contacted
+     * @throws IOException if something occurs while transferring data
+     */
     public RabbitMQEventConsumer(final Channel channel,
-                                 String producerTypeName,
+                                 String topicName,
                                  RabbitMqConfig rabbitMqConfig)
         throws JMSException, IOException {
-        super(producerTypeName);
+        super(topicName);
         this.channel = channel;
         this.rabbitMqConfig = rabbitMqConfig;
         Map<String, Object> queueArgs = getEvictQueueArguments();
@@ -78,6 +91,7 @@ public class RabbitMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
         consumerTag = channel.basicConsume(queueName, false, consumer);
     }
 
+    @Override
     public void close() {
         try {
             if (channel != null) {

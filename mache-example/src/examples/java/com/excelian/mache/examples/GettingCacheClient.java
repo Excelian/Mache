@@ -40,15 +40,13 @@ public class GettingCacheClient {
         doExample(count, example);
     }
 
-    private static <T,C, M extends Example.KeyedMessge> void doExample(int count, Example<T,C, M> example) throws Exception {
+    private static <T,M extends Example.KeyedMessge> void doExample(int count, Example<T,M> example) throws Exception {
 
-        try(ConnectionContext<C> context = example.createConnectionContext()) {
-            try(final Mache<String, T> cache = example.exampleCache(context)) {
-                LOG.info("Getting...");
-                for (int i = 0; i < count; i++) {
-                    final T hello = cache.get("msg_" + i);
-                    LOG.info("hello = " + hello);
-                }
+        try (final Mache<String, T> cache = example.exampleCache()) {
+            LOG.info("Getting...");
+            for (int i = 0; i < count; i++) {
+                final T hello = cache.get("msg_" + i);
+                LOG.info("hello = " + hello);
             }
         }
     }

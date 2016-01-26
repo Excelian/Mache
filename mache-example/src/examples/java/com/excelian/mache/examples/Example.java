@@ -7,26 +7,22 @@ import com.excelian.mache.core.Mache;
  * Provides a {@link Mache} type for an example client.
  *
  * @param <T> The Spring Data Annotated object type.
+ * @param <M> The value type to store
  */
-public interface Example<T, S, M extends Example.KeyedMessge> {
-
-    /**
-     * Provides connection context for subsequent Mache clients to utilise
-     *
-     * @return The connection context.
-     */
-    public ConnectionContext<S> createConnectionContext();
+public interface Example<T, M extends Example.KeyedMessge> {
 
     /**
      * Provides a {@link Mache} type for an example client.
      *
      * @return The example mache client.
      */
-    Mache<String, T> exampleCache(ConnectionContext<S> connectionContext) throws Exception;
+    Mache<String, T> exampleCache() throws Exception;
 
     M createEntity(String primaryKey, String msg);
 
-
+    /**
+     * A value type with a key.
+     */
     public interface KeyedMessge {
         public String getPrimaryKey();
     }

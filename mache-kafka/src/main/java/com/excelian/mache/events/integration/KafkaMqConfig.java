@@ -1,5 +1,8 @@
 package com.excelian.mache.events.integration;
 
+/**
+ * Encapuslates Kafak config.
+ */
 public class KafkaMqConfig {
 
     private final String autoCommitInterval;
@@ -13,6 +16,19 @@ public class KafkaMqConfig {
     private final String zkSessionTimeout;
     private final String zkSyncTime;
 
+    /**
+     * Constructor.
+     * @param autoCommitInterval - auto commit interval
+     * @param kafkaSerializerClass - kafka Serializer Class
+     * @param offsetReset - offset Reset
+     * @param requiredAckCount - required Ack Count
+     * @param shutdownTimeoutSecs - shutdown Timeout Secs
+     * @param zkHost - Zookeeper Host
+     * @param zkConsumerPort - Zookeper Consumer Port
+     * @param zkProducerPort - Zookeeper Producer Port
+     * @param zkSessionTimeout - Zookeeper Session Timeout
+     * @param zkSyncTime - Zookeper Sync Time
+     */
     KafkaMqConfig(String autoCommitInterval, String kafkaSerializerClass, String offsetReset,
                   String requiredAckCount, int shutdownTimeoutSecs, String zkHost, String zkConsumerPort,
                   String zkProducerPort, String zkSessionTimeout, String zkSyncTime) {
@@ -68,6 +84,9 @@ public class KafkaMqConfig {
         return requiredAckCount;
     }
 
+    /**
+     * Builds the Kafka config.
+     */
     public static class KafkaMqConfigBuilder {
         private String autoCommitInterval = "50";
         private String kafkaSerializerClass = "kafka.serializer.StringEncoder";

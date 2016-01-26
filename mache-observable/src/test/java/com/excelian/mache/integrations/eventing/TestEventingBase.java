@@ -5,7 +5,7 @@ import com.excelian.mache.events.BaseCoordinationEntryEventProducer;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
-import com.excelian.mache.observable.utils.UUIDUtils;
+import com.excelian.mache.observable.utils.UuidUtils;
 import com.fasterxml.uuid.Generators;
 import org.junit.After;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public abstract class TestEventingBase {
         consumer.beginSubscriptionThread();
 
         CoordinationEntryEvent<String> event = new CoordinationEntryEvent<>(getUuid(), TestEntity.class.getName(),
-                "ID1", CREATED, new UUIDUtils());
+            "ID1", CREATED, new UuidUtils());
 
         drainQueues(collector, 150);
         producer.send(event);
@@ -111,7 +111,7 @@ public abstract class TestEventingBase {
         consumer.beginSubscriptionThread();
 
         CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(),
-                TestOtherEntity.class.getName(), "ID1", CREATED, new UUIDUtils());
+            TestOtherEntity.class.getName(), "ID1", CREATED, new UuidUtils());
 
         producer.send(event);
 
@@ -147,7 +147,7 @@ public abstract class TestEventingBase {
         drainQueues(collector2, 120);
 
         CoordinationEntryEvent<String> event = new CoordinationEntryEvent<>(getUuid(), TestEntity.class.getName(),
-                "ID1", CREATED, new UUIDUtils());
+            "ID1", CREATED, new UuidUtils());
 
         producer.send(event);
 
@@ -229,22 +229,22 @@ public abstract class TestEventingBase {
 
     private void when_aCreatedEventIsRaisedBy(BaseCoordinationEntryEventProducer<String> producer) {
         producer.send(new CoordinationEntryEvent<>(getUuid(), TestEntity.class.getName(),
-                "ID1", CREATED, new UUIDUtils()));
+            "ID1", CREATED, new UuidUtils()));
     }
 
     private void when_anInvalidatedEventIsRaisedBy(BaseCoordinationEntryEventProducer<String> producer) {
         producer.send(new CoordinationEntryEvent<>(getUuid(), TestEntity.class.getName(),
-                "ID1", INVALIDATE, new UUIDUtils()));
+            "ID1", INVALIDATE, new UuidUtils()));
     }
 
     private void when_aRemovedEventIsRaisedBy(BaseCoordinationEntryEventProducer<String> producer) {
         producer.send(new CoordinationEntryEvent<>(getUuid(), TestEntity.class.getName(),
-                "ID1", REMOVED, new UUIDUtils()));
+            "ID1", REMOVED, new UuidUtils()));
     }
 
     private void when_anUpdatedEventIsRaisedBy(BaseCoordinationEntryEventProducer<String> producer) {
         producer.send(new CoordinationEntryEvent<>(getUuid(), TestEntity.class.getName(),
-                "ID1", UPDATED, new UUIDUtils()));
+            "ID1", UPDATED, new UuidUtils()));
     }
 
     @SuppressWarnings("unchecked")

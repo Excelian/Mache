@@ -2,11 +2,15 @@ package com.excelian.mache.observable.coordination;
 
 import com.fasterxml.uuid.Generators;
 import com.excelian.mache.observable.EventType;
-import com.excelian.mache.observable.utils.UUIDUtils;
+import com.excelian.mache.observable.utils.UuidUtils;
 
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Event descriptor.
+ * @param <K> the type of the key
+ */
 public class CoordinationEntryEvent<K> {
 
     private final K key;
@@ -16,7 +20,17 @@ public class CoordinationEntryEvent<K> {
     private final EventType eventType;
     private Date uniqueIdTime;
 
-    public CoordinationEntryEvent(UUID cacheId, final String entityName, final K key, final EventType eventType, final UUIDUtils uuidUtils) {
+    /**
+     * Constructor.
+     * @param cacheId - cacheId
+     * @param entityName - entityName
+     * @param key - key
+     * @param eventType - eventType
+     * @param uuidUtils - uuidUtils
+     */
+    public CoordinationEntryEvent(UUID cacheId, final String entityName,
+                                  final K key, final EventType eventType,
+                                  final UuidUtils uuidUtils) {
         this.cacheId = cacheId;
         this.entityName = entityName;
         this.eventType = eventType;

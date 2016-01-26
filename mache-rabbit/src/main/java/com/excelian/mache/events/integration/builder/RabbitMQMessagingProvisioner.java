@@ -10,12 +10,17 @@ import com.rabbitmq.client.ConnectionFactory;
 import javax.jms.JMSException;
 import java.io.IOException;
 
+/**
+ * Provisions Rabbit MQ messaging from config.
+ */
 public class RabbitMQMessagingProvisioner extends AbstractMessagingProvisioner {
 
     private final ConnectionFactory connectionFactory;
     private final RabbitMqConfig rabbitMqConfig;
 
-    private RabbitMQMessagingProvisioner(String topic, ConnectionFactory connectionFactory, RabbitMqConfig rabbitMqConfig) {
+    private RabbitMQMessagingProvisioner(String topic,
+                                         ConnectionFactory connectionFactory,
+                                         RabbitMqConfig rabbitMqConfig) {
         super(topic);
         this.connectionFactory = connectionFactory;
         this.rabbitMqConfig = rabbitMqConfig;
@@ -30,14 +35,23 @@ public class RabbitMQMessagingProvisioner extends AbstractMessagingProvisioner {
         return topic -> connectionFactory -> new RabbitMqMessagingProvisionerBuilder(topic, connectionFactory);
     }
 
+    /**
+     * Enforces topic to be specified.
+     */
     public interface TopicBuilder {
         ConnectionFactoryBuilder withTopic(String topic);
     }
 
+    /**
+     * Enforces connection details to be specified.
+     */
     public interface ConnectionFactoryBuilder {
         RabbitMqMessagingProvisionerBuilder withConnectionFactory(ConnectionFactory connectionFactory);
     }
 
+    /**
+     * Builder for Rabbit MQ.
+     */
     private static class RabbitMqMessagingProvisionerBuilder {
         private final String topic;
         private final ConnectionFactory connectionFactory;

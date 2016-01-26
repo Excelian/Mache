@@ -1,8 +1,8 @@
 package com.excelian.mache.mongo;
 
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.mongo.builder.MongoConnectionContext;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 import org.slf4j.Logger;
@@ -25,15 +25,15 @@ public class MongoDBJsonCacheLoader<K, V> implements MacheLoader<String, String>
     private final MongoClientOptions clientOptions;
     private final SchemaOptions schemaOptions;
     private final String database;
-    private ConnectionContext<List<ServerAddress>> seeds;
+    private MongoConnectionContext mongoConnectionContext;
 
     private MongoClient mongoClient;
 
-    public MongoDBJsonCacheLoader(ConnectionContext<List<ServerAddress>> seeds,
+    public MongoDBJsonCacheLoader(MongoConnectionContext mongoConnectionContext,
                                   List<MongoCredential> credentials,
                                   MongoClientOptions clientOptions,
                                   String database, SchemaOptions schemaOptions) {
-        this.seeds = seeds;
+        this.mongoConnectionContext = mongoConnectionContext;
         this.credentials = credentials;
         this.clientOptions = clientOptions;
         this.schemaOptions = schemaOptions;
@@ -111,7 +111,7 @@ public class MongoDBJsonCacheLoader<K, V> implements MacheLoader<String, String>
     }
 
     private MongoClient connect() {
-        return new MongoClient(seeds.getConnection(), credentials, clientOptions);
+        return new MongoClient(mongoConnectionContext.getConnection(this), credentials, clientOptions);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class MongoDBJsonCacheLoader<K, V> implements MacheLoader<String, String>
                 + "credentials=" + credentials
                 + ", clientOptions=" + clientOptions
                 + ", mongoClient=" + mongoClient
-                + ", seeds=" + seeds
+                + ", mongoConnectionContext=" + mongoConnectionContext
                 + ", schemaOptions=" + schemaOptions
                 + ", database='" + database + '\''
                 + '}';

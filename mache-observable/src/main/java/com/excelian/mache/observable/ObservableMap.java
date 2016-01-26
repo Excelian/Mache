@@ -4,7 +4,7 @@ import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
-import com.excelian.mache.observable.utils.UUIDUtils;
+import com.excelian.mache.observable.utils.UuidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,10 +24,17 @@ public class ObservableMap<K, V> implements Mache<K, V> {
 
     private MQFactory<K> communicationFactory;
     private final Mache<K, V> delegate;
-    private final UUIDUtils uuidUtils;
+    private final UuidUtils uuidUtils;
     private MapEventListener<K> listener;
 
-    public ObservableMap(MQFactory<K> communicationFactory, Mache<K, V> delegate, UUIDUtils uuidUtils) {
+    /**
+     * Constructor.
+     *
+     * @param communicationFactory - communicationFactory
+     * @param delegate             - delegate
+     * @param uuidUtils            - uuidUtils
+     */
+    public ObservableMap(MQFactory<K> communicationFactory, Mache<K, V> delegate, UuidUtils uuidUtils) {
         this.communicationFactory = communicationFactory;
         this.delegate = delegate;
         this.uuidUtils = uuidUtils;

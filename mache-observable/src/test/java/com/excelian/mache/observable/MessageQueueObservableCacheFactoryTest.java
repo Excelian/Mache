@@ -11,7 +11,7 @@ import com.excelian.mache.events.BaseCoordinationEntryEventProducer;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
-import com.excelian.mache.observable.utils.UUIDUtils;
+import com.excelian.mache.observable.utils.UuidUtils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import org.junit.After;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class MessageQueueObservableCacheFactoryTest {
 
-    private final UUIDUtils uuidUtils = new UUIDUtils();
+    private final UuidUtils uuidUtils = new UuidUtils();
     private final Gson gson = new Gson();
     MacheLoader<String, TestEntity> cacheLoader1;
     MacheLoader<String, TestEntity> cacheLoader2;
@@ -107,9 +107,9 @@ public class MessageQueueObservableCacheFactoryTest {
         MacheLoader<String, TestEntity2> cacheLoader =
                 new HashMapCacheLoader<>(TestEntity2.class);
         ObservableCacheFactory<String, TestEntity2> observableCacheFactory1 =
-                new MessageQueueObservableCacheFactory<>(mqFactory1, mqConfiguration, new UUIDUtils());
+            new MessageQueueObservableCacheFactory<>(mqFactory1, mqConfiguration, new UuidUtils());
         ObservableCacheFactory<String, TestEntity2> observableCacheFactory2 =
-                new MessageQueueObservableCacheFactory<>(mqFactory2, mqConfiguration, new UUIDUtils());
+            new MessageQueueObservableCacheFactory<>(mqFactory2, mqConfiguration, new UuidUtils());
 
         Mache<String, TestEntity2> cache1 = observableCacheFactory1.createCache(
                 macheFactory2.create(String.class, TestEntity2.class, cacheLoader));

@@ -5,6 +5,7 @@ import com.excelian.mache.builder.MacheBuilder;
 import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.mongo.builder.MongoConnectionContext;
 import com.google.common.cache.CacheLoader;
 import com.mongodb.ServerAddress;
 import org.junit.After;
@@ -32,7 +33,6 @@ public class MongoCacheIntegrationTest {
     @Rule
     public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
-
     private String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
 
     private Mache<String, TestEntity> mache;
@@ -46,10 +46,11 @@ public class MongoCacheIntegrationTest {
 
     private Mache<String, TestEntity> getMache(ConnectionContext<List<ServerAddress>> context) throws Exception {
 
+        final String mongoHost = new NoRunningMongoDbForTests().getHost();
         return MacheBuilder.mache(String.class, TestEntity.class)
                 .cachedBy(guava())
                 .storedIn(mongodb()
-                        .withConnectionContext(context)
+                    .withSeeds(new ServerAddress(mongoHost, 27017))
                         .withDatabase(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                         .build())

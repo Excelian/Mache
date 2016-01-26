@@ -14,6 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
+/**
+ * Sends events over a kafka message queue.
+ * @param <K> the type of the key
+ */
 public class KafkaEventProducer<K> extends BaseCoordinationEntryEventProducer<K> {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaEventProducer.class);
     private final Gson gson = new Gson();

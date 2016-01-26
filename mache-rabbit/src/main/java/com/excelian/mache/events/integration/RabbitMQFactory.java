@@ -12,12 +12,24 @@ import com.rabbitmq.client.ConnectionFactory;
 import java.io.IOException;
 import javax.jms.JMSException;
 
+/**
+ * Produces Rabbit MQ event producers and consumers.
+ *
+ * @param <K> the type of the keys
+ */
 public class RabbitMQFactory<K> implements MQFactory<K> {
 
     private final Channel channel;
     private final Connection connection;
     private final RabbitMqConfig rabbitMqConfig;
 
+    /**
+     * Constructor.
+     * @param factory - factory
+     * @param rabbitMqConfig - rabbitMqConfig
+     * @throws JMSException - if an error with jms formats etc.
+     * @throws IOException - on error transmitting data
+     */
     public RabbitMQFactory(ConnectionFactory factory, RabbitMqConfig rabbitMqConfig) throws JMSException, IOException {
         this.rabbitMqConfig = rabbitMqConfig;
         connection = factory.newConnection();

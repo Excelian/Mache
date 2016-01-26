@@ -42,7 +42,7 @@ public class MongoJsonCacheIntegrationTest {
         return MacheBuilder.mache(String.class, String.class)
                 .cachedBy(guava())
                 .storedIn(mongodb()
-                        .withConnectionContext(mongoConnectionContext(new ServerAddress(new NoRunningMongoDbForTests().getHost(), 27017)))
+                        .withSeeds(new ServerAddress(new NoRunningMongoDbForTests().getHost(), 27017))
                         .withDatabase(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                         .build())

@@ -13,13 +13,13 @@ import java.util.Date;
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
-import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbaseConnectionContext;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
+
 
 /**
  * A factory for a Couchbase backed {@link Example}.
  */
-public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, Cluster, CouchbaseAnnotatedMessage> {
+public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, CouchbaseAnnotatedMessage> {
 
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
     private String serverIpAddress;
@@ -29,15 +29,15 @@ public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, Clus
     }
 
     @Override
-    public Mache<String, CouchbaseAnnotatedMessage> exampleCache(ConnectionContext<Cluster> context) throws Exception {
+    public Mache<String, CouchbaseAnnotatedMessage> exampleCache() throws Exception {
 
         final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
 
         return mache(String.class, CouchbaseAnnotatedMessage.class)
                 .cachedBy(guava())
                 .storedIn(couchbase()
-                        .withContext(context)
                         .withBucketSettings(builder().name(keySpace).quota(150).build())
+                    .withNodes(serverIpAddress)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                         .build())
                 .withNoMessaging()
@@ -47,10 +47,5 @@ public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, Clus
     @Override
     public CouchbaseAnnotatedMessage createEntity(String primaryKey, String msg) {
         return new CouchbaseAnnotatedMessage(primaryKey, msg);
-    }
-
-    @Override
-    public ConnectionContext<Cluster> createConnectionContext() {
-        return couchbaseConnectionContext(serverIpAddress, DefaultCouchbaseEnvironment.create());
     }
 }

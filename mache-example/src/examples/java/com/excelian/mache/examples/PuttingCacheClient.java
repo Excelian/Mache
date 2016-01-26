@@ -43,15 +43,11 @@ public class PuttingCacheClient {
     }
 
     private static void populateWithMsgs(int count, Example example) throws Exception {
-
-        try (ConnectionContext context = example.createConnectionContext()) {
-            try (Mache mache = example.exampleCache(context)) {
-                LOG.info("Putting...");
-                for (int i = 0; i < count; i++) {
-                    Example.KeyedMessge v = example.createEntity("msg_" + i, "Hello World - " + i);
-
-                    mache.put(v.getPrimaryKey(), v);
-                }
+        try (Mache mache = example.exampleCache()) {
+            LOG.info("Putting...");
+            for (int i = 0; i < count; i++) {
+                Example.KeyedMessge v = example.createEntity("msg_" + i, "Hello World - " + i);
+                mache.put(v.getPrimaryKey(), v);
             }
         }
     }

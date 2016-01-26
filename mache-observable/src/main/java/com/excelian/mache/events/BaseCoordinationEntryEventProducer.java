@@ -2,6 +2,11 @@ package com.excelian.mache.events;
 
 import com.excelian.mache.observable.MapEventListener;
 
+/**
+ * Base class for event producers.
+ *
+ * @param <K> the type of the keys
+ */
 public abstract class BaseCoordinationEntryEventProducer<K> implements MapEventListener<K> {
 
     private String topicName;
