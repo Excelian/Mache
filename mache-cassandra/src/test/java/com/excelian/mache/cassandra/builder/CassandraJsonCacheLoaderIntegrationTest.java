@@ -30,7 +30,7 @@ public class CassandraJsonCacheLoaderIntegrationTest {
     private Mache<String, String> cache;
     private String cachedValueForKey;
     private String resultFromDatabase;
-    public static final String KEY_SPACE = "mache-json";
+    public static final String KEY_SPACE = "mache_json";
 
     /*
      * CQL Commands:
