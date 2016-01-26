@@ -6,7 +6,6 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 import com.excelian.mache.cassandra.NoRunningCassandraDbForTests;
 import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.SchemaOptions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,6 +30,7 @@ public class CassandraJsonCacheLoaderIntegrationTest {
     private Mache<String, String> cache;
     private String cachedValueForKey;
     private String resultFromDatabase;
+    public static final String KEY_SPACE = "mache-json";
 
     /*
      * CQL Commands:
@@ -63,7 +63,9 @@ public class CassandraJsonCacheLoaderIntegrationTest {
     }
 
     private String createTable() {
-        return "CREATE TABLE if not exists users ("
+        return "CREATE TABLE if not exists "
+            + KEY_SPACE
+            + ".users ("
             + "id text PRIMARY KEY, "
             + "age int, "
             + "state text)";
@@ -78,7 +80,7 @@ public class CassandraJsonCacheLoaderIntegrationTest {
     }
 
     private String dropTable() {
-        return "DROP TABLE if exists users";
+        return "DROP TABLE if exists " + KEY_SPACE + ".users";
     }
 
     @Test
@@ -110,7 +112,8 @@ public class CassandraJsonCacheLoaderIntegrationTest {
     }
 
     private void when_theDatabaseIsQueriedForKey(String key) {
-        final ResultSet resultSet = getSession().execute("SELECT JSON * from users where id = '" + key + "'");
+        final String select = "SELECT JSON * from " + KEY_SPACE + ".users where id = '" + key + "'";
+        final ResultSet resultSet = getSession().execute(select);
         resultFromDatabase = resultSet.one().getString(0);
     }
 
@@ -128,20 +131,20 @@ public class CassandraJsonCacheLoaderIntegrationTest {
 
     private void given_anInsertedRecordWithJsonValues() {
         final String jsonValue = "'{\"id\": \"user123-JSON\", \"age\": 44, \"state\": \"TX\"}'";
-        final String insert = "INSERT INTO users JSON " + jsonValue;
+        final String insert = "INSERT INTO " + KEY_SPACE + ".users JSON " + jsonValue;
         getSession().execute(insert);
     }
 
     private void given_anInsertedRecordWithRawColumnValues() {
-        getSession().execute("INSERT INTO users (id, age, state) VALUES ('user123', 42, 'TX')");
+        getSession().execute("INSERT INTO " + KEY_SPACE
+            + ".users (id, age, state) VALUES ('user123', 42, 'TX')");
     }
 
     private Mache<String, String> exampleCache() throws Exception {
-        final String keySpace = "mache-json";
         return mache(String.class, String.class)
             .cachedBy(guava())
             .storedIn(cassandra().withCluster(theCluster())
-                .withKeyspace(keySpace)
+                .withKeyspace(KEY_SPACE)
                 .withSchemaOptions(CREATE_SCHEMA_IF_NEEDED)
                 .asJsonDocuments()
                 .inTable("users")
