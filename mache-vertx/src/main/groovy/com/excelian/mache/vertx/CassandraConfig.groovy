@@ -4,7 +4,6 @@ import com.excelian.mache.core.SchemaOptions
 import com.datastax.driver.core.Cluster
 
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra
-import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandraConnectionContext;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 
@@ -19,10 +18,10 @@ public class CassandraConfig {
                     .cachedBy(guava())
                     .storedIn(
                     cassandra()
-                            .withConnectionContext(cassandraConnectionContext(Cluster.builder()
+                            .withCluster(Cluster.builder()
                                 .withClusterName("BluePrint")
                                 .addContactPoint("192.168.3.4")
-                                .withPort(9042)))
+                                .withPort(9042))
                             .withKeyspace(keySpace)
                             .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                             .build())
