@@ -47,5 +47,4 @@ addons:
       - mono-beta
     packages:
       - mono-devel
-      - mono-gmcs
       - nunit-console
