@@ -17,14 +17,11 @@ services:
 
 before_install:
   - chmod +x ./config/travis-scripts/*
-  - sudo rm -rf /var/lib/cassandra/*
-  - wget https://archive.apache.org/dist/cassandra/2.2.4/apache-cassandra-2.2.4-bin.tar.gz
-  - tar -xzf apache-cassandra-2.2.4-bin.tar.gz
-  - sudo sh apache-cassandra-2.2.4/bin/cassandra > /dev/null
 
 install:
   - ./config/travis-scripts/prepare-kafka.sh
   - ./config/travis-scripts/prepare-couchbase.sh
+  - ./config/travis-scripts/prepare-cassandra.sh
 
 notifications:
   slack: exceliandev:1eNY8ozgMfUYwzAECmL4LNHi
