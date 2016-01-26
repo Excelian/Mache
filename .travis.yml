@@ -21,7 +21,7 @@ before_install:
 install:
   - ./config/travis-scripts/prepare-kafka.sh
   - ./config/travis-scripts/prepare-couchbase.sh
-  - sudo ./config/travis-scripts/prepare-cassandra.sh
+  - ./config/travis-scripts/prepare-cassandra.sh
 
 notifications:
   slack: exceliandev:1eNY8ozgMfUYwzAECmL4LNHi

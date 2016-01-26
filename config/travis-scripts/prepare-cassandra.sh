@@ -6,7 +6,7 @@ if [ ! -d $HOME/binaries ] ; then
   mkdir ~/binaries
 fi
 
-if [ ! -e $HOME/binaries/kafka.tgz ] ; then
+if [ ! -e $HOME/binaries/cassandra.tgz ] ; then
   wget $CASSANDRA_BINARY_URL -O $HOME/binaries/cassandra.tgz
 fi
 
