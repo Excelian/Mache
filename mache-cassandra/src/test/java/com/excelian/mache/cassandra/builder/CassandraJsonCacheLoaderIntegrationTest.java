@@ -98,7 +98,7 @@ public class CassandraJsonCacheLoaderIntegrationTest {
 
     @Test
     public void ensureAJsonDocumentCanBeWrittenBackToTheTableFromTheCache() throws Exception {
-        final String jsonDocValue = "{\"id\": \'new-key-123\', \"age\": 99, \"state\": \"MA\"}";
+        final String jsonDocValue = "{\"id\": \"new-key-123\", \"age\": 99, \"state\": \"MA\"}";
         given_TheCachePut("new-key-123", jsonDocValue);
         when_theDatabaseIsQueriedForKey("new-key-123");
         then_theValueRetrievedFromTheDatabaseIs(jsonDocValue);
@@ -128,7 +128,7 @@ public class CassandraJsonCacheLoaderIntegrationTest {
 
     private void given_anInsertedRecordWithJsonValues() {
         final String jsonValue = "{\"id\": \"user123-JSON\", \"age\": 44, \"state\": \"TX\"}";
-        final String insert = format("INSERT INTO %s.users JSON ('%s');", KEY_SPACE, jsonValue);
+        final String insert = format("INSERT INTO %s.users JSON '%s';", KEY_SPACE, jsonValue);
         getSession().execute(insert);
     }
 
