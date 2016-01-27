@@ -18,8 +18,8 @@ public class UuidUtilsTest {
     public void testTimestamps() throws Exception {
         final UUID uuid = Generators.timeBasedGenerator().generate();
 
-        final long unixTimestamp = uuidUtils.toUnixTimestamp(uuid);
         final long nowTime = System.currentTimeMillis();
+        final long unixTimestamp = uuidUtils.toUnixTimestamp(uuid);
 
         LOG.info("UnixMsFromUUID=" + unixTimestamp + ", nowMs=" + nowTime + ", delta=" + (nowTime - unixTimestamp));
 

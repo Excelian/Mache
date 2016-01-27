@@ -36,7 +36,7 @@ public class MongoConnectionContext extends AbstractConnectionContext<List<Serve
     }
 
 
-    private static MongoConnectionContext singleton;
+    private static volatile MongoConnectionContext singleton;
 
     /**
      * Gets the singleton instance.

@@ -9,19 +9,19 @@ branches:
     - create-provider-specific-builders
     - jmeter-multithreaded-tests
     - 53-alternative-cache-implementations
-    - couchprovcleanup
-    - internalise-connection-context
+    - 58-values-stored-as-json
 
 services:
   - rabbitmq
   - mongodb
-  - cassandra
 
-before_install: chmod +x ./config/travis-scripts/*
+before_install:
+  - chmod +x ./config/travis-scripts/*
 
 install:
   - ./config/travis-scripts/prepare-kafka.sh
   - ./config/travis-scripts/prepare-couchbase.sh
+  - ./config/travis-scripts/prepare-cassandra.sh
 
 notifications:
   slack: exceliandev:1eNY8ozgMfUYwzAECmL4LNHi

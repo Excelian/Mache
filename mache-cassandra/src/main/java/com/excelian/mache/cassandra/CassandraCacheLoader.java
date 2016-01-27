@@ -1,10 +1,6 @@
 package com.excelian.mache.cassandra;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.exceptions.DriverException;
-import com.excelian.mache.builder.storage.ConnectionContext;
-import com.excelian.mache.core.MacheLoader;
+import com.excelian.mache.cassandra.builder.CassandraConnectionContext;
 import com.excelian.mache.core.SchemaOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,21 +18,11 @@ import org.springframework.data.cassandra.core.CassandraTemplate;
  * @param <K> Cache key type.
  * @param <V> Cache value type.
  */
-public class CassandraCacheLoader<K, V> implements MacheLoader<K, V> {
+public class CassandraCacheLoader<K, V> extends AbstractCassandraCacheLoader<K, V> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CassandraCacheLoader.class);
-    private static final String CREATE_KEYPSACE = "CREATE KEYSPACE IF NOT EXISTS %s  "
-            + "WITH REPLICATION = {'class':'%s', 'replication_factor':%d}; ";
+    private boolean isTableCreated;
 
-    private final Class<K> keyType;
-    private final Class<V> valueType;
-    private final ConnectionContext<Cluster> connectionContext;
-    private final SchemaOptions schemaOption;
-    private final String replicationClass;
-    private final int replicationFactor;
-    private final String keySpace;
-    private Session session;
-    private boolean isTableCreated = false;
 
     /**
      * @param keyType           The class type of the cache key.
@@ -48,47 +34,21 @@ public class CassandraCacheLoader<K, V> implements MacheLoader<K, V> {
      * @param replicationFactor The replication factor for the keyspace.
      */
     public CassandraCacheLoader(Class<K> keyType, Class<V> valueType,
-                                ConnectionContext<Cluster> connectionContext,
+                                CassandraConnectionContext connectionContext,
                                 SchemaOptions schemaOption, String keySpace,
                                 String replicationClass, int replicationFactor) {
-        this.keyType = keyType;
-        this.connectionContext = connectionContext;
-        this.schemaOption = schemaOption;
-        this.replicationClass = replicationClass;
-        this.replicationFactor = replicationFactor;
-        this.keySpace = keySpace.replace("-", "_").replace(" ", "_").replace(":", "_");
-        this.valueType = valueType;
+        super(keyType, valueType, connectionContext, schemaOption, keySpace, replicationClass, replicationFactor);
     }
 
     @Override
-    public void create() {
-        if (schemaOption.shouldCreateSchema() && session == null) {
-            synchronized (this) {
-                if (session == null) {
-                    session = connectionContext.getConnection(this).connect();
-                    if (schemaOption.shouldCreateSchema()) {
-                        createKeySpace();
-                    }
-                    createTable();
-                }
-            }
-        } else {
-            session = connectionContext.getConnection(this).connect(keySpace);
-        }
+    protected boolean shouldCreateTable() {
+        return !isTableCreated;
     }
 
-    private void createKeySpace() {
-        session.execute(String.format(CREATE_KEYPSACE, keySpace, replicationClass, replicationFactor));
-        session.execute(String.format("USE %s", keySpace));
-        LOG.info("Created keyspace if missing {}", keySpace);
-    }
-
-    private void createTable() {
-        if (!isTableCreated) {
-            CassandraAdminTemplate adminTemplate = new CassandraAdminTemplate(session, new MappingCassandraConverter());
-            adminTemplate.createTable(true, null, valueType, null);
-            isTableCreated = true;
-        }
+    protected void createTable() {
+        CassandraAdminTemplate adminTemplate = new CassandraAdminTemplate(session, new MappingCassandraConverter());
+        adminTemplate.createTable(true, null, valueType, null);
+        isTableCreated = true;
     }
 
     public void put(K key, V value) {
@@ -107,23 +67,6 @@ public class CassandraCacheLoader<K, V> implements MacheLoader<K, V> {
     }
 
     @Override
-    public void close() {
-        if (session != null && !session.isClosed()) {
-            if (schemaOption.shouldDropSchema()) {
-                try {
-                    session.execute(String.format("DROP KEYSPACE %s; ", keySpace));
-                    LOG.info("Dropped keyspace {}", keySpace);
-                } catch (DriverException e) {
-                    LOG.error("Failed to drop keyspace : {}. err={}", keySpace, e);
-                }
-            }
-            session.close();
-            session = null;
-        }
-        this.connectionContext.close(this);
-    }
-
-    @Override
     public String getName() {
         return valueType.getSimpleName();
     }
@@ -132,18 +75,4 @@ public class CassandraCacheLoader<K, V> implements MacheLoader<K, V> {
         return new CassandraTemplate(session);
     }
 
-    @Override
-    public String toString() {
-        return "CassandraCacheLoader{"
-                + "connectionContext=" + connectionContext
-                + ", schemaOption=" + schemaOption
-                + ", replicationClass='" + replicationClass + '\''
-                + ", replicationFactor=" + replicationFactor
-                + ", keySpace='" + keySpace + '\''
-                + ", session=" + session
-                + ", isTableCreated=" + isTableCreated
-                + ", keyType=" + keyType
-                + ", valueType=" + valueType
-                + '}';
-    }
 }

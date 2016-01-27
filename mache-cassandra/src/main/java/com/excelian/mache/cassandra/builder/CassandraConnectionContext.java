@@ -5,7 +5,7 @@ import com.excelian.mache.builder.storage.AbstractConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 
 /**
- * Created by jbowkett on 20/01/2016.
+ * Manages access to Cassandra Cluster.
  */
 public class CassandraConnectionContext extends AbstractConnectionContext<Cluster> {
 
@@ -41,7 +41,7 @@ public class CassandraConnectionContext extends AbstractConnectionContext<Cluste
         }
     }
 
-    private static CassandraConnectionContext singleton;
+    private static volatile CassandraConnectionContext singleton;
 
     static CassandraConnectionContext getInstance(Cluster.Builder clusterBuilder) {
         if (singleton == null) {
