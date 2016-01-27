@@ -19,12 +19,14 @@ public class CassandraConfig {
                     .storedIn(
                     cassandra()
                             .withCluster(Cluster.builder()
-                                .withClusterName("BluePrint")
-                                .addContactPoint("192.168.3.4")
-                                .withPort(9042))
+                            .withClusterName("BluePrint")
+                            .addContactPoint("192.168.3.4")
+                            .withPort(9042))
                             .withKeyspace(keySpace)
                             .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
-                            .build())
+                            .asJsonDocuments()
+                            .inTable("names")
+                            .withIDField("id"))
                     .withNoMessaging()
                     .macheUp();
         });
