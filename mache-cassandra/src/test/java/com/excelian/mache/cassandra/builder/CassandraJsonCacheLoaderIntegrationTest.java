@@ -147,7 +147,7 @@ public class CassandraJsonCacheLoaderIntegrationTest {
                 .asJsonDocuments()
                 .inTable("users")
                 .withIDField("id")
-                .build())
+            )
             .withNoMessaging()
             .macheUp();
     }
