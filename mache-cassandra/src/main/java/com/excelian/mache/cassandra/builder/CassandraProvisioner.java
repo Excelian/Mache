@@ -101,7 +101,8 @@ public class CassandraProvisioner implements StorageProvisioner {
         }
 
         public CassandraJsonProvisionerBuilder asJsonDocuments() {
-            return new CassandraJsonProvisionerBuilder(this);
+            return new CassandraJsonProvisionerBuilder(connectionContext, schemaOptions,
+                keySpace, replicationClass, replicationFactor);
         }
 
 
@@ -111,8 +112,24 @@ public class CassandraProvisioner implements StorageProvisioner {
          */
         public static class CassandraJsonProvisionerBuilder extends CassandraProvisionerBuilder {
 
-            public CassandraJsonProvisionerBuilder(CassandraProvisionerBuilder cassandraProvisionerBuilder) {
-                super(cassandraProvisionerBuilder.connectionContext, cassandraProvisionerBuilder.keySpace);
+            /**
+             * Constructor.
+             *
+             * @param connectionContext shared context for Cassandra managed resources
+             * @param schemaOptions     schema policy
+             * @param keySpace          keyspace name
+             * @param replicationClass  cassandra replication class
+             * @param replicationFactor cassandra replication factor
+             */
+            public CassandraJsonProvisionerBuilder(CassandraConnectionContext connectionContext,
+                                                   SchemaOptions schemaOptions,
+                                                   String keySpace,
+                                                   String replicationClass,
+                                                   int replicationFactor) {
+                super(connectionContext, keySpace);
+                this.schemaOptions = schemaOptions;
+                this.replicationClass = replicationClass;
+                this.replicationFactor = replicationFactor;
             }
 
             public CassandraJsonTableProvisionerBuilder inTable(String tableName) {
