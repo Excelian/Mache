@@ -17,6 +17,7 @@ services:
 
 before_install:
   - chmod +x ./config/travis-scripts/*
+  - chmod +x gradlew
   - ./config/travis-scripts/prepare-environment.sh
 
 install:
@@ -34,11 +35,11 @@ cache:
     - ~/binaries
 
 script: |
-  gradlew check &&
+  ./gradlew check &&
   ./config/travis-scripts/run-rest-test.sh &&
-  gradlew :mache-example:putClient -Parg=10,Cassandra,localhost &&
-  gradlew :mache-example:putClient -Parg=10,Mongo,localhost &&
-  gradlew :mache-example:putClient -Parg=10,Couchbase,localhost
+  ./gradlew :mache-example:putClient -Parg=10,Cassandra,localhost &&
+  ./gradlew :mache-example:putClient -Parg=10,Mongo,localhost &&
+  ./gradlew :mache-example:putClient -Parg=10,Couchbase,localhost
 
 addons:
   apt:

@@ -5,8 +5,6 @@ bin/
 *.iws
 *.ipr
 .gradle/
-gradlew
-gradlew.bat
 out/
 *.class
 .idea/
