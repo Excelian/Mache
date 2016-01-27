@@ -25,6 +25,7 @@ import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandr
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCassandraDbForTests.class)
 public class CassandraCacheLoaderIntegrationTest {
@@ -95,7 +96,7 @@ public class CassandraCacheLoaderIntegrationTest {
         mache.put(key, new TestEntity(key));
         assertNotNull("Expected entry to be in cache prior to removal", mache.get(key));
         mache.remove(key);
-        assertEquals(null, mache.get(key));
+        assertNull(mache.get(key));
     }
 
     @Test

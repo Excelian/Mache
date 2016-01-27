@@ -4,9 +4,7 @@ import com.codeaffine.test.ConditionalIgnoreRule;
 import com.excelian.mache.builder.MacheBuilder;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
-import com.google.common.cache.CacheLoader;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
 import com.mongodb.util.JSON;
 import org.junit.After;
@@ -18,10 +16,9 @@ import java.util.Date;
 
 import static com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
-import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongoConnectionContext;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @IgnoreIf(condition = NoRunningMongoDbForTests.class)
 public class MongoJsonCacheIntegrationTest {
@@ -82,7 +79,7 @@ public class MongoJsonCacheIntegrationTest {
         String key = "rem-test-2";
         mache.put(key, getJsonKey(key));
         mache.remove(key);
-        assertEquals(null, mache.get(key));
+        assertNull(mache.get(key));
     }
 
     @Test

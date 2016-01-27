@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class GuavaMacheTest {
 
@@ -59,7 +60,7 @@ public class GuavaMacheTest {
     @Test
     public void missingKeyShouldReturnNull() {
         String missing = mache.get("Missing");
-        assertEquals(null, missing);
+        assertNull(missing);
     }
 
     @Test

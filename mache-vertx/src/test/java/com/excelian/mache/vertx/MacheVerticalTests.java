@@ -132,7 +132,7 @@ public class MacheVerticalTests {
             response -> {
                 context.assertEquals(200, response.statusCode());
                 String value = instanceCache.getKey("names", "1");
-                context.assertEquals(null, value);
+                context.assertNull(value);
                 async.complete();
             })
             .end();
