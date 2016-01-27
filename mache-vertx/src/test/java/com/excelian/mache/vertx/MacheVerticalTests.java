@@ -65,11 +65,11 @@ public class MacheVerticalTests {
         final Async async = context.async();
 
         vertx.createHttpClient().getNow(8080, "localhost", "/",
-                response -> response.bodyHandler(body -> {
-                    // Check for swagger to be present as the Mache references are loaded via JS scripts
-                    context.assertTrue(body.toString().toLowerCase().contains("swagger"));
-                    async.complete();
-                }));
+            response -> response.bodyHandler(body -> {
+                // Check for swagger to be present as the Mache references are loaded via JS scripts
+                context.assertTrue(body.toString().toLowerCase().contains("swagger"));
+                async.complete();
+            }));
     }
 
     @Ignore("Intermittently failing on the build server with a timeout exception")
@@ -94,10 +94,10 @@ public class MacheVerticalTests {
         vertical.setLocalAddressCheck(address -> false);
 
         vertx.createHttpClient().getNow(8080, "localhost", "/map/names/2",
-                response -> {
-                    context.assertEquals(401, response.statusCode());
-                    asyncRun.complete();
-                });
+            response -> {
+                context.assertEquals(401, response.statusCode());
+                asyncRun.complete();
+            });
     }
 
     @Test
@@ -106,10 +106,10 @@ public class MacheVerticalTests {
 
         instanceCache.putKey("names", "1", "{'name': 'ben'");
         vertx.createHttpClient().getNow(8080, "localhost", "/map/names/1",
-                response -> response.handler(body -> {
-                    context.assertTrue(body.toString().contains("ben"));
-                    async.complete();
-                }));
+            response -> response.handler(body -> {
+                context.assertTrue(body.toString().contains("ben"));
+                async.complete();
+            }));
     }
 
     @Test
@@ -117,10 +117,10 @@ public class MacheVerticalTests {
         final Async async = context.async();
 
         vertx.createHttpClient().getNow(8080, "localhost", "/map/names/2",
-                response -> {
-                    context.assertEquals(400, response.statusCode());
-                    async.complete();
-                });
+            response -> {
+                context.assertEquals(400, response.statusCode());
+                async.complete();
+            });
     }
 
     @Test
@@ -129,13 +129,13 @@ public class MacheVerticalTests {
 
         instanceCache.putKey("names", "1", "{'name': 'ben'}");
         vertx.createHttpClient().delete(8080, "localhost", "/map/names/1",
-                response -> {
-                    context.assertEquals(200, response.statusCode());
-                    String value = instanceCache.getKey("names", "1");
-                    context.assertEquals(null, value);
-                    async.complete();
-                })
-                .end();
+            response -> {
+                context.assertEquals(200, response.statusCode());
+                String value = instanceCache.getKey("names", "1");
+                context.assertEquals(null, value);
+                async.complete();
+            })
+            .end();
     }
 
     @Test
@@ -145,14 +145,14 @@ public class MacheVerticalTests {
         instanceCache.putKey("names", "1", "{'name': 'ben'");
         String jsonData = "{'name': 'ben'}";
         vertx.createHttpClient().put(8080, "localhost", "/map/names/1",
-                response -> {
-                    context.assertEquals(200, response.statusCode());
-                    context.assertEquals(jsonData, instanceCache.getKey("names", "1"));
-                    async.complete();
-                })
-                .putHeader(HttpHeaders.CONTENT_LENGTH, jsonData.length() + "")
-                .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString())
-                .write(jsonData)
-                .end();
+            response -> {
+                context.assertEquals(200, response.statusCode());
+                context.assertEquals(jsonData, instanceCache.getKey("names", "1"));
+                async.complete();
+            })
+            .putHeader(HttpHeaders.CONTENT_LENGTH, jsonData.length() + "")
+            .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString())
+            .write(jsonData)
+            .end();
     }
 }

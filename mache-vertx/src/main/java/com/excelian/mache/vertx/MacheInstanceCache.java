@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 /**
  * Manages the Mache instances created by the vertx REST endpoint
  * <p>
- * The methods exposed from this class are threadsafe
+ * The methods exposed from this class are threadsafe.
  */
 public class MacheInstanceCache {
     private static final Logger LOG = LoggerFactory.getLogger(MacheInstanceCache.class);
@@ -19,7 +19,7 @@ public class MacheInstanceCache {
     private final Supplier<Mache<String, String>> factory;
 
     /**
-     * Creates an instance cache that will retain the queried instances
+     * Creates an instance cache that will retain the queried instances.
      *
      * @param factory A threadsafe factory to dispense new map instances
      */
@@ -41,7 +41,7 @@ public class MacheInstanceCache {
     }
 
     /**
-     * Puts a key/value into the specified map, if the map does not exist it is created
+     * Puts a key/value into the specified map, if the map does not exist it is created.
      *
      * @param mapId The map
      * @param key   The key
@@ -53,7 +53,7 @@ public class MacheInstanceCache {
     }
 
     /**
-     * Get the value for the given map and key
+     * Get the value for the given map and key.
      *
      * @param mapId The map
      * @param key   The key
@@ -73,7 +73,7 @@ public class MacheInstanceCache {
     }
 
     /**
-     * Removes an entry from the cache
+     * Removes an entry from the cache.
      *
      * @param mapId The map to remove
      * @param key   The key to remove

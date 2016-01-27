@@ -18,12 +18,12 @@ import java.net.UnknownHostException;
  * A vertx vertical is synonymous to an Actor. This class will register the routes that we are interested in
  * and forward calls to a MacheInstanceCache
  * <p>
- * Threading/synchronisation is handled by the map instances
+ * Threading/synchronisation is handled by the map instances.
  */
 public class MacheVertical extends AbstractVerticle {
 
     /**
-     * Utility to detect if a specific IP is a loopback address or bound on any local NIC
+     * Utility to detect if a specific IP is a loopback address or bound on any local NIC.
      */
     @FunctionalInterface
     public interface LocalAddressCheck {
@@ -68,14 +68,14 @@ public class MacheVertical extends AbstractVerticle {
                 .createHttpServer()
                 .requestHandler(router::accept)
                 .listen(serviceConfiguration.getBindPort(), serviceConfiguration.getBindIp(),
-                        handler -> {
-                            if (handler.succeeded()) {
-                                LOG.info("Running on http://{}:{}/",
-                                        serviceConfiguration.getBindIp(), serviceConfiguration.getBindPort());
-                            } else {
-                                LOG.error("Failed to listen on port {}", serviceConfiguration.getBindPort());
-                            }
-                        });
+                    handler -> {
+                        if (handler.succeeded()) {
+                            LOG.info("Running on http://{}:{}/",
+                                    serviceConfiguration.getBindIp(), serviceConfiguration.getBindPort());
+                        } else {
+                            LOG.error("Failed to listen on port {}", serviceConfiguration.getBindPort());
+                        }
+                    });
     }
 
     private void registerRoutes(Router router) {
