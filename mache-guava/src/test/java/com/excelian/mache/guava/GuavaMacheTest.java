@@ -57,7 +57,7 @@ public class GuavaMacheTest {
     }
 
     @Test
-    public void missingKeyShouldReturnNull(){
+    public void missingKeyShouldReturnNull() {
         String missing = mache.get("Missing");
         assertEquals(null, missing);
     }

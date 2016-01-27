@@ -23,7 +23,7 @@ public class GuavaMache<K, V> implements Mache<K, V> {
 
     /**
      * @param cacheLoader The MacheLoader of the backing store for this Mache.
-     * @param cache The created Guava LoadingCache.
+     * @param cache       The created Guava LoadingCache.
      */
     public GuavaMache(final MacheLoader<K, V> cacheLoader, LoadingCache<K, V> cache) {
         this.cacheLoader = cacheLoader;
@@ -48,7 +48,7 @@ public class GuavaMache<K, V> implements Mache<K, V> {
         // the value and if missing return null
         try {
             return cache.getUnchecked(key);
-        } catch (CacheLoader.InvalidCacheLoadException e){
+        } catch (CacheLoader.InvalidCacheLoadException e) {
             return null;
         }
     }

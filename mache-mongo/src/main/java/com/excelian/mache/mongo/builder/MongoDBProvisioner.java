@@ -31,11 +31,12 @@ public class MongoDBProvisioner implements StorageProvisioner {
 
     /**
      * Constructor.
+     *
      * @param connectionContext - connectionContext
-     * @param credentials - credentials
-     * @param clientOptions - clientOptions
-     * @param database - database
-     * @param schemaOptions - schemaOptions
+     * @param credentials       - credentials
+     * @param clientOptions     - clientOptions
+     * @param database          - database
+     * @param schemaOptions     - schemaOptions
      * @param collectionOptions - collectionOptions
      */
     private MongoDBProvisioner(MongoConnectionContext connectionContext, List<MongoCredential> credentials,
@@ -52,6 +53,7 @@ public class MongoDBProvisioner implements StorageProvisioner {
 
     /**
      * Gets default mongodb config.
+     *
      * @return the start of the builder for mongodb
      */
     public static SeedsListBuilder mongodb() {
@@ -64,6 +66,7 @@ public class MongoDBProvisioner implements StorageProvisioner {
 
     /**
      * Creates a mongo connection context from the server addresses.
+     *
      * @param seeds the mongo servers
      * @return the connection context
      */
@@ -76,10 +79,10 @@ public class MongoDBProvisioner implements StorageProvisioner {
         // TODO this is the wrong approach but gets tests running for now
         if (valueType == String.class) {
             return new MongoDBJsonCacheLoader(connectionContext, mongoCredentials, clientOptions, database,
-                    schemaOptions);
+                schemaOptions);
         } else {
-            return new MongoDBCacheLoader<>(keyType, valueType, connectionContext, mongoCredentials, clientOptions, database,
-                    schemaOptions, collectionOptions);
+            return new MongoDBCacheLoader<>(keyType, valueType, connectionContext, mongoCredentials,
+                clientOptions, database, schemaOptions, collectionOptions);
         }
     }
 

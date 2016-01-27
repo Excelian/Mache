@@ -21,9 +21,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.jms.JMSException;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import javax.jms.JMSException;
 
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static org.junit.Assert.assertEquals;
@@ -62,10 +62,12 @@ public class MessageQueueObservableCacheFactoryTest {
         BaseCoordinationEntryEventConsumer<String> inMemoryConsumer2 = getInMemoryConsumer();
 
         when(mqFactory1.getConsumer(mqConfiguration)).thenReturn(inMemoryConsumer1);
-        when(mqFactory1.getProducer(mqConfiguration)).thenReturn(getInMemProducer(inMemoryConsumer1, inMemoryConsumer2));
+        when(mqFactory1.getProducer(mqConfiguration)).thenReturn(
+            getInMemProducer(inMemoryConsumer1, inMemoryConsumer2));
 
         when(mqFactory2.getConsumer(mqConfiguration)).thenReturn(inMemoryConsumer2);
-        when(mqFactory2.getProducer(mqConfiguration)).thenReturn(getInMemProducer(inMemoryConsumer1, inMemoryConsumer2));
+        when(mqFactory2.getProducer(mqConfiguration)).thenReturn(
+            getInMemProducer(inMemoryConsumer1, inMemoryConsumer2));
 
         observableCacheFactory1 = new MessageQueueObservableCacheFactory<>(mqFactory1, mqConfiguration, uuidUtils);
         observableCacheFactory2 = new MessageQueueObservableCacheFactory<>(mqFactory2, mqConfiguration, uuidUtils);
@@ -94,7 +96,7 @@ public class MessageQueueObservableCacheFactoryTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldProperlyInvalidateFromAnotherCacheWhenItemPut() throws ExecutionException, InterruptedException {
+    public void shouldProperlyInvalidateFromAnotherCacheWhenItemPut() throws Exception {
         Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(
                 macheFactory.create(String.class, TestEntity.class, cacheLoader2));
         reset(spiedCache1);
@@ -103,7 +105,7 @@ public class MessageQueueObservableCacheFactoryTest {
     }
 
     @Test
-    public void shouldProperlyPropagateValues() throws ExecutionException, InterruptedException, JMSException {
+    public void shouldProperlyPropagateValues() throws Exception {
         MacheLoader<String, TestEntity2> cacheLoader =
                 new HashMapCacheLoader<>(TestEntity2.class);
         ObservableCacheFactory<String, TestEntity2> observableCacheFactory1 =
@@ -129,21 +131,22 @@ public class MessageQueueObservableCacheFactoryTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldNotInvalidateFromAnotherCacheWhenItemFetched() throws ExecutionException, InterruptedException {
+    public void shouldNotInvalidateFromAnotherCacheWhenItemFetched() throws Exception {
         // a get in one cache does nothing to the other
 
         Mache<String, TestEntity> cache1 = observableCacheFactory1.createCache(
                 macheFactory.create(String.class, TestEntity.class, cacheLoader1));
-        Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(
-                macheFactory.create(String.class, TestEntity.class, cacheLoader1));
 
-		/* insert data into loader and ensure it is within cache */
+        /* insert data into loader and ensure it is within cache */
         cache1.put(testValue2.pkey, testValue2);
         assertNotNull(cache1.get(testValue2.pkey));
 
         /* reset mocks */
         reset(spiedCache1);
+
         /* pull it into 2nd cache (this should NOT affect any other cache*/
+        Mache<String, TestEntity> cache2 = observableCacheFactory2.createCache(
+            macheFactory.create(String.class, TestEntity.class, cacheLoader1));
         assertNotNull(cache2.get(testValue2.pkey));
 
         verify(spiedCache1, never()).invalidate(testValue2.pkey);
@@ -151,7 +154,7 @@ public class MessageQueueObservableCacheFactoryTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldNotInvalidateSameCacheOnPut() throws ExecutionException, InterruptedException {
+    public void shouldNotInvalidateSameCacheOnPut() throws Exception {
         reset(spiedCache1);
         unspiedCache1.put(testValue2.pkey, testValue2);
 
@@ -161,10 +164,11 @@ public class MessageQueueObservableCacheFactoryTest {
     private BaseCoordinationEntryEventConsumer<String> getInMemoryConsumer() {
         return new BaseCoordinationEntryEventConsumer<String>("testTopic") {
             @Override
-            public void beginSubscriptionThread() throws InterruptedException, JMSException, IOException {
+            public void beginSubscriptionThread() throws InterruptedException,
+                JMSException, IOException {
                 final CoordinationEntryEvent<String> event = gson.fromJson(currentMessage,
-                        new TypeToken<CoordinationEntryEvent<String>>() {
-                        }.getType());
+                    new TypeToken<CoordinationEntryEvent<String>>() {
+                    }.getType());
 
                 if (event != null) {
                     routeEventToListeners(event);

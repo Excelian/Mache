@@ -48,7 +48,7 @@ public class CouchbaseConnectionContext extends AbstractConnectionContext<Cluste
         }
     }
 
-    private static CouchbaseConnectionContext singletonInstance;
+    private static volatile CouchbaseConnectionContext singletonInstance;
 
     /**
      * Gets the singleton.

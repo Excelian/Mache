@@ -10,13 +10,10 @@ branches:
     - jmeter-multithreaded-tests
     - 53-alternative-cache-implementations
     - Vertx-REST-Spike
-    - couchprovcleanup
-    - internalise-connection-context
 
 services:
   - rabbitmq
   - mongodb
-  - cassandra
 
 before_install:
   - chmod +x ./config/travis-scripts/*
@@ -25,6 +22,7 @@ before_install:
 install:
   - ./config/travis-scripts/prepare-kafka.sh
   - ./config/travis-scripts/prepare-couchbase.sh
+  - ./config/travis-scripts/prepare-cassandra.sh
 
 notifications:
   slack: exceliandev:1eNY8ozgMfUYwzAECmL4LNHi

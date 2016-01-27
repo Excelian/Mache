@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
  * Example Spring Data Mongo Annotated Object.
  */
 @Document
-public class MongoAnnotatedMessage implements Example.KeyedMessge{
+public class MongoAnnotatedMessage implements Example.KeyedMessge {
 
     @Field
     private final String msg;

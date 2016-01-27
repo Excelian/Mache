@@ -28,7 +28,7 @@ public class MacheBuilder<K, V> {
 
     public static <K, V> FluentMacheBuilder<K, V> mache(Class<K> keyType, Class<V> valueType) {
         return cacheProvisioner -> storageProvisioner -> messagingProvisioner ->
-                new MacheBuilder<>(keyType, valueType, cacheProvisioner, storageProvisioner, messagingProvisioner);
+            new MacheBuilder<>(keyType, valueType, cacheProvisioner, storageProvisioner, messagingProvisioner);
     }
 
     /**
@@ -44,6 +44,7 @@ public class MacheBuilder<K, V> {
         Mache<K, V> cache = cacheProvisioner.create(keyType, valueType, cacheLoader);
         return messagingProvisioner.wireInMessaging(cache);
     }
+
     /**
      * Adds a cache provisioner.
      *

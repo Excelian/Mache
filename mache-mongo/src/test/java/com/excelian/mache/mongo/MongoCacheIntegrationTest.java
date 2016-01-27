@@ -97,7 +97,7 @@ public class MongoCacheIntegrationTest {
 
     @Test
     public void testInvalidate() throws Exception {
-        try(final Mache<String, TestEntity> anotherMache = getMache(connectionContext)) {
+        try (final Mache<String, TestEntity> anotherMache = getMache(connectionContext)) {
 
             final String key = "test-1";
             final String expectedDescription = "test1-description";
@@ -118,7 +118,7 @@ public class MongoCacheIntegrationTest {
         this.mache.put("test-2", new TestEntity("test-2"));
         this.mache.put("test-3", new TestEntity("test-3"));
 
-        try(Mache<String, TestEntity> anotherMacheInstance = getMache(connectionContext)) {
+        try (Mache<String, TestEntity> anotherMacheInstance = getMache(connectionContext)) {
 
             TestEntity test = anotherMacheInstance.get("test-2");
             assertEquals("test-2", test.pkString);

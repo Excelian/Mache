@@ -130,18 +130,15 @@ public abstract class TestEventingBase {
         MQFactory<String> mqFactory = buildMQFactory();
         BaseCoordinationEntryEventConsumer<String> consumer1 =
                 mqFactory.getConsumer(getConfigurationForEntity(TestEntity.class));
-        BaseCoordinationEntryEventConsumer<String> consumer2 =
-                mqFactory.getConsumer(getConfigurationForEntity(TestEntity.class));
-        BaseCoordinationEntryEventProducer<String> producer =
-                mqFactory.getProducer(getConfigurationForEntity(TestEntity.class));
 
         CacheEventCollector<String> collector1 = new CacheEventCollector<>();
-        CacheEventCollector<String> collector2 = new CacheEventCollector<>();
-
         consumer1.registerEventListener(collector1);
         consumer1.beginSubscriptionThread();
         drainQueues(collector1, 120);
 
+        BaseCoordinationEntryEventConsumer<String> consumer2 =
+            mqFactory.getConsumer(getConfigurationForEntity(TestEntity.class));
+        CacheEventCollector<String> collector2 = new CacheEventCollector<>();
         consumer2.registerEventListener(collector2);
         consumer2.beginSubscriptionThread();
         drainQueues(collector2, 120);
@@ -149,6 +146,8 @@ public abstract class TestEventingBase {
         CoordinationEntryEvent<String> event = new CoordinationEntryEvent<>(getUuid(), TestEntity.class.getName(),
             "ID1", CREATED, new UuidUtils());
 
+        BaseCoordinationEntryEventProducer<String> producer =
+            mqFactory.getProducer(getConfigurationForEntity(TestEntity.class));
         producer.send(event);
 
         try {

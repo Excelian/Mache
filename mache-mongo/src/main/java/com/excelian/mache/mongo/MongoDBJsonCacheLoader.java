@@ -3,7 +3,13 @@ package com.excelian.mache.mongo;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.mongo.builder.MongoConnectionContext;
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
 import com.mongodb.util.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,13 +17,13 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Loads Mongo data as JSON
+ * Loads Mongo data as JSON.
  *
- * @param <K>
- * @param <V>
+ * @param <K> Key
+ * @param <V> Value
  * @implNote This does not use Spring and will directly interface with Mongo
- * TODO move to mongo V3 api, the older API is deprecated but will work
- * TODO remove unused generic arguments, some references will break if changed ar present
+ *           TODO move to mongo V3 api, the older API is deprecated but will work
+ *           TODO remove unused generic arguments, some references will break if changed ar present
  */
 public class MongoDBJsonCacheLoader<K, V> implements MacheLoader<String, String> {
     private static final Logger LOG = LoggerFactory.getLogger(MongoDBJsonCacheLoader.class);
@@ -29,6 +35,15 @@ public class MongoDBJsonCacheLoader<K, V> implements MacheLoader<String, String>
 
     private MongoClient mongoClient;
 
+    /**
+     * TODO To be refactored.
+     *
+     * @param mongoConnectionContext A
+     * @param credentials            A
+     * @param clientOptions          A
+     * @param database               A
+     * @param schemaOptions          A
+     */
     public MongoDBJsonCacheLoader(MongoConnectionContext mongoConnectionContext,
                                   List<MongoCredential> credentials,
                                   MongoClientOptions clientOptions,
@@ -117,12 +132,12 @@ public class MongoDBJsonCacheLoader<K, V> implements MacheLoader<String, String>
     @Override
     public String toString() {
         return "MongoDBJsonCacheLoader{"
-                + "credentials=" + credentials
-                + ", clientOptions=" + clientOptions
-                + ", mongoClient=" + mongoClient
-                + ", mongoConnectionContext=" + mongoConnectionContext
-                + ", schemaOptions=" + schemaOptions
-                + ", database='" + database + '\''
-                + '}';
+            + "credentials=" + credentials
+            + ", clientOptions=" + clientOptions
+            + ", mongoClient=" + mongoClient
+            + ", mongoConnectionContext=" + mongoConnectionContext
+            + ", schemaOptions=" + schemaOptions
+            + ", database='" + database + '\''
+            + '}';
     }
 }

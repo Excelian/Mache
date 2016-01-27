@@ -1,8 +1,7 @@
 package com.excelian.mache.jmeter.cassandra.knownkeys;
 
 import com.datastax.driver.core.Cluster;
-import com.excelian.mache.builder.storage.ConnectionContext;
-import com.excelian.mache.cassandra.CassandraCacheLoader;
+import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.cassandra.AbstractCassandraSamplerClient;
 import com.excelian.mache.jmeter.cassandra.CassandraTestEntity;
@@ -18,8 +17,7 @@ import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandr
  */
 public class ReadFromDB extends AbstractCassandraSamplerClient {
     private static final long serialVersionUID = 251140199032740124L;
-    private CassandraCacheLoader<String, CassandraTestEntity> db;
-    private ConnectionContext<Cluster> connectionContext;
+    private MacheLoader<String, CassandraTestEntity> db;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -47,13 +45,6 @@ public class ReadFromDB extends AbstractCassandraSamplerClient {
     public void teardownTest(JavaSamplerContext context) {
         if (db != null) {
             db.close();
-        }
-        if (connectionContext != null) {
-            try {
-                connectionContext.close();
-            } catch (Exception e) {
-                getLogger().error("Error closing cassandra context", e);
-            }
         }
     }
 

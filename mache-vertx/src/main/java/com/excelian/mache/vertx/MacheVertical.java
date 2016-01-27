@@ -65,24 +65,24 @@ public class MacheVertical extends AbstractVerticle {
         registerRoutes(router);
 
         vertx
-                .createHttpServer()
-                .requestHandler(router::accept)
-                .listen(serviceConfiguration.getBindPort(), serviceConfiguration.getBindIp(),
-                    handler -> {
-                        if (handler.succeeded()) {
-                            LOG.info("Running on http://{}:{}/",
-                                    serviceConfiguration.getBindIp(), serviceConfiguration.getBindPort());
-                        } else {
-                            LOG.error("Failed to listen on port {}", serviceConfiguration.getBindPort());
-                        }
-                    });
+            .createHttpServer()
+            .requestHandler(router::accept)
+            .listen(serviceConfiguration.getBindPort(), serviceConfiguration.getBindIp(),
+                handler -> {
+                    if (handler.succeeded()) {
+                        LOG.info("Running on http://{}:{}/",
+                            serviceConfiguration.getBindIp(), serviceConfiguration.getBindPort());
+                    } else {
+                        LOG.error("Failed to listen on port {}", serviceConfiguration.getBindPort());
+                    }
+                });
     }
 
     private void registerRoutes(Router router) {
         router.route().handler(context -> {
             try {
                 boolean isLocal = localAddressCheck.isLocalAddress(
-                        InetAddress.getByName(context.request().remoteAddress().host()));
+                    InetAddress.getByName(context.request().remoteAddress().host()));
 
                 if (serviceConfiguration.isLocalOnly() && !isLocal) {
                     context.fail(401);
@@ -100,11 +100,11 @@ public class MacheVertical extends AbstractVerticle {
         router.exceptionHandler(this::handleException);
 
         router.route(HttpMethod.DELETE, "/map/:mapName/:key")
-                .handler(this::handleDeleteMap);
+            .handler(this::handleDeleteMap);
         router.route(HttpMethod.GET, "/map/:mapName/:key")
-                .handler(this::handleGetMap); // avoid static handler interception
+            .handler(this::handleGetMap); // avoid static handler interception
         router.route(HttpMethod.PUT, "/map/:mapName/:key")
-                .handler(this::handlePutMap);
+            .handler(this::handlePutMap);
 
         // Register static handler last to avoid GET on a map URL being intercepted
         router.route().handler(StaticHandler.create());
@@ -122,8 +122,8 @@ public class MacheVertical extends AbstractVerticle {
             String value = instanceCache.getKey(mapName, key);
             if (value == null) {
                 req.response()
-                        .setStatusCode(400)
-                        .end("key not found");
+                    .setStatusCode(400)
+                    .end("key not found");
             } else {
                 req.response().end(value);
             }

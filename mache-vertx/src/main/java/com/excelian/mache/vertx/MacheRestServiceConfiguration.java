@@ -1,7 +1,7 @@
 package com.excelian.mache.vertx;
 
 /**
- * Options used to start the REST service
+ * Options used to start the REST service.
  */
 public class MacheRestServiceConfiguration {
     private int bindPort = 8080;
@@ -9,15 +9,16 @@ public class MacheRestServiceConfiguration {
     private boolean localOnly = true;
 
     /**
-     * Creates a default configuration
+     * Creates a default configuration.
      */
     public MacheRestServiceConfiguration() {
     }
 
     /**
-     * Creates a service configuration with the given settings
-     * @param bindPort The port to bind on
-     * @param bindIp The address to bind on
+     * Creates a service configuration with the given settings.
+     *
+     * @param bindPort  The port to bind on
+     * @param bindIp    The address to bind on
      * @param localOnly Indicates if only loopback connections are allowed to this instance
      */
     public MacheRestServiceConfiguration(int bindPort, String bindIp, boolean localOnly) {

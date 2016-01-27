@@ -33,8 +33,8 @@ public class ActiveMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
     private volatile boolean notStopped = true;
 
     /**
-     * @param connection The ActiveMQ Connection to use.
-     * @param producerTopicName The topic name to receive events from.
+     * @param connection          The ActiveMQ Connection to use.
+     * @param producerTopicName   The topic name to receive events from.
      * @param acknowledgementMode The JMS acknowledgement mode to use.
      * @throws JMSException If a JMS error occurred.
      */
@@ -48,32 +48,32 @@ public class ActiveMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
 
     @Override
     public void beginSubscriptionThread() throws InterruptedException, JMSException {
-        final Type genericType = new TypeToken<CoordinationEntryEvent<K>>() {}.getType();
+        final Type genericType = new TypeToken<CoordinationEntryEvent<K>>() { }.getType();
         final Gson gson = new Gson();
 
         task = executor.submit(() -> {
-                while (notStopped) {
-                    try {
-                        TextMessage message = (TextMessage) consumer.receive(1);
+            while (notStopped) {
+                try {
+                    TextMessage message = (TextMessage) consumer.receive(1);
 
-                        if (message != null) {
+                    if (message != null) {
 
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("[ActiveMQEventConsumer {}] Received Message: {}",
-                                        Thread.currentThread().getId(), message.getText());
-                            }
-
-                            final CoordinationEntryEvent<K> event = gson.fromJson(message.getText(), genericType);
-
-                            routeEventToListeners(event);
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("[ActiveMQEventConsumer {}] Received Message: {}",
+                                Thread.currentThread().getId(), message.getText());
                         }
-                    } catch (JMSException e) {
-                        LOG.error("[ActiveMQEventConsumer {}] eventConsumer - could not 'take' event.\\n{}",
-                                Thread.currentThread().getId(), e);
-                        throw new RuntimeException(e);
+
+                        final CoordinationEntryEvent<K> event = gson.fromJson(message.getText(), genericType);
+
+                        routeEventToListeners(event);
                     }
+                } catch (JMSException e) {
+                    LOG.error("[ActiveMQEventConsumer {}] eventConsumer - could not 'take' event.\\n{}",
+                        Thread.currentThread().getId(), e);
+                    throw new RuntimeException(e);
                 }
-            });
+            }
+        });
     }
 
     @Override
