@@ -68,11 +68,11 @@ public class CassandraProvisioner implements StorageProvisioner {
      * A builder with defaults for a Cassandra cluster.
      */
     public static class CassandraProvisionerBuilder {
-        private final CassandraConnectionContext connectionContext;
-        private final String keySpace;
-        private SchemaOptions schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
-        private String replicationClass = "SimpleStrategy";
-        private int replicationFactor = 1;
+        protected final CassandraConnectionContext connectionContext;
+        protected final String keySpace;
+        protected SchemaOptions schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
+        protected String replicationClass = "SimpleStrategy";
+        protected int replicationFactor = 1;
 
         private CassandraProvisionerBuilder(CassandraConnectionContext connectionContext, String keySpace) {
             this.connectionContext = connectionContext;
@@ -108,27 +108,37 @@ public class CassandraProvisioner implements StorageProvisioner {
          * Provisions Cassandra Cache Loaders that can persist and serve values
          * as JSON Strings.
          */
-        public class CassandraJsonProvisionerBuilder extends CassandraProvisionerBuilder {
-            private String tableName;
-            private String idField;
+        public static class CassandraJsonProvisionerBuilder extends CassandraProvisionerBuilder {
 
             public CassandraJsonProvisionerBuilder(CassandraProvisionerBuilder cassandraProvisionerBuilder) {
                 super(cassandraProvisionerBuilder.connectionContext, cassandraProvisionerBuilder.keySpace);
             }
 
-            public CassandraJsonProvisionerBuilder inTable(String tableName) {
-                this.tableName = tableName;
-                return this;
+            public CassandraJsonTableProvisionerBuilder inTable(String tableName) {
+                return new CassandraJsonTableProvisionerBuilder() {
+
+                    public AnonBuilder withIDField(String idField) {
+
+                        return new AnonBuilder() {
+
+                            @Override
+                            public CassandraJsonProvisioner build() {
+                                return new CassandraJsonProvisioner(connectionContext, schemaOptions,
+                                    keySpace, replicationClass, replicationFactor, tableName, idField);
+                            }
+                        };
+                    }
+                };
             }
 
-            public CassandraJsonProvisionerBuilder withIDField(String idField) {
-                this.idField = idField;
-                return this;
+            public interface AnonBuilder {
+                public CassandraJsonProvisioner build();
             }
 
-            public CassandraJsonProvisioner build() {
-                return new CassandraJsonProvisioner(connectionContext, schemaOptions,
-                    keySpace, replicationClass, replicationFactor, tableName, idField);
+
+            public interface CassandraJsonTableProvisionerBuilder {
+                public AnonBuilder withIDField(String idField);
+
             }
         }
     }
