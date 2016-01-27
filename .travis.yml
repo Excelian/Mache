@@ -34,11 +34,11 @@ cache:
     - ~/binaries
 
 script: |
-  gradle check &&
+  gradlew check &&
   ./config/travis-scripts/run-rest-test.sh &&
-  gradle :mache-example:putClient -Parg=10,Cassandra,localhost &&
-  gradle :mache-example:putClient -Parg=10,Mongo,localhost &&
-  gradle :mache-example:putClient -Parg=10,Couchbase,localhost
+  gradlew :mache-example:putClient -Parg=10,Cassandra,localhost &&
+  gradlew :mache-example:putClient -Parg=10,Mongo,localhost &&
+  gradlew :mache-example:putClient -Parg=10,Couchbase,localhost
 
 addons:
   apt:
