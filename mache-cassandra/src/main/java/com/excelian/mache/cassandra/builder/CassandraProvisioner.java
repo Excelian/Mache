@@ -16,6 +16,15 @@ public class CassandraProvisioner implements StorageProvisioner {
     private final String replicationClass;
     private final int replicationFactor;
 
+    /**
+     * Constructor.
+     *
+     * @param connectionContext - the central storage of managed resources
+     * @param schemaOptions     - policy for schema creation
+     * @param keySpace          - where to store the tables
+     * @param replicationClass  - Cassandra replication class
+     * @param replicationFactor - Cassandra replication factor
+     */
     protected CassandraProvisioner(CassandraConnectionContext connectionContext,
                                    SchemaOptions schemaOptions, String keySpace,
                                    String replicationClass, int replicationFactor) {
@@ -112,6 +121,10 @@ public class CassandraProvisioner implements StorageProvisioner {
                         keySpace, replicationClass, replicationFactor, tableName, idField);
             }
 
+            /**
+             * Allows specification of ID/primary key field for the JSON doc
+             * store.
+             */
             public interface CassandraJsonTableProvisionerBuilder {
                 CassandraJsonProvisioner withIDField(String idField);
             }
