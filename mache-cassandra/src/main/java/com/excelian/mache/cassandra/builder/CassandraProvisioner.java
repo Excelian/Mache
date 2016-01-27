@@ -132,6 +132,12 @@ public class CassandraProvisioner implements StorageProvisioner {
                 this.replicationFactor = replicationFactor;
             }
 
+            /**
+             * Specifies the table for the documents to be stored.
+             *
+             * @param tableName tableName
+             * @return the provisioner for the CassandraJsonCacheLoader
+             */
             public CassandraJsonTableProvisionerBuilder inTable(String tableName) {
                 return idField ->
                     new CassandraJsonProvisioner(connectionContext, schemaOptions,
