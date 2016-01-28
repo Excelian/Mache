@@ -3,6 +3,7 @@ package com.excelian.mache.cassandra.builder;
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.excelian.mache.cassandra.NoRunningCassandraDbForTests;
 import com.excelian.mache.core.Mache;
@@ -18,6 +19,7 @@ import static com.excelian.mache.core.SchemaOptions.CREATE_SCHEMA_IF_NEEDED;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningCassandraDbForTests.class)
 public class CassandraJsonCacheLoaderIntegrationTest {
@@ -85,23 +87,71 @@ public class CassandraJsonCacheLoaderIntegrationTest {
         throws Exception {
         given_anInsertedRecordWithRawColumnValues();
         when_theCacheIsQueriedForKey("user123");
-        then_theValueReadIs("{\"id\": \"user123\", \"age\": 42, \"state\": \"TX\"}");
+        then_theValueReadIs(jsonDoc("user123", 42, "TX"));
     }
 
     @Test
     public void ensureAJsonDocumentCanBeReadAsJsonFromExistingRecordsWhenThatRecordWasInsertedAsJson()
         throws Exception {
-        given_anInsertedRecordWithJsonValues();
+        given_anInsertedRecordWithJson(jsonDoc("user123-JSON", 44, "TX"));
         when_theCacheIsQueriedForKey("user123-JSON");
-        then_theValueReadIs("{\"id\": \"user123-JSON\", \"age\": 44, \"state\": \"TX\"}");
+        then_theValueReadIs(jsonDoc("user123-JSON", 44, "TX"));
     }
 
     @Test
     public void ensureAJsonDocumentCanBeWrittenBackToTheTableFromTheCache() throws Exception {
-        final String jsonDocValue = "{\"id\": \"new-key-123\", \"age\": 99, \"state\": \"MA\"}";
+        final String jsonDocValue = jsonDoc("new-key-123", 99, "MA");
         given_TheCachePut("new-key-123", jsonDocValue);
         when_theDatabaseIsQueriedForKey("new-key-123");
         then_theValueRetrievedFromTheDatabaseIs(jsonDocValue);
+    }
+
+    @Test
+    public void ensureAJsonDocumentCanBeDeletedFromTheTableByTheCacheLoader() throws Exception {
+        given_anInsertedRecordWithJson(jsonDoc("user123-JSON", 44, "TX"));
+        given_theCacheIsWarmedWithTheKey("user123-JSON");
+        when_removeIsCalledOnTheCacheWithKey("user123-JSON");
+        then_theDatabaseContainsNullForKey("user123-JSON");
+    }
+
+    @Test
+    public void ensureAJsonDocumentCanBeUpdatedInTheTableByTheCacheLoader() throws Exception {
+        given_anInsertedRecordWithJson(jsonDoc("user123-JSON", 44, "TX"));
+        given_theCacheIsWarmedWithTheKey("user123-JSON");
+        when_putIsCalledOnTheCacheWithKeyAndValue("user123-JSON", jsonDoc("user123-JSON", 145, "MA"));
+        then_theDatabaseContainsTheValueForForKey("user123-JSON", jsonDoc("user123-JSON", 145, "MA"));
+    }
+
+    @Test
+    public void ensureANonExistentValueInTheDBAndTheCacheYieldsNullFromGet() throws Exception {
+        when_theCacheIsQueriedForKey("NON-EXISTENT");
+        then_theValueReadIs(null);
+    }
+
+    private void then_theDatabaseContainsTheValueForForKey(String key, String expectedJsonDoc) {
+        when_theDatabaseIsQueriedForKey(key);
+        assertEquals(expectedJsonDoc, this.resultFromDatabase);
+    }
+
+    private void when_putIsCalledOnTheCacheWithKeyAndValue(String key, String jsonDoc) {
+        cache.put(key, jsonDoc);
+    }
+
+    private String jsonDoc(final String id, final int age, final String state) {
+        return "{\"id\": \"" + id + "\", \"age\": " + age + ", \"state\": \"" + state + "\"}";
+    }
+
+    private void then_theDatabaseContainsNullForKey(String key) {
+        when_theDatabaseIsQueriedForKey(key);
+        assertNull(resultFromDatabase);
+    }
+
+    private void when_removeIsCalledOnTheCacheWithKey(String key) {
+        this.cache.remove(key);
+    }
+
+    private void given_theCacheIsWarmedWithTheKey(String key) {
+        when_theCacheIsQueriedForKey(key);
     }
 
     private void then_theValueRetrievedFromTheDatabaseIs(String expectedValue) {
@@ -111,7 +161,12 @@ public class CassandraJsonCacheLoaderIntegrationTest {
     private void when_theDatabaseIsQueriedForKey(String key) {
         final String select = format("SELECT JSON * from %s.users where id = '%s';", KEY_SPACE, key);
         final ResultSet resultSet = getSession().execute(select);
-        resultFromDatabase = resultSet.one().getString(0);
+        final Row row = resultSet.one();
+        if (row != null) {
+            resultFromDatabase = row.getString(0);
+        } else {
+            resultFromDatabase = null;
+        }
     }
 
     private void given_TheCachePut(String key, String value) {
@@ -126,8 +181,7 @@ public class CassandraJsonCacheLoaderIntegrationTest {
         cachedValueForKey = cache.get(key);
     }
 
-    private void given_anInsertedRecordWithJsonValues() {
-        final String jsonValue = "{\"id\": \"user123-JSON\", \"age\": 44, \"state\": \"TX\"}";
+    private void given_anInsertedRecordWithJson(String jsonValue) {
         final String insert = format("INSERT INTO %s.users JSON '%s';", KEY_SPACE, jsonValue);
         getSession().execute(insert);
     }
