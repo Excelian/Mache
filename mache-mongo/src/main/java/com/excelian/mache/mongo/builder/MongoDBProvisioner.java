@@ -5,6 +5,7 @@ import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.mongo.MongoDBCacheLoader;
+import com.excelian.mache.mongo.MongoDBJsonCacheLoader;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
@@ -30,11 +31,12 @@ public class MongoDBProvisioner implements StorageProvisioner {
 
     /**
      * Constructor.
+     *
      * @param connectionContext - connectionContext
-     * @param credentials - credentials
-     * @param clientOptions - clientOptions
-     * @param database - database
-     * @param schemaOptions - schemaOptions
+     * @param credentials       - credentials
+     * @param clientOptions     - clientOptions
+     * @param database          - database
+     * @param schemaOptions     - schemaOptions
      * @param collectionOptions - collectionOptions
      */
     private MongoDBProvisioner(MongoConnectionContext connectionContext, List<MongoCredential> credentials,
@@ -51,6 +53,7 @@ public class MongoDBProvisioner implements StorageProvisioner {
 
     /**
      * Gets default mongodb config.
+     *
      * @return the start of the builder for mongodb
      */
     public static SeedsListBuilder mongodb() {
@@ -63,6 +66,7 @@ public class MongoDBProvisioner implements StorageProvisioner {
 
     /**
      * Creates a mongo connection context from the server addresses.
+     *
      * @param seeds the mongo servers
      * @return the connection context
      */
@@ -72,8 +76,14 @@ public class MongoDBProvisioner implements StorageProvisioner {
 
     @Override
     public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-        return new MongoDBCacheLoader<>(keyType, valueType, connectionContext,
-            mongoCredentials, clientOptions, database, schemaOptions, collectionOptions);
+        // TODO this is the wrong approach but gets tests running for now
+        if (valueType == String.class) {
+            return new MongoDBJsonCacheLoader(connectionContext, mongoCredentials, clientOptions, database,
+                schemaOptions);
+        } else {
+            return new MongoDBCacheLoader<>(keyType, valueType, connectionContext, mongoCredentials,
+                clientOptions, database, schemaOptions, collectionOptions);
+        }
     }
 
     /**

@@ -1,0 +1,78 @@
+host: localhost:8080
+swagger: '2.0'
+info:
+  description: The mache REST API provides methods allowing you to access your map remotely
+  version: "1.0.0"
+  title: Mache Rest API
+
+produces:
+  - application/json
+paths:
+  /map/{mapName}/{key}:
+    delete:
+      tags:
+        - map
+      summary: Remove the specified key from the map
+      parameters:
+        - in: path
+          name: mapName
+          description: The name of the map to remove
+          required: true
+          type: string
+        - in: path
+          name: key
+          description: The key that a value needs to be retrieved for
+          required: true
+          type: string
+      responses:
+        200:
+          description: Succeeded
+        400:
+          description: Delete failed
+    get:
+      tags:
+        - map
+      summary: Get the value from a key
+      description: Returns the given value from the specified map with the given key
+      parameters:
+        - in: path
+          name: mapName
+          description: The name of the map to query
+          required: true
+          type: string
+        - in: path
+          name: key
+          description: The key that a value needs to be retrieved for
+          required: true
+          type: string
+      responses:
+        200:
+          description: Succeeded
+        404:
+          description: Key not found
+    put:
+      tags:
+        - map
+      summary: Puts a value into the map
+      description: Set the specified map key to the given value
+      parameters:
+        - in: path
+          name: mapName
+          description: The name of the map to query
+          required: true
+          type: string
+        - in: path
+          name: key
+          description: The key to set the value for
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: The value to set
+          required: true
+          type: string
+      responses:
+        200:
+          description: Succeeded
+        400:
+          description: Unable to put value

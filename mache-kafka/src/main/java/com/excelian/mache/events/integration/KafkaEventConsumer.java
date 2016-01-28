@@ -74,26 +74,26 @@ public class KafkaEventConsumer<K> extends BaseCoordinationEntryEventConsumer<K>
         taskStarted = false;
 
         task = executor.submit((Runnable) () -> {
-                LOG.info("[KafkaEventConsumer{}] Signed up for topic : {} stream - {}",
-                    Thread.currentThread().getId(), topic, stream);
+            LOG.info("[KafkaEventConsumer{}] Signed up for topic : {} stream - {}",
+                Thread.currentThread().getId(), topic, stream);
 
-                ConsumerIterator<byte[], byte[]> iterator = stream.iterator();
-                taskStarted = true;
-                while (iterator.hasNext()) {
-                    MessageAndMetadata<byte[], byte[]> next = iterator.next();
+            ConsumerIterator<byte[], byte[]> iterator = stream.iterator();
+            taskStarted = true;
+            while (iterator.hasNext()) {
+                MessageAndMetadata<byte[], byte[]> next = iterator.next();
 
-                    if (next.message() != null) {
-                        String message = new String(next.message());
-                        LOG.info("[KafkaEventConsumer{}] Received Message: {}",
-                            Thread.currentThread().getId(), message);
+                if (next.message() != null) {
+                    String message = new String(next.message());
+                    LOG.info("[KafkaEventConsumer{}] Received Message: {}",
+                        Thread.currentThread().getId(), message);
 
-                        Gson gson = new Gson();
-                        @SuppressWarnings("unchecked")
-                        final CoordinationEntryEvent<K> event = gson.fromJson(message, CoordinationEntryEvent.class);
-                        routeEventToListeners(event);
-                    }
+                    Gson gson = new Gson();
+                    @SuppressWarnings("unchecked")
+                    final CoordinationEntryEvent<K> event = gson.fromJson(message, CoordinationEntryEvent.class);
+                    routeEventToListeners(event);
                 }
-            });
+            }
+        });
 
         while (!taskStarted) {
             Thread.sleep(1);

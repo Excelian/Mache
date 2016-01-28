@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -59,11 +60,11 @@ public class ChronicleMapMacheTest {
         verify(loader, times(0)).load("Hello");
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testRemove() throws Exception {
         mache.put("Hello", "World!");
         mache.remove("Hello");
-        mache.get("Hello");
+        assertNull(mache.get("Hello"));
     }
 
     @Test

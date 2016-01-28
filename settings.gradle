@@ -11,4 +11,5 @@ include 'mache-rabbit'
 include 'mache-guava'
 include 'mache-caffeine'
 include 'mache-chroniclemap'
+include 'mache-vertx'
 

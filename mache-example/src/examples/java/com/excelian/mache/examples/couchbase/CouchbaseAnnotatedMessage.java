@@ -8,7 +8,7 @@ import org.springframework.data.couchbase.core.mapping.Document;
  * Example Spring Data Couchbase Annotated Object.
  */
 @Document
-public class CouchbaseAnnotatedMessage implements Example.KeyedMessge{
+public class CouchbaseAnnotatedMessage implements Example.KeyedMessge {
 
     private final String msg;
 

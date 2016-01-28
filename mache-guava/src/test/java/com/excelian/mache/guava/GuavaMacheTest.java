@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class GuavaMacheTest {
 
@@ -57,6 +58,12 @@ public class GuavaMacheTest {
     }
 
     @Test
+    public void missingKeyShouldReturnNull() {
+        String missing = mache.get("Missing");
+        assertNull(missing);
+    }
+
+    @Test
     public void multipleInvalidateWorks() {
         final String key = "TEST";
         mache.put(key, "VALUE");
@@ -77,7 +84,7 @@ public class GuavaMacheTest {
         MacheLoader<String, String> fixture = new MacheLoader<String, String>() {
             public String load(String key) throws Exception {
                 read++;
-                return "FIXTURE:loaded_" + key;
+                return key.equalsIgnoreCase("missing") ? null : "FIXTURE:loaded_" + key;
             }
 
             public void close() {

@@ -39,12 +39,6 @@ public class HashMapCacheLoader<K, V> implements MacheLoader<K, V> {
 
     @Override
     public V load(K key) throws Exception {
-        V result = store.get(key);
-
-        if (result == null) {
-            throw new RuntimeException("Item not found in store.");
-        }
-
-        return result;
+        return store.get(key);
     }
 }

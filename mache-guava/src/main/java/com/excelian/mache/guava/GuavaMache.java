@@ -3,6 +3,7 @@ package com.excelian.mache.guava;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
 import com.fasterxml.uuid.Generators;
+import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 import java.util.UUID;
@@ -22,7 +23,7 @@ public class GuavaMache<K, V> implements Mache<K, V> {
 
     /**
      * @param cacheLoader The MacheLoader of the backing store for this Mache.
-     * @param cache The created Guava LoadingCache.
+     * @param cache       The created Guava LoadingCache.
      */
     public GuavaMache(final MacheLoader<K, V> cacheLoader, LoadingCache<K, V> cache) {
         this.cacheLoader = cacheLoader;
@@ -42,7 +43,14 @@ public class GuavaMache<K, V> implements Mache<K, V> {
 
     @Override
     public V get(final K key) {
-        return cache.getUnchecked(key);
+        // Whilst getIfPresent will return null for missing keys
+        // it will not attempt to use the CacheLoader, as a result we must try to get
+        // the value and if missing return null
+        try {
+            return cache.getUnchecked(key);
+        } catch (CacheLoader.InvalidCacheLoadException e) {
+            return null;
+        }
     }
 
     @Override

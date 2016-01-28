@@ -5,8 +5,6 @@ import com.excelian.mache.builder.MacheBuilder;
 import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.mongo.builder.MongoConnectionContext;
-import com.google.common.cache.CacheLoader;
 import com.mongodb.ServerAddress;
 import org.junit.After;
 import org.junit.Before;
@@ -25,7 +23,7 @@ import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongoConnectionContext;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @IgnoreIf(condition = NoRunningMongoDbForTests.class)
 public class MongoCacheIntegrationTest {
@@ -87,12 +85,12 @@ public class MongoCacheIntegrationTest {
         assertEquals("test-2", test.pkString);
     }
 
-    @Test(expected = CacheLoader.InvalidCacheLoadException.class)
+    @Test
     public void testRemove() throws Exception {
         String key = "rem-test-2";
         mache.put(key, new TestEntity(key));
         mache.remove(key);
-        mache.get(key);
+        assertNull(mache.get(key));
     }
 
     @Test
