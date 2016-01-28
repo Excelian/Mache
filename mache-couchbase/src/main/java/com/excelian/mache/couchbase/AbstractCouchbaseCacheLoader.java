@@ -1,12 +1,11 @@
 package com.excelian.mache.couchbase;
 
 import com.couchbase.client.java.Bucket;
-import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.cluster.ClusterManager;
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.couchbase.builder.CouchbaseConnectionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +20,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractCouchbaseCacheLoader<K, V> implements MacheLoader<K, V> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCouchbaseCacheLoader.class);
-    private final ConnectionContext<Cluster> connectionContext;
-    private Class<K> keyType;
-    protected Class<V> valueType;
+    private final CouchbaseConnectionContext connectionContext;
     protected Bucket bucket;
     protected ClusterManager manager;
     private BucketSettings bucketSettings;
@@ -32,19 +29,15 @@ public abstract class AbstractCouchbaseCacheLoader<K, V> implements MacheLoader<
     private SchemaOptions schemaOptions;
 
     /**
-     * @param keyType           The class type of the cache key.
-     * @param valueType         The class type of the cache value.
      * @param bucketSettings    Bucket that will hold cached objects.
      * @param connectionContext Cluster connection.
      * @param adminUser         Administration user for Couchbase cluster.
      * @param adminPassword     Password for Administration user for Couchbase cluster.
      * @param schemaOptions     Determine whether to create/drop bucket.
      */
-    public AbstractCouchbaseCacheLoader(Class<K> keyType, Class<V> valueType, BucketSettings bucketSettings,
-                                        ConnectionContext<Cluster> connectionContext, String adminUser,
+    public AbstractCouchbaseCacheLoader(BucketSettings bucketSettings,
+                                        CouchbaseConnectionContext connectionContext, String adminUser,
                                         String adminPassword, SchemaOptions schemaOptions) {
-        this.keyType = keyType;
-        this.valueType = valueType;
         this.bucketSettings = bucketSettings;
         this.connectionContext = connectionContext;
         this.adminUser = adminUser;
@@ -112,8 +105,6 @@ public abstract class AbstractCouchbaseCacheLoader<K, V> implements MacheLoader<
             + ", adminUser='" + adminUser + '\''
             + ", adminPassword='" + adminPassword + '\''
             + ", schemaOptions=" + schemaOptions
-            + ", keyType=" + keyType
-            + ", valueType=" + valueType
             + '}';
     }
 

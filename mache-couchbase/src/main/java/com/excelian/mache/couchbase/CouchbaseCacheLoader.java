@@ -1,9 +1,8 @@
 package com.excelian.mache.couchbase;
 
-import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.cluster.BucketSettings;
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.couchbase.builder.CouchbaseConnectionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
@@ -20,10 +19,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class CouchbaseCacheLoader<K, V> extends AbstractCouchbaseCacheLoader<K, V> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CouchbaseCacheLoader.class);
+    private final Class<V> valueType;
     private CouchbaseTemplate template;
 
     /**
-     * @param keyType           The class type of the cache key.
      * @param valueType         The class type of the cache value.
      * @param bucketSettings    Bucket that will hold cached objects.
      * @param connectionContext Cluster connection.
@@ -31,10 +30,11 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCouchbaseCacheLoader<K, 
      * @param adminPassword     Password for Administration user for Couchbase cluster.
      * @param schemaOptions     Determine whether to create/drop bucket.
      */
-    public CouchbaseCacheLoader(Class<K> keyType, Class<V> valueType, BucketSettings bucketSettings,
-                                ConnectionContext<Cluster> connectionContext, String adminUser,
+    public CouchbaseCacheLoader(Class<V> valueType, BucketSettings bucketSettings,
+                                CouchbaseConnectionContext connectionContext, String adminUser,
                                 String adminPassword, SchemaOptions schemaOptions) {
-        super(keyType, valueType, bucketSettings, connectionContext, adminUser, adminPassword, schemaOptions);
+        super(bucketSettings, connectionContext, adminUser, adminPassword, schemaOptions);
+        this.valueType = valueType;
     }
 
     @Override

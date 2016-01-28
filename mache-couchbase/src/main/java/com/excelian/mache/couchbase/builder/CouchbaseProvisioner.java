@@ -25,10 +25,10 @@ public class CouchbaseProvisioner implements StorageProvisioner {
     private String adminPassword;
     private SchemaOptions schemaOptions;
 
-    private CouchbaseProvisioner(CouchbaseConnectionContext couchbaseConnectionContext,
-                                 BucketSettings bucketSettings,
-                                 String adminUser, String adminPassword,
-                                 SchemaOptions schemaOptions) {
+    protected CouchbaseProvisioner(CouchbaseConnectionContext couchbaseConnectionContext,
+                                   BucketSettings bucketSettings,
+                                   String adminUser, String adminPassword,
+                                   SchemaOptions schemaOptions) {
         this.connectionContext = couchbaseConnectionContext;
         this.bucketSettings = bucketSettings;
         this.adminUser = adminUser;
@@ -45,7 +45,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
 
     @Override
     public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-        return new CouchbaseCacheLoader<>(keyType, valueType, bucketSettings, connectionContext, adminUser,
+        return new CouchbaseCacheLoader<>(valueType, bucketSettings, connectionContext, adminUser,
                 adminPassword, schemaOptions);
     }
 
@@ -103,6 +103,18 @@ public class CouchbaseProvisioner implements StorageProvisioner {
             final CouchbaseConnectionContext connectionContext =
                 CouchbaseConnectionContext.getInstance(couchbaseEnvironment, nodes);
             return new CouchbaseProvisioner(connectionContext, bucketSettings,
+                adminUser, adminPassword, schemaOptions);
+        }
+
+        /**
+         * Builds the provisioner ready for Json documents given the inputs.
+         *
+         * @return a couchbase Json provisioner
+         */
+        public CouchbaseJsonProvisioner asJsonDocuments() {
+            final CouchbaseConnectionContext connectionContext =
+                CouchbaseConnectionContext.getInstance(couchbaseEnvironment, nodes);
+            return new CouchbaseJsonProvisioner(connectionContext, bucketSettings,
                 adminUser, adminPassword, schemaOptions);
         }
     }
