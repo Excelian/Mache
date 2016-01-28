@@ -13,16 +13,17 @@ public class MongoConfig {
     public static void main(String[] args) {
         MacheRestService restService = new MacheRestService();
 
-        restService.run({ ->
+        restService.runAsync({ context ->
             mache(String.class, String.class)
                     .cachedBy(guava())
                     .storedIn(
-                        mongodb()
-                                .withSeeds(new ServerAddress("localhost", 27017))
-                                .withDatabase(keySpace)
-                                .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
-                                .build())
+                    mongodb()
+                            .withSeeds(new ServerAddress("localhost", 27017))
+                            .withDatabase(keySpace)
+                            .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
+                            .build())
                     .withNoMessaging()
-                    .macheUp(); });
+                    .macheUp();
+        });
     }
 }

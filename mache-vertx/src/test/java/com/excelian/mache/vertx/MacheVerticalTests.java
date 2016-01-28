@@ -16,6 +16,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
@@ -31,18 +32,18 @@ public class MacheVerticalTests {
     public void setUp(TestContext context) {
         vertx = Vertx.vertx();
 
-        Supplier<Mache<String, String>> factory = () -> {
+        Function<MacheRestRequestContext, Mache<String, String>> factory = (request) -> {
             try {
                 return mache(String.class, String.class)
-                        .cachedBy(guava())
-                        .storedIn(new StorageProvisioner() {
-                            @Override
-                            public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-                                return new HashMapCacheLoader<>(valueType);
-                            }
-                        })
-                        .withNoMessaging()
-                        .macheUp();
+                    .cachedBy(guava())
+                    .storedIn(new StorageProvisioner() {
+                        @Override
+                        public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+                            return new HashMapCacheLoader<>(valueType);
+                        }
+                    })
+                    .withNoMessaging()
+                    .macheUp();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -113,12 +114,12 @@ public class MacheVerticalTests {
     }
 
     @Test
-    public void getShouldReturn400MissingKey(TestContext context) {
+    public void getShouldReturn404MissingKey(TestContext context) {
         final Async async = context.async();
 
         vertx.createHttpClient().getNow(8080, "localhost", "/map/names/2",
             response -> {
-                context.assertEquals(400, response.statusCode());
+                context.assertEquals(404, response.statusCode());
                 async.complete();
             });
     }

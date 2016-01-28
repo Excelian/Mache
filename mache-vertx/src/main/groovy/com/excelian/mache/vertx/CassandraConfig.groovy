@@ -13,7 +13,7 @@ public class CassandraConfig {
     public static void main(String[] args) {
         MacheRestService restService = new MacheRestService();
 
-        restService.run({ ->
+        restService.runAsync({ context ->
             mache(String.class, String.class)
                     .cachedBy(guava())
                     .storedIn(

@@ -122,7 +122,7 @@ public class MacheVertical extends AbstractVerticle {
             String value = instanceCache.getKey(mapName, key);
             if (value == null) {
                 req.response()
-                    .setStatusCode(400)
+                    .setStatusCode(404)
                     .end("key not found");
             } else {
                 req.response().end(value);

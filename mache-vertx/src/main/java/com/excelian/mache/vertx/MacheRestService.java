@@ -3,7 +3,7 @@ package com.excelian.mache.vertx;
 import com.excelian.mache.core.Mache;
 import io.vertx.core.Vertx;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 /**
  * Entry point to start the Rest service.
@@ -12,20 +12,38 @@ import java.util.function.Supplier;
  *           the implementation the public API is better off hiding any reference to vertx/vertical.
  */
 public class MacheRestService {
+    private final Vertx vertx;
 
-    /**
-     * A blocking call to start the rest service.
-     */
-    public void run(MacheRestServiceConfiguration serviceConfiguration, Supplier<Mache<String, String>> macheFactory)
-            throws Exception {
-        MacheVertical vertical = new MacheVertical(serviceConfiguration, new MacheInstanceCache(macheFactory));
-        Vertx.vertx().deployVerticle(vertical);
+    public MacheRestService() {
+        vertx = Vertx.vertx();
     }
 
     /**
-     * A blocking call to start the rest service using default options.
+     * An async call to start the rest service.
+     *
+     * @param serviceConfiguration Configuration describing the endpoint
+     * @param macheFactory         A delegate that will create new Mache instances given a RequestContext
      */
-    public void run(Supplier<Mache<String, String>> macheFactory) throws Exception {
-        run(new MacheRestServiceConfiguration(), macheFactory);
+    public void runAsync(MacheRestServiceConfiguration serviceConfiguration,
+                         Function<MacheRestRequestContext, Mache<String, String>> macheFactory)
+        throws Exception {
+        MacheVertical vertical = new MacheVertical(serviceConfiguration, new MacheInstanceCache(macheFactory));
+        vertx.deployVerticle(vertical);
+    }
+
+    /**
+     * An async call to start the rest service using default options.
+     *
+     * @param macheFactory A delegate that will create new Mache instances given a RequestContext
+     */
+    public void runAsync(Function<MacheRestRequestContext, Mache<String, String>> macheFactory) throws Exception {
+        runAsync(new MacheRestServiceConfiguration(), macheFactory);
+    }
+
+    /**
+     * Stops the REST service.
+     */
+    public void stopAsync() {
+        vertx.close();
     }
 }
