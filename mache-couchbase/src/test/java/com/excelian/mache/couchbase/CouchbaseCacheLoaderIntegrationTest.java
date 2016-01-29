@@ -1,9 +1,6 @@
 package com.excelian.mache.couchbase;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
-import com.couchbase.client.java.Bucket;
-import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.NoMessagingProvisioner;
@@ -28,7 +25,7 @@ public class CouchbaseCacheLoaderIntegrationTest {
     private static final String BUCKET = "couchbase-test";
     private static final String ADMIN_USER = "Administrator";
     private static final String PASSWORD = "password";
-    private static final double DELTA = 0.000001;
+    private static final double EPSILON = 0.000001;
     private static final String COUCHBASE_HOST = new NoRunningCouchbaseDbForTests().getHost();
 
     private static final CouchbaseEnvironment COUCHBASE_ENVIRONMENT =
@@ -61,7 +58,7 @@ public class CouchbaseCacheLoaderIntegrationTest {
     @Test
     public void canPutAndGetValue() throws Throwable {
         cache.put("test1", new TestEntity("test1", "FXRATE", 0.91));
-        assertEquals(0.91, cache.get("test1").value, DELTA);
+        assertEquals(0.91, cache.get("test1").value, EPSILON);
     }
 
     @Test
@@ -78,7 +75,7 @@ public class CouchbaseCacheLoaderIntegrationTest {
     public void canOverwriteValue() throws Throwable {
         cache.put("test3", new TestEntity("test3", "FXRATE", 3.93));
         cache.put("test3", new TestEntity("test3", "FXRATE", 0.93));
-        assertEquals(0.93, cache.get("test3").value, DELTA);
+        assertEquals(0.93, cache.get("test3").value, EPSILON);
     }
 
 }

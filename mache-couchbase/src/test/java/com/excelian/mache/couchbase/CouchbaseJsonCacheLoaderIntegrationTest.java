@@ -35,7 +35,6 @@ public class CouchbaseJsonCacheLoaderIntegrationTest {
     private static final String BUCKET = "couchbase-test";
     private static final String ADMIN_USER = "Administrator";
     private static final String PASSWORD = "password";
-    private static final double DELTA = 0.000001;
     private static final String COUCHBASE_HOST = new NoRunningCouchbaseDbForTests().getHost();
 
     private static final CouchbaseEnvironment COUCHBASE_ENVIRONMENT =
