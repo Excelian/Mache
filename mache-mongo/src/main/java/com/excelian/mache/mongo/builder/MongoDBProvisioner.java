@@ -1,7 +1,6 @@
 package com.excelian.mache.mongo.builder;
 
 import com.excelian.mache.builder.StorageProvisioner;
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.mongo.MongoDBCacheLoader;
@@ -15,7 +14,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.toList;
 
 /**
  * {@link StorageProvisioner} implementation for Mongo DB.
@@ -78,8 +76,8 @@ public class MongoDBProvisioner implements StorageProvisioner {
     public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
         // TODO this is the wrong approach but gets tests running for now
         if (valueType == String.class) {
-            return new MongoDBJsonCacheLoader(connectionContext, mongoCredentials, clientOptions, database,
-                schemaOptions);
+            return (MacheLoader<K, V>) new MongoDBJsonCacheLoader(connectionContext,
+                mongoCredentials, clientOptions, database, schemaOptions, "SLIMEª");
         } else {
             return new MongoDBCacheLoader<>(keyType, valueType, connectionContext, mongoCredentials,
                 clientOptions, database, schemaOptions, collectionOptions);
