@@ -35,12 +35,7 @@ public class MacheVerticalTests {
             try {
                 return mache(String.class, String.class)
                         .cachedBy(guava())
-                        .storedIn(new StorageProvisioner() {
-                            @Override
-                            public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-                                return new HashMapCacheLoader<>(valueType);
-                            }
-                        })
+                        .storedIn((keyType, valueType) -> new HashMapCacheLoader<>(valueType))
                         .withNoMessaging()
                         .macheUp();
             } catch (Exception e) {

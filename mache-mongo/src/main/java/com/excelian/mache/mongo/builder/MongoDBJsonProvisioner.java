@@ -12,8 +12,11 @@ import java.util.List;
 
 /**
  * Provisions a Mongo DB cache loader that stores string values as Json.
+ *
+ * @param <K> the key type.
+ * @param <V> the value type.
  */
-public class MongoDBJsonProvisioner implements StorageProvisioner {
+public class MongoDBJsonProvisioner<K, V> implements StorageProvisioner<K, V> {
     private final MongoDBConnectionContext connectionContext;
     private final List<MongoCredential> mongoCredentials;
     private final MongoClientOptions mongoClientOptions;
@@ -49,7 +52,7 @@ public class MongoDBJsonProvisioner implements StorageProvisioner {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+    public MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
         if (keyType.equals(String.class) && valueType.equals(String.class)) {
             return (MacheLoader<K, V>) new MongoDBJsonCacheLoader(connectionContext,
                 mongoCredentials, mongoClientOptions, database, schemaOptions, collection);

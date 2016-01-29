@@ -1,5 +1,6 @@
 package com.excelian.mache.chroniclemap;
 
+import com.excelian.mache.builder.MacheBuilder;
 import com.excelian.mache.core.HashMapCacheLoader;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
@@ -8,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static com.excelian.mache.chroniclemap.ChronicleMapMacheProvisioner.chronicleMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -25,9 +27,11 @@ public class ChronicleMapMacheTest {
     public void setUp() throws Exception {
         loader = Mockito.spy(new HashMapCacheLoader<>(String.class));
 
-        mache = ChronicleMapMacheProvisioner.<String, String>chronicleMap()
-                .create()
-                .create(String.class, String.class, loader);
+        mache = MacheBuilder.mache(String.class, String.class)
+                .cachedBy(chronicleMap(String.class, String.class).size(1000))
+                .storedIn((keyType, valueType) -> loader)
+                .withNoMessaging()
+                .macheUp();
     }
 
     @After

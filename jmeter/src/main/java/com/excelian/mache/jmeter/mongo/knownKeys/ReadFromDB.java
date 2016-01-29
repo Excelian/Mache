@@ -24,7 +24,7 @@ import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 public class ReadFromDB extends AbstractMongoSamplerClient {
     private static final long serialVersionUID = 251140199032740124L;
 
-    private MacheLoader db;
+    private MacheLoader<String, MongoTestEntity> db;
 
     @Override
     public void setupTest(JavaSamplerContext context) {

@@ -4,6 +4,7 @@ import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.mongo.AbstractMongoSamplerClient;
 import com.excelian.mache.jmeter.mongo.MongoTestEntity;
+import com.excelian.mache.mongo.builder.MongoDBProvisioner;
 import com.mongodb.ServerAddress;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -29,11 +30,12 @@ public class WriteToDB extends AbstractMongoSamplerClient {
         final Map<String, String> mapParams = extractParameters(context);
 
         try {
-            db = mongodb()
-                .withSeeds(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017))
-                .withDatabase(mapParams.get("keyspace.name"))
-                .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                .build().getCacheLoader(String.class, MongoTestEntity.class);
+            MongoDBProvisioner<String, MongoTestEntity> provisioner = mongodb()
+                    .withSeeds(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017))
+                    .withDatabase(mapParams.get("keyspace.name"))
+                    .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                    .build();//
+            db = provisioner.getCacheLoader(String.class, MongoTestEntity.class);
             db.create();// ensure we are connected and schema exists
 
         } catch (Exception e) {

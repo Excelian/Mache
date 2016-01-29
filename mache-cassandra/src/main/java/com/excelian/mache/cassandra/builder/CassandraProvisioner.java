@@ -7,8 +7,11 @@ import com.excelian.mache.core.SchemaOptions;
 
 /**
  * {@link StorageProvisioner} implementation for Cassandra.
+ *
+ * @param <K> the key type.
+ * @param <V> the value type.
  */
-public class CassandraProvisioner implements StorageProvisioner {
+public class CassandraProvisioner<K, V> implements StorageProvisioner<K, V> {
 
     private final CassandraConnectionContext connectionContext;
     private final SchemaOptions schemaOptions;
@@ -46,7 +49,7 @@ public class CassandraProvisioner implements StorageProvisioner {
         };
     }
 
-    public <K, V> CassandraCacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+    public CassandraCacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
         return new CassandraCacheLoader<>(keyType, valueType, connectionContext,
                 schemaOptions, keySpace, replicationClass, replicationFactor);
     }
@@ -95,8 +98,8 @@ public class CassandraProvisioner implements StorageProvisioner {
             return this;
         }
 
-        public StorageProvisioner build() {
-            return new CassandraProvisioner(connectionContext, schemaOptions,
+        public <K, V> StorageProvisioner<K, V> build() {
+            return new CassandraProvisioner<>(connectionContext, schemaOptions,
                 keySpace, replicationClass, replicationFactor);
         }
 

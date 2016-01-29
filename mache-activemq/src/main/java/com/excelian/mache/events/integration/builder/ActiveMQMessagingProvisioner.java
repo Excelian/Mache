@@ -13,8 +13,11 @@ import static javax.jms.Session.AUTO_ACKNOWLEDGE;
 
 /**
  * Provisions Active MQ Messaging Providers.
+ *
+ * @param <K> the mache key type.
+ * @param <V> the mache value type.
  */
-public class ActiveMQMessagingProvisioner extends AbstractMessagingProvisioner {
+public class ActiveMQMessagingProvisioner<K, V> extends AbstractMessagingProvisioner<K, V> {
 
     private final ConnectionFactory connectionFactory;
     private final long timeToLiveInMillis;
@@ -35,7 +38,7 @@ public class ActiveMQMessagingProvisioner extends AbstractMessagingProvisioner {
     }
 
     @Override
-    public <K> MQFactory<K> getMqFactory() throws JMSException {
+    public MQFactory<K> getMqFactory() throws JMSException {
         return new ActiveMQFactory<>(connectionFactory, timeToLiveInMillis, deliveryMode, acknowledgementMode);
     }
 
@@ -83,8 +86,8 @@ public class ActiveMQMessagingProvisioner extends AbstractMessagingProvisioner {
             return this;
         }
 
-        public ActiveMQMessagingProvisioner build() {
-            return new ActiveMQMessagingProvisioner(topic, connectionFactory, timeToLiveInMillis, deliveryMode,
+        public <K, V> ActiveMQMessagingProvisioner<K, V> build() {
+            return new ActiveMQMessagingProvisioner<>(topic, connectionFactory, timeToLiveInMillis, deliveryMode,
                     acknowledgementMode);
         }
 

@@ -55,8 +55,8 @@ public abstract class MacheAbstractMongoKafkaSamplerClient extends AbstractMongo
     }
 
     protected void createCache(Map<String, String> mapParams) throws Exception {
-        final KafkaMessagingProvisioner kafkaProvisioner =
-                KafkaMessagingProvisioner.kafka()
+        final KafkaMessagingProvisioner<String, MongoTestEntity> kafkaProvisioner =
+                KafkaMessagingProvisioner.kafka(String.class, MongoTestEntity.class)
                         .withKafkaMqConfig(KafkaMqConfig.KafkaMqConfigBuilder.builder()
                                 .withZkHost(mapParams.get("kafka.connection")).build())
                         .withTopic(mapParams.get("kafka.topic"));

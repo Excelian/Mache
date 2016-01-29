@@ -12,6 +12,7 @@ import java.util.Map;
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
+import static com.excelian.mache.events.integration.builder.KafkaMessagingProvisioner.kafka;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 
 
@@ -56,8 +57,8 @@ public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouch
     }
 
     protected void createCache(Map<String, String> mapParams) throws Exception {
-        final KafkaMessagingProvisioner kafkaProvisioner =
-                KafkaMessagingProvisioner.kafka()
+        final KafkaMessagingProvisioner<String, CouchTestEntity> kafkaProvisioner
+                = kafka(String.class, CouchTestEntity.class)
                         .withKafkaMqConfig(KafkaMqConfig.KafkaMqConfigBuilder.builder()
                                 .withZkHost(mapParams.get("kafka.connection")).build())
                         .withTopic(mapParams.get("kafka.topic"));

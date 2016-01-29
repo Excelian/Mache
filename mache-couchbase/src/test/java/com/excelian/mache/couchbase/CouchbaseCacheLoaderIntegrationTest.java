@@ -5,6 +5,8 @@ import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.NoMessagingProvisioner;
 import com.excelian.mache.core.Mache;
+import com.excelian.mache.couchbase.builder.CouchbaseProvisioner;
+import junit.extensions.TestSetup;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,9 +44,10 @@ public class CouchbaseCacheLoaderIntegrationTest {
                         .withBucketSettings(builder().name(BUCKET).quota(150).build())
                         .withCouchbaseEnvironment(COUCHBASE_ENVIRONMENT)
                         .withAdminDetails(ADMIN_USER, PASSWORD)
-                    .withNodes(COUCHBASE_HOST)
-                        .withSchemaOptions(CREATE_AND_DROP_SCHEMA).build())
-                .withMessaging(new NoMessagingProvisioner())
+                        .withNodes(COUCHBASE_HOST)
+                        .withSchemaOptions(CREATE_AND_DROP_SCHEMA)
+                        .build())
+                .withMessaging(new NoMessagingProvisioner<>())
                 .macheUp();
     }
 

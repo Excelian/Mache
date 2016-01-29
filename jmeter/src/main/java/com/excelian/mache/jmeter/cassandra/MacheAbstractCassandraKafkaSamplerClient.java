@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra;
+import static com.excelian.mache.events.integration.builder.KafkaMessagingProvisioner.kafka;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 
 /**
@@ -69,7 +70,8 @@ public abstract class MacheAbstractCassandraKafkaSamplerClient extends AbstractC
     }
 
     protected void createCache(Map<String, String> mapParams) throws Exception {
-        final KafkaMessagingProvisioner kafkaProvisioner = KafkaMessagingProvisioner.kafka()
+        final KafkaMessagingProvisioner<String, CassandraTestEntity> kafkaProvisioner
+                = kafka(String.class, CassandraTestEntity.class)
                 .withKafkaMqConfig(KafkaMqConfig.KafkaMqConfigBuilder.builder()
                         .withZkHost(mapParams.get("kafka.connection")).build())
                 .withTopic(mapParams.get("kafka.topic"));

@@ -15,8 +15,11 @@ import java.util.List;
 
 /**
  * {@link StorageProvisioner} implementation for Mongo DB.
+ *
+ * @param <K> the key type.
+ * @param <V> the value type.
  */
-public class MongoDBProvisioner implements StorageProvisioner {
+public class MongoDBProvisioner<K, V> implements StorageProvisioner<K, V> {
 
     private final MongoDBConnectionContext connectionContext;
     private final List<MongoCredential> mongoCredentials;
@@ -71,7 +74,7 @@ public class MongoDBProvisioner implements StorageProvisioner {
     }
 
     @Override
-    public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+    public MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
         return new MongoDBCacheLoader<>(keyType, valueType, connectionContext, mongoCredentials,
             clientOptions, database, schemaOptions, collectionOptions);
     }
@@ -124,11 +127,10 @@ public class MongoDBProvisioner implements StorageProvisioner {
         public MongoDBProvisionerBuilder withCollectionOptions(CollectionOptions collectionOptions) {
             this.collectionOptions = collectionOptions;
             return this;
-
         }
 
-        public MongoDBProvisioner build() {
-            return new MongoDBProvisioner(connectionContext, mongoCredentials,
+        public <K, V> MongoDBProvisioner<K, V> build() {
+            return new MongoDBProvisioner<>(connectionContext, mongoCredentials,
                 mongoClientOptions, database, schemaOptions, collectionOptions);
         }
 
@@ -171,8 +173,8 @@ public class MongoDBProvisioner implements StorageProvisioner {
              * @param collection the collection name
              * @return the provisioner for creating the Mongo DB Json Cache Loader
              */
-            public StorageProvisioner inCollection(String collection) {
-                return new MongoDBJsonProvisioner(connectionContext, mongoCredentials,
+            public <K, V> StorageProvisioner<K, V> inCollection(String collection) {
+                return new MongoDBJsonProvisioner<>(connectionContext, mongoCredentials,
                     mongoClientOptions, database, schemaOptions, collectionOptions, collection);
             }
         }

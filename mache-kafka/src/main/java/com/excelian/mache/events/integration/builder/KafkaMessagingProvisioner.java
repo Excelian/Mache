@@ -10,8 +10,11 @@ import java.io.IOException;
 
 /**
  * Provisions kafka messaging.
+ *
+ * @param <K> the key type.
+ * @param <V> the value type.
  */
-public class KafkaMessagingProvisioner extends AbstractMessagingProvisioner {
+public class KafkaMessagingProvisioner<K, V> extends AbstractMessagingProvisioner<K, V> {
 
     private final KafkaMqConfig kafkaMqConfig;
 
@@ -25,26 +28,30 @@ public class KafkaMessagingProvisioner extends AbstractMessagingProvisioner {
         this.kafkaMqConfig = kafkaMqConfig;
     }
 
-    public static KafkaMqConfigBuilder kafka() {
-        return kafkaMqConfig -> topic -> new KafkaMessagingProvisioner(topic, kafkaMqConfig);
+    public static <K, V> KafkaMqConfigBuilder<K, V> kafka(Class<K> keyClass, Class<V> valueClass) {
+        return kafkaMqConfig -> topic -> new KafkaMessagingProvisioner<>(topic, kafkaMqConfig);
     }
 
     /**
      * Enforces specification kafka config.
+     * @param <K> key type.
+     * @param <V> value type.
      */
-    public interface KafkaMqConfigBuilder {
-        TopicBuilder withKafkaMqConfig(KafkaMqConfig kafkaMqConfig);
+    public interface KafkaMqConfigBuilder<K, V> {
+        TopicBuilder<K, V> withKafkaMqConfig(KafkaMqConfig kafkaMqConfig);
     }
 
     /**
      * Enforces specification topic.
+     * @param <K> key type.
+     * @param <V> value type.
      */
-    public interface TopicBuilder {
-        KafkaMessagingProvisioner withTopic(String topic);
+    public interface TopicBuilder<K, V> {
+        KafkaMessagingProvisioner<K, V> withTopic(String topic);
     }
 
     @Override
-    public <K> MQFactory<K> getMqFactory() throws IOException, JMSException {
+    public MQFactory<K> getMqFactory() throws IOException, JMSException {
         return new KafkaMQFactory<>(kafkaMqConfig);
     }
 }
