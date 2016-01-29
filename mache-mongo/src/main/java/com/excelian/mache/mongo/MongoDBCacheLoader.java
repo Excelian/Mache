@@ -1,9 +1,7 @@
 package com.excelian.mache.mongo;
 
-import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.mongo.builder.MongoConnectionContext;
-import com.mongodb.MongoClient;
+import com.excelian.mache.mongo.builder.MongoDBConnectionContext;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import org.slf4j.Logger;
@@ -37,7 +35,7 @@ public class MongoDBCacheLoader<K, V> extends AbstractMongoDBCacheLoader<K, V> {
      * @param collectionOptions - collectionOptions
      */
     public MongoDBCacheLoader(Class<K> keyType, Class<V> valueType,
-                              MongoConnectionContext connectionContext,
+                              MongoDBConnectionContext connectionContext,
                               List<MongoCredential> credentials,
                               MongoClientOptions clientOptions,
                               String database, SchemaOptions schemaOptions,

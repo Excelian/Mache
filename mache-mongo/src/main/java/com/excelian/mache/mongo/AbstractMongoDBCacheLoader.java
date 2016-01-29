@@ -2,7 +2,7 @@ package com.excelian.mache.mongo;
 
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.mongo.builder.MongoConnectionContext;
+import com.excelian.mache.mongo.builder.MongoDBConnectionContext;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
@@ -26,7 +26,7 @@ public abstract class AbstractMongoDBCacheLoader<K, V> implements MacheLoader<K,
     protected MongoClient mongoClient;
     protected Class<K> keyType;
     protected Class<V> valueType;
-    protected MongoConnectionContext mongoConnectionContext;
+    protected MongoDBConnectionContext mongoDBConnectionContext;
     protected SchemaOptions schemaOptions;
     protected String databaseName;
 
@@ -42,12 +42,12 @@ public abstract class AbstractMongoDBCacheLoader<K, V> implements MacheLoader<K,
      * @param credentials       the logon credentials to use
      * @param databaseName      the db name
      */
-    public AbstractMongoDBCacheLoader(MongoConnectionContext connectionContext,
+    public AbstractMongoDBCacheLoader(MongoDBConnectionContext connectionContext,
                                       MongoClientOptions clientOptions,
                                       Class<K> keyType, SchemaOptions schemaOptions,
                                       Class<V> valueType, List<MongoCredential> credentials,
                                       String databaseName) {
-        this.mongoConnectionContext = connectionContext;
+        this.mongoDBConnectionContext = connectionContext;
         this.clientOptions = clientOptions;
         this.keyType = keyType;
         this.schemaOptions = schemaOptions;
@@ -87,7 +87,7 @@ public abstract class AbstractMongoDBCacheLoader<K, V> implements MacheLoader<K,
                     }
                     mongoClient.close();
                     mongoClient = null;
-                    mongoConnectionContext.close(this);
+                    mongoDBConnectionContext.close(this);
                 }
             }
         }
@@ -101,13 +101,13 @@ public abstract class AbstractMongoDBCacheLoader<K, V> implements MacheLoader<K,
             + ", mongoClient=" + mongoClient
             + ", keyType=" + keyType
             + ", valueType=" + valueType
-            + ", mongoConnectionContext=" + mongoConnectionContext
+            + ", mongoConnectionContext=" + mongoDBConnectionContext
             + ", schemaOptions=" + schemaOptions
             + ", database='" + databaseName + '\''
             + '}';
     }
 
     private MongoClient connect() {
-        return new MongoClient(mongoConnectionContext.getConnection(this), credentials, clientOptions);
+        return new MongoClient(mongoDBConnectionContext.getConnection(this), credentials, clientOptions);
     }
 }

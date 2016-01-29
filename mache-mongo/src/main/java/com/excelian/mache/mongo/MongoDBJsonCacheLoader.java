@@ -1,7 +1,7 @@
 package com.excelian.mache.mongo;
 
 import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.mongo.builder.MongoConnectionContext;
+import com.excelian.mache.mongo.builder.MongoDBConnectionContext;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
@@ -29,18 +29,18 @@ public class MongoDBJsonCacheLoader extends AbstractMongoDBCacheLoader<String, S
 
     /**
      * TODO To be refactored.
-     *  @param mongoConnectionContext A
+     *  @param mongoDBConnectionContext A
      * @param credentials            A
      * @param clientOptions          A
      * @param database               A
      * @param schemaOptions          A
      * @param collectionName         A
      */
-    public MongoDBJsonCacheLoader(MongoConnectionContext mongoConnectionContext,
+    public MongoDBJsonCacheLoader(MongoDBConnectionContext mongoDBConnectionContext,
                                   List<MongoCredential> credentials,
                                   MongoClientOptions clientOptions,
                                   String database, SchemaOptions schemaOptions, String collectionName) {
-        super(mongoConnectionContext, clientOptions, String.class, schemaOptions, String.class, credentials, database);
+        super(mongoDBConnectionContext, clientOptions, String.class, schemaOptions, String.class, credentials, database);
         this.collectionName = collectionName;
     }
 

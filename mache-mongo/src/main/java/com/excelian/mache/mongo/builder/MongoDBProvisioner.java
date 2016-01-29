@@ -20,7 +20,7 @@ import static java.util.Arrays.stream;
  */
 public class MongoDBProvisioner implements StorageProvisioner {
 
-    private final MongoConnectionContext connectionContext;
+    private final MongoDBConnectionContext connectionContext;
     private final List<MongoCredential> mongoCredentials;
     private final MongoClientOptions clientOptions;
     private final String database;
@@ -37,7 +37,7 @@ public class MongoDBProvisioner implements StorageProvisioner {
      * @param schemaOptions     - schemaOptions
      * @param collectionOptions - collectionOptions
      */
-    private MongoDBProvisioner(MongoConnectionContext connectionContext, List<MongoCredential> credentials,
+    private MongoDBProvisioner(MongoDBConnectionContext connectionContext, List<MongoCredential> credentials,
                                MongoClientOptions clientOptions, String database, SchemaOptions schemaOptions,
                                CollectionOptions collectionOptions) {
 
@@ -56,8 +56,8 @@ public class MongoDBProvisioner implements StorageProvisioner {
      */
     public static SeedsListBuilder mongodb() {
         return seeds -> database -> {
-            final MongoConnectionContext mongoConnectionContext = MongoConnectionContext.getInstance(seeds);
-            return new MongoDBProvisionerBuilder(mongoConnectionContext, database);
+            final MongoDBConnectionContext mongoDBConnectionContext = MongoDBConnectionContext.getInstance(seeds);
+            return new MongoDBProvisionerBuilder(mongoDBConnectionContext, database);
         };
     }
 
@@ -68,8 +68,8 @@ public class MongoDBProvisioner implements StorageProvisioner {
      * @param seeds the mongo servers
      * @return the connection context
      */
-    public static MongoConnectionContext mongoConnectionContext(ServerAddress... seeds) {
-        return MongoConnectionContext.getInstance(seeds);
+    public static MongoDBConnectionContext mongoConnectionContext(ServerAddress... seeds) {
+        return MongoDBConnectionContext.getInstance(seeds);
     }
 
     @Override
@@ -102,14 +102,14 @@ public class MongoDBProvisioner implements StorageProvisioner {
      * A builder with defaults for a Mongo DB cluster.
      */
     public static class MongoDBProvisionerBuilder {
-        private final MongoConnectionContext connectionContext;
+        private final MongoDBConnectionContext connectionContext;
         private final String database;
         private List<MongoCredential> mongoCredentials = Collections.emptyList();
         private MongoClientOptions mongoClientOptions = MongoClientOptions.builder().build();
         private SchemaOptions schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
         private CollectionOptions collectionOptions = null;
 
-        private MongoDBProvisionerBuilder(MongoConnectionContext connectionContext, String database) {
+        private MongoDBProvisionerBuilder(MongoDBConnectionContext connectionContext, String database) {
             this.connectionContext = connectionContext;
             this.database = database;
         }
