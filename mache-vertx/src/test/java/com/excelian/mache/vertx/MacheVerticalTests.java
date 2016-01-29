@@ -2,7 +2,6 @@ package com.excelian.mache.vertx;
 
 import com.excelian.mache.builder.StorageProvisioner;
 import com.excelian.mache.core.HashMapCacheLoader;
-import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
 import com.google.common.net.MediaType;
 import io.vertx.core.Vertx;
@@ -17,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
@@ -32,9 +30,9 @@ public class MacheVerticalTests {
     public void setUp(TestContext context) {
         vertx = Vertx.vertx();
 
-        Function<MacheRestRequestContext, Mache<String, String>> factory = (request) -> {
+        Function<MacheRestRequestContext, RestManagedMache> factory = (request) -> {
             try {
-                return mache(String.class, String.class)
+                return new RestManagedMache(mache(String.class, String.class)
                     .cachedBy(guava())
                     .storedIn(new StorageProvisioner() {
                         @Override
@@ -43,14 +41,14 @@ public class MacheVerticalTests {
                         }
                     })
                     .withNoMessaging()
-                    .macheUp();
+                    .macheUp(), 0, request.getMapName());
             } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
         };
 
-        instanceCache = new MacheInstanceCache(factory);
+        instanceCache = new MacheInstanceCache(factory, (x, y) -> { });
         vertical = new MacheVertical(new MacheRestServiceConfiguration(), instanceCache);
         vertx.deployVerticle(vertical, context.asyncAssertSuccess());
     }

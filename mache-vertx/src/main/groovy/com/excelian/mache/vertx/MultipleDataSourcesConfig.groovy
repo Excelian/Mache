@@ -4,6 +4,8 @@ import com.datastax.driver.core.Cluster
 import com.excelian.mache.core.SchemaOptions
 import com.mongodb.ServerAddress
 
+import java.util.concurrent.TimeUnit
+
 import static com.excelian.mache.builder.MacheBuilder.mache
 import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandra
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava
@@ -24,32 +26,34 @@ public class MultipleDataSourcesConfig {
 
         restService.runAsync({ context ->
             if (context.getMapName().toLowerCase().startsWith("trade")) {
-                mache(String.class, String.class)
-                        .cachedBy(guava())
-                        .storedIn(
-                        mongodb()
-                                .withSeeds(new ServerAddress("localhost", 27017))
-                                .withDatabase(keySpace)
-                                .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
-                                .build())
-                        .withNoMessaging()
-                        .macheUp();
+                new RestManagedMache(
+                        mache(String.class, String.class)
+                                .cachedBy(guava())
+                                .storedIn(
+                                mongodb()
+                                        .withSeeds(new ServerAddress("localhost", 27017))
+                                        .withDatabase(keySpace)
+                                        .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
+                                        .build())
+                                .withNoMessaging()
+                                .macheUp(), TimeUnit.HOURS.toMillis(2))
             } else {
-                mache(String.class, String.class)
-                        .cachedBy(guava())
-                        .storedIn(
-                        cassandra()
-                                .withCluster(Cluster.builder()
-                                .withClusterName("BluePrint")
-                                .addContactPoint("192.168.3.4")
-                                .withPort(9042))
-                                .withKeyspace(keySpace)
-                                .withSchemaOptions(SchemaOptions.USE_EXISTING_SCHEMA)
-                                .asJsonDocuments()
-                                .inTable("names")
-                                .withIDField("id"))
-                        .withNoMessaging()
-                        .macheUp();
+                new RestManagedMache(
+                        mache(String.class, String.class)
+                                .cachedBy(guava())
+                                .storedIn(
+                                cassandra()
+                                        .withCluster(Cluster.builder()
+                                            .withClusterName("BluePrint")
+                                            .addContactPoint("192.168.3.4")
+                                            .withPort(9042))
+                                        .withKeyspace(keySpace)
+                                        .withSchemaOptions(SchemaOptions.USE_EXISTING_SCHEMA)
+                                        .asJsonDocuments()
+                                        .inTable("names")
+                                        .withIDField("id"))
+                                .withNoMessaging()
+                                .macheUp(), 0)
             }
         });
     }

@@ -3,10 +3,16 @@ package com.excelian.mache.vertx
 import com.excelian.mache.core.SchemaOptions
 import com.mongodb.ServerAddress
 
+import java.util.concurrent.TimeUnit
+
 import static com.excelian.mache.builder.MacheBuilder.mache
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 
+/**
+ * Run the REST service using a Mongo storage provider, the maps created will not be evicted after any period
+ * of time.
+ */
 public class MongoConfig {
     protected static String keySpace = "NoSQL_MacheClient_Test_" + new Date().toString();
 
@@ -14,16 +20,17 @@ public class MongoConfig {
         MacheRestService restService = new MacheRestService();
 
         restService.runAsync({ context ->
-            mache(String.class, String.class)
-                    .cachedBy(guava())
-                    .storedIn(
-                    mongodb()
-                            .withSeeds(new ServerAddress("localhost", 27017))
-                            .withDatabase(keySpace)
-                            .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
-                            .build())
-                    .withNoMessaging()
-                    .macheUp();
+            new RestManagedMache(
+                    mache(String.class, String.class)
+                            .cachedBy(guava())
+                            .storedIn(
+                            mongodb()
+                                    .withSeeds(new ServerAddress("localhost", 27017))
+                                    .withDatabase(keySpace)
+                                    .withSchemaOptions(SchemaOptions.USE_EXISTING_SCHEMA)
+                                    .build())
+                            .withNoMessaging()
+                            .macheUp(), 0)
         });
     }
 }

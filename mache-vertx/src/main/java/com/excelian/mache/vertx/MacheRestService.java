@@ -1,6 +1,5 @@
 package com.excelian.mache.vertx;
 
-import com.excelian.mache.core.Mache;
 import io.vertx.core.Vertx;
 
 import java.util.function.Function;
@@ -9,7 +8,7 @@ import java.util.function.Function;
  * Entry point to start the Rest service.
  *
  * @implNote This exists purely to hide the Vertx implementation, whilst an interface may separate
- *           the implementation the public API is better off hiding any reference to vertx/vertical.
+ *          the implementation the public API is better off hiding any reference to vertx/vertical.
  */
 public class MacheRestService {
     private final Vertx vertx;
@@ -25,9 +24,11 @@ public class MacheRestService {
      * @param macheFactory         A delegate that will create new Mache instances given a RequestContext
      */
     public void runAsync(MacheRestServiceConfiguration serviceConfiguration,
-                         Function<MacheRestRequestContext, Mache<String, String>> macheFactory)
+                         Function<MacheRestRequestContext, RestManagedMache> macheFactory)
         throws Exception {
-        MacheVertical vertical = new MacheVertical(serviceConfiguration, new MacheInstanceCache(macheFactory));
+        MacheInstanceCache instanceCache = new MacheInstanceCache(macheFactory,
+            (time, delegate) -> vertx.setTimer(time, (x) -> delegate.run()));
+        MacheVertical vertical = new MacheVertical(serviceConfiguration, instanceCache);
         vertx.deployVerticle(vertical);
     }
 
@@ -36,7 +37,7 @@ public class MacheRestService {
      *
      * @param macheFactory A delegate that will create new Mache instances given a RequestContext
      */
-    public void runAsync(Function<MacheRestRequestContext, Mache<String, String>> macheFactory) throws Exception {
+    public void runAsync(Function<MacheRestRequestContext, RestManagedMache> macheFactory) throws Exception {
         runAsync(new MacheRestServiceConfiguration(), macheFactory);
     }
 
