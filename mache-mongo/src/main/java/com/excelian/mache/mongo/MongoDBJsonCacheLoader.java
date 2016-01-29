@@ -28,19 +28,21 @@ public class MongoDBJsonCacheLoader extends AbstractMongoDBCacheLoader<String, S
     private final String collectionName;
 
     /**
-     * TODO To be refactored.
-     *  @param mongoDBConnectionContext A
-     * @param credentials            A
-     * @param clientOptions          A
-     * @param database               A
-     * @param schemaOptions          A
-     * @param collectionName         A
+     * Constructor.
+     * @param mongoDBConnectionContext shared mongo DB resources
+     * @param credentials              logon credentials
+     * @param clientOptions            mongo client options
+     * @param database                 database name
+     * @param schemaOptions            schema creation policy
+     * @param collectionName           collection to persist to and from
      */
     public MongoDBJsonCacheLoader(MongoDBConnectionContext mongoDBConnectionContext,
                                   List<MongoCredential> credentials,
                                   MongoClientOptions clientOptions,
-                                  String database, SchemaOptions schemaOptions, String collectionName) {
-        super(mongoDBConnectionContext, clientOptions, String.class, schemaOptions, String.class, credentials, database);
+                                  String database, SchemaOptions schemaOptions,
+                                  String collectionName) {
+        super(mongoDBConnectionContext, clientOptions, String.class,
+            schemaOptions, String.class, credentials, database);
         this.collectionName = collectionName;
     }
 
