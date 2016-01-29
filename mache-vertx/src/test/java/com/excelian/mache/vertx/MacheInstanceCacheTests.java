@@ -31,7 +31,7 @@ public class MacheInstanceCacheTests {
                         }
                     })
                     .withNoMessaging()
-                    .macheUp(), TimeUnit.SECONDS.toMillis(5), request.getMapName());
+                    .macheUp(), TimeUnit.SECONDS.toMillis(5));
             } catch (Exception e) {
                 e.printStackTrace();
             }

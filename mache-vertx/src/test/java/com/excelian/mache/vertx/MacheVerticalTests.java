@@ -41,14 +41,15 @@ public class MacheVerticalTests {
                         }
                     })
                     .withNoMessaging()
-                    .macheUp(), 0, request.getMapName());
+                    .macheUp(), 0);
             } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
         };
 
-        instanceCache = new MacheInstanceCache(factory, (x, y) -> { });
+        instanceCache = new MacheInstanceCache(factory, (x, y) -> {
+        });
         vertical = new MacheVertical(new MacheRestServiceConfiguration(), instanceCache);
         vertx.deployVerticle(vertical, context.asyncAssertSuccess());
     }

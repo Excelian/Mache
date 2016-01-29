@@ -36,7 +36,7 @@ public class MacheInstanceCache {
         try {
             newMache = factory.apply(new MacheRestRequestContext(mapName));
             if (newMache.getTimeToLiveMillis() > 0) {
-                timerService.runAfterPeriod(newMache.getTimeToLiveMillis(), () -> removeFromCache(newMache.getName()));
+                timerService.runAfterPeriod(newMache.getTimeToLiveMillis(), () -> removeFromCache(mapName));
             }
             cacheInstances.put(mapName, newMache.getMache());
         } catch (Exception e) {
