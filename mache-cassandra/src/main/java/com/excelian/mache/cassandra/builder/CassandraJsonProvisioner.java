@@ -8,11 +8,8 @@ import com.excelian.mache.core.SchemaOptions;
 /**
  * Provisions a CassandraCacheLoader to store String keys to String values which
  * are assumed to be Json documents).
- *
- * @param <K> the key type.
- * @param <V> the value type.
  */
-public class CassandraJsonProvisioner<K, V> implements StorageProvisioner<K, V> {
+public class CassandraJsonProvisioner implements StorageProvisioner<String, String> {
     private final CassandraConnectionContext connectionContext;
     private final SchemaOptions schemaOptions;
     private final String keySpace;
@@ -47,14 +44,8 @@ public class CassandraJsonProvisioner<K, V> implements StorageProvisioner<K, V> 
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-        if (keyType.equals(String.class) && valueType.equals(String.class)) {
-            return (MacheLoader<K, V>) new CassandraJsonCacheLoader(connectionContext,
+    public MacheLoader<String, String> getCacheLoader(Class<String> keyType, Class<String> valueType) {
+        return new CassandraJsonCacheLoader(connectionContext,
                 schemaOptions, keySpace, replicationClass, replicationFactor, tableName, idField);
-        } else {
-            throw new IllegalArgumentException("Only Cassandra Json Caches of type "
-                + "<String, String> are supported.");
-        }
     }
 }

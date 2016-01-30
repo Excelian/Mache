@@ -9,11 +9,8 @@ import com.excelian.mache.couchbase.CouchbaseJsonCacheLoader;
 /**
  * Proivisions Couchbase as storage with values in the mache expected as  Json
  * documents.
- *
- * @param <K> the key type.
- * @param <V> the value type.
  */
-public class CouchbaseJsonProvisioner<K, V> implements StorageProvisioner<K, V> {
+public class CouchbaseJsonProvisioner implements StorageProvisioner<String, String> {
     private final CouchbaseConnectionContext connectionContext;
     private final BucketSettings bucketSettings;
     private final String adminUser;
@@ -42,13 +39,8 @@ public class CouchbaseJsonProvisioner<K, V> implements StorageProvisioner<K, V> 
 
     @Override
     @SuppressWarnings("unchecked")
-    public MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-        if (keyType.equals(String.class) && valueType.equals(String.class)) {
-            return (MacheLoader<K, V>) new CouchbaseJsonCacheLoader(bucketSettings,
+    public MacheLoader<String, String> getCacheLoader(Class<String> keyType, Class<String> valueType) {
+        return new CouchbaseJsonCacheLoader(bucketSettings,
                 connectionContext, adminUser, adminPassword, schemaOptions);
-        } else {
-            throw new IllegalArgumentException("Only Cassandra Json Caches of type "
-                + "<String, String> are supported.");
-        }
     }
 }

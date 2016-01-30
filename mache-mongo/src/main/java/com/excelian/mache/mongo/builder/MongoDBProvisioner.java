@@ -173,8 +173,8 @@ public class MongoDBProvisioner<K, V> implements StorageProvisioner<K, V> {
              * @param collection the collection name
              * @return the provisioner for creating the Mongo DB Json Cache Loader
              */
-            public <K, V> StorageProvisioner<K, V> inCollection(String collection) {
-                return new MongoDBJsonProvisioner<>(connectionContext, mongoCredentials,
+            public MongoDBJsonProvisioner inCollection(String collection) {
+                return new MongoDBJsonProvisioner(connectionContext, mongoCredentials,
                     mongoClientOptions, database, schemaOptions, collectionOptions, collection);
             }
         }

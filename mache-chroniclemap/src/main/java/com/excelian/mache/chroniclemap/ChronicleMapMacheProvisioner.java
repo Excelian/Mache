@@ -33,8 +33,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class ChronicleMapMacheProvisioner<K, V> implements CacheProvisioner<K, V> {
 
-    private int upperWaterMark = 10000;
-    private int lowerWaterMark = 8500;
+    private int upperWatermark = 10000;
+    private int lowerWatermark = 8500;
     private int acceptableWatermark = 9250;
     private boolean runCleanupThread = true;
     private boolean runNewThreadForCleanup = false;
@@ -48,12 +48,12 @@ public class ChronicleMapMacheProvisioner<K, V> implements CacheProvisioner<K, V
 
     @Override
     public Mache<K, V> create(Class<K> keyType, Class<V> valueType, MacheLoader<K, V> cacheLoader) {
-        ChronicleMapBuilder<K, V> chronicleMapBuilder = ChronicleMapBuilder.of(keyType, valueType).entries(10000);
+        ChronicleMapBuilder<K, V> chronicleMapBuilder = ChronicleMapBuilder.of(keyType, valueType).entries(11500);
         applyConfig(chronicleMapBuilder);
 
         ConcurrentMap<K, V> map = buildMap(chronicleMapBuilder);
 
-        ConcurrentLRUCache<K, V> cache = new ConcurrentLRUCache<>(upperWaterMark, lowerWaterMark,
+        ConcurrentLRUCache<K, V> cache = new ConcurrentLRUCache<>(upperWatermark, lowerWatermark,
                 acceptableWatermark, runCleanupThread, runNewThreadForCleanup, evictionListener, map);
 
         return new ChronicleMapMache<>(cacheLoader, cache);
@@ -116,9 +116,9 @@ public class ChronicleMapMacheProvisioner<K, V> implements CacheProvisioner<K, V
      * @see ChronicleMapBuilder#entries(long)
      */
     public ChronicleMapMacheProvisioner<K, V> size(int size, double buffer) {
-        this.upperWaterMark = size;
+        this.upperWatermark = size;
         this.acceptableWatermark = size - (int) Math.ceil(size * (buffer / 2));
-        this.lowerWaterMark = size - (int) Math.floor(size * buffer) - 1;
+        this.lowerWatermark = size - (int) Math.floor(size * buffer) - 1;
 
         this.configToApply.add((builder -> builder.entries(size + (int) Math.ceil(size * buffer))));
         return this;
@@ -132,17 +132,19 @@ public class ChronicleMapMacheProvisioner<K, V> implements CacheProvisioner<K, V
     /**
      * Run a separate daemon thread to evict least recently used elements from the cache.
      */
-    public ChronicleMapMacheProvisioner<K, V> withRunCleanupThread(boolean runCleanupThread) {
-        this.runCleanupThread = runCleanupThread;
+    public ChronicleMapMacheProvisioner<K, V> withRunCleanupThread() {
+        this.runCleanupThread = true;
+        this.runNewThreadForCleanup = false;
         return this;
     }
 
     /**
-     * Spawns a new thread to event least recently used elements from the cache on each put that occurs when
+     * Spawns a new thread to evict least recently used elements from the cache on each put that occurs when
      * the cache is greater than the specified size.
      */
-    public ChronicleMapMacheProvisioner<K, V> withRunNewThreadForCleanup(boolean runNewThreadForCleanup) {
-        this.runNewThreadForCleanup = runNewThreadForCleanup;
+    public ChronicleMapMacheProvisioner<K, V> withRunNewThreadForCleanup() {
+        this.runCleanupThread = false;
+        this.runNewThreadForCleanup = true;
         return this;
     }
 
@@ -326,7 +328,7 @@ public class ChronicleMapMacheProvisioner<K, V> implements CacheProvisioner<K, V
     }
 
     /**
-     * Pass through to keyMarshallerson ChronicleMapBuilder.
+     * Pass through to keyMarshallers on ChronicleMapBuilder.
      *
      * @see ChronicleMapBuilder#keyMarshallers(BytesWriter, BytesReader)
      */

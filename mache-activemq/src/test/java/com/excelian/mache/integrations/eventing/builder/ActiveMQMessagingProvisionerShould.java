@@ -1,6 +1,5 @@
 package com.excelian.mache.integrations.eventing.builder;
 
-import com.excelian.mache.builder.MacheBuilder;
 import com.excelian.mache.core.HashMapCacheLoader;
 import com.excelian.mache.core.HashMapMache;
 import com.excelian.mache.core.Mache;
@@ -9,7 +8,7 @@ import org.junit.Test;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.events.integration.builder.ActiveMQMessagingProvisioner.activemq;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 public class ActiveMQMessagingProvisionerShould {
 

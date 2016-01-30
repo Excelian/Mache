@@ -5,8 +5,6 @@ import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import com.excelian.mache.builder.NoMessagingProvisioner;
 import com.excelian.mache.core.Mache;
-import com.excelian.mache.couchbase.builder.CouchbaseProvisioner;
-import junit.extensions.TestSetup;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
