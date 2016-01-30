@@ -10,7 +10,7 @@ import com.excelian.mache.core.MacheLoader;
 public class CassandraConnectionContext extends AbstractConnectionContext<Cluster> {
 
     private final Cluster.Builder builder;
-    private Cluster cluster;
+    private volatile Cluster cluster;
 
     private CassandraConnectionContext(Cluster.Builder builder) {
         this.builder = builder;

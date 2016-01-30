@@ -23,7 +23,7 @@ public abstract class AbstractMongoDBCacheLoader<K, V> implements MacheLoader<K,
 
     protected final List<MongoCredential> credentials;
     protected final MongoClientOptions clientOptions;
-    protected MongoClient mongoClient;
+    protected volatile MongoClient mongoClient;
     protected Class<K> keyType;
     protected Class<V> valueType;
     protected MongoDBConnectionContext mongoDBConnectionContext;

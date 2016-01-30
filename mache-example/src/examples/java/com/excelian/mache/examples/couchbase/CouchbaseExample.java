@@ -1,8 +1,5 @@
 package com.excelian.mache.examples.couchbase;
 
-import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.examples.Example;
@@ -21,7 +18,7 @@ import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
  */
 public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, CouchbaseAnnotatedMessage> {
 
-    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+    protected final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
     private String serverIpAddress;
 
     public CouchbaseExample(String serverIpAddress) {
@@ -31,7 +28,7 @@ public class CouchbaseExample implements Example<CouchbaseAnnotatedMessage, Couc
     @Override
     public Mache<String, CouchbaseAnnotatedMessage> exampleCache() throws Exception {
 
-        final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
+        final String keySpace = "NoSQL_MacheClient_Test_" + dateFormat.format(new Date());
 
         return mache(String.class, CouchbaseAnnotatedMessage.class)
                 .cachedBy(guava())

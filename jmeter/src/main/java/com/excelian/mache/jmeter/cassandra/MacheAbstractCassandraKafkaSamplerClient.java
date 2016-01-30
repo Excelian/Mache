@@ -28,7 +28,6 @@ import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 public abstract class MacheAbstractCassandraKafkaSamplerClient extends AbstractCassandraSamplerClient {
 
     protected Mache<String, CassandraTestEntity> cache1 = null;
-    protected ConnectionContext<Cluster> connectionContext;
 
     @Override
     public void setupTest(JavaSamplerContext context) {
@@ -50,13 +49,6 @@ public abstract class MacheAbstractCassandraKafkaSamplerClient extends AbstractC
     public void teardownTest(JavaSamplerContext context) {
         if (cache1 != null) {
             cache1.close();
-        }
-        if (connectionContext != null) {
-            try {
-                connectionContext.close();
-            } catch (Exception e) {
-                getLogger().error("mache error closing db session", e);
-            }
         }
     }
 
