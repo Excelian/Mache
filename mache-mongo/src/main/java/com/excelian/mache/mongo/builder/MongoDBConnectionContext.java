@@ -12,7 +12,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Stores singletons that should be shared between Mongo connections.
  */
-public class MongoConnectionContext extends AbstractConnectionContext<List<ServerAddress>> {
+public class MongoDBConnectionContext extends AbstractConnectionContext<List<ServerAddress>> {
 
     private final ServerAddress[] seeds;
 
@@ -20,7 +20,7 @@ public class MongoConnectionContext extends AbstractConnectionContext<List<Serve
      * Constructor.
      * @param seeds the servers to connect to
      */
-    public MongoConnectionContext(ServerAddress... seeds) {
+    public MongoDBConnectionContext(ServerAddress... seeds) {
         this.seeds = seeds;
     }
 
@@ -36,18 +36,18 @@ public class MongoConnectionContext extends AbstractConnectionContext<List<Serve
     }
 
 
-    private static volatile MongoConnectionContext singleton;
+    private static volatile MongoDBConnectionContext singleton;
 
     /**
      * Gets the singleton instance.
      * @param seeds the servers to connect to
      * @return the singleton instance
      */
-    static MongoConnectionContext getInstance(ServerAddress... seeds) {
+    static MongoDBConnectionContext getInstance(ServerAddress... seeds) {
         if (singleton == null) {
-            synchronized (MongoConnectionContext.class) {
+            synchronized (MongoDBConnectionContext.class) {
                 if (singleton == null) {
-                    singleton = new MongoConnectionContext(seeds);
+                    singleton = new MongoDBConnectionContext(seeds);
                 }
             }
         }

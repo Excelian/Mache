@@ -1,6 +1,7 @@
 package com.excelian.mache.cassandra;
 
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
 import com.excelian.mache.cassandra.builder.CassandraConnectionContext;
 import com.excelian.mache.core.SchemaOptions;
 import org.slf4j.Logger;
@@ -58,7 +59,11 @@ public class CassandraJsonCacheLoader extends AbstractCassandraCacheLoader<Strin
     public String load(String key) throws Exception {
         final String select = String.format("SELECT JSON * from %s WHERE %s = '%s';", keyspaceDotTable, idColumn, key);
         final ResultSet execute = session.execute(select);
-        return execute.one().getString(0);
+        final Row row = execute.one();
+        if (row == null) {
+            return null;
+        }
+        return row.getString(0);
     }
 
     @Override

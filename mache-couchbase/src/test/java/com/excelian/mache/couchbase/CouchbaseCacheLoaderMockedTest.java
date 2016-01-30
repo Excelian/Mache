@@ -129,7 +129,7 @@ public class CouchbaseCacheLoaderMockedTest {
             CouchbaseConnectionContext.getInstance(nullEnvironmentAsSingletonWillBeHandledByTheContext,
                 singletonList("localhost"));
         final BucketSettings bucket = DefaultBucketSettings.builder().name("test").build();
-        loader = new CouchbaseCacheLoader<>(String.class, Object.class,
+        loader = new CouchbaseCacheLoader<>(Object.class,
             bucket, couchbaseConnectionContext, "Admin", "Pass", schemaOptions);
     }
 
