@@ -66,7 +66,7 @@ public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouch
         final String keySpace = mapParams.get("keyspace.name");
         final String couchServer = mapParams.get("couch.server.ip.address");
 
-        final Mache<String, CouchTestEntity> mache = mache(String.class, CouchTestEntity.class)
+        cache1 = mache(String.class, CouchTestEntity.class)
             .cachedBy(guava())
             .storedIn(couchbase()
                 .withBucketSettings(builder().name(keySpace).quota(150).build())

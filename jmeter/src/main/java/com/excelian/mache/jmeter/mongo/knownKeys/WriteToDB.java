@@ -19,7 +19,6 @@ import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
  * JMeter test that measures writing directly to the MongoDB backing store.
  */
 public class WriteToDB extends AbstractMongoSamplerClient {
-    private static final long serialVersionUID = 4662847886347883622L;
 
     private MacheLoader<String, MongoTestEntity> db;
 

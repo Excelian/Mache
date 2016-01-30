@@ -22,7 +22,6 @@ import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandr
  * JMeter test that measures writing directly to the Cassandra backing store.
  */
 public class WriteToDB extends AbstractCassandraSamplerClient {
-    private static final long serialVersionUID = 4662847886347883622L;
     private MacheLoader<String, CassandraTestEntity> db;
 
     @Override

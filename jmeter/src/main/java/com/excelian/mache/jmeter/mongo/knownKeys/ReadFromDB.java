@@ -22,7 +22,6 @@ import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
  * JMeter test that measures reading directly from the backing Mongo store.
  */
 public class ReadFromDB extends AbstractMongoSamplerClient {
-    private static final long serialVersionUID = 251140199032740124L;
 
     private MacheLoader<String, MongoTestEntity> db;
 

@@ -18,7 +18,6 @@ import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandr
  * JMeter test that measures reading directly from the backing Cassandra store.
  */
 public class ReadFromDB extends AbstractCassandraSamplerClient {
-    private static final long serialVersionUID = 251140199032740124L;
     private MacheLoader<String, CassandraTestEntity> db;
 
     @Override

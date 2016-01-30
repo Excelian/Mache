@@ -43,4 +43,5 @@ public class CouchbaseJsonProvisioner implements StorageProvisioner<String, Stri
         return new CouchbaseJsonCacheLoader(bucketSettings,
                 connectionContext, adminUser, adminPassword, schemaOptions);
     }
+
 }
