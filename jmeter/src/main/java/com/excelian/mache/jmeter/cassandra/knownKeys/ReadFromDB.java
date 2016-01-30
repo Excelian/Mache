@@ -3,7 +3,6 @@ package com.excelian.mache.jmeter.cassandra.knownkeys;
 import com.datastax.driver.core.Cluster;
 import com.excelian.mache.builder.StorageProvisioner;
 import com.excelian.mache.core.MacheLoader;
-import com.excelian.mache.cassandra.builder.CassandraProvisioner;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.cassandra.AbstractCassandraSamplerClient;
 import com.excelian.mache.jmeter.cassandra.CassandraTestEntity;

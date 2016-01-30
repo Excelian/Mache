@@ -1,8 +1,5 @@
 package com.excelian.mache.jmeter.couch.knownkeys;
 
-import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.couchbase.builder.CouchbaseProvisioner;

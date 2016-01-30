@@ -1,9 +1,7 @@
 package com.excelian.mache.vertx;
 
-import com.excelian.mache.builder.StorageProvisioner;
 import com.excelian.mache.core.HashMapCacheLoader;
 import com.excelian.mache.core.Mache;
-import com.excelian.mache.core.MacheLoader;
 import com.google.common.net.MediaType;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpHeaders;

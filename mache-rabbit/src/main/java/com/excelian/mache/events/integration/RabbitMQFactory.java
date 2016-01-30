@@ -4,13 +4,12 @@ import com.excelian.mache.events.BaseCoordinationEntryEventConsumer;
 import com.excelian.mache.events.BaseCoordinationEntryEventProducer;
 import com.excelian.mache.events.MQConfiguration;
 import com.excelian.mache.events.MQFactory;
-import com.excelian.mache.observable.coordination.CoordinationEntryEvent;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
-import java.io.IOException;
 import javax.jms.JMSException;
+import java.io.IOException;
 
 /**
  * Produces Rabbit MQ event producers and consumers.
