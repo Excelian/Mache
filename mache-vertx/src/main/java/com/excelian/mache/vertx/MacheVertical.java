@@ -89,9 +89,8 @@ public class MacheVertical extends AbstractVerticle {
                 } else {
                     context.next();
                 }
-
             } catch (UnknownHostException e) {
-                e.printStackTrace();
+                LOG.error("Failed to register routers", e);
             }
         });
 
