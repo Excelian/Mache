@@ -34,7 +34,8 @@ public class MultipleDataSourcesConfig {
                                         .withSeeds(new ServerAddress("localhost", 27017))
                                         .withDatabase(keySpace)
                                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
-                                        .build())
+                                        .asJsonDocuments()
+                                        .inCollection("test"))
                                 .withNoMessaging()
                                 .macheUp(), TimeUnit.HOURS.toMillis(2))
             } else {
