@@ -32,8 +32,9 @@ public abstract class TestEventingBase {
     private static final Logger LOG = LoggerFactory.getLogger(TestEventingBase.class);
     protected MQFactory<String> theMqFactory;
     protected BaseCoordinationEntryEventProducer<String> theProducer;
-    private CacheEventCollector<String> theSpiedEventCollector;
     protected BaseCoordinationEntryEventConsumer<String> theConsumer;
+
+    private CacheEventCollector<String> theSpiedEventCollector;
 
     protected abstract MQFactory<String> buildMQFactory() throws JMSException, IOException;
 
@@ -44,7 +45,7 @@ public abstract class TestEventingBase {
     /**
      * May be overridden for messaging systems requiring a longer living connection.
      *
-     * @throws IOException
+     * @throws IOException Exception.
      */
     @After
     public void afterEachTestcase() throws IOException {

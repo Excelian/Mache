@@ -36,7 +36,7 @@ public class RabbitMQFactory<K> implements MQFactory<K> {
         this.rabbitMqConfig = rabbitMqConfig;
     }
 
-    public Channel createChannel() throws IOException {
+    private Channel createChannel() throws IOException {
         Channel channel = connection.createChannel();
         channel.exchangeDeclare(rabbitMqConfig.getExchangeName(), "direct", true);
         return channel;

@@ -23,8 +23,7 @@ public class RabbitMQEventingTest extends TestEventingBase {
 
     @Override
     protected MQFactory<String> buildMQFactory() throws JMSException, IOException {
-
-        if(mqFactory == null) {
+        if (mqFactory == null) {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setHost(new NoRunningRabbitMQForTests().getHost());
             factory.setAutomaticRecoveryEnabled(true);
