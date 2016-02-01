@@ -10,9 +10,9 @@ import javax.jms.JMSException;
  * @param <K> the type of the keys
  */
 public interface MQFactory<K> extends Closeable {
-    public BaseCoordinationEntryEventProducer<K> getProducer(MQConfiguration config);
+    BaseCoordinationEntryEventProducer<K> getProducer(MQConfiguration config);
 
-    public BaseCoordinationEntryEventConsumer<K> getConsumer(MQConfiguration config) throws IOException, JMSException;
+    BaseCoordinationEntryEventConsumer<K> getConsumer(MQConfiguration config) throws IOException, JMSException;
 
-    public void close() throws IOException;
+    void close() throws IOException;
 }
