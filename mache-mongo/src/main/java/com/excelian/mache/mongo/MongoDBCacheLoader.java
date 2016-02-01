@@ -1,9 +1,7 @@
 package com.excelian.mache.mongo;
 
-import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.mongo.builder.MongoConnectionContext;
-import com.mongodb.MongoClient;
+import com.excelian.mache.mongo.builder.MongoDBConnectionContext;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import org.slf4j.Logger;
@@ -21,17 +19,9 @@ import java.util.List;
  * @param <K> the type of the keys
  * @param <V> the type of the values
  */
-public class MongoDBCacheLoader<K, V> implements MacheLoader<K, V> {
+public class MongoDBCacheLoader<K, V> extends AbstractMongoDBCacheLoader<K, V> {
     private static final Logger LOG = LoggerFactory.getLogger(MongoDBCacheLoader.class);
-    private final List<MongoCredential> credentials;
-    private final MongoClientOptions clientOptions;
-    private MongoClient mongoClient;
-    private Class<K> keyType;
-    private Class<V> valueType;
-    private MongoConnectionContext mongoConnectionContext;
-    private SchemaOptions schemaOptions;
-    private CollectionOptions collectionOptions;
-    private String database;
+    private final CollectionOptions collectionOptions;
 
     /**
      * Constructor.
@@ -44,38 +34,20 @@ public class MongoDBCacheLoader<K, V> implements MacheLoader<K, V> {
      * @param schemaOptions - schemaOptions
      * @param collectionOptions - collectionOptions
      */
-    public MongoDBCacheLoader(Class<K> keyType, Class<V> valueType, MongoConnectionContext connectionContext,
-                              List<MongoCredential> credentials, MongoClientOptions clientOptions,
-                              String database, SchemaOptions schemaOptions, CollectionOptions collectionOptions) {
-        this.keyType = keyType;
-        this.valueType = valueType;
-        this.mongoConnectionContext = connectionContext;
-        this.credentials = credentials;
-        this.clientOptions = clientOptions;
-        this.database = database;
-        this.schemaOptions = schemaOptions;
+    public MongoDBCacheLoader(Class<K> keyType, Class<V> valueType,
+                              MongoDBConnectionContext connectionContext,
+                              List<MongoCredential> credentials,
+                              MongoClientOptions clientOptions,
+                              String database, SchemaOptions schemaOptions,
+                              CollectionOptions collectionOptions) {
+        super(connectionContext, clientOptions, keyType, schemaOptions, valueType,
+            credentials, database);
         this.collectionOptions = collectionOptions;
-        this.database = database.replace("-", "_").replace(" ", "_").replace(":", "_");
     }
 
     @Override
     public String getName() {
         return valueType.getSimpleName();
-    }
-
-    @Override
-    public void create() {
-        if (mongoClient == null) {
-            synchronized (this) {
-                if (mongoClient == null) {
-                    mongoClient = connect();
-
-                    if (!ops().collectionExists(valueType)) {
-                        ops().createCollection(valueType, collectionOptions);
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -98,43 +70,17 @@ public class MongoDBCacheLoader<K, V> implements MacheLoader<K, V> {
         return value;
     }
 
-    @Override
-    public void close() {
-        if (mongoClient != null) {
-            synchronized (this) {
-                if (mongoClient != null) {
-                    if (schemaOptions.shouldDropSchema()) {
-                        mongoClient.dropDatabase(database);
-                        LOG.info("Dropped database {}", database);
-                    }
-                    mongoClient.close();
-                    mongoClient = null;
-                    mongoConnectionContext.close(this);
-                }
-            }
-        }
-    }
-
     private MongoOperations ops() {
-        return new MongoTemplate(mongoClient, database);
-    }
-
-    private MongoClient connect() {
-        return new MongoClient(mongoConnectionContext.getConnection(this), credentials, clientOptions);
+        return new MongoTemplate(mongoClient, databaseName);
     }
 
     @Override
-    public String toString() {
-        return "MongoDBCacheLoader{"
-                + "credentials=" + credentials
-                + ", clientOptions=" + clientOptions
-                + ", mongoClient=" + mongoClient
-                + ", keyType=" + keyType
-                + ", valueType=" + valueType
-                + ", mongoConnectionContext=" + mongoConnectionContext
-                + ", schemaOptions=" + schemaOptions
-                + ", collectionOptions=" + collectionOptions
-                + ", database='" + database + '\''
-                + '}';
+    protected void createCollection() {
+        ops().createCollection(valueType, collectionOptions);
+    }
+
+    @Override
+    protected boolean shouldCreateCollection() {
+        return this.schemaOptions.shouldCreateSchema() && !ops().collectionExists(valueType);
     }
 }

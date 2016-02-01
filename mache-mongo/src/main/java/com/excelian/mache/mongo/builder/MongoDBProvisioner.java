@@ -1,11 +1,9 @@
 package com.excelian.mache.mongo.builder;
 
 import com.excelian.mache.builder.StorageProvisioner;
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.mongo.MongoDBCacheLoader;
-import com.excelian.mache.mongo.MongoDBJsonCacheLoader;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
@@ -14,15 +12,13 @@ import org.springframework.data.mongodb.core.CollectionOptions;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.toList;
 
 /**
  * {@link StorageProvisioner} implementation for Mongo DB.
  */
 public class MongoDBProvisioner implements StorageProvisioner {
 
-    private final MongoConnectionContext connectionContext;
+    private final MongoDBConnectionContext connectionContext;
     private final List<MongoCredential> mongoCredentials;
     private final MongoClientOptions clientOptions;
     private final String database;
@@ -39,7 +35,7 @@ public class MongoDBProvisioner implements StorageProvisioner {
      * @param schemaOptions     - schemaOptions
      * @param collectionOptions - collectionOptions
      */
-    private MongoDBProvisioner(MongoConnectionContext connectionContext, List<MongoCredential> credentials,
+    private MongoDBProvisioner(MongoDBConnectionContext connectionContext, List<MongoCredential> credentials,
                                MongoClientOptions clientOptions, String database, SchemaOptions schemaOptions,
                                CollectionOptions collectionOptions) {
 
@@ -58,8 +54,8 @@ public class MongoDBProvisioner implements StorageProvisioner {
      */
     public static SeedsListBuilder mongodb() {
         return seeds -> database -> {
-            final MongoConnectionContext mongoConnectionContext = MongoConnectionContext.getInstance(seeds);
-            return new MongoDBProvisionerBuilder(mongoConnectionContext, database);
+            final MongoDBConnectionContext mongoDBConnectionContext = MongoDBConnectionContext.getInstance(seeds);
+            return new MongoDBProvisionerBuilder(mongoDBConnectionContext, database);
         };
     }
 
@@ -70,20 +66,14 @@ public class MongoDBProvisioner implements StorageProvisioner {
      * @param seeds the mongo servers
      * @return the connection context
      */
-    public static MongoConnectionContext mongoConnectionContext(ServerAddress... seeds) {
-        return MongoConnectionContext.getInstance(seeds);
+    public static MongoDBConnectionContext mongoConnectionContext(ServerAddress... seeds) {
+        return MongoDBConnectionContext.getInstance(seeds);
     }
 
     @Override
     public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-        // TODO this is the wrong approach but gets tests running for now
-        if (valueType == String.class) {
-            return new MongoDBJsonCacheLoader(connectionContext, mongoCredentials, clientOptions, database,
-                schemaOptions);
-        } else {
-            return new MongoDBCacheLoader<>(keyType, valueType, connectionContext, mongoCredentials,
-                clientOptions, database, schemaOptions, collectionOptions);
-        }
+        return new MongoDBCacheLoader<>(keyType, valueType, connectionContext, mongoCredentials,
+            clientOptions, database, schemaOptions, collectionOptions);
     }
 
     /**
@@ -104,14 +94,14 @@ public class MongoDBProvisioner implements StorageProvisioner {
      * A builder with defaults for a Mongo DB cluster.
      */
     public static class MongoDBProvisionerBuilder {
-        private final MongoConnectionContext connectionContext;
+        private final MongoDBConnectionContext connectionContext;
         private final String database;
-        private List<MongoCredential> mongoCredentials = Collections.emptyList();
-        private MongoClientOptions mongoClientOptions = MongoClientOptions.builder().build();
-        private SchemaOptions schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
-        private CollectionOptions collectionOptions = null;
+        protected List<MongoCredential> mongoCredentials = Collections.emptyList();
+        protected MongoClientOptions mongoClientOptions = MongoClientOptions.builder().build();
+        protected SchemaOptions schemaOptions = SchemaOptions.USE_EXISTING_SCHEMA;
+        protected CollectionOptions collectionOptions = null;
 
-        private MongoDBProvisionerBuilder(MongoConnectionContext connectionContext, String database) {
+        private MongoDBProvisionerBuilder(MongoDBConnectionContext connectionContext, String database) {
             this.connectionContext = connectionContext;
             this.database = database;
         }
@@ -140,6 +130,51 @@ public class MongoDBProvisioner implements StorageProvisioner {
         public MongoDBProvisioner build() {
             return new MongoDBProvisioner(connectionContext, mongoCredentials,
                 mongoClientOptions, database, schemaOptions, collectionOptions);
+        }
+
+        public MongoDBJsonProvisionerBuilder asJsonDocuments() {
+            return new MongoDBJsonProvisionerBuilder(connectionContext, mongoCredentials,
+                mongoClientOptions, database, schemaOptions, collectionOptions);
+        }
+
+        /**
+         * Builds a Mongo DB CacheProvisioner that is backed by Json document
+         * values.
+         */
+        public class MongoDBJsonProvisionerBuilder extends MongoDBProvisionerBuilder {
+            /**
+             * Constructor.
+             *
+             * @param connectionContext  shared Mongo DB resources
+             * @param mongoCredentials   logon credentials
+             * @param mongoClientOptions client options
+             * @param database           database name
+             * @param schemaOptions      schema policy
+             * @param collectionOptions  collection options
+             */
+            public MongoDBJsonProvisionerBuilder(MongoDBConnectionContext connectionContext,
+                                                 List<MongoCredential> mongoCredentials,
+                                                 MongoClientOptions mongoClientOptions,
+                                                 String database,
+                                                 SchemaOptions schemaOptions,
+                                                 CollectionOptions collectionOptions) {
+                super(connectionContext, database);
+                this.mongoCredentials = mongoCredentials;
+                this.mongoClientOptions = mongoClientOptions;
+                this.schemaOptions = schemaOptions;
+                this.collectionOptions = collectionOptions;
+            }
+
+            /**
+             * Specifies the collection to store the documents in.
+             *
+             * @param collection the collection name
+             * @return the provisioner for creating the Mongo DB Json Cache Loader
+             */
+            public StorageProvisioner inCollection(String collection) {
+                return new MongoDBJsonProvisioner(connectionContext, mongoCredentials,
+                    mongoClientOptions, database, schemaOptions, collectionOptions, collection);
+            }
         }
     }
 }

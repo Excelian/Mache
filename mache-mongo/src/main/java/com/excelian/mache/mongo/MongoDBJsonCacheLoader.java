@@ -1,58 +1,56 @@
 package com.excelian.mache.mongo;
 
-import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.mongo.builder.MongoConnectionContext;
+import com.excelian.mache.mongo.builder.MongoDBConnectionContext;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
-import com.mongodb.util.JSON;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.UpdateOptions;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-/**
- * Loads Mongo data as JSON.
- *
- * @param <K> Key
- * @param <V> Value
- * @implNote This does not use Spring and will directly interface with Mongo
- *           TODO move to mongo V3 api, the older API is deprecated but will work
- *           TODO remove unused generic arguments, some references will break if changed ar present
- */
-public class MongoDBJsonCacheLoader<K, V> implements MacheLoader<String, String> {
-    private static final Logger LOG = LoggerFactory.getLogger(MongoDBJsonCacheLoader.class);
-    private final List<MongoCredential> credentials;
-    private final MongoClientOptions clientOptions;
-    private final SchemaOptions schemaOptions;
-    private final String database;
-    private MongoConnectionContext mongoConnectionContext;
+import static com.mongodb.client.model.Filters.eq;
 
-    private MongoClient mongoClient;
+/**
+ * Loads a MongoDB cache with Json documents.
+ */
+public class MongoDBJsonCacheLoader extends AbstractMongoDBCacheLoader<String, String> {
+    private static final Logger LOG = LoggerFactory.getLogger(MongoDBJsonCacheLoader.class);
+    private static final UpdateOptions UPSERT = getUpsert();
+    private MongoDatabase database;
+    private MongoCollection<Document> collection;
+    private final String collectionName;
 
     /**
-     * TODO To be refactored.
-     *
-     * @param mongoConnectionContext A
-     * @param credentials            A
-     * @param clientOptions          A
-     * @param database               A
-     * @param schemaOptions          A
+     * Constructor.
+     * @param mongoDBConnectionContext shared mongo DB resources
+     * @param credentials              logon credentials
+     * @param clientOptions            mongo client options
+     * @param database                 database name
+     * @param schemaOptions            schema creation policy
+     * @param collectionName           collection to persist to and from
      */
-    public MongoDBJsonCacheLoader(MongoConnectionContext mongoConnectionContext,
+    public MongoDBJsonCacheLoader(MongoDBConnectionContext mongoDBConnectionContext,
                                   List<MongoCredential> credentials,
                                   MongoClientOptions clientOptions,
-                                  String database, SchemaOptions schemaOptions) {
-        this.mongoConnectionContext = mongoConnectionContext;
-        this.credentials = credentials;
-        this.clientOptions = clientOptions;
-        this.schemaOptions = schemaOptions;
-        this.database = database.replace("-", "_").replace(" ", "_").replace(":", "_");
+                                  String database, SchemaOptions schemaOptions,
+                                  String collectionName) {
+        super(mongoDBConnectionContext, clientOptions, String.class,
+            schemaOptions, String.class, credentials, database);
+        this.collectionName = collectionName;
+    }
+
+    @Override
+    public void create() {
+        super.create();
+        setDatabaseIfNotAlready();
+        this.collection = database.getCollection(this.collectionName);
     }
 
     @Override
@@ -60,84 +58,55 @@ public class MongoDBJsonCacheLoader<K, V> implements MacheLoader<String, String>
         return String.class.getSimpleName();
     }
 
-    @Override
-    public void create() {
-        if (mongoClient == null) {
-            synchronized (this) {
-                if (mongoClient == null) {
-                    mongoClient = connect();
-                }
-            }
-        }
-    }
 
     @Override
     public void put(String key, String value) {
         LOG.trace("Saving to mongo key={}, newValue={}", key, value);
-        DBObject dbObject = (DBObject) JSON.parse(value);
-        DBObject keyObject = new BasicDBObject();
-        keyObject.put("_id", key);
-        DB database = mongoClient.getDB(this.database); // TODO, cache DB object
-        DBCollection collection = database.getCollection(this.database);// TODO, how do we get map name?
-        collection.update(keyObject, dbObject, true, false);
+        final Document idFindQuery = new Document("_id", key);
+        final Document payload = Document.parse(value);
+        collection.replaceOne(idFindQuery, payload, UPSERT);
     }
 
     @Override
     public void remove(String key) {
         LOG.trace("Removing from mongo key={}", key);
-        DB database = mongoClient.getDB(this.database);
-        DBCollection collection = database.getCollection(this.database);
         BasicDBObject query = new BasicDBObject();
         query.put("_id", key);
-        collection.remove(query);
+        collection.deleteOne(query);
     }
+
 
     @Override
     public String load(String key) {
-        DB database = mongoClient.getDB(this.database);
-        DBCollection collection = database.getCollection(this.database);
-
-        BasicDBObject query = new BasicDBObject();
-        query.put("_id", key);
-        DBObject result = collection.findOne(query);
-        if (result == null) {
-            return null;
-        } else {
-            String value = result.toString();
-            LOG.trace("Loading from mongo by key {} - result {}", key, value);
-            return value;
+        String value = null;
+        final FindIterable<Document> results = collection.find(eq("_id", key));
+        for (Document document : results) {
+            value = document.toJson();
         }
+        return value;
     }
 
     @Override
-    public void close() {
-        if (mongoClient != null) {
-            synchronized (this) {
-                if (mongoClient != null) {
-                    if (schemaOptions.shouldDropSchema()) {
-                        mongoClient.dropDatabase(database);
-                        LOG.info("Dropped database {}", database);
-                    }
-                    mongoClient.close();
-                    mongoClient = null;
-                }
-            }
-        }
-    }
-
-    private MongoClient connect() {
-        return new MongoClient(mongoConnectionContext.getConnection(this), credentials, clientOptions);
+    protected void createCollection() {
+        setDatabaseIfNotAlready();
+        this.database.createCollection(this.collectionName);
     }
 
     @Override
-    public String toString() {
-        return "MongoDBJsonCacheLoader{"
-            + "credentials=" + credentials
-            + ", clientOptions=" + clientOptions
-            + ", mongoClient=" + mongoClient
-            + ", mongoConnectionContext=" + mongoConnectionContext
-            + ", schemaOptions=" + schemaOptions
-            + ", database='" + database + '\''
-            + '}';
+    protected boolean shouldCreateCollection() {
+        setDatabaseIfNotAlready();
+        return database.getCollection(this.collectionName) == null;
+    }
+
+    private static UpdateOptions getUpsert() {
+        final UpdateOptions options = new UpdateOptions();
+        options.upsert(true);
+        return options;
+    }
+
+    private void setDatabaseIfNotAlready() {
+        if (this.database == null) {
+            this.database = mongoClient.getDatabase(this.databaseName);
+        }
     }
 }

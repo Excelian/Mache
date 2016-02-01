@@ -50,7 +50,7 @@ public class CassandraJsonProvisioner implements StorageProvisioner {
             return (MacheLoader<K, V>) new CassandraJsonCacheLoader(connectionContext,
                 schemaOptions, keySpace, replicationClass, replicationFactor, tableName, idField);
         } else {
-            throw new IllegalArgumentException("Cassandra Json Caches of type "
+            throw new IllegalArgumentException("Only Cassandra Json Caches of type "
                 + "<String, String> are supported.");
         }
     }

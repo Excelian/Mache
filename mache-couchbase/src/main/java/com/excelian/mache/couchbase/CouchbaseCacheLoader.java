@@ -1,12 +1,8 @@
 package com.excelian.mache.couchbase;
 
-import com.couchbase.client.java.Bucket;
-import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.cluster.BucketSettings;
-import com.couchbase.client.java.cluster.ClusterManager;
-import com.excelian.mache.builder.storage.ConnectionContext;
-import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.couchbase.builder.CouchbaseConnectionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
@@ -14,28 +10,19 @@ import org.springframework.data.couchbase.core.CouchbaseTemplate;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * An implementation of the Mache CacheLoader for Couchbase Server. Utilises the newer Spring Data Couchbase
- * that
+ * An implementation of the Mache CacheLoader for Couchbase Server. Utilises the
+ * newer Spring Data Couchbase.
  *
  * @param <K> Cache key type.
  * @param <V> Cache value type.
  */
-public class CouchbaseCacheLoader<K, V> implements MacheLoader<K, V> {
+public class CouchbaseCacheLoader<K, V> extends AbstractCouchbaseCacheLoader<K, V> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CouchbaseCacheLoader.class);
-    private final ConnectionContext<Cluster> connectionContext;
-    private Class<K> keyType;
-    private Class<V> valueType;
-    private Bucket bucket;
-    private ClusterManager manager;
+    private final Class<V> valueType;
     private CouchbaseTemplate template;
-    private BucketSettings bucketSettings;
-    private String adminUser;
-    private String adminPassword;
-    private SchemaOptions schemaOptions;
 
     /**
-     * @param keyType           The class type of the cache key.
      * @param valueType         The class type of the cache value.
      * @param bucketSettings    Bucket that will hold cached objects.
      * @param connectionContext Cluster connection.
@@ -43,32 +30,17 @@ public class CouchbaseCacheLoader<K, V> implements MacheLoader<K, V> {
      * @param adminPassword     Password for Administration user for Couchbase cluster.
      * @param schemaOptions     Determine whether to create/drop bucket.
      */
-    public CouchbaseCacheLoader(Class<K> keyType, Class<V> valueType, BucketSettings bucketSettings,
-                                ConnectionContext<Cluster> connectionContext, String adminUser,
+    public CouchbaseCacheLoader(Class<V> valueType, BucketSettings bucketSettings,
+                                CouchbaseConnectionContext connectionContext, String adminUser,
                                 String adminPassword, SchemaOptions schemaOptions) {
-        this.keyType = keyType;
+        super(bucketSettings, connectionContext, adminUser, adminPassword, schemaOptions);
         this.valueType = valueType;
-        this.bucketSettings = bucketSettings;
-        this.connectionContext = connectionContext;
-        this.adminUser = adminUser;
-        this.adminPassword = adminPassword;
-        this.schemaOptions = schemaOptions;
     }
 
     @Override
     public void create() {
-        synchronized (this) {
-            if (manager == null) {
-                LOG.info("Attempting to connect to authenticate to Couchbase cluster as {}", adminUser);
-                manager = connectionContext.getConnection(this).clusterManager(adminUser, adminPassword);
-
-                dropBucketIfRequired();
-                bucket = createBucketIfRequired();
-
-                template = new CouchbaseTemplate(manager.info(), bucket);
-                LOG.info("Using Couchbase bucket: {}", bucket);
-            }
-        }
+        super.create();
+        template = new CouchbaseTemplate(manager.info(), bucket);
     }
 
     @Override
@@ -87,60 +59,5 @@ public class CouchbaseCacheLoader<K, V> implements MacheLoader<K, V> {
         template.remove(key);
     }
 
-    @Override
-    public void close() {
-        if (manager != null) {
-            synchronized (this) {
-                if (manager != null) {
-                    dropBucketIfRequired();
-                }
-            }
-        }
-
-        if (bucket != null) {
-            synchronized (this) {
-                if (bucket != null) {
-                    bucket.close();
-                    bucket = null;
-                }
-            }
-        }
-        connectionContext.close(this);
-    }
-
-    @Override
-    public String getName() {
-        return getClass().getSimpleName();
-    }
-
-    private void dropBucketIfRequired() {
-        if (schemaOptions.shouldDropSchema() && manager.hasBucket(bucketSettings.name())) {
-            LOG.info("Removing bucket {}", bucketSettings.name());
-            manager.removeBucket(bucketSettings.name());
-        }
-    }
-
-    private Bucket createBucketIfRequired() {
-        if (schemaOptions.shouldCreateSchema() && !manager.hasBucket(bucketSettings.name())) {
-            LOG.info("Creating bucket {}", bucketSettings.name());
-            manager.insertBucket(bucketSettings);
-        }
-        return connectionContext.getConnection(this).openBucket(bucketSettings.name());
-    }
-
-    @Override
-    public String toString() {
-        return "CouchbaseCacheLoader{"
-                + "connectionContext=" + connectionContext
-                + ", manager=" + manager
-                + ", template=" + template
-                + ", bucketSettings=" + bucketSettings
-                + ", adminUser='" + adminUser + '\''
-                + ", adminPassword='" + adminPassword + '\''
-                + ", schemaOptions=" + schemaOptions
-                + ", keyType=" + keyType
-                + ", valueType=" + valueType
-                + '}';
-    }
 }
 

@@ -3,8 +3,6 @@ package com.excelian.mache.vertx
 import com.excelian.mache.core.SchemaOptions
 import com.mongodb.ServerAddress
 
-import java.util.concurrent.TimeUnit
-
 import static com.excelian.mache.builder.MacheBuilder.mache
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
@@ -27,8 +25,9 @@ public class MongoConfig {
                             mongodb()
                                     .withSeeds(new ServerAddress("localhost", 27017))
                                     .withDatabase(keySpace)
-                                    .withSchemaOptions(SchemaOptions.USE_EXISTING_SCHEMA)
-                                    .build())
+                                    .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
+                                    .asJsonDocuments()
+                                    .inCollection("test"))
                             .withNoMessaging()
                             .macheUp(), 0)
         });
