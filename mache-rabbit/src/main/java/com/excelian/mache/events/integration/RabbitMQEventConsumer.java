@@ -27,21 +27,22 @@ public class RabbitMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
 
     private static final Logger LOG = LoggerFactory.getLogger(RabbitMQEventConsumer.class);
     private final Channel channel;
-    private final RabbitMqConfig rabbitMqConfig;
+    private final RabbitMQConfig rabbitMqConfig;
     private final String queueName;
-    String consumerTag = "";
+    private String consumerTag = "";
 
     /**
      * Constructor.
-     * @param channel - channel
-     * @param topicName - topicName
+     *
+     * @param channel        - channel
+     * @param topicName      - topicName
      * @param rabbitMqConfig - rabbitMqConfig
      * @throws JMSException if Rabbit cannot be contacted
-     * @throws IOException if something occurs while transferring data
+     * @throws IOException  if something occurs while transferring data
      */
     public RabbitMQEventConsumer(final Channel channel,
                                  String topicName,
-                                 RabbitMqConfig rabbitMqConfig)
+                                 RabbitMQConfig rabbitMqConfig)
         throws JMSException, IOException {
         super(topicName);
         this.channel = channel;
@@ -71,10 +72,10 @@ public class RabbitMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
         DefaultConsumer consumer = new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(String consumerTag,
-                                       Envelope envelope,
-                                       AMQP.BasicProperties properties,
-                                       byte[] body)
-                    throws IOException {
+                                                    Envelope envelope,
+                                                    AMQP.BasicProperties properties,
+                                                    byte[] body)
+                throws IOException {
                 long deliveryTag = envelope.getDeliveryTag();
 
                 LOG.info("[RabbitMQEventConsumer {}] Received Message: {}",
@@ -99,7 +100,7 @@ public class RabbitMQEventConsumer<K> extends BaseCoordinationEntryEventConsumer
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Failed to close Rabbit consumer", e);
         }
     }
 }
