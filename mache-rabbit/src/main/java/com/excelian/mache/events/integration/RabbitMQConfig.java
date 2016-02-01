@@ -8,7 +8,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 /**
  * Type for the Rabbit MQ config.
  */
-public class RabbitMqConfig_ {
+public class RabbitMQConfig {
 
     private final String exchangeName;
     private final int maxLength;
@@ -27,9 +27,9 @@ public class RabbitMqConfig_ {
      * @param messageTtl              - messageTtl
      * @param routingHeader           - routingHeader
      */
-    private RabbitMqConfig_(String exchangeName, int maxLength,
-                            int messageExpiry, int networkRecoveryInterval,
-                            int messageTtl, BasicProperties routingHeader) {
+    private RabbitMQConfig(String exchangeName, int maxLength,
+                           int messageExpiry, int networkRecoveryInterval,
+                           int messageTtl, BasicProperties routingHeader) {
         this.exchangeName = exchangeName;
         this.maxLength = maxLength;
         this.messageExpiry = messageExpiry;
@@ -84,8 +84,8 @@ public class RabbitMqConfig_ {
             return this;
         }
 
-        public RabbitMqConfig_ build() {
-            return new RabbitMqConfig_(exchangeName, maxLength, messageExpiry,
+        public RabbitMQConfig build() {
+            return new RabbitMQConfig(exchangeName, maxLength, messageExpiry,
                 networkRecoveryInterval, messageTtl, routingHeader);
         }
     }
