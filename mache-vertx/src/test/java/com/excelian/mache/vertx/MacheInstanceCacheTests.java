@@ -1,8 +1,6 @@
 package com.excelian.mache.vertx;
 
-import com.excelian.mache.builder.StorageProvisioner;
 import com.excelian.mache.core.HashMapCacheLoader;
-import com.excelian.mache.core.MacheLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,12 +22,7 @@ public class MacheInstanceCacheTests {
             try {
                 return new RestManagedMache(mache(String.class, String.class)
                     .cachedBy(guava())
-                    .storedIn(new StorageProvisioner() {
-                        @Override
-                        public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
-                            return new HashMapCacheLoader<>(valueType);
-                        }
-                    })
+                    .storedIn((keyType, valueType) -> new HashMapCacheLoader<>(valueType))
                     .withNoMessaging()
                     .macheUp(), TimeUnit.SECONDS.toMillis(5));
             } catch (Exception e) {
@@ -62,9 +55,7 @@ public class MacheInstanceCacheTests {
     @Test
     public void cacheShouldRetainInstancesBetweenCalls() {
         AtomicInteger callCount = new AtomicInteger();
-        MacheInstanceCache cache = new MacheInstanceCache(inMemoryFactory, (x, y) -> {
-            callCount.incrementAndGet();
-        });
+        MacheInstanceCache cache = new MacheInstanceCache(inMemoryFactory, (x, y) -> callCount.incrementAndGet());
 
         cache.putKey("TestMap", "TestKey", "Hello");
         String key = cache.getKey("TestMap", "TestKey");
@@ -80,9 +71,7 @@ public class MacheInstanceCacheTests {
     @Test
     public void cacheShouldIgnoreMapNameCase() {
         AtomicInteger callCount = new AtomicInteger();
-        MacheInstanceCache cache = new MacheInstanceCache(inMemoryFactory, (x, y) -> {
-            callCount.incrementAndGet();
-        });
+        MacheInstanceCache cache = new MacheInstanceCache(inMemoryFactory, (x, y) -> callCount.incrementAndGet());
 
         cache.putKey("TestMap", "TestKey", "Hello");
         String key = cache.getKey("TestMap", "TestKey");

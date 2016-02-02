@@ -1,6 +1,7 @@
 package com.excelian.mache.jmeter.cassandra.knownkeys;
 
 import com.datastax.driver.core.Cluster;
+import com.excelian.mache.builder.StorageProvisioner;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.cassandra.AbstractCassandraSamplerClient;
@@ -16,7 +17,6 @@ import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandr
  * JMeter test that measures reading directly from the backing Cassandra store.
  */
 public class ReadFromDB extends AbstractCassandraSamplerClient {
-    private static final long serialVersionUID = 251140199032740124L;
     private MacheLoader<String, CassandraTestEntity> db;
 
     @Override
@@ -29,11 +29,11 @@ public class ReadFromDB extends AbstractCassandraSamplerClient {
             final Cluster.Builder bluePrint = Cluster.builder().withClusterName("BluePrint")
                 .addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042);
 
-            db = cassandra()
-                .withCluster(bluePrint)
+            StorageProvisioner<String, CassandraTestEntity> provisioner = cassandra()
+                    .withCluster(bluePrint)
                     .withKeyspace(mapParams.get("keyspace.name"))
-                    .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED).build()
-                    .getCacheLoader(String.class, CassandraTestEntity.class);
+                    .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED).build();
+            db = provisioner.getCacheLoader(String.class, CassandraTestEntity.class);
 
             db.create();// ensure we are connected and schema exists
         } catch (Exception e) {

@@ -19,8 +19,7 @@ import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
  * JMeter test that measures reading directly from the backing Couchbase store.
  */
 public class ReadFromDB extends AbstractCouchSamplerClient {
-    private static final long serialVersionUID = 251140199032740124L;
-    private MacheLoader db;
+    private MacheLoader<String, CouchTestEntity> db;
 
     @Override
     public void setupTest(JavaSamplerContext context) {

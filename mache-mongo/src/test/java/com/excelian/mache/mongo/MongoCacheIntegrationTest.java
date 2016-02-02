@@ -2,7 +2,6 @@ package com.excelian.mache.mongo;
 
 import com.codeaffine.test.ConditionalIgnoreRule;
 import com.excelian.mache.builder.MacheBuilder;
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.mongodb.ServerAddress;
@@ -16,11 +15,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
-import java.util.List;
 
 import static com.codeaffine.test.ConditionalIgnoreRule.IgnoreIf;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
-import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongoConnectionContext;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -34,21 +31,19 @@ public class MongoCacheIntegrationTest {
     private String keySpace = "NoSQL_Nearside_Test_" + new Date().toString();
 
     private Mache<String, TestEntity> mache;
-    private ConnectionContext<List<ServerAddress>> connectionContext;
 
     @Before
     public void setUp() throws Exception {
-        connectionContext = mongoConnectionContext(new ServerAddress(new NoRunningMongoDbForTests().getHost(), 27017));
-        mache = getMache(connectionContext);
+        mache = getMache();
     }
 
-    private Mache<String, TestEntity> getMache(ConnectionContext<List<ServerAddress>> context) throws Exception {
+    private Mache<String, TestEntity> getMache() throws Exception {
 
         final String mongoHost = new NoRunningMongoDbForTests().getHost();
         return MacheBuilder.mache(String.class, TestEntity.class)
                 .cachedBy(guava())
                 .storedIn(mongodb()
-                    .withSeeds(new ServerAddress(mongoHost, 27017))
+                        .withSeeds(new ServerAddress(mongoHost, 27017))
                         .withDatabase(keySpace)
                         .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
                         .build())
@@ -59,7 +54,6 @@ public class MongoCacheIntegrationTest {
     @After
     public void tearDown() throws Exception {
         mache.close();
-        connectionContext.close();
     }
 
     @Test
@@ -95,7 +89,7 @@ public class MongoCacheIntegrationTest {
 
     @Test
     public void testInvalidate() throws Exception {
-        try (final Mache<String, TestEntity> anotherMache = getMache(connectionContext)) {
+        try (final Mache<String, TestEntity> anotherMache = getMache()) {
 
             final String key = "test-1";
             final String expectedDescription = "test1-description";
@@ -116,7 +110,7 @@ public class MongoCacheIntegrationTest {
         this.mache.put("test-2", new TestEntity("test-2"));
         this.mache.put("test-3", new TestEntity("test-3"));
 
-        try (Mache<String, TestEntity> anotherMacheInstance = getMache(connectionContext)) {
+        try (Mache<String, TestEntity> anotherMacheInstance = getMache()) {
 
             TestEntity test = anotherMacheInstance.get("test-2");
             assertEquals("test-2", test.pkString);

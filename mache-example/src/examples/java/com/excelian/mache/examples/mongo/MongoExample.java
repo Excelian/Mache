@@ -1,6 +1,5 @@
 package com.excelian.mache.examples.mongo;
 
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.examples.Example;
@@ -8,11 +7,9 @@ import com.mongodb.ServerAddress;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
-import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongoConnectionContext;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 
 /**
@@ -20,7 +17,7 @@ import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
  */
 public class MongoExample implements Example<MongoAnnotatedMessage, MongoAnnotatedMessage> {
 
-    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+    protected final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
     private String serverIpAddress;
 
     public MongoExample(String serverIpAddress) {
@@ -29,7 +26,7 @@ public class MongoExample implements Example<MongoAnnotatedMessage, MongoAnnotat
 
     @Override
     public Mache<String, MongoAnnotatedMessage> exampleCache() throws Exception {
-        final String keySpace = "NoSQL_MacheClient_Test_" + DATE_FORMAT.format(new Date());
+        final String keySpace = "NoSQL_MacheClient_Test_" + dateFormat.format(new Date());
         return mache(String.class, MongoAnnotatedMessage.class)
                 .cachedBy(guava())
                 .storedIn(mongodb()

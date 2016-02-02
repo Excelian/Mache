@@ -13,12 +13,12 @@ public class MacheBuilder<K, V> {
 
     private final Class<K> keyType;
     private final Class<V> valueType;
-    private final StorageProvisioner storageProvisioner;
-    private final MessagingProvisioner messagingProvisioner;
+    private final StorageProvisioner<K, V> storageProvisioner;
+    private final MessagingProvisioner<K, V> messagingProvisioner;
     private CacheProvisioner<K, V> cacheProvisioner;
 
     private MacheBuilder(Class<K> keyType, Class<V> valueType, CacheProvisioner<K, V> cacheProvisioner,
-                         StorageProvisioner storageProvisioner, MessagingProvisioner messagingProvisioner) {
+                         StorageProvisioner<K, V> storageProvisioner, MessagingProvisioner<K, V> messagingProvisioner) {
         this.keyType = keyType;
         this.valueType = valueType;
         this.cacheProvisioner = cacheProvisioner;
@@ -62,7 +62,7 @@ public class MacheBuilder<K, V> {
      * @param <V> value type of the cache to be provisioned.
      */
     public interface StorageProvisionerBuilder<K, V> {
-        MessagingProvisionerBuilder<K, V> storedIn(StorageProvisioner storageProvisioner);
+        MessagingProvisionerBuilder<K, V> storedIn(StorageProvisioner<K, V> storageProvisioner);
     }
 
     /**
@@ -72,10 +72,10 @@ public class MacheBuilder<K, V> {
      * @param <V> value type of the cache to be provisioned.
      */
     public interface MessagingProvisionerBuilder<K, V> {
-        MacheBuilder<K, V> withMessaging(MessagingProvisioner messagingProvisioner);
+        MacheBuilder<K, V> withMessaging(MessagingProvisioner<K, V> messagingProvisioner);
 
         default MacheBuilder<K, V> withNoMessaging() {
-            return withMessaging(new NoMessagingProvisioner());
+            return withMessaging(new NoMessagingProvisioner<>());
         }
     }
 }

@@ -35,5 +35,5 @@ public interface Mache<K, V> extends AutoCloseable {
 
     void close();
 
-    MacheLoader getCacheLoader();
+    MacheLoader<K, V> getCacheLoader();
 }

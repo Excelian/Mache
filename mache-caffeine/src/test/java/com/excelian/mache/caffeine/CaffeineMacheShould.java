@@ -1,5 +1,6 @@
-package com.excelian.mache.chroniclemap;
+package com.excelian.mache.caffeine;
 
+import com.excelian.mache.builder.MacheBuilder;
 import com.excelian.mache.core.HashMapCacheLoader;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.MacheLoader;
@@ -8,16 +9,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static com.excelian.mache.caffeine.CaffeineMacheProvisioner.caffeine;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class ChronicleMapMacheTest {
-
+public class CaffeineMacheShould {
     Mache<String, String> mache;
     private MacheLoader<String, String> loader;
 
@@ -25,8 +24,11 @@ public class ChronicleMapMacheTest {
     public void setUp() throws Exception {
         loader = Mockito.spy(new HashMapCacheLoader<>(String.class));
 
-        mache = ChronicleMapMacheProvisioner.<String, String>chronicleMap()
-                .create(String.class, String.class, loader);
+        mache = MacheBuilder.mache(String.class, String.class)
+                .cachedBy(caffeine())
+                .storedIn((keyType, valueType) -> loader)
+                .withNoMessaging()
+                .macheUp();
     }
 
     @After
@@ -35,17 +37,18 @@ public class ChronicleMapMacheTest {
     }
 
     @Test
-    public void testGetName() throws Exception {
-        assertEquals("String", mache.getName());
+    public void deferGettingNameToTheCacheLoader() throws Exception {
+        verify(loader).getName();
+        assertEquals(loader.getName(), mache.getName());
     }
 
     @Test
-    public void testGetId() throws Exception {
+    public void setCacheId() throws Exception {
         assertNotNull(mache.getId());
     }
 
     @Test
-    public void testGetWithReadThrough() throws Exception {
+    public void readThroughWhenGettingButThenCache() throws Exception {
         loader.put("Hello", "World!");
         assertThat(mache.get("Hello"), is("World!"));
         assertThat(mache.get("Hello"), is("World!"));
@@ -53,22 +56,24 @@ public class ChronicleMapMacheTest {
     }
 
     @Test
-    public void testPutWithWriteThrough() throws Exception {
+    public void writeThroughWhenPutting() throws Exception {
         mache.put("Hello", "World!");
         assertThat(mache.get("Hello"), is("World!"));
         assertThat(mache.get("Hello"), is("World!"));
+        verify(loader).put("Hello", "World!");
         verify(loader, times(0)).load("Hello");
     }
 
     @Test
-    public void testRemove() throws Exception {
+    public void removesFromBothCacheAndStore() throws Exception {
         mache.put("Hello", "World!");
         mache.remove("Hello");
         assertNull(mache.get("Hello"));
+        verify(loader).remove("Hello");
     }
 
     @Test
-    public void testInvalidateAll() throws Exception {
+    public void beAbleToIvalidateAllEntries() throws Exception {
         mache.put("One", "Value");
         mache.put("Two", "Value");
         mache.invalidateAll();
@@ -79,7 +84,7 @@ public class ChronicleMapMacheTest {
     }
 
     @Test
-    public void testInvalidate() throws Exception {
+    public void beAbleToInvalidateIndividualEntries() throws Exception {
         mache.put("One", "Value");
         mache.put("Two", "Value");
         mache.invalidate("One");
@@ -90,13 +95,13 @@ public class ChronicleMapMacheTest {
     }
 
     @Test
-    public void testClose() throws Exception {
+    public void closeTheCacheLoader() throws Exception {
         mache.close();
         verify(loader).close();
     }
 
     @Test
-    public void testGetCacheLoader() throws Exception {
+    public void returnTheCacheLoader() throws Exception {
         assertThat(mache.getCacheLoader(), is(loader));
     }
 }

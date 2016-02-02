@@ -6,7 +6,6 @@ import org.apache.jmeter.samplers.SampleResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Provides base client for Mache JMeter tests.
  */
 @SuppressWarnings("serial")
-public abstract class MacheAbstractJavaSamplerClient extends AbstractJavaSamplerClient implements Serializable {
+public abstract class MacheAbstractJavaSamplerClient extends AbstractJavaSamplerClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(MacheAbstractJavaSamplerClient.class);
 

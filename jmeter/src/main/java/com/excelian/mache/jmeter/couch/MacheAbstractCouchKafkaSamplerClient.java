@@ -2,8 +2,7 @@ package com.excelian.mache.jmeter.couch;
 
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.events.integration.KafkaMqConfig;
-import com.excelian.mache.events.integration.builder.KafkaMessagingProvisioner;
+import com.excelian.mache.events.integration.KafkaMqConfig.KafkaMqConfigBuilder;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 
@@ -12,6 +11,7 @@ import java.util.Map;
 import static com.couchbase.client.java.cluster.DefaultBucketSettings.builder;
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbase;
+import static com.excelian.mache.events.integration.builder.KafkaMessagingProvisioner.kafka;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 
 
@@ -56,23 +56,22 @@ public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouch
     }
 
     protected void createCache(Map<String, String> mapParams) throws Exception {
-        final KafkaMessagingProvisioner kafkaProvisioner =
-                KafkaMessagingProvisioner.kafka()
-                        .withKafkaMqConfig(KafkaMqConfig.KafkaMqConfigBuilder.builder()
-                                .withZkHost(mapParams.get("kafka.connection")).build())
-                        .withTopic(mapParams.get("kafka.topic"));
-
         final String keySpace = mapParams.get("keyspace.name");
         final String couchServer = mapParams.get("couch.server.ip.address");
 
-        final Mache<String, CouchTestEntity> mache = mache(String.class, CouchTestEntity.class)
-            .cachedBy(guava())
-            .storedIn(couchbase()
-                .withBucketSettings(builder().name(keySpace).quota(150).build())
-                .withNodes(couchServer)
-                .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                .build())
-            .withMessaging(kafkaProvisioner)
-            .macheUp();
+        cache1 = mache(String.class, CouchTestEntity.class)
+                .cachedBy(guava())
+                .storedIn(couchbase()
+                        .withBucketSettings(builder().name(keySpace).quota(150).build())
+                        .withNodes(couchServer)
+                        .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                        .build())
+                .withMessaging(kafka()
+                        .withKafkaMqConfig(KafkaMqConfigBuilder.builder()
+                                .withZkHost(mapParams.get("kafka.connection"))
+                                .build())
+                        .withTopic(mapParams.get("kafka.topic"))
+                        .build())
+                .macheUp();
     }
 }

@@ -93,7 +93,7 @@ public class ObservableMap<K, V> implements Mache<K, V> {
     }
 
     @Override
-    public MacheLoader getCacheLoader() {
+    public MacheLoader<K, V> getCacheLoader() {
         return delegate.getCacheLoader();
     }
 

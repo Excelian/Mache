@@ -1,10 +1,8 @@
 package com.excelian.mache.jmeter.couch.knownkeys;
 
-import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
+import com.excelian.mache.couchbase.builder.CouchbaseProvisioner;
 import com.excelian.mache.jmeter.couch.AbstractCouchSamplerClient;
 import com.excelian.mache.jmeter.couch.CouchTestEntity;
 import org.apache.jmeter.config.Arguments;
@@ -20,7 +18,6 @@ import static com.excelian.mache.couchbase.builder.CouchbaseProvisioner.couchbas
  * JMeter test that measures writing directly to the Cassandra backing store.
  */
 public class WriteToDB extends AbstractCouchSamplerClient {
-    private static final long serialVersionUID = 4662847886347883622L;
     private MacheLoader<String, CouchTestEntity> db;
 
     @Override
@@ -32,11 +29,12 @@ public class WriteToDB extends AbstractCouchSamplerClient {
         try {
             final String keySpace = mapParams.get("keyspace.name");
             final String couchServer = mapParams.get("couch.server.ip.address");
-            db = couchbase()
+            final CouchbaseProvisioner<String, CouchTestEntity> provisioner = couchbase()
                 .withBucketSettings(builder().name(keySpace).quota(150).build())
                 .withNodes(couchServer)
                 .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                .build().getCacheLoader(String.class, CouchTestEntity.class);
+                .build();
+            db = provisioner.getCacheLoader(String.class, CouchTestEntity.class);
 
             db.create();// ensure we are connected and schema exists
 

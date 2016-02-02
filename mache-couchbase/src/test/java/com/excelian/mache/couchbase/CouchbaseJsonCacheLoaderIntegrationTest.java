@@ -74,21 +74,6 @@ public class CouchbaseJsonCacheLoaderIntegrationTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void ensureAJsonMacheCannotBeInstantiatedThatIsNotOfTypeStringString() throws Exception {
-        mache(String.class, TestEntity.class)
-            .cachedBy(caffeine())
-            .storedIn(couchbase()
-                .withBucketSettings(builder().name(BUCKET).quota(150).enableFlush(true).build())
-                .withCouchbaseEnvironment(COUCHBASE_ENVIRONMENT)
-                .withAdminDetails(ADMIN_USER, PASSWORD)
-                .withNodes(COUCHBASE_HOST)
-                .withSchemaOptions(CREATE_SCHEMA_IF_NEEDED)
-                .asJsonDocuments())
-            .withNoMessaging()
-            .macheUp();
-    }
-
     @Test
     public void ensureAJsonDocumentCanBeReadAsJsonFromExistingRecords()
         throws Exception {

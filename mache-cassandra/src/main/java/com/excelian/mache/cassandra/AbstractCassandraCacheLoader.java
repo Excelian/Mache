@@ -27,7 +27,7 @@ public abstract class AbstractCassandraCacheLoader<K, V> implements MacheLoader<
     private final String replicationClass;
     private final int replicationFactor;
     private final String keySpace;
-    protected Session session;
+    protected volatile Session session;
 
     /**
      * @param keyType           The class type of the cache key.

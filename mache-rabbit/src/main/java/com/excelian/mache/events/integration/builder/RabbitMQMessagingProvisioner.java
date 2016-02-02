@@ -12,8 +12,11 @@ import java.io.IOException;
 
 /**
  * Provisions Rabbit MQ messaging from config.
+ *
+ * @param <K> the key type.
+ * @param <V> the value type.
  */
-public class RabbitMQMessagingProvisioner extends AbstractMessagingProvisioner {
+public class RabbitMQMessagingProvisioner<K, V> extends AbstractMessagingProvisioner<K, V> {
 
     private final ConnectionFactory connectionFactory;
     private final RabbitMQConfig rabbitMqConfig;
@@ -27,7 +30,7 @@ public class RabbitMQMessagingProvisioner extends AbstractMessagingProvisioner {
     }
 
     @Override
-    public <K> MQFactory<K> getMqFactory() throws IOException, JMSException {
+    public MQFactory<K> getMqFactory() throws IOException, JMSException {
         return new RabbitMQFactory<>(connectionFactory, rabbitMqConfig);
     }
 
@@ -52,7 +55,7 @@ public class RabbitMQMessagingProvisioner extends AbstractMessagingProvisioner {
     /**
      * Builder for Rabbit MQ.
      */
-    private static class RabbitMqMessagingProvisionerBuilder {
+    public static class RabbitMqMessagingProvisionerBuilder {
         private final String topic;
         private final ConnectionFactory connectionFactory;
         private RabbitMQConfig rabbitMqConfig = RabbitMQConfigBuilder.builder().build();
@@ -67,9 +70,9 @@ public class RabbitMQMessagingProvisioner extends AbstractMessagingProvisioner {
             return this;
         }
 
-        public RabbitMQMessagingProvisioner build() {
+        public <K, V> RabbitMQMessagingProvisioner<K, V> build() {
             connectionFactory.setNetworkRecoveryInterval(rabbitMqConfig.getNetworkRecoveryInterval());
-            return new RabbitMQMessagingProvisioner(topic, connectionFactory, rabbitMqConfig);
+            return new RabbitMQMessagingProvisioner<>(topic, connectionFactory, rabbitMqConfig);
         }
     }
 }
