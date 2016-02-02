@@ -55,7 +55,7 @@ public class RabbitMQMessagingProvisioner<K, V> extends AbstractMessagingProvisi
     /**
      * Builder for Rabbit MQ.
      */
-    private static class RabbitMqMessagingProvisionerBuilder {
+    public static class RabbitMqMessagingProvisionerBuilder {
         private final String topic;
         private final ConnectionFactory connectionFactory;
         private RabbitMqConfig rabbitMqConfig = RabbitMqConfigBuilder.builder().build();

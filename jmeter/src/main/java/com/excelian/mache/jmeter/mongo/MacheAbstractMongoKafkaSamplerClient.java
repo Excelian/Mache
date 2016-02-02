@@ -2,8 +2,7 @@ package com.excelian.mache.jmeter.mongo;
 
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.events.integration.KafkaMqConfig;
-import com.excelian.mache.events.integration.builder.KafkaMessagingProvisioner;
+import com.excelian.mache.events.integration.KafkaMqConfig.KafkaMqConfigBuilder;
 import com.mongodb.ServerAddress;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -11,6 +10,7 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import java.util.Map;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
+import static com.excelian.mache.events.integration.builder.KafkaMessagingProvisioner.kafka;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
 import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 
@@ -55,21 +55,19 @@ public abstract class MacheAbstractMongoKafkaSamplerClient extends AbstractMongo
     }
 
     protected void createCache(Map<String, String> mapParams) throws Exception {
-        final KafkaMessagingProvisioner<String, MongoTestEntity> kafkaProvisioner =
-                KafkaMessagingProvisioner.kafka(String.class, MongoTestEntity.class)
-                        .withKafkaMqConfig(KafkaMqConfig.KafkaMqConfigBuilder.builder()
-                                .withZkHost(mapParams.get("kafka.connection")).build())
-                        .withTopic(mapParams.get("kafka.topic"));
-
-
         cache1 = mache(String.class, com.excelian.mache.jmeter.mongo.MongoTestEntity.class)
-            .cachedBy(guava())
-            .storedIn(mongodb()
-                .withSeeds(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017))
-                .withDatabase(mapParams.get("keyspace.name"))
-                .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                .build())
-            .withMessaging(kafkaProvisioner)
-            .macheUp();
+                .cachedBy(guava())
+                .storedIn(mongodb()
+                        .withSeeds(new ServerAddress(mapParams.get("mongo.server.ip.address"), 27017))
+                        .withDatabase(mapParams.get("keyspace.name"))
+                        .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                        .build())
+                .withMessaging(kafka()
+                        .withKafkaMqConfig(KafkaMqConfigBuilder.builder()
+                                .withZkHost(mapParams.get("kafka.connection"))
+                                .build())
+                        .withTopic(mapParams.get("kafka.topic"))
+                        .build())
+                .macheUp();
     }
 }

@@ -8,8 +8,7 @@ import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import com.datastax.driver.core.policies.TokenAwarePolicy;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.events.integration.KafkaMqConfig;
-import com.excelian.mache.events.integration.builder.KafkaMessagingProvisioner;
+import com.excelian.mache.events.integration.KafkaMqConfig.KafkaMqConfigBuilder;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 
@@ -61,21 +60,25 @@ public abstract class MacheAbstractCassandraKafkaSamplerClient extends AbstractC
     }
 
     protected void createCache(Map<String, String> mapParams) throws Exception {
-        final KafkaMessagingProvisioner<String, CassandraTestEntity> kafkaProvisioner
-                = kafka(String.class, CassandraTestEntity.class)
-                .withKafkaMqConfig(KafkaMqConfig.KafkaMqConfigBuilder.builder()
-                        .withZkHost(mapParams.get("kafka.connection")).build())
-                .withTopic(mapParams.get("kafka.topic"));
-
         final Cluster.Builder bluePrint = Cluster.builder().withClusterName("BluePrint")
-            .withQueryOptions(new QueryOptions().setConsistencyLevel(ConsistencyLevel.LOCAL_QUORUM))
-            .withRetryPolicy(DefaultRetryPolicy.INSTANCE)
-            .withLoadBalancingPolicy(new TokenAwarePolicy(new DCAwareRoundRobinPolicy()))
-            .addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042);
+                .withQueryOptions(new QueryOptions().setConsistencyLevel(ConsistencyLevel.LOCAL_QUORUM))
+                .withRetryPolicy(DefaultRetryPolicy.INSTANCE)
+                .withLoadBalancingPolicy(new TokenAwarePolicy(new DCAwareRoundRobinPolicy()))
+                .addContactPoint(mapParams.get("cassandra.server.ip.address")).withPort(9042);
 
-        cache1 = mache(String.class, CassandraTestEntity.class).cachedBy(guava()).storedIn(cassandra()
-            .withCluster(bluePrint)
-                .withKeyspace(mapParams.get("keyspace.name")).withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                .build()).withMessaging(kafkaProvisioner).macheUp();
+        cache1 = mache(String.class, CassandraTestEntity.class)
+                .cachedBy(guava())
+                .storedIn(cassandra()
+                        .withCluster(bluePrint)
+                        .withKeyspace(mapParams.get("keyspace.name"))
+                        .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                        .build())
+                .withMessaging(kafka()
+                        .withKafkaMqConfig(KafkaMqConfigBuilder.builder()
+                                .withZkHost(mapParams.get("kafka.connection"))
+                                .build())
+                        .withTopic(mapParams.get("kafka.topic"))
+                        .build())
+                .macheUp();
     }
 }

@@ -2,8 +2,7 @@ package com.excelian.mache.jmeter.couch;
 
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.core.SchemaOptions;
-import com.excelian.mache.events.integration.KafkaMqConfig;
-import com.excelian.mache.events.integration.builder.KafkaMessagingProvisioner;
+import com.excelian.mache.events.integration.KafkaMqConfig.KafkaMqConfigBuilder;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 
@@ -57,23 +56,22 @@ public abstract class MacheAbstractCouchKafkaSamplerClient extends AbstractCouch
     }
 
     protected void createCache(Map<String, String> mapParams) throws Exception {
-        final KafkaMessagingProvisioner<String, CouchTestEntity> kafkaProvisioner
-                = kafka(String.class, CouchTestEntity.class)
-                        .withKafkaMqConfig(KafkaMqConfig.KafkaMqConfigBuilder.builder()
-                                .withZkHost(mapParams.get("kafka.connection")).build())
-                        .withTopic(mapParams.get("kafka.topic"));
-
         final String keySpace = mapParams.get("keyspace.name");
         final String couchServer = mapParams.get("couch.server.ip.address");
 
         cache1 = mache(String.class, CouchTestEntity.class)
-            .cachedBy(guava())
-            .storedIn(couchbase()
-                .withBucketSettings(builder().name(keySpace).quota(150).build())
-                .withNodes(couchServer)
-                .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
-                .build())
-            .withMessaging(kafkaProvisioner)
-            .macheUp();
+                .cachedBy(guava())
+                .storedIn(couchbase()
+                        .withBucketSettings(builder().name(keySpace).quota(150).build())
+                        .withNodes(couchServer)
+                        .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED)
+                        .build())
+                .withMessaging(kafka()
+                        .withKafkaMqConfig(KafkaMqConfigBuilder.builder()
+                                .withZkHost(mapParams.get("kafka.connection"))
+                                .build())
+                        .withTopic(mapParams.get("kafka.topic"))
+                        .build())
+                .macheUp();
     }
 }

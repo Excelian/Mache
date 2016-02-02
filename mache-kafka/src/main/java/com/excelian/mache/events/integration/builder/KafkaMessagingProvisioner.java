@@ -28,26 +28,39 @@ public class KafkaMessagingProvisioner<K, V> extends AbstractMessagingProvisione
         this.kafkaMqConfig = kafkaMqConfig;
     }
 
-    public static <K, V> KafkaMqConfigBuilder<K, V> kafka(Class<K> keyClass, Class<V> valueClass) {
-        return kafkaMqConfig -> topic -> new KafkaMessagingProvisioner<>(topic, kafkaMqConfig);
+    public static KafkaMqConfigBuilder kafka() {
+        return kafkaMqConfig -> topic -> new KafkaMessagingProvisionerBuilder(topic, kafkaMqConfig);
     }
 
     /**
      * Enforces specification kafka config.
-     * @param <K> key type.
-     * @param <V> value type.
      */
-    public interface KafkaMqConfigBuilder<K, V> {
-        TopicBuilder<K, V> withKafkaMqConfig(KafkaMqConfig kafkaMqConfig);
+    public interface KafkaMqConfigBuilder {
+        TopicBuilder withKafkaMqConfig(KafkaMqConfig kafkaMqConfig);
     }
 
     /**
      * Enforces specification topic.
-     * @param <K> key type.
-     * @param <V> value type.
      */
-    public interface TopicBuilder<K, V> {
-        KafkaMessagingProvisioner<K, V> withTopic(String topic);
+    public interface TopicBuilder {
+        KafkaMessagingProvisionerBuilder withTopic(String topic);
+    }
+
+    /**
+     * Builder containing generic build method for a KafkaMessagingProvisioner.
+     */
+    public static class KafkaMessagingProvisionerBuilder {
+        private final String topic;
+        private final KafkaMqConfig kafkaMqConfig;
+
+        public KafkaMessagingProvisionerBuilder(String topic, KafkaMqConfig kafkaMqConfig) {
+            this.topic = topic;
+            this.kafkaMqConfig = kafkaMqConfig;
+        }
+
+        public <K, V> KafkaMessagingProvisioner<K, V> build() {
+            return new KafkaMessagingProvisioner<>(topic, kafkaMqConfig);
+        }
     }
 
     @Override
