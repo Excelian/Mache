@@ -71,9 +71,10 @@ public class MacheInstanceCache {
     }
 
     private synchronized Mache<String, String> getMache(String mapName) {
-        Mache<String, String> mache = cacheInstances.get(mapName);
+        String checkMapName = mapName.toLowerCase();
+        Mache<String, String> mache = cacheInstances.get(checkMapName);
         if (mache == null) {
-            mache = createMap(mapName);
+            mache = createMap(checkMapName);
         }
         return mache;
     }

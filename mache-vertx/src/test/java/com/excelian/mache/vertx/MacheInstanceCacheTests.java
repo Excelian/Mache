@@ -76,4 +76,22 @@ public class MacheInstanceCacheTests {
         cache.getKey("TestMap", "TestKey");
         assertEquals(1, callCount.get());
     }
+
+    @Test
+    public void cacheShouldIgnoreMapNameCase() {
+        AtomicInteger callCount = new AtomicInteger();
+        MacheInstanceCache cache = new MacheInstanceCache(inMemoryFactory, (x, y) -> {
+            callCount.incrementAndGet();
+        });
+
+        cache.putKey("TestMap", "TestKey", "Hello");
+        String key = cache.getKey("TestMap", "TestKey");
+
+        assertEquals("Hello", key);
+        assertEquals(1, callCount.get());
+
+        cache.putKey("testMap", "TestKey", "World");
+        cache.getKey("testMap", "TestKey");
+        assertEquals(1, callCount.get());
+    }
 }
