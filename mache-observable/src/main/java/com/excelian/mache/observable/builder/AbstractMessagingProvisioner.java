@@ -12,8 +12,11 @@ import java.io.IOException;
 
 /**
  * Base class for provisioners of messaging.
+ *
+ * @param <K> the key type.
+ * @param <V> the value type.
  */
-public abstract class AbstractMessagingProvisioner implements MessagingProvisioner {
+public abstract class AbstractMessagingProvisioner<K, V> implements MessagingProvisioner<K, V> {
 
     protected final String topic;
 
@@ -22,7 +25,7 @@ public abstract class AbstractMessagingProvisioner implements MessagingProvision
     }
 
     @Override
-    public <K, V> Mache<K, V> wireInMessaging(Mache<K, V> toWireIn) throws Exception {
+    public Mache<K, V> wireInMessaging(Mache<K, V> toWireIn) throws Exception {
 
         final MQFactory<K> mqFactory = getMqFactory();
         final MQConfiguration mqConfiguration = () -> topic;
@@ -33,6 +36,6 @@ public abstract class AbstractMessagingProvisioner implements MessagingProvision
         return cacheFactory.createCache(toWireIn);
     }
 
-    public abstract <K> MQFactory<K> getMqFactory() throws IOException, JMSException;
+    public abstract MQFactory<K> getMqFactory() throws IOException, JMSException;
 
 }

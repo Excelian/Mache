@@ -21,8 +21,8 @@ public abstract class AbstractCouchbaseCacheLoader<K, V> implements MacheLoader<
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCouchbaseCacheLoader.class);
     private final CouchbaseConnectionContext connectionContext;
-    protected Bucket bucket;
-    protected ClusterManager manager;
+    protected volatile Bucket bucket;
+    protected volatile ClusterManager manager;
     private BucketSettings bucketSettings;
     private String adminUser;
     private String adminPassword;
@@ -47,15 +47,17 @@ public abstract class AbstractCouchbaseCacheLoader<K, V> implements MacheLoader<
 
     @Override
     public void create() {
-        synchronized (this) {
-            if (manager == null) {
-                LOG.info("Attempting to connect to authenticate to Couchbase cluster as {}", adminUser);
-                manager = connectionContext.getConnection(this).clusterManager(adminUser, adminPassword);
+        if (manager == null) {
+            synchronized (this) {
+                if (manager == null) {
+                    LOG.info("Attempting to connect to authenticate to Couchbase cluster as {}", adminUser);
+                    manager = connectionContext.getConnection(this).clusterManager(adminUser, adminPassword);
 
-                dropBucketIfRequired();
-                bucket = createBucketIfRequired();
+                    dropBucketIfRequired();
+                    bucket = createBucketIfRequired();
 
-                LOG.info("Using Couchbase bucket: {}", bucket);
+                    LOG.info("Using Couchbase bucket: {}", bucket);
+                }
             }
         }
     }

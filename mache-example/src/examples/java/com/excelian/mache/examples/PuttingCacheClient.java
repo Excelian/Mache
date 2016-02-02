@@ -1,6 +1,5 @@
 package com.excelian.mache.examples;
 
-import com.excelian.mache.builder.storage.ConnectionContext;
 import com.excelian.mache.core.Mache;
 import com.excelian.mache.examples.cassandra.CassandraExample;
 import com.excelian.mache.examples.couchbase.CouchbaseExample;

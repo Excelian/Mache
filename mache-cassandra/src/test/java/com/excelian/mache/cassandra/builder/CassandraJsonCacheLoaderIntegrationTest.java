@@ -128,22 +128,6 @@ public class CassandraJsonCacheLoaderIntegrationTest {
         then_theValueReadIs(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void ensureAJsonMacheCannotBeInstantiatedThatIsNotOfTypeStringString() throws Exception {
-        mache(String.class, Integer.class)
-            .cachedBy(guava())
-            .storedIn(cassandra().withCluster(theCluster())
-                .withKeyspace(KEY_SPACE)
-                .withSchemaOptions(CREATE_SCHEMA_IF_NEEDED)
-                .asJsonDocuments()
-                .inTable("users")
-                .withIDField("id")
-            )
-            .withNoMessaging()
-            .macheUp();
-    }
-
-
     private void then_theDatabaseContainsTheValueForForKey(String key, String expectedJsonDoc) {
         when_theDatabaseIsQueriedForKey(key);
         assertEquals(expectedJsonDoc, this.resultFromDatabase);

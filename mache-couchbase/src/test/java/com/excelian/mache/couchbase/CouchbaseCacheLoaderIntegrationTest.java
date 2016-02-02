@@ -42,9 +42,10 @@ public class CouchbaseCacheLoaderIntegrationTest {
                         .withBucketSettings(builder().name(BUCKET).quota(150).build())
                         .withCouchbaseEnvironment(COUCHBASE_ENVIRONMENT)
                         .withAdminDetails(ADMIN_USER, PASSWORD)
-                    .withNodes(COUCHBASE_HOST)
-                        .withSchemaOptions(CREATE_AND_DROP_SCHEMA).build())
-                .withMessaging(new NoMessagingProvisioner())
+                        .withNodes(COUCHBASE_HOST)
+                        .withSchemaOptions(CREATE_AND_DROP_SCHEMA)
+                        .build())
+                .withMessaging(new NoMessagingProvisioner<>())
                 .macheUp();
     }
 

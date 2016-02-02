@@ -73,7 +73,7 @@ public class CaffeineMache<K, V> implements Mache<K, V> {
     }
 
     @Override
-    public MacheLoader getCacheLoader() {
+    public MacheLoader<K, V> getCacheLoader() {
         return cacheLoader;
     }
 }

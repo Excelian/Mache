@@ -15,8 +15,11 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * {@link StorageProvisioner} implementation for Couchbase.
+ *
+ * @param <K> the key type.
+ * @param <V> the value type.
  */
-public class CouchbaseProvisioner implements StorageProvisioner {
+public class CouchbaseProvisioner<K, V> implements StorageProvisioner<K, V> {
 
     private final CouchbaseConnectionContext connectionContext;
     private final BucketSettings bucketSettings;
@@ -44,7 +47,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
     }
 
     @Override
-    public <K, V> MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
+    public MacheLoader<K, V> getCacheLoader(Class<K> keyType, Class<V> valueType) {
         return new CouchbaseCacheLoader<>(valueType, bucketSettings, connectionContext, adminUser,
                 adminPassword, schemaOptions);
     }
@@ -99,10 +102,10 @@ public class CouchbaseProvisioner implements StorageProvisioner {
          * Builds the provisioner given the inputs.
          * @return a couchbase provisioner
          */
-        public CouchbaseProvisioner build() {
+        public <K, V> CouchbaseProvisioner<K, V> build() {
             final CouchbaseConnectionContext connectionContext =
-                CouchbaseConnectionContext.getInstance(couchbaseEnvironment, nodes);
-            return new CouchbaseProvisioner(connectionContext, bucketSettings,
+                    CouchbaseConnectionContext.getInstance(couchbaseEnvironment, nodes);
+            return new CouchbaseProvisioner<>(connectionContext, bucketSettings,
                 adminUser, adminPassword, schemaOptions);
         }
 
@@ -115,7 +118,7 @@ public class CouchbaseProvisioner implements StorageProvisioner {
             final CouchbaseConnectionContext connectionContext =
                 CouchbaseConnectionContext.getInstance(couchbaseEnvironment, nodes);
             return new CouchbaseJsonProvisioner(connectionContext, bucketSettings,
-                adminUser, adminPassword, schemaOptions);
+                    adminUser, adminPassword, schemaOptions);
         }
     }
 }

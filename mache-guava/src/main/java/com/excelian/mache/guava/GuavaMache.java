@@ -81,7 +81,7 @@ public class GuavaMache<K, V> implements Mache<K, V> {
     }
 
     @Override
-    public MacheLoader getCacheLoader() {
+    public MacheLoader<K, V> getCacheLoader() {
         return cacheLoader;
     }
 }

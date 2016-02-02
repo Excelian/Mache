@@ -62,4 +62,11 @@ public class CaffeineMacheProvisioner<K, V> implements CacheProvisioner<K, V> {
         }
         return new CaffeineMacheProvisioner<>(caffeine);
     }
+
+    @Override
+    public String toString() {
+        return "CaffeineMacheProvisioner{"
+                + "builder=" + builder
+                + '}';
+    }
 }

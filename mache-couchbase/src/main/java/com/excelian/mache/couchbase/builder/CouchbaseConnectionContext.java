@@ -16,7 +16,7 @@ public class CouchbaseConnectionContext extends AbstractConnectionContext<Cluste
 
     private final CouchbaseEnvironment builder;
     private final List<String> nodes;
-    private Cluster cluster;
+    private volatile Cluster cluster;
 
     private CouchbaseConnectionContext(CouchbaseEnvironment builder, List<String> nodes) {
         this.nodes = nodes;

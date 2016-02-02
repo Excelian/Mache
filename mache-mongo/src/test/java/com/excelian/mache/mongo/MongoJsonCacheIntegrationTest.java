@@ -116,21 +116,6 @@ public class MongoJsonCacheIntegrationTest {
         mache.close();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void ensureAJsonMacheCannotBeInstantiatedThatIsNotOfTypeStringString() throws Exception {
-        MacheBuilder.mache(String.class, Integer.class)
-            .cachedBy(guava())
-            .storedIn(mongodb()
-                .withSeeds(new ServerAddress(new NoRunningMongoDbForTests().getHost(), 27017))
-                .withDatabase(keySpace)
-                .withSchemaOptions(SchemaOptions.CREATE_AND_DROP_SCHEMA)
-                .asJsonDocuments()
-                .inCollection("test")
-            )
-            .withNoMessaging()
-            .macheUp();
-    }
-
 
 
     private String getJsonKey(String key) {

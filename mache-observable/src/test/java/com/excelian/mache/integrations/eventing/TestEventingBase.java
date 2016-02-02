@@ -62,7 +62,7 @@ public abstract class TestEventingBase {
         consumer.beginSubscriptionThread();
 
         CoordinationEntryEvent<String> event = new CoordinationEntryEvent<>(getUuid(), TestEntity.class.getName(),
-            "ID1", CREATED, new UuidUtils());
+                "ID1", CREATED, new UuidUtils());
 
         drainQueues(collector, 150);
         producer.send(event);
@@ -110,8 +110,8 @@ public abstract class TestEventingBase {
         consumer.registerEventListener(collector);
         consumer.beginSubscriptionThread();
 
-        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<String>(getUuid(),
-            TestOtherEntity.class.getName(), "ID1", CREATED, new UuidUtils());
+        CoordinationEntryEvent<String> event = new CoordinationEntryEvent<>(getUuid(),
+                TestOtherEntity.class.getName(), "ID1", CREATED, new UuidUtils());
 
         producer.send(event);
 
@@ -128,10 +128,10 @@ public abstract class TestEventingBase {
     public void multipleConsumersGetACopyOfPublishedEvent() throws InterruptedException, JMSException, IOException {
 
         MQFactory<String> mqFactory = buildMQFactory();
-        BaseCoordinationEntryEventConsumer<String> consumer1 =
+        final BaseCoordinationEntryEventConsumer<String> consumer1 =
                 mqFactory.getConsumer(getConfigurationForEntity(TestEntity.class));
 
-        CacheEventCollector<String> collector1 = new CacheEventCollector<>();
+        final CacheEventCollector<String> collector1 = new CacheEventCollector<>();
         consumer1.registerEventListener(collector1);
         consumer1.beginSubscriptionThread();
         drainQueues(collector1, 120);
@@ -144,7 +144,7 @@ public abstract class TestEventingBase {
         drainQueues(collector2, 120);
 
         CoordinationEntryEvent<String> event = new CoordinationEntryEvent<>(getUuid(), TestEntity.class.getName(),
-            "ID1", CREATED, new UuidUtils());
+                "ID1", CREATED, new UuidUtils());
 
         BaseCoordinationEntryEventProducer<String> producer =
             mqFactory.getProducer(getConfigurationForEntity(TestEntity.class));
@@ -228,22 +228,22 @@ public abstract class TestEventingBase {
 
     private void when_aCreatedEventIsRaisedBy(BaseCoordinationEntryEventProducer<String> producer) {
         producer.send(new CoordinationEntryEvent<>(getUuid(), TestEntity.class.getName(),
-            "ID1", CREATED, new UuidUtils()));
+                "ID1", CREATED, new UuidUtils()));
     }
 
     private void when_anInvalidatedEventIsRaisedBy(BaseCoordinationEntryEventProducer<String> producer) {
         producer.send(new CoordinationEntryEvent<>(getUuid(), TestEntity.class.getName(),
-            "ID1", INVALIDATE, new UuidUtils()));
+                "ID1", INVALIDATE, new UuidUtils()));
     }
 
     private void when_aRemovedEventIsRaisedBy(BaseCoordinationEntryEventProducer<String> producer) {
         producer.send(new CoordinationEntryEvent<>(getUuid(), TestEntity.class.getName(),
-            "ID1", REMOVED, new UuidUtils()));
+                "ID1", REMOVED, new UuidUtils()));
     }
 
     private void when_anUpdatedEventIsRaisedBy(BaseCoordinationEntryEventProducer<String> producer) {
         producer.send(new CoordinationEntryEvent<>(getUuid(), TestEntity.class.getName(),
-            "ID1", UPDATED, new UuidUtils()));
+                "ID1", UPDATED, new UuidUtils()));
     }
 
     @SuppressWarnings("unchecked")

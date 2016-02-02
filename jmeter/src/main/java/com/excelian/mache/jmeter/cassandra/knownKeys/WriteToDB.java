@@ -1,13 +1,11 @@
 package com.excelian.mache.jmeter.cassandra.knownkeys;
 
 import com.datastax.driver.core.Cluster;
-
-import com.excelian.mache.builder.storage.ConnectionContext;
+import com.excelian.mache.builder.StorageProvisioner;
 import com.excelian.mache.core.MacheLoader;
 import com.excelian.mache.core.SchemaOptions;
 import com.excelian.mache.jmeter.cassandra.AbstractCassandraSamplerClient;
 import com.excelian.mache.jmeter.cassandra.CassandraTestEntity;
-
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
@@ -20,7 +18,6 @@ import static com.excelian.mache.cassandra.builder.CassandraProvisioner.cassandr
  * JMeter test that measures writing directly to the Cassandra backing store.
  */
 public class WriteToDB extends AbstractCassandraSamplerClient {
-    private static final long serialVersionUID = 4662847886347883622L;
     private MacheLoader<String, CassandraTestEntity> db;
 
     @Override
@@ -34,11 +31,11 @@ public class WriteToDB extends AbstractCassandraSamplerClient {
                 .addContactPoint(mapParams.get("cassandra.server.ip.address"))
                 .withPort(9042)
                 .withClusterName("BluePrint");
-            db = cassandra()
-                .withCluster(bluePrint)
+            StorageProvisioner<String, CassandraTestEntity> provisioner = cassandra()
+                    .withCluster(bluePrint)
                     .withKeyspace(mapParams.get("keyspace.name"))
-                    .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED).build()
-                    .getCacheLoader(String.class, CassandraTestEntity.class);
+                    .withSchemaOptions(SchemaOptions.CREATE_SCHEMA_IF_NEEDED).build();
+            db = provisioner.getCacheLoader(String.class, CassandraTestEntity.class);
             db.create();// ensure we are connected and schema exists
         } catch (Exception e) {
             getLogger().error("Error connecting to cassandra", e);
