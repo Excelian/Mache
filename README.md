@@ -11,17 +11,17 @@ pluggable messaging platforms.
 - Event listener support 
 - Eventing and invalidation between various client-side caches 
 
-### Current In Memory Cache Support
+*Current In Memory Cache Support*
 - OpenHFT ChronicleMap
 - Google Guava
 - Caffeine
 
-### Current Storage Layer Support
+*Current Storage Layer Support*
 - Cassandra 
 - Mongodb 
 - Couchbase
 
-### Message Queue Support
+*Message Queue Support*
 - Kafka
 - Rabbit
 - ActiveMQ
