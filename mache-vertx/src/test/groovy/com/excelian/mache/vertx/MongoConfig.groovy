@@ -10,6 +10,8 @@ import static com.excelian.mache.mongo.builder.MongoDBProvisioner.mongodb;
 /**
  * Run the REST service using a Mongo storage provider, the maps created will not be evicted after any period
  * of time.
+ *
+ * This example is used by the build server when running the tests for other languages.
  */
 public class MongoConfig {
     protected static String keySpace = "NoSQL_MacheClient_Test_" + new Date().toString();

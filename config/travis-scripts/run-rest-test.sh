@@ -1,6 +1,5 @@
 #!/bin/bash
-gradle :mache-vertx:installApp
-./mache-vertx/build/install/mache-vertx/bin/mache-vertx &
+gradle :mache-vertx:run &
 MACHE_PID=$!
 
 NEXT_WAIT_TIME=0
