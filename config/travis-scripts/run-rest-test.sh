@@ -1,5 +1,5 @@
 #!/bin/bash
-./gradlew :mache-vertx:run &
+./gradlew :mache-rest:run &
 MACHE_PID=$!
 echo "Mache started, PID $MACHE_PID"
 
