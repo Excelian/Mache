@@ -1,19 +1,18 @@
 #!/bin/bash
-gradle :mache-vertx:installApp
-./mache-vertx/build/install/mache-vertx/bin/mache-vertx &
+./gradlew :mache-rest:run &
 MACHE_PID=$!
+echo "Mache started, PID $MACHE_PID"
 
-NEXT_WAIT_TIME=0
-until nc -z -v -w 1 localhost 8080 || [ $NEXT_WAIT_TIME -eq 5 ]; do
+NEXT_WAIT_TIME=5
+MAX_WAIT_TIME=15
+until nc -z -v -w 1 localhost 8080 || [ $NEXT_WAIT_TIME -eq $MAX_WAIT_TIME ]; do
    sleep $(( NEXT_WAIT_TIME++ ))
 done
 
-if [ $NEXT_WAIT_TIME -eq 5 ] && [ $? -ne 0 ]; then
-   echo 'unable to start vertx on 8080'
+if [ $NEXT_WAIT_TIME -eq $MAX_WAIT_TIME ] && nc -z -v -w 1 localhost 8080; then
+   echo 'Unable to start Mache REST Service on 8080'
    exit 1
 fi
-
-echo "Mache started, PID $MACHE_PID"
 
 echo "Running python REST tests"
 python mache-example/src/examples/python/MacheRestTest.py || { echo 'Python REST test failed' ; exit 1; }
