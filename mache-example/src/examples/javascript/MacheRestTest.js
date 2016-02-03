@@ -5,7 +5,7 @@ var base_url = "http://localhost:8080/map"
 
 getShouldFailUnknownKey = function () {
     http.request(base_url + "/unknown/2", function(res) {
-        assert.equal(400, res.statusCode)
+        assert.equal(404, res.statusCode)
     }).end();
 }();
 

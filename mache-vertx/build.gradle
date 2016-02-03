@@ -29,7 +29,3 @@ shadowJar {
         include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
     }
 }
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.8'
-}

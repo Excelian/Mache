@@ -1,11 +1,6 @@
 language: java
 jdk:
   - oraclejdk8
-branches:
-  only:
-    - master
-    - development
-    - 53-finish-chroniclemap-todos
 
 services:
   - rabbitmq

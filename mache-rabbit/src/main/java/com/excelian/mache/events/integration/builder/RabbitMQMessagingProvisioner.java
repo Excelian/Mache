@@ -2,8 +2,8 @@ package com.excelian.mache.events.integration.builder;
 
 import com.excelian.mache.events.MQFactory;
 import com.excelian.mache.events.integration.RabbitMQFactory;
-import com.excelian.mache.events.integration.RabbitMqConfig;
-import com.excelian.mache.events.integration.RabbitMqConfig.RabbitMqConfigBuilder;
+import com.excelian.mache.events.integration.RabbitMQConfig;
+import com.excelian.mache.events.integration.RabbitMQConfig.RabbitMQConfigBuilder;
 import com.excelian.mache.observable.builder.AbstractMessagingProvisioner;
 import com.rabbitmq.client.ConnectionFactory;
 
@@ -19,11 +19,11 @@ import java.io.IOException;
 public class RabbitMQMessagingProvisioner<K, V> extends AbstractMessagingProvisioner<K, V> {
 
     private final ConnectionFactory connectionFactory;
-    private final RabbitMqConfig rabbitMqConfig;
+    private final RabbitMQConfig rabbitMqConfig;
 
     private RabbitMQMessagingProvisioner(String topic,
                                          ConnectionFactory connectionFactory,
-                                         RabbitMqConfig rabbitMqConfig) {
+                                         RabbitMQConfig rabbitMqConfig) {
         super(topic);
         this.connectionFactory = connectionFactory;
         this.rabbitMqConfig = rabbitMqConfig;
@@ -58,14 +58,14 @@ public class RabbitMQMessagingProvisioner<K, V> extends AbstractMessagingProvisi
     public static class RabbitMqMessagingProvisionerBuilder {
         private final String topic;
         private final ConnectionFactory connectionFactory;
-        private RabbitMqConfig rabbitMqConfig = RabbitMqConfigBuilder.builder().build();
+        private RabbitMQConfig rabbitMqConfig = RabbitMQConfigBuilder.builder().build();
 
         public RabbitMqMessagingProvisionerBuilder(String topic, ConnectionFactory connectionFactory) {
             this.topic = topic;
             this.connectionFactory = connectionFactory;
         }
 
-        public RabbitMqMessagingProvisionerBuilder withRabbitMqConfig(RabbitMqConfig rabbitMqConfig) {
+        public RabbitMqMessagingProvisionerBuilder withRabbitMqConfig(RabbitMQConfig rabbitMqConfig) {
             this.rabbitMqConfig = rabbitMqConfig;
             return this;
         }

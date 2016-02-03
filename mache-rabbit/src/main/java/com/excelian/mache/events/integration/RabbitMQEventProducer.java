@@ -22,7 +22,7 @@ public class RabbitMQEventProducer<K> extends BaseCoordinationEntryEventProducer
     private static final Logger LOG = LoggerFactory.getLogger(RabbitMQEventProducer.class);
     private Channel channel;
     private String exchangeName;
-    private final RabbitMqConfig rabbitMqConfig;
+    private final RabbitMQConfig rabbitMqConfig;
 
     /**
      * Constructor.
@@ -30,7 +30,7 @@ public class RabbitMQEventProducer<K> extends BaseCoordinationEntryEventProducer
      * @param topic - topic
      * @param rabbitMqConfig - rabbitMqConfig
      */
-    public RabbitMQEventProducer(Channel channel, String topic, RabbitMqConfig rabbitMqConfig) {
+    public RabbitMQEventProducer(Channel channel, String topic, RabbitMQConfig rabbitMqConfig) {
         super(topic);
         this.channel = channel;
         this.exchangeName = rabbitMqConfig.getExchangeName();
@@ -52,6 +52,10 @@ public class RabbitMQEventProducer<K> extends BaseCoordinationEntryEventProducer
 
     @Override
     public void close() {
+        try {
+            channel.close();
+        } catch (IOException e) {
+            LOG.error("Failed to close channel", e);
+        }
     }
-
 }

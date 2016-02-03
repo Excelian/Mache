@@ -89,9 +89,8 @@ public class MacheVertical extends AbstractVerticle {
                 } else {
                     context.next();
                 }
-
             } catch (UnknownHostException e) {
-                e.printStackTrace();
+                LOG.error("Failed to register routers", e);
             }
         });
 
@@ -122,7 +121,7 @@ public class MacheVertical extends AbstractVerticle {
             String value = instanceCache.getKey(mapName, key);
             if (value == null) {
                 req.response()
-                    .setStatusCode(400)
+                    .setStatusCode(404)
                     .end("key not found");
             } else {
                 req.response().end(value);

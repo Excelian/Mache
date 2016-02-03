@@ -8,7 +8,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 /**
  * Type for the Rabbit MQ config.
  */
-public class RabbitMqConfig {
+public class RabbitMQConfig {
 
     private final String exchangeName;
     private final int maxLength;
@@ -27,7 +27,7 @@ public class RabbitMqConfig {
      * @param messageTtl              - messageTtl
      * @param routingHeader           - routingHeader
      */
-    private RabbitMqConfig(String exchangeName, int maxLength,
+    private RabbitMQConfig(String exchangeName, int maxLength,
                            int messageExpiry, int networkRecoveryInterval,
                            int messageTtl, BasicProperties routingHeader) {
         this.exchangeName = exchangeName;
@@ -41,7 +41,7 @@ public class RabbitMqConfig {
     /**
      * Builder to produce Rabbit MQ config.
      */
-    public static class RabbitMqConfigBuilder {
+    public static class RabbitMQConfigBuilder {
         private String exchangeName = "default-exchange";
         private int maxLength = 10000;
         private int messageExpiry = (int) SECONDS.toMillis(1);
@@ -50,42 +50,42 @@ public class RabbitMqConfig {
         private BasicProperties routingHeader = MessageProperties.PERSISTENT_TEXT_PLAIN;
 
 
-        public static RabbitMqConfigBuilder builder() {
-            return new RabbitMqConfigBuilder();
+        public static RabbitMQConfigBuilder builder() {
+            return new RabbitMQConfigBuilder();
         }
 
-        public RabbitMqConfigBuilder withExchangeName(String exchangeName) {
+        public RabbitMQConfigBuilder withExchangeName(String exchangeName) {
             this.exchangeName = exchangeName;
             return this;
         }
 
-        public RabbitMqConfigBuilder withMaxLength(int maxLength) {
+        public RabbitMQConfigBuilder withMaxLength(int maxLength) {
             this.maxLength = maxLength;
             return this;
         }
 
-        public RabbitMqConfigBuilder withMessageExpiry(int messageExpiry) {
+        public RabbitMQConfigBuilder withMessageExpiry(int messageExpiry) {
             this.messageExpiry = messageExpiry;
             return this;
         }
 
-        public RabbitMqConfigBuilder withNetworkRecoveryInterval(int networkRecoveryInterval) {
+        public RabbitMQConfigBuilder withNetworkRecoveryInterval(int networkRecoveryInterval) {
             this.networkRecoveryInterval = networkRecoveryInterval;
             return this;
         }
 
-        public RabbitMqConfigBuilder withMessageTtl(int messageTtl) {
+        public RabbitMQConfigBuilder withMessageTtl(int messageTtl) {
             this.messageTtl = messageTtl;
             return this;
         }
 
-        public RabbitMqConfigBuilder withRoutingHeader(BasicProperties routingHeader) {
+        public RabbitMQConfigBuilder withRoutingHeader(BasicProperties routingHeader) {
             this.routingHeader = routingHeader;
             return this;
         }
 
-        public RabbitMqConfig build() {
-            return new RabbitMqConfig(exchangeName, maxLength, messageExpiry,
+        public RabbitMQConfig build() {
+            return new RabbitMQConfig(exchangeName, maxLength, messageExpiry,
                 networkRecoveryInterval, messageTtl, routingHeader);
         }
     }
