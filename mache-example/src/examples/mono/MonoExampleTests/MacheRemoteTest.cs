@@ -46,7 +46,7 @@ namespace MonoExampleTests
 			var getRequest = new RestRequest ("cars/1", Method.GET);
 			IRestResponse getResponse = client.Execute (getRequest);
 
-			Assert.AreEqual(HttpStatusCode.BadRequest, getResponse.StatusCode);
+			Assert.AreEqual(HttpStatusCode.NotFound, getResponse.StatusCode);
 		}
 
 		private IRestResponse PutCar(RestClient client)

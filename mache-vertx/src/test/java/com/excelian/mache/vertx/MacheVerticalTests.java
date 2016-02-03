@@ -1,7 +1,6 @@
 package com.excelian.mache.vertx;
 
 import com.excelian.mache.core.HashMapCacheLoader;
-import com.excelian.mache.core.Mache;
 import com.google.common.net.MediaType;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpHeaders;
@@ -14,7 +13,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import static com.excelian.mache.builder.MacheBuilder.mache;
 import static com.excelian.mache.guava.GuavaMacheProvisioner.guava;
@@ -29,20 +28,21 @@ public class MacheVerticalTests {
     public void setUp(TestContext context) {
         vertx = Vertx.vertx();
 
-        Supplier<Mache<String, String>> factory = () -> {
+        Function<MacheRestRequestContext, RestManagedMache> factory = (request) -> {
             try {
-                return mache(String.class, String.class)
-                        .cachedBy(guava())
-                        .storedIn((keyType, valueType) -> new HashMapCacheLoader<>(valueType))
-                        .withNoMessaging()
-                        .macheUp();
+                return new RestManagedMache(mache(String.class, String.class)
+                    .cachedBy(guava())
+                    .storedIn((keyType, valueType) -> new HashMapCacheLoader<>(valueType))
+                    .withNoMessaging()
+                    .macheUp(), 0);
             } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
         };
 
-        instanceCache = new MacheInstanceCache(factory);
+        instanceCache = new MacheInstanceCache(factory, (x, y) -> {
+        });
         vertical = new MacheVertical(new MacheRestServiceConfiguration(), instanceCache);
         vertx.deployVerticle(vertical, context.asyncAssertSuccess());
     }
@@ -106,12 +106,12 @@ public class MacheVerticalTests {
     }
 
     @Test
-    public void getShouldReturn400MissingKey(TestContext context) {
+    public void getShouldReturn404MissingKey(TestContext context) {
         final Async async = context.async();
 
         vertx.createHttpClient().getNow(8080, "localhost", "/map/names/2",
             response -> {
-                context.assertEquals(400, response.statusCode());
+                context.assertEquals(404, response.statusCode());
                 async.complete();
             });
     }

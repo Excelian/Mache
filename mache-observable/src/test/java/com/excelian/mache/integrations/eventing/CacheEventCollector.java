@@ -22,6 +22,10 @@ public class CacheEventCollector<K> implements RemoteCacheEntryCreatedListener<K
         return queue.poll(msecs, TimeUnit.MILLISECONDS);
     }
 
+    public CoordinationEntryEvent<K> take() throws InterruptedException {
+        return queue.take();
+    }
+
     @Override
     public void onCreated(Iterable<CoordinationEntryEvent<K>> events) throws CacheEntryListenerException {
         addAllToQueue(events);
