@@ -1,5 +1,3 @@
-version 'unspecified'
-
 apply plugin: 'java'
 
 dependencies {

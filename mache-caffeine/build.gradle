@@ -3,6 +3,6 @@ apply plugin: 'java'
 dependencies {
     compile project(":mache-core")
     compile 'com.github.ben-manes.caffeine:caffeine:2.0.2'
-    testCompile project(path: ':mache-core', configuration: 'tests')
 
+    testCompile project(path: ':mache-core', configuration: 'tests')
 }

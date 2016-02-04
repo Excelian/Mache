@@ -1,12 +1,12 @@
 dependencies {
     compile project(':mache-core')
-    compile project(':mache-guava')
-    compile project(':mache-caffeine')
-    testCompile project(':mache-chroniclemap')
+
     compile 'org.springframework.data:spring-data-couchbase:2.0.0.M1'
     compile 'com.couchbase.client:java-client:2.2.0-dp2'
 
+    testCompile project(':mache-caffeine')
     testCompile project(path: ':mache-core', configuration: 'tests')
+
     testCompile 'org.powermock:powermock-core:1.6.2'
     testCompile 'org.powermock:powermock-module-junit4:1.6.2'
     testCompile 'org.powermock:powermock-api-mockito:1.6.2'

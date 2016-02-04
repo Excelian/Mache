@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * An implementation of the Mache CacheLoader for Couchbase Server. Utilises the
  * newer Spring Data Couchbase.
@@ -45,7 +43,6 @@ public class CouchbaseCacheLoader<K, V> extends AbstractCouchbaseCacheLoader<K, 
 
     @Override
     public V load(K key) throws Exception {
-        checkNotNull(key);
         return template.findById(key.toString(), valueType);
     }
 
