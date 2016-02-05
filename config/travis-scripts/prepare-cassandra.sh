@@ -13,4 +13,6 @@ fi
 mkdir -p cassandra && tar xzf $HOME/binaries/cassandra.tgz -C cassandra --strip-components 1
 
 nohup bash -c "cd cassandra && bin/cassandra & "
+CASSANDRA_PID=$!
+echo "Cassandra started, PID $CASSANDRA_PID"
 sleep 5
