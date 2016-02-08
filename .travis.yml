@@ -28,7 +28,7 @@ cache:
 script: |
   ./gradlew check &&
   ./config/travis-scripts/run-rest-test.sh &&
-  ps aux && ps aux | grep cassandra && tail -n 500 nohup.out &&
+  ps aux && ps aux | grep cassandra && tail -n 500 cassandra/cassandra.log &&
   ./gradlew :mache-example:putClient -Parg=10,Cassandra,localhost &&
   ./gradlew :mache-example:putClient -Parg=10,Mongo,localhost &&
   ./gradlew :mache-example:putClient -Parg=10,Couchbase,localhost
