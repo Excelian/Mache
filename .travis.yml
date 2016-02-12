@@ -35,7 +35,8 @@ script: |
 addons:
   apt:
     sources:
-      - mono-beta
+      - mono
+      - mono-libtiff-compat
     packages:
       - mono-devel
       - nunit-console
