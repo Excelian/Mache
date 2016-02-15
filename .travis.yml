@@ -1,3 +1,4 @@
+sudo: required
 language: java
 jdk:
   - oraclejdk8
@@ -35,7 +36,8 @@ script: |
 addons:
   apt:
     sources:
-      - mono-beta
+      - mono
+      - mono-libtiff-compat
     packages:
       - mono-devel
       - nunit-console
