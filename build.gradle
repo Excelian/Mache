@@ -78,3 +78,34 @@ subprojects {
         }
     }
 }
+
+def reportsDir = new File("build/reports")
+def compileDepsPng = file("$reportsDir/compileDeps.png")
+
+task dependenciesPng() {
+    inputs.files subprojects.configurations.compile
+    outputs.files compileDepsPng
+    doFirst {
+        if(compileDepsPng.exists()) compileDepsPng.delete()
+        if(!reportsDir.exists()) reportsDir.mkdirs()
+
+    }
+    doLast {
+        def dotGraph = "digraph Compile{"
+        subprojects.each {subproject ->
+            subproject.configurations.compile.dependencies.each {dependency ->
+                if(dependency instanceof ProjectDependency) {
+                    dotGraph += "\"$subproject.name\" -> \"$dependency.name\""
+                }   }
+        }
+        dotGraph += "}"
+
+        def chartParams = [cht: 'gv', chof: 'png', chl: dotGraph]
+        def url = "http://chart.googleapis.com/chart?"
+        url += chartParams.collect {k,v -> "$k=${URLEncoder.encode(v)}"}.join('&')
+
+        compileDepsPng.withOutputStream{out ->
+            out << new URL(url).openStream()
+        }
+    }
+}
