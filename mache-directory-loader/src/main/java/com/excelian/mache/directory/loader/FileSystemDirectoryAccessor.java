@@ -1,5 +1,7 @@
 package com.excelian.mache.directory.loader;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,7 @@ public class FileSystemDirectoryAccessor implements DirectoryAccessor {
     }
 
     @Override
+    @NotNull
     public List<String> listFiles(String directory) {
         File[] files = new File(rootDirectory, directory).listFiles();
         if (files == null) {
@@ -37,6 +40,7 @@ public class FileSystemDirectoryAccessor implements DirectoryAccessor {
     }
 
     @Override
+    @Nullable
     public ByteBuffer getFile(String file) {
         File resolvedFile = new File(rootDirectory, file);
         try (RandomAccessFile fileHandle = new RandomAccessFile(resolvedFile, "r");

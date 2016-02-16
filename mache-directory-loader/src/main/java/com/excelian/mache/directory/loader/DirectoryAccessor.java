@@ -1,5 +1,8 @@
 package com.excelian.mache.directory.loader;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -10,21 +13,25 @@ import java.util.List;
 public interface DirectoryAccessor {
 
     /**
-     * List all files within the specified directory
+     * List all files within the specified directory.
+     *
      * @param directory The directory
      * @return A list of files within the directory
      */
+    @NotNull
     List<String> listFiles(String directory);
 
     /**
-     * Loads the specified files into a buffer
+     * Loads the specified files into a buffer.
+     *
      * @param file The file
      * @return Loaded ByteBuffer or null if file loading fails
      */
+    @Nullable
     ByteBuffer getFile(String file);
 
     /**
-     * Close the connection to the directory
+     * Close the connection to the directory.
      */
     void close();
 }
