@@ -13,4 +13,5 @@ include 'mache-caffeine'
 include 'mache-chroniclemap'
 include 'mache-rest'
 include 'mache-directory-loader'
+include 'mache-s3'
 
