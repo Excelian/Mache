@@ -1,7 +1,6 @@
 package com.excelian.mache.s3;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Region;
@@ -60,12 +59,19 @@ public class S3DirectoryAccessor implements DirectoryAccessor {
         amazonS3Client.setRegion(region);
     }
 
+    public S3DirectoryAccessor(AmazonS3 amazonS3Client, String bucketName) {
+        this.amazonS3Client = amazonS3Client;
+        this.bucketName = bucketName;
+    }
+
     @NotNull
     @Override
     public List<String> listFiles(String directory) {
         try {
             ObjectListing objectListing = amazonS3Client.listObjects(new ListObjectsRequest()
-                .withBucketName(bucketName));
+                .withBucketName(bucketName)
+                .withPrefix(directory)
+            );
 
             return objectListing.getObjectSummaries().stream()
                 .map(S3ObjectSummary::getKey)
