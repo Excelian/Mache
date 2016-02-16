@@ -5,4 +5,4 @@ pip install --user requests || { echo 'pip package install failed'; exit 1; }
 
 echo "Installing fakes3 for ruby"
 gem install fakes3
-fakes3 -r . -p 4567
+fakes3 -r . -p 4567 &
