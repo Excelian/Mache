@@ -1,10 +1,6 @@
 package com.excelian.mache.s3;
 
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.S3ClientOptions;
 import com.excelian.mache.directory.loader.DirectoryCacheLoader;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +10,8 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * S3 tests, using the ruby gem fakes3, the server must be started prior to running tests.
@@ -34,7 +31,8 @@ public class S3DirectoryAccessorTest {
         directoryAccessor = new S3DirectoryAccessor(s3Client, BUCKET_NAME);
 
         // get the trades file within directory tests
-        URL resource = DirectoryCacheLoader.class.getClassLoader().getResource("Maps/Trades/June2016.txt");
+        URL resource = S3DirectoryAccessorTest.class.getResource("/Trades/June2016.txt");
+        assertNotNull("Resource not found", resource);
         s3Client.putObject(BUCKET_NAME, "trades/myFile.txt", new File(resource.getFile()));
     }
 
