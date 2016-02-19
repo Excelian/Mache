@@ -15,10 +15,10 @@ public class FileSystemDirectoryAccessorTests {
 
     @Test
     public void fileSystemShouldReturnAllFilesInDirectory() throws Exception {
-        URL resource = this.getClass().getClassLoader().getResource("Maps/");
+        URL resource =  this.getClass().getClassLoader().getResource("Maps/");
         FileSystemDirectoryAccessor directoryAccessor = new FileSystemDirectoryAccessor(new File(resource.getPath()));
 
-        List<String> testDirectory = directoryAccessor.listFiles("Trades");
+        List<String> testDirectory = directoryAccessor.listFiles();
 
         assertEquals(1, testDirectory.size());
     }

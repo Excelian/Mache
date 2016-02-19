@@ -32,6 +32,7 @@ public class S3DirectoryAccessor implements DirectoryAccessor {
 
     private final AmazonS3 amazonS3Client;
     private final String bucketName;
+    private String prefix;
 
     /**
      * Creates a new S3 Directory accessor for the specified region.
@@ -40,9 +41,11 @@ public class S3DirectoryAccessor implements DirectoryAccessor {
      *
      * @param region     The region to use S3 within
      * @param bucketName The name of the bucket to use
+     * @param prefix     The prefix to apply
      */
-    public S3DirectoryAccessor(Region region, String bucketName) {
+    public S3DirectoryAccessor(Region region, String bucketName, String prefix) {
         this.bucketName = bucketName;
+        this.prefix = prefix;
 
         AWSCredentials credentials;
         try {
@@ -59,18 +62,26 @@ public class S3DirectoryAccessor implements DirectoryAccessor {
         amazonS3Client.setRegion(region);
     }
 
-    public S3DirectoryAccessor(AmazonS3 amazonS3Client, String bucketName) {
+    /**
+     * Creates a new S3 Directory accessor for the specified region.
+     *
+     * @param amazonS3Client The client to use
+     * @param bucketName     The bucket to use
+     * @param prefix         The file prefix to apply
+     */
+    public S3DirectoryAccessor(AmazonS3 amazonS3Client, String bucketName, String prefix) {
         this.amazonS3Client = amazonS3Client;
         this.bucketName = bucketName;
+        this.prefix = prefix;
     }
 
     @NotNull
     @Override
-    public List<String> listFiles(String directory) {
+    public List<String> listFiles() {
         try {
             ObjectListing objectListing = amazonS3Client.listObjects(new ListObjectsRequest()
                 .withBucketName(bucketName)
-                .withPrefix(directory)
+                .withPrefix(prefix)
             );
 
             return objectListing.getObjectSummaries().stream()

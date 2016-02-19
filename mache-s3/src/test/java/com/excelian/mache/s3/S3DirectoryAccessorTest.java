@@ -1,8 +1,9 @@
 package com.excelian.mache.s3;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.excelian.mache.directory.loader.DirectoryCacheLoader;
+import com.codeaffine.test.ConditionalIgnoreRule;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.File;
@@ -18,17 +19,21 @@ import static org.junit.Assert.assertNotNull;
  *
  * For this to work we add a file to the fake s3 and then query the file back.
  */
+@ConditionalIgnoreRule.IgnoreIf(condition = NoRunningS3ForTests.class)
 public class S3DirectoryAccessorTest {
     private static final String BUCKET_NAME = "myBucket";
 
     private S3DirectoryAccessor directoryAccessor;
+
+    @Rule
+    public final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
     @Before
     public void create() {
         AmazonS3Client s3Client = new AmazonS3Client();
         s3Client.setEndpoint("http://localhost:4567");
 
-        directoryAccessor = new S3DirectoryAccessor(s3Client, BUCKET_NAME);
+        directoryAccessor = new S3DirectoryAccessor(s3Client, BUCKET_NAME, "trades");
 
         // get the trades file within directory tests
         URL resource = S3DirectoryAccessorTest.class.getResource("/Trades/June2016.txt");
@@ -38,7 +43,7 @@ public class S3DirectoryAccessorTest {
 
     @Test
     public void shouldListFilesInS3Bucket() {
-        List<String> trades = directoryAccessor.listFiles("trades");
+        List<String> trades = directoryAccessor.listFiles();
         assertEquals(1, trades.size());
     }
 

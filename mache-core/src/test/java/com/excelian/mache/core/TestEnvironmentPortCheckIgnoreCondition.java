@@ -24,7 +24,7 @@ public abstract class TestEnvironmentPortCheckIgnoreCondition implements Conditi
         }
     }
 
-    public static boolean hostIsReachable(String host) {
+    public boolean hostIsReachable(String host) {
         try {
             return InetAddress.getByName(host).isReachable(2000);
         } catch (IOException e) {

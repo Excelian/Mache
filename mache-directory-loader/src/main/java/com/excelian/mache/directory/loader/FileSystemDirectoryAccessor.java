@@ -29,8 +29,8 @@ public class FileSystemDirectoryAccessor implements DirectoryAccessor {
 
     @Override
     @NotNull
-    public List<String> listFiles(String directory) {
-        File[] files = new File(rootDirectory, directory).listFiles();
+    public List<String> listFiles() {
+        File[] files = rootDirectory.listFiles();
         if (files == null) {
             return new ArrayList<>();
         }

@@ -15,11 +15,10 @@ public interface DirectoryAccessor {
     /**
      * List all files within the specified directory.
      *
-     * @param directory The directory
-     * @return A list of files within the directory
+     * @return A list of files available for this map
      */
     @NotNull
-    List<String> listFiles(String directory);
+    List<String> listFiles();
 
     /**
      * Loads the specified files into a buffer.
