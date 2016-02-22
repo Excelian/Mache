@@ -24,12 +24,12 @@ public class DirectoryCacheLoader implements MacheLoader<String, ByteBuffer> {
 
     @Override
     public void put(String key, ByteBuffer value) {
-        // Put not supported
+        throw new UnsupportedOperationException("Directory Cache Loader is read only");
     }
 
     @Override
     public void remove(String key) {
-        // Do not remove from a file system
+        throw new UnsupportedOperationException("Directory Cache Loader is read only");
     }
 
     @Override
