@@ -52,5 +52,4 @@ public class S3DirectoryAccessorTest {
         ByteBuffer file = directoryAccessor.getFile("trades/myFile.txt");
         assertNotNull(file);
     }
-
 }

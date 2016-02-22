@@ -11,6 +11,7 @@ dependencies {
     testCompile project(':mache-guava')
     testCompile project(':mache-cassandra')
     testCompile project(':mache-mongo')
+    testCompile project(':mache-s3')
     testCompile project(path: ':mache-core', configuration: 'tests')
 
     compile "io.vertx:vertx-core:$vertxVersion"
