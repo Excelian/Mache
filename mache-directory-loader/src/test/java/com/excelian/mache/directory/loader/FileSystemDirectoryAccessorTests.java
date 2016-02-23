@@ -14,16 +14,6 @@ import static org.junit.Assert.assertNull;
 public class FileSystemDirectoryAccessorTests {
 
     @Test
-    public void fileSystemShouldReturnAllFilesInDirectory() throws Exception {
-        URL resource =  this.getClass().getClassLoader().getResource("Maps/");
-        FileSystemDirectoryAccessor directoryAccessor = new FileSystemDirectoryAccessor(new File(resource.getPath()));
-
-        List<String> testDirectory = directoryAccessor.listFiles();
-
-        assertEquals(1, testDirectory.size());
-    }
-
-    @Test
     public void fileSystemShouldLoadSpecifiedFile() throws Exception {
         URL resource = this.getClass().getClassLoader().getResource("Maps/Trades");
         FileSystemDirectoryAccessor directoryAccessor = new FileSystemDirectoryAccessor(new File(resource.getPath()));

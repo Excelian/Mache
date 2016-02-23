@@ -7,12 +7,8 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.excelian.mache.directory.loader.DirectoryAccessor;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +16,6 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The S3 directory accessor provides access to an S3 bucket.
@@ -63,7 +56,7 @@ public class S3DirectoryAccessor implements DirectoryAccessor {
     }
 
     /**
-     * Creates a new S3 Directory accessor for the specified region.
+     * Creates a new S3 Directory accessor with a given S3 client.
      *
      * @param amazonS3Client The client to use
      * @param bucketName     The bucket to use
@@ -75,28 +68,12 @@ public class S3DirectoryAccessor implements DirectoryAccessor {
         this.prefix = prefix;
     }
 
-    @NotNull
-    @Override
-    public List<String> listFiles() {
-        try {
-            ObjectListing objectListing = amazonS3Client.listObjects(new ListObjectsRequest()
-                .withBucketName(bucketName)
-                .withPrefix(prefix)
-            );
-
-            return objectListing.getObjectSummaries().stream()
-                .map(S3ObjectSummary::getKey)
-                .collect(Collectors.toList());
-        } catch (AmazonClientException e) {
-            LOG.error("Failed to retrieve file list", e);
-        }
-        return new ArrayList<>();
-    }
-
     @Nullable
     @Override
     public ByteBuffer getFile(String file) {
-        try (S3Object object = amazonS3Client.getObject(new GetObjectRequest(bucketName, file))) {
+        String qualifiedFile = prefix + (prefix.endsWith("/") ? "" : "/") + file;
+
+        try (S3Object object = amazonS3Client.getObject(new GetObjectRequest(bucketName,  qualifiedFile))) {
             // Object is null on invalid request
             if (object != null) {
                 return readInputStream(object.getObjectContent());
@@ -120,9 +97,5 @@ public class S3DirectoryAccessor implements DirectoryAccessor {
         buffer.flush();
 
         return ByteBuffer.wrap(buffer.toByteArray());
-    }
-
-    @Override
-    public void close() {
     }
 }

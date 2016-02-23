@@ -9,10 +9,8 @@ import org.junit.Test;
 import java.io.File;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * S3 tests, using the ruby gem fakes3, the server must be started prior to running tests.
@@ -42,14 +40,14 @@ public class S3DirectoryAccessorTest {
     }
 
     @Test
-    public void shouldListFilesInS3Bucket() {
-        List<String> trades = directoryAccessor.listFiles();
-        assertEquals(1, trades.size());
+    public void shouldReadFileFromBucket() {
+        ByteBuffer file = directoryAccessor.getFile("myFile.txt");
+        assertNotNull(file);
     }
 
     @Test
-    public void shouldReadFileFromBucket() {
-        ByteBuffer file = directoryAccessor.getFile("trades/myFile.txt");
-        assertNotNull(file);
+    public void shouldReturnNullForMissingFile() {
+        ByteBuffer file = directoryAccessor.getFile("not_uploaded.txt");
+        assertNull(file);
     }
 }

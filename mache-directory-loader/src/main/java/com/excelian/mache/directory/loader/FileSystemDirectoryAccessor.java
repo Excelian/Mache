@@ -1,6 +1,5 @@
 package com.excelian.mache.directory.loader;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,10 +9,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The file system is able to retrieve files using the Java File API.
@@ -25,17 +20,6 @@ public class FileSystemDirectoryAccessor implements DirectoryAccessor {
 
     public FileSystemDirectoryAccessor(File rootDirectory) {
         this.rootDirectory = rootDirectory;
-    }
-
-    @Override
-    @NotNull
-    public List<String> listFiles() {
-        File[] files = rootDirectory.listFiles();
-        if (files == null) {
-            return new ArrayList<>();
-        }
-        return Arrays.asList(files)
-            .stream().map(File::getName).collect(Collectors.toList());
     }
 
     @Override
@@ -51,10 +35,5 @@ public class FileSystemDirectoryAccessor implements DirectoryAccessor {
             LOG.error("Failed to read file " + file, e);
         }
         return null;
-    }
-
-    @Override
-    public void close() {
-
     }
 }

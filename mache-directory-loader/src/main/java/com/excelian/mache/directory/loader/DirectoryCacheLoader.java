@@ -39,7 +39,6 @@ public class DirectoryCacheLoader implements MacheLoader<String, ByteBuffer> {
 
     @Override
     public void close() {
-        directoryAccessor.close();
     }
 
     @Override

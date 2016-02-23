@@ -16,14 +16,4 @@ public class DirectoryCacheLoaderTests {
 
         verify(mock).getFile("ABC");
     }
-
-    @Test
-    public void loaderShouldCloseFileSystem() throws Exception {
-        DirectoryAccessor mock = mock(DirectoryAccessor.class);
-        DirectoryCacheLoader loader = new DirectoryCacheLoader(mock);
-
-        loader.close();
-
-        verify(mock).close();
-    }
 }

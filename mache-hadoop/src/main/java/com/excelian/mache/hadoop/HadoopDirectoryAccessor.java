@@ -45,29 +45,13 @@ public class HadoopDirectoryAccessor implements DirectoryAccessor {
         }
     }
 
-    @NotNull
-    @Override
-    public List<String> listFiles() {
-        List<String> files = new ArrayList<>();
-        try {
-            RemoteIterator<LocatedFileStatus> fileIter = fileSystem.listFiles(path, false);
-            while (fileIter.hasNext()) {
-                LocatedFileStatus next = fileIter.next();
-                files.add(next.getPath().toString());
-            }
-        } catch (IOException e) {
-            LOG.error("Failed to retrieve hadoop files", e);
-        }
-        return files;
-    }
-
     @Nullable
     @Override
     public ByteBuffer getFile(String file) {
         try (FSDataInputStream open = fileSystem.open(new Path(path, file))) {
             return readInputStream(open);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Failed to retrieve Hadoop file " + file, e);
         }
         return null;
     }
@@ -84,10 +68,5 @@ public class HadoopDirectoryAccessor implements DirectoryAccessor {
         buffer.flush();
 
         return ByteBuffer.wrap(buffer.toByteArray());
-    }
-
-    @Override
-    public void close() {
-
     }
 }

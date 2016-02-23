@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -22,7 +21,9 @@ import static org.junit.Assert.*;
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningHadoopForTests.class)
 public class HadoopDirectoryAccessorTest {
 
-    public static final String HDFS_SERVER = "hdfs://" + new NoRunningHadoopForTests().getHost() + ":9000";
+    public static final String HDFS_SERVER = String.format("hdfs://%s:%s",
+        new NoRunningHadoopForTests().getHost(),
+        new NoRunningHadoopForTests().getPort());
     public static final String ROOT_DIRECTORY = "test/file/";
 
     @Rule
@@ -55,10 +56,9 @@ public class HadoopDirectoryAccessorTest {
     }
 
     @Test
-    public void hadoopShouldListFiles() throws Exception {
-        List<String> files = hadoopDirectoryAccessor.listFiles();
+    public void hadoopShouldReturnNullForMissingFile() throws Exception {
+        ByteBuffer file = hadoopDirectoryAccessor.getFile("doesnt_exist.txt");
 
-        assertEquals(1, files.size());
-        assertTrue(files.get(0).toLowerCase().contains("test.txt"));
+        assertNull(file);
     }
 }
