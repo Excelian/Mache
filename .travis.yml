@@ -1,15 +1,12 @@
 sudo: required
 language: java
-jdk:
-  - oraclejdk8
+jdk: oraclejdk8
 
 services:
   - rabbitmq
   - mongodb
 
 before_install:
-  - chmod +x ./config/travis-scripts/*
-  - chmod +x gradlew
   - ./config/travis-scripts/prepare-environment.sh
 
 install:

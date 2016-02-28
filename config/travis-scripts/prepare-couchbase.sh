@@ -10,6 +10,10 @@ if [ ! -e $HOME/binaries/couchbase.deb ] ; then
   wget ${CB_BINARY_URL} -O ${HOME}/binaries/couchbase.deb
 fi
 
+if [ -d $HOME/opt/couchbase ] ; then
+  rm -rf $HOME/opt/couchbase
+fi
+
 dpkg-deb -x $HOME/binaries/couchbase.deb $HOME
 
 cd $HOME/opt/couchbase

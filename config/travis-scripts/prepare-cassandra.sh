@@ -9,8 +9,11 @@ fi
 if [ ! -e $HOME/binaries/cassandra.tgz ] ; then
   wget $CASSANDRA_BINARY_URL -O $HOME/binaries/cassandra.tgz
 fi
+if [ -d /tmp/cassandra ] ; then
+  rm -rf /tmp/cassandra
+fi
 
-mkdir -p cassandra && tar xzf $HOME/binaries/cassandra.tgz -C cassandra --strip-components 1
+mkdir -p /tmp/cassandra && tar xzf $HOME/binaries/cassandra.tgz -C /tmp/cassandra --strip-components 1
 
-nohup bash -c "cd cassandra && bin/cassandra & "
+nohup bash -c "cd /tmp/cassandra && bin/cassandra & "
 sleep 5
