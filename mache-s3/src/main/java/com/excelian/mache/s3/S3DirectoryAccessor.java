@@ -8,13 +8,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.excelian.mache.directory.loader.ByteBufferUtilities;
 import com.excelian.mache.directory.loader.DirectoryAccessor;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 /**
@@ -73,29 +72,15 @@ public class S3DirectoryAccessor implements DirectoryAccessor {
     public ByteBuffer getFile(String file) {
         String qualifiedFile = prefix + (prefix.endsWith("/") ? "" : "/") + file;
 
-        try (S3Object object = amazonS3Client.getObject(new GetObjectRequest(bucketName,  qualifiedFile))) {
+        try (S3Object object = amazonS3Client.getObject(new GetObjectRequest(bucketName, qualifiedFile))) {
             // Object is null on invalid request
             if (object != null) {
-                return readInputStream(object.getObjectContent());
+                return ByteBufferUtilities.readInputStream(object.getObjectContent());
             }
         } catch (Exception e) {
             LOG.error("Failed to retrieve file " + file, e);
         }
 
         return null;
-    }
-
-    private ByteBuffer readInputStream(InputStream inputStream) throws Exception {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-        int read;
-        byte[] data = new byte[(int) Math.pow(2, 14)];
-
-        while ((read = inputStream.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, read);
-        }
-        buffer.flush();
-
-        return ByteBuffer.wrap(buffer.toByteArray());
     }
 }

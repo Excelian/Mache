@@ -1,5 +1,6 @@
 package com.excelian.mache.hadoop;
 
+import com.excelian.mache.directory.loader.ByteBufferUtilities;
 import com.excelian.mache.directory.loader.DirectoryAccessor;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -49,24 +50,10 @@ public class HadoopDirectoryAccessor implements DirectoryAccessor {
     @Override
     public ByteBuffer getFile(String file) {
         try (FSDataInputStream open = fileSystem.open(new Path(path, file))) {
-            return readInputStream(open);
+            return ByteBufferUtilities.readInputStream(open);
         } catch (Exception e) {
             LOG.error("Failed to retrieve Hadoop file " + file, e);
         }
         return null;
-    }
-
-    private ByteBuffer readInputStream(InputStream inputStream) throws Exception {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-        int read;
-        byte[] data = new byte[(int) Math.pow(2, 14)];
-
-        while ((read = inputStream.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, read);
-        }
-        buffer.flush();
-
-        return ByteBuffer.wrap(buffer.toByteArray());
     }
 }
