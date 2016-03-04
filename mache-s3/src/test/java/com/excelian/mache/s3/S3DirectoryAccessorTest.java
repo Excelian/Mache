@@ -14,7 +14,6 @@ import static org.junit.Assert.*;
 
 /**
  * S3 tests, using the ruby gem fakes3, the server must be started prior to running tests.
- *
  * For this to work we add a file to the fake s3 and then query the file back.
  */
 @ConditionalIgnoreRule.IgnoreIf(condition = NoRunningS3ForTests.class)
@@ -29,7 +28,7 @@ public class S3DirectoryAccessorTest {
     @Before
     public void create() {
         AmazonS3Client s3Client = new AmazonS3Client();
-        s3Client.setEndpoint("http://localhost:4567");
+        s3Client.setEndpoint(String.format("http://%s:%d", NoRunningS3ForTests.HOST, NoRunningS3ForTests.PORT));
 
         directoryAccessor = new S3DirectoryAccessor(s3Client, BUCKET_NAME, "trades");
 

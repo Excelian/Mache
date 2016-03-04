@@ -22,8 +22,7 @@ import static org.junit.Assert.*;
 public class HadoopDirectoryAccessorTest {
 
     public static final String HDFS_SERVER = String.format("hdfs://%s:%s",
-        new NoRunningHadoopForTests().getHost(),
-        new NoRunningHadoopForTests().getPort());
+        NoRunningHadoopForTests.HOST, NoRunningHadoopForTests.PORT);
     public static final String ROOT_DIRECTORY = "test/file/";
 
     @Rule
@@ -40,9 +39,9 @@ public class HadoopDirectoryAccessorTest {
 
         try {
             FileSystem fileSystem = FileSystem.get(configuration);
-            fileSystem.mkdirs(new Path(ROOT_DIRECTORY));
-            fileSystem.createNewFile(new Path(ROOT_DIRECTORY + "test.txt"));
-            fileSystem.deleteOnExit(new Path(ROOT_DIRECTORY));
+            fileSystem.mkdirs(path);
+            fileSystem.createNewFile(new Path(path, "test.txt"));
+            fileSystem.deleteOnExit(path);
         } catch (IOException e) {
             e.printStackTrace();
         }

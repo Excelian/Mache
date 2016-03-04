@@ -3,8 +3,12 @@ package com.excelian.mache.s3;
 import com.excelian.mache.core.TestEnvironmentPortCheckIgnoreCondition;
 
 public class NoRunningS3ForTests extends TestEnvironmentPortCheckIgnoreCondition {
+
+    public static final String HOST = "localhost";
+    public static final int PORT = 4567;
+
     public NoRunningS3ForTests() {
-        super(4567, "localhost");
+        super(PORT, HOST);
     }
 
     @Override

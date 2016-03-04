@@ -15,6 +15,7 @@ public class JsonDirectoryCacheLoader implements MacheLoader<String, String> {
 
     /**
      * Creates the JSON Directory loader with the wrapped internal cache loader.
+     *
      * @param cacheLoader The cache loader to wrap
      */
     public JsonDirectoryCacheLoader(DirectoryCacheLoader cacheLoader) {
