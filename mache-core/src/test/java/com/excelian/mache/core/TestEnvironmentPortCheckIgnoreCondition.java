@@ -18,7 +18,7 @@ public abstract class TestEnvironmentPortCheckIgnoreCondition implements Conditi
         if (portAccessible("localhost", port)) {
             host = "localhost";
             hostPresent = true;
-        } else if (hostIsReachable(testEnvIp) && (checkExternalPort && portAccessible(testEnvIp, port))) {
+        } else if (hostIsReachable(testEnvIp) && (!checkExternalPort || portAccessible(testEnvIp, port))) {
             host = testEnvIp;
             hostPresent = true;
         } else {
