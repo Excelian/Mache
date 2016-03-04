@@ -10,10 +10,11 @@ import java.nio.ByteBuffer;
 public class ByteBufferUtilities {
 
     /**
-     * Loads a ByteBuffer from a given input stream
-     * @param inputStream The input stream
+     * Loads a ByteBuffer from a given input stream.
+     *
+     * @param inputStream The input stream.
      * @return Loaded bytebuffer
-     * @throws Exception
+     * @throws Exception Any exception that occurs whilst reading the stream
      */
     public static ByteBuffer readInputStream(InputStream inputStream) throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
